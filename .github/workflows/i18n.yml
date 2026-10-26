@@ -4,7 +4,7 @@
 #
 # Purpose:
 #   Validates existence, cross-navigation, encoding integrity,
-#   and Arabic RTL direction for all 10 supported documentation languages.
+#   and structural parity for all 10 supported documentation languages.
 # ============================================================
 
 name: "DERA | Multilingual Validation"
@@ -33,7 +33,7 @@ concurrency:
 
 jobs:
   validate-i18n:
-    name: "10-Language Parity & RTL Verification"
+    name: "10-Language Parity Verification"
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
