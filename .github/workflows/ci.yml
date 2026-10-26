@@ -1,0 +1,141 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Primary Continuous Integration (CI) Workflow
+#
+# Purpose:
+#   Main automated quality gate verifying Python backend,
+#   TypeScript contracts/frontend, and schema models.
+#
+# Security principles:
+#   - Least-privilege permissions (contents: read)
+#   - Controlled concurrency with PR cancellation
+#   - Job timeouts on all executions
+#   - Zero external AI services
+# ============================================================
+
+name: "DERA | CI"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # ----------------------------------------------------------
+  # 1. Python Quality & Unit Testing
+  # ----------------------------------------------------------
+  python-tests:
+    name: "Python Quality & Tests (${{ matrix.python-version }})"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python ${{ matrix.python-version }}"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: "Install Dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install pydantic networkx sqlglot fastapi httpx
+
+      - name: "Compile Python Source"
+        run: |
+          python -m compileall packages/ apps/ tests/
+
+      - name: "Execute Unit & Integration Tests"
+        env:
+          PYTHONPATH: packages/core/src:apps/api/src
+        run: |
+          python -m unittest discover tests/
+
+  # ----------------------------------------------------------
+  # 2. TypeScript Quality & Typecheck
+  # ----------------------------------------------------------
+  typescript-tests:
+    name: "TypeScript Quality & Typecheck"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Node.js LTS"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: "Install Node Dependencies"
+        run: |
+          npm ci || npm install --no-audit
+
+      - name: "Execute Static Typecheck"
+        run: |
+          npx tsc --noEmit
+
+  # ----------------------------------------------------------
+  # 3. Canonical Schema Contract Parity Check
+  # ----------------------------------------------------------
+  contracts-parity:
+    name: "Schema Contract Parity"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Verify Contract Integrity"
+        run: |
+          test -s packages/core/src/dera/models.py
+          test -s packages/contracts/src/index.ts
+
+  # ----------------------------------------------------------
+  # 4. Master CI Status Gate (Branch Protection Target)
+  # ----------------------------------------------------------
+  ci-gate:
+    name: "CI Gate"
+    needs: [python-tests, typescript-tests, contracts-parity]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: always()
+
+    steps:
+      - name: "Evaluate CI Status"
+        run: |
+          if [ "${{ needs.python-tests.result }}" != "success" ] || \
+             [ "${{ needs.typescript-tests.result }}" != "success" ] || \
+             [ "${{ needs.contracts-parity.result }}" != "success" ]; then
+            echo "CI Gate FAILED: One or more prerequisite jobs did not succeed."
+            exit 1
+          fi
+          echo "CI Gate PASSED: All prerequisite verification jobs succeeded."

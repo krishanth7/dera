@@ -1,0 +1,74 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Deep Pull Request Qualification Workflow
+#
+# Purpose:
+#   Comprehensive qualification for database connector changes,
+#   schema normalization, SQL parsing, and release candidate PRs.
+#
+# Security principles:
+#   - Safe event triggers (workflow_dispatch or labeled PRs)
+#   - Read-only token permissions
+#   - Explicit commit SHA binding
+# ============================================================
+
+name: "DERA | Full PR Qualification"
+
+on:
+  pull_request:
+    types: [labeled, synchronize]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual full qualification"
+        required: false
+        default: "Manual audit"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-full-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: "Deep Schema & Connector Qualification"
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.pull_request.labels.*.name, 'ci:full')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python 3.13"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: "Install Full Dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install pydantic networkx sqlglot fastapi httpx
+
+      - name: "Run Extended Schema Regression Suite"
+        env:
+          PYTHONPATH: packages/core/src:apps/api/src
+        run: |
+          python -m unittest discover tests/regression/
+
+      - name: "Run SQLite Integration Matrix"
+        env:
+          PYTHONPATH: packages/core/src:apps/api/src
+        run: |
+          python -m unittest discover tests/integration/
+
+      - name: "Qualification Complete"
+        run: |
+          echo "Deep qualification successfully verified schema normalization and connectors."

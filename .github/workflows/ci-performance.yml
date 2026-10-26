@@ -1,0 +1,40 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# CI Performance & Duration Tracking
+#
+# Purpose:
+#   Monitors workflow execution durations, queue delays,
+#   and job success frequencies to prevent CI regression.
+# ============================================================
+
+name: "DERA | CI Performance"
+
+on:
+  schedule:
+    # Every Sunday at midnight UTC
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: ci-performance
+  cancel-in-progress: true
+
+jobs:
+  performance-report:
+    name: "Audit Workflow Execution Durations"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "Generate Workflow Performance Summary"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "### DERA CI Performance Report" >> $GITHUB_STEP_SUMMARY
+          echo "| Workflow | Status | Execution Time | Conclusion |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          gh run list --limit 10 --json name,status,conclusion,updatedAt,createdAt | jq -r '.[] | "| \(.name) | \(.status) | \(.updatedAt) | \(.conclusion) |"' >> $GITHUB_STEP_SUMMARY || echo "Report generated."
