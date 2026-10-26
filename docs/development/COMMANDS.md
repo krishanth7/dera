@@ -15,6 +15,8 @@ DERA provides a dedicated cross-platform runner (`scripts/development/dev.py`) t
 | `python scripts/development/dev.py typecheck` | Run static TypeScript compiler typecheck | `npx -p typescript tsc --noEmit` |
 | `python scripts/development/dev.py compile` | Byte-compile all Python packages | `python -m compileall packages/ apps/ tests/` |
 | `python scripts/development/dev.py validate-docs` | Validate documentation markdown links and i18n parity | `scripts/ci/validate_docs.py` & `validate_i18n.py` |
+| `python scripts/development/dev.py validate-title "<title>"` | Validate a commit or PR title against Conventional Commits | `scripts/ci/validate_pr_title.py "<title>"` |
+| `python scripts/development/dev.py install-hooks` | Install local Git commit-msg hook for Conventional Commits | Writes `.git/hooks/commit-msg` |
 | `python scripts/development/dev.py all` | Execute full baseline verification suite | Runs compile, tests, typecheck, and doc validation sequentially |
 
 ---
@@ -33,11 +35,31 @@ For contributors using Linux or macOS with GNU Make installed:
 | `make test` | Run Python unit, integration, and architecture tests | `make test` |
 | `make build` | Compile Python packages and build Node workspaces | `make build` |
 | `make dev-api` | Launch FastAPI gateway server with reload | `make dev-api` |
+| `make validate-title` | Validate PR or commit title (pass `TITLE="..."`) | `make validate-title TITLE="feat(core): test"` |
+| `make install-hooks` | Install local Git commit-msg hook | `make install-hooks` |
 | `make clean` | Remove `__pycache__`, `.pytest_cache`, `.ruff_cache`, and build directories | `make clean` |
 
 ---
 
-## 3. Direct Native Commands
+## 3. Pre-Commit Hook Tooling (Optional)
+
+Contributors who use the standard `pre-commit` framework can enable automated local git hooks:
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Install git hook scripts into .git/hooks
+pre-commit install
+
+# Run checks manually against all files
+pre-commit run --all-files
+```
+
+
+---
+
+## 4. Direct Native Commands
 
 Contributors who prefer running native commands directly can use:
 

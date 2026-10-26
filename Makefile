@@ -43,7 +43,15 @@ build: ## Compile Python packages and build TypeScript workspaces
 
 .PHONY: dev-api
 dev-api: ## Run local FastAPI development server
-	$(PYTHON) -m uvicorn dera_api.main:app --reload --host 0.0.0.0 --port 8000
+	$(PYTHON) -m uvicorn dera_api.main:app --reload --host 127.0.0.1 --port 8000
+
+.PHONY: validate-title
+validate-title: ## Validate pull request or commit title
+	$(PYTHON) scripts/ci/validate_pr_title.py "$(TITLE)"
+
+.PHONY: install-hooks
+install-hooks: ## Install local Git commit-msg hook
+	$(PYTHON) scripts/development/dev.py install-hooks
 
 .PHONY: clean
 clean: ## Remove temporary build files, test caches, and compiled artifacts
@@ -51,3 +59,4 @@ clean: ## Remove temporary build files, test caches, and compiled artifacts
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
 	rm -rf dist/ build/ *.egg-info .next/ out/
+
