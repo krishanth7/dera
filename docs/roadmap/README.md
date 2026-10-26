@@ -44,7 +44,7 @@ gantt
 | Phase | Milestone Name | Status | Key Deliverables & Focus Areas |
 |---|---|---|---|
 | **Phase 1** | **Repository Foundation & Governance** | **Completed** | Monorepo structure, PEP 621 packaging, Git branching, Conventional Commits, PR qualification gates, community operations (PR #20). |
-| **Phase 2** | **Multilingual Documentation & Developer Experience** | **In Progress** | Authoritative English README (PR #21), 9 international translations (PR #22), 10-language navigation (PR #23), Architecture & Developer Documentation (Phase 2.4). |
+| **Phase 2** | **Multilingual Documentation & Developer Experience** | **Completed** | Authoritative English README (PR #22), 9 international translations (PR #22), 10-language navigation (PR #23), Architecture & Developer Documentation (PR #24), Quality Gates (PR #25), Contribution & Governance (Phase 2.6). |
 | **Phase 3** | **GitHub Actions & DevSecOps** | **Implemented** | Automated CI qualification gate, CodeQL scanning, Bandit SAST, matrix testing (Python 3.12/3.13), secret detection. |
 | **Phase 4** | **Backend & Platform Infrastructure** | Planned | FastAPI gateway endpoints, loopback default bindings, configuration management, health telemetry. |
 | **Phase 5** | **Database Connectors & Metadata Inspection** | Experimental | Read-only catalog extraction for PostgreSQL (`pg_catalog`) and SQLite (`sqlite_master`), query mutation guards. |
@@ -69,11 +69,12 @@ gantt
 - [x] **Sub-phase 1.6:** GitHub issue forms, Discussions guide, pull request templates, and community operations ([`docs/community/`](../community/README.md), [`docs/audit/PHASE_1_COMPLETION.md`](../audit/PHASE_1_COMPLETION.md)) (Completed Phase 1 via PR #20).
 
 ### Phase 2 — Multilingual Documentation & Developer Experience
-- [x] **Sub-phase 2.1:** Authoritative English README, truth-in-documentation matrix, architecture visualization, and documentation lifecycle contract ([`docs/development/README_MAINTENANCE.md`](../development/README_MAINTENANCE.md), PR #21).
+- [x] **Sub-phase 2.1:** Authoritative English README, truth-in-documentation matrix, architecture visualization, and documentation lifecycle contract ([`docs/development/README_MAINTENANCE.md`](../development/README_MAINTENANCE.md), PR #22).
 - [x] **Sub-phase 2.2:** Synchronize 9 international README translations (`es`, `fr`, `de`, `pt`, `it`, `ja`, `ko`, `zh-CN`, `ru`) in [`docs/i18n/`](../i18n/), replacing Arabic with Italian in the official 10-language matrix (PR #22).
 - [x] **Sub-phase 2.3:** Ten-Language Documentation Navigation System with canonical manifest (`languages.json`), deterministic generator (`scripts/docs/generate_language_navigation.py`), and CI validation (PR #23).
-- [x] **Sub-phase 2.4:** Complete Architecture & Developer Documentation knowledge base, system component diagrams, backend/frontend guides, core/connector architectures, and audit acceptance.
-- [x] **Sub-phase 2.5:** Documentation Linting, Link Validation & Quality Gates (markdownlint-cli2, internal link and heading anchor validation, Mermaid diagram syntax validation, isolated external link health checks, regression fixtures, and contributor guide in [`docs/development/DOCUMENTATION_VALIDATION.md`](../development/DOCUMENTATION_VALIDATION.md)).
+- [x] **Sub-phase 2.4:** Complete Architecture & Developer Documentation knowledge base, system component diagrams, backend/frontend guides, core/connector architectures, and audit acceptance (PR #24).
+- [x] **Sub-phase 2.5:** Documentation Linting, Link Validation & Quality Gates (markdownlint-cli2, internal link and heading anchor validation, Mermaid diagram syntax validation, isolated external link health checks, regression fixtures, and contributor guide in [`docs/development/DOCUMENTATION_VALIDATION.md`](../development/DOCUMENTATION_VALIDATION.md), PR #25).
+- [x] **Sub-phase 2.6:** Contribution Guides, Documentation Governance & Maintenance (contributor onboarding audit, FIRST_CONTRIBUTION walkthrough, contribution areas, style guide, documentation ownership & review policy, release documentation procedures, documentation lifecycle, maintenance schedule, contributor FAQ, and complete Phase 2 completion audit in [`docs/audit/PHASE_2_COMPLETION.md`](../audit/PHASE_2_COMPLETION.md)).
 
 ### Phase 3 — GitHub Actions & DevSecOps
 - [x] CodeQL semantic security analysis for Python and JavaScript/TypeScript.

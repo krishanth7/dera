@@ -20,7 +20,7 @@ All database reverse-engineering, schema diagnostics, graph algorithms, and migr
 
 ## 2. Master Audit Reports Index
 
-The repository audit log comprises eighteen technical assessments, audit reports, and milestone acceptance certificates:
+The repository audit log comprises twenty-two technical assessments, audit reports, and milestone acceptance certificates:
 
 | # | Audit Document | Description | Status |
 |---|---|---|---|
@@ -44,6 +44,8 @@ The repository audit log comprises eighteen technical assessments, audit reports
 | 18 | [PHASE_2_4_ACCEPTANCE.md](./PHASE_2_4_ACCEPTANCE.md) | Phase 2.4 acceptance certificate, test telemetry, and definition of done verification | **Verified Complete** |
 | 19 | [PHASE_2_5_VALIDATION_BASELINE.md](./PHASE_2_5_VALIDATION_BASELINE.md) | Phase 2.5 documentation validation audit, gap analysis, and layered quality architecture | **Verified Complete** |
 | 20 | [PHASE_2_5_ACCEPTANCE.md](./PHASE_2_5_ACCEPTANCE.md) | Phase 2.5 acceptance certificate, verification telemetry, and Definition of Done sign-off | **Verified Complete** |
+| 21 | [PHASE_2_6_CONTRIBUTOR_AUDIT.md](./PHASE_2_6_CONTRIBUTOR_AUDIT.md) | Contributor experience audit, friction points, severity findings, and action plan | **Verified Complete** |
+| 22 | [PHASE_2_COMPLETION.md](./PHASE_2_COMPLETION.md) | Comprehensive audit and acceptance certificate for all Phase 2 sub-phases (2.1–2.6) | **Verified Complete** |
 
 ---
 
