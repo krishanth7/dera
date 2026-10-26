@@ -37,6 +37,11 @@ flowchart TD
 |---|---|---|
 | [**LICENSE**](../../LICENSE) | Legal terms of use and distribution | Permissive MIT License text, copyright attribution to Krishanth. |
 | [**MAINTAINERS.md**](MAINTAINERS.md) | Repository leadership & stewardship | Lead maintainer identity, review SLAs, security escalation, release authority, succession. |
+| [**DOCUMENTATION_OWNERSHIP.md**](DOCUMENTATION_OWNERSHIP.md) | Documentation domain stewardship | Subsystem ownership mapping, editorial vs CODEOWNERS enforcement, author responsibilities. |
+| [**DOCUMENTATION_REVIEW_POLICY.md**](DOCUMENTATION_REVIEW_POLICY.md) | Quality & review standards | Three proportional review tiers, accuracy verification, and review checklists. |
+| [**RELEASE_DOCUMENTATION.md**](RELEASE_DOCUMENTATION.md) | Release documentation procedures | Changelog maintenance, version references, release notes, and pre-release vs stable gates. |
+| [**DOCUMENTATION_LIFECYCLE.md**](DOCUMENTATION_LIFECYCLE.md) | Lifecycle stages & preservation | Draft, Active, Deprecated, and Archived states; ADR and audit preservation rules. |
+| [**DOCUMENTATION_MAINTENANCE_SCHEDULE.md**](DOCUMENTATION_MAINTENANCE_SCHEDULE.md) | Maintenance rituals & cadence | Per-PR, per-release, and quarterly review checklists and automation scope. |
 | [**THIRD_PARTY_LICENSES.md**](THIRD_PARTY_LICENSES.md) | Dependency compliance & inventory | SPDX identifiers, license compatibility with MIT, copyleft restrictions, supply chain security. |
 | [**GOVERNANCE_DECISIONS.md**](GOVERNANCE_DECISIONS.md) | Architectural & governance decision records | Formal decision records (GADs) covering licensing, non-AI mandate, database safety, and Git workflow. |
 | [**CODE_OF_CONDUCT.md**](../../CODE_OF_CONDUCT.md) | Community participation standards | Contributor Covenant v2.0, positive behavior standards, enforcement ladder, reporting contact. |

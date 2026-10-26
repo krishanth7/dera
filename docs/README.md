@@ -26,11 +26,15 @@ Welcome to the official technical documentation for **DERA — Database Engineer
 | **Deterministic Core** | Pure Python canonical domain models, Kahn DAG algorithms, and rule diagnostics | [docs/core/README.md](core/README.md) |
 | **Database Connectors** | Read-only connection lifecycle, query mutation safety, and capability matrix | [docs/connectors/CONNECTOR_ARCHITECTURE.md](connectors/CONNECTOR_ARCHITECTURE.md) |
 | **Shared Contracts** | JSON Schema exchange specifications and TypeScript protocol definitions | [docs/contracts/SCHEMA_CONTRACTS.md](contracts/SCHEMA_CONTRACTS.md) |
-| **Developer Experience** | Onboarding guides, commands catalog, testing guides, and troubleshooting | [docs/development/GETTING_STARTED.md](development/GETTING_STARTED.md) |
+| **Getting Started & Setup** | Quickstart onboarding, prerequisites, and developer environment setup | [docs/development/GETTING_STARTED.md](development/GETTING_STARTED.md) |
+| **Developer Workflow** | CLI commands reference, branching strategy, Conventional Commits, and PR lifecycle | [docs/development/CONTRIBUTION_WORKFLOW.md](development/CONTRIBUTION_WORKFLOW.md) |
+| **Testing & Quality Gates** | Python unit tests, TypeScript type checks, and architecture invariants | [docs/development/TESTING.md](development/TESTING.md) |
 | **Security Architecture** | Threat modeling, read-only guarantees, credential safety, and vulnerability triage | [docs/security/SECURITY_ARCHITECTURE.md](security/SECURITY_ARCHITECTURE.md) |
+| **Community & Contributing** | First contribution walkthrough, contribution categories, and contributor FAQ | [docs/community/README.md](community/README.md) |
+| **Documentation Governance** | Ownership, review standards, style guide, release docs, and lifecycle policies | [docs/governance/README.md](governance/README.md) |
+| **International Documentation** | 10-language translations, translation maintenance, and translation guides | [docs/i18n/README.en.md](i18n/README.en.md) |
 | **Audit & Baseline Reports** | Phase audit reports, baseline assessments, and acceptance certificates | [docs/audit/README.md](audit/README.md) |
 | **Roadmap & Milestones** | Master 12-Phase development roadmap and engineering delivery schedule | [docs/roadmap/README.md](roadmap/README.md) |
-| **International Documentation** | Synchronized technical documentation in 10 international languages | [docs/i18n/](i18n/README.en.md) |
 
 ---
 

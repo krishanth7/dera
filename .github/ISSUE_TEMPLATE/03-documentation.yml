@@ -47,10 +47,10 @@ body:
         - "French (fr)"
         - "German (de)"
         - "Portuguese (pt)"
+        - "Italian (it)"
         - "Japanese (ja)"
         - "Korean (ko)"
         - "Simplified Chinese (zh-CN)"
-        - "Arabic (ar) [RTL]"
         - "Russian (ru)"
     validations:
       required: true
