@@ -72,6 +72,34 @@ Once an issue is validated, replace `status/triage` with appropriate operational
   1. Comment: *"Thank you for reporting! This appears to be a duplicate of #<number>. Consolidating conversation there."*
   2. Apply `duplicate` label and close the newer issue.
 
+### Documentation Bug Reports & Broken Links
+- Reports filed via the Documentation Issue Form (`.github/ISSUE_TEMPLATE/03-documentation.yml`):
+  - Apply `type/docs` and relevant component (`component/docs`).
+  - For broken links or typo fixes, apply `good first issue` to invite community contributions.
+  - If a broken link blocks core navigation, triage with `priority/medium`.
+
+### Translation Requests & Outdated Translations
+- Requests for updating international documentation (`docs/i18n/`):
+  - Label with `type/docs`, `component/docs`.
+  - Reference the authoritative English source in [`README.md`](../../README.md).
+  - Verify that the requested language is one of the ten official languages (`en`, `es`, `fr`, `de`, `pt`, `it`, `ja`, `ko`, `zh-CN`, `ru`). Reject requests for non-supported languages per the [Translation Policy](../i18n/TRANSLATION_POLICY.md).
+
+### Feature Documentation Gaps
+- If an existing implemented feature lacks adequate documentation or examples:
+  - Apply `type/docs` and component label (e.g., `component/connectors`, `component/core`).
+  - Request technical input from the subsystem author or lead maintainer.
+
+### Security-Sensitive Issues
+- **Immediate Redaction:** If an issue discloses plaintext credentials, database connection strings with passwords, private tokens, or proprietary database schemas:
+  1. Maintainers must immediately edit the issue body to redact the sensitive information.
+  2. If the issue discloses a zero-day vulnerability or security exploit, do not discuss it publicly. Direct the reporter to file a private disclosure via GitHub Security Advisories or email `krishanth.b.2008@gmail.com` per [`SECURITY.md`](../../SECURITY.md).
+  3. Close or convert the public issue to prevent disclosure before a fix is released.
+
+### Contributor Support & Maintainer Escalation
+- If a contributor is blocked on an issue or needs architectural guidance:
+  - Mention the lead maintainer [`@krishanth7`](https://github.com/krishanth7).
+  - Direct open-ended discussions or broader architecture questions to [GitHub Discussions](https://github.com/krishanth7/dera/discussions).
+
 ### Unreproducible Bugs
 - If a reported bug cannot be reproduced with the provided steps:
   - Request the minimal synthetic SQL DDL script that triggers the error.
