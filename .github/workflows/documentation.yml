@@ -1,10 +1,17 @@
 # ============================================================
 # DERA — Database Engineering & Reverse Analysis
-# Documentation Integrity Verification
+# Documentation Quality Gate & Linting
 #
 # Purpose:
-#   Validates internal markdown links, heading hierarchy,
-#   and UTF-8 encoding across all documentation files.
+#   Validates Markdown formatting, internal link and heading anchor
+#   integrity, Mermaid diagram syntax, 10-language navigation parity,
+#   documentation structure, and regression test suites.
+#
+# Principles:
+#   - Least-privilege permissions (contents: read)
+#   - Fast deterministic execution (< 1 minute)
+#   - Fully offline / hermetic (no external network dependencies)
+#   - Concurrency cancellation for superseded PR runs
 # ============================================================
 
 name: "DERA | Documentation Validation"
@@ -16,12 +23,30 @@ on:
     paths:
       - "docs/**"
       - "*.md"
+      - ".markdownlint-cli2.jsonc"
+      - "scripts/ci/validate_docs.py"
+      - "scripts/ci/validate_mermaid.py"
+      - "scripts/ci/validate_i18n.py"
+      - "scripts/docs/**"
+      - "tests/docs/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/documentation.yml"
   pull_request:
     branches:
       - main
     paths:
       - "docs/**"
       - "*.md"
+      - ".markdownlint-cli2.jsonc"
+      - "scripts/ci/validate_docs.py"
+      - "scripts/ci/validate_mermaid.py"
+      - "scripts/ci/validate_i18n.py"
+      - "scripts/docs/**"
+      - "tests/docs/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/documentation.yml"
   workflow_dispatch:
 
 permissions:
@@ -33,7 +58,7 @@ concurrency:
 
 jobs:
   validate-docs:
-    name: "Internal Markdown Link & Structure Check"
+    name: "Documentation Quality Gates"
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -43,11 +68,38 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: "Set up Node.js LTS"
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: "Install Node Dependencies"
+        run: |
+          npm ci || npm install --no-audit
+
       - name: "Set up Python"
         uses: actions/setup-python@v7
         with:
           python-version: "3.13"
 
-      - name: "Run Documentation Validator"
+      - name: "1. Markdown Linting"
+        run: |
+          npm run docs:lint
+
+      - name: "2. Internal Link, Anchor & Structure Validation"
         run: |
           python scripts/ci/validate_docs.py
+
+      - name: "3. Mermaid Diagram Syntax Validation"
+        run: |
+          python scripts/ci/validate_mermaid.py
+
+      - name: "4. 10-Language Navigation & Manifest Check"
+        run: |
+          python scripts/docs/generate_language_navigation.py --check
+          python scripts/ci/validate_i18n.py
+
+      - name: "5. Documentation Regression Tests"
+        run: |
+          python -m unittest discover tests/docs/
