@@ -344,12 +344,13 @@ For specialized security architecture and policy documents:
 
 DERA is executing a structured **12-Phase Roadmap** to build a complete database reverse-engineering platform:
 
-- [x] **Phase 1: Repository Foundation & Governance**
+- [x] **Phase 1: Repository Foundation & Governance (Completed)**
   - [x] Phase 1.1: Complete repository audit & baseline verification
   - [x] Phase 1.2: Enterprise monorepo folder architecture (`apps/`, `packages/`)
   - [x] Phase 1.3: Git branching, Conventional Commits, and PR governance
   - [x] Phase 1.4: Professional README, project identity, and architecture diagrams
-  - [x] Phase 1.5: Security policy, vulnerability reporting, and community governance (Current)
+  - [x] Phase 1.5: Security policy, vulnerability reporting, and community governance
+  - [x] Phase 1.6: GitHub issue forms, Discussions guide, and community operations ([Audit](docs/audit/PHASE_1_COMPLETION.md))
 - [ ] **Phase 2: Multilingual Documentation & Internationalization**
 - [x] **Phase 3: GitHub Actions, CI/CD & DevSecOps Automation**
 - [ ] **Phase 4: Backend & Platform Infrastructure**
@@ -372,7 +373,10 @@ We warmly welcome contributions from software engineers, database administrators
 
 ### Contributor Resources
 
+- **[Community Hub](docs/community/README.md):** Central community portal, discussions guide, and operational procedures.
+- **[First-Time Contributor Guide](docs/community/FIRST_CONTRIBUTION.md):** Beginner-friendly walkthrough from repository setup to your first PR.
 - **[Contribution Workflow](docs/development/CONTRIBUTION_WORKFLOW.md):** Complete step-by-step guide from forking to opening a qualified pull request.
+- **[Discussions Guide](docs/community/DISCUSSIONS_GUIDE.md):** How to ask technical questions and propose architectural changes.
 - **[Branching Strategy](docs/development/BRANCHING_STRATEGY.md):** Trunk-based development and branch naming conventions (`feat/...`, `fix/...`).
 - **[Commit Conventions](docs/development/COMMIT_CONVENTIONS.md):** Conventional Commits 1.0.0 format specification and SemVer mapping.
 - **[Code Review Policy](docs/development/CODE_REVIEW_POLICY.md):** Peer review criteria, code owner approval, and qualification gates.
@@ -385,6 +389,7 @@ We warmly welcome contributions from software engineers, database administrators
 
 ## 💬 Community
 
+- [Community Hub](docs/community/README.md) — Comprehensive portal for issue forms, discussions, triage workflows, and first-time contributor onboarding.
 - [GitHub Discussions](https://github.com/krishanth7/dera/discussions) — Ask questions, share ideas, and discuss database reverse engineering.
 - [GitHub Issues](https://github.com/krishanth7/dera/issues) — Report bugs or submit feature proposals.
 - [GitHub Pull Requests](https://github.com/krishanth7/dera/pulls) — Submit code, test, and documentation contributions.

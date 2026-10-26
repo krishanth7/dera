@@ -1,0 +1,112 @@
+name: "🔌 Database Connector Request"
+description: "Propose metadata introspection support for a new database engine or dialect."
+title: "[Connector]: "
+labels: ["type/connector", "status/triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Propose a Database Connector for DERA
+        DERA uses a pluggable connector architecture (`packages/connectors`) that extracts schema definitions via system catalogs.
+        - **Read-Only Safety:** All connectors must operate strictly with read-only database accounts.
+        - **Zero Customer Row Data:** Connectors must query system catalogs exclusively and never extract customer table rows.
+        - **Never include live database passwords or production connection strings.**
+
+  - type: dropdown
+    id: engine
+    attributes:
+      label: "Database Engine"
+      description: "Select the database engine to be supported."
+      options:
+        - "PostgreSQL (Native)"
+        - "Supabase PostgreSQL"
+        - "SQLite"
+        - "MySQL"
+        - "MariaDB"
+        - "Microsoft SQL Server"
+        - "CockroachDB"
+        - "DuckDB"
+        - "ClickHouse"
+        - "Oracle Database"
+        - "Other"
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: "Target Version Range"
+      description: "Specify which engine releases should be targeted (e.g., `PostgreSQL 14–17`, `MySQL 8.0+`)."
+      placeholder: "e.g., MySQL 8.0 through 8.4 LTS"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: "Primary Deployment Environment"
+      description: "Where is this database typically deployed?"
+      options:
+        - "Cloud-Managed (AWS RDS, GCP Cloud SQL, Supabase, Azure)"
+        - "Self-Hosted (Linux / Docker / Kubernetes)"
+        - "Embedded / Local File (e.g., SQLite, DuckDB)"
+        - "Distributed / Cloud-Native (e.g., CockroachDB, TiDB)"
+        - "Other"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: capabilities
+    attributes:
+      label: "Required Catalog Introspection Scope"
+      description: "Select the structural objects this connector should inspect."
+      options:
+        - label: "Tables & Columns (Names, Data Types, Nullability, Defaults)"
+        - label: "Primary Key & Unique Constraints"
+        - label: "Foreign Keys (Referential Actions: CASCADE, SET NULL, RESTRICT)"
+        - label: "Indexes (B-Tree, Unique Flags, Multi-Column Sequences)"
+        - label: "Views & Materialized Views (Definitions & Dependencies)"
+        - label: "Check Constraints & Enum Types"
+        - label: "Partitioning & Table Inheritance Hierarchies"
+
+  - type: textarea
+    id: catalog_mechanism
+    attributes:
+      label: "Catalog / Introspection Mechanism"
+      description: "Describe how this engine exposes structural metadata (e.g., `information_schema`, system tables, PRAGMAs, or client drivers)."
+      placeholder: "MySQL exposes metadata in `information_schema.TABLES` and `information_schema.KEY_COLUMN_USAGE`..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: security_model
+    attributes:
+      label: "Least-Privilege Provisioning & Security Model"
+      description: "How can database administrators provision a read-only role with access exclusively to system catalogs?"
+      placeholder: "In MySQL: `GRANT SELECT ON *.* TO 'dera_user'@'%'` or restricted schema grants..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: dialect_nuances
+    attributes:
+      label: "Dialect Nuances & Known Limitations"
+      description: "Note identifier quoting rules (backticks vs double quotes), case sensitivity, or unsupported features."
+      placeholder: "MySQL uses backticks for identifier quoting; case sensitivity depends on `lower_case_table_names` setting..."
+
+  - type: textarea
+    id: documentation_links
+    attributes:
+      label: "Official Vendor Documentation Links"
+      description: "Provide links to the vendor's catalog reference, SQL grammar, or driver documentation."
+      placeholder: "https://dev.mysql.com/doc/refman/8.0/en/information-schema.html"
+
+  - type: checkboxes
+    id: safety_ack
+    attributes:
+      label: "Safety & Policy Confirmation"
+      options:
+        - label: "I confirm this connector will operate with read-only catalog access and will not extract application table rows."
+          required: true
+        - label: "I confirm no live passwords or production credentials are included in this issue."
+          required: true

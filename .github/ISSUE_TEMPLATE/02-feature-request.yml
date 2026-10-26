@@ -1,0 +1,80 @@
+name: "💡 Feature Request"
+description: "Propose a new deterministic capability, reverse-engineering feature, or tool enhancement."
+title: "[Feature]: "
+labels: ["type/feature", "status/triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Propose an Enhancement to DERA
+        Thank you for suggesting an improvement! DERA is an open-source, deterministic database engineering platform.
+        - **Mandatory Non-AI Policy:** DERA relies strictly on deterministic catalog queries, AST parsing, and graph theory. Proposals requiring generative AI or external LLM APIs will be declined.
+        - For broad design exploration, consider starting a discussion in [GitHub Discussions](https://github.com/krishanth7/dera/discussions) before filing a feature issue.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problem Statement"
+      description: "What engineering challenge or database reverse-engineering limitation does this proposal solve?"
+      placeholder: "When inspecting databases with partitioned tables, DERA currently treats partitions as separate root entities..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: "Proposed Solution"
+      description: "Describe how you envision this feature functioning within DERA's architecture."
+      placeholder: "Introduce a `is_partition_of` relation in CanonicalTable model to collapse partition hierarchies..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: "Target Architectural Component"
+      description: "Which package or service will primarily host this feature?"
+      options:
+        - "Core Engine (packages/core)"
+        - "Database Connectors (packages/connectors)"
+        - "Shared Contracts (packages/contracts)"
+        - "Backend API (apps/api)"
+        - "Web Application (apps/web)"
+        - "Developer CLI & Scripts (scripts/)"
+        - "CI/CD & Workflows (.github/)"
+        - "Documentation (docs/)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: users_and_use_cases
+    attributes:
+      label: "Intended Users & Use Cases"
+      description: "Who benefits from this capability? (e.g., Database Administrators, Platform Engineers, Schema Auditors)"
+      placeholder: "Database architects managing sharded or partitioned PostgreSQL schemas who need consolidated ER diagrams..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives Considered"
+      description: "Did you consider alternative approaches, workarounds, or external tools?"
+      placeholder: "We considered using a custom SQL view before running DERA, but that requires elevated DDL permissions..."
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: "Compatibility & Breaking Changes"
+      description: "Does this proposal alter existing JSON contracts, CLI arguments, or require migration steps?"
+      placeholder: "Backward compatible; adds optional fields to TableSchema without removing existing fields."
+
+  - type: checkboxes
+    id: architectural_confirmation
+    attributes:
+      label: "Architectural & Policy Acknowledgments"
+      options:
+        - label: "I confirm this proposal relies on deterministic engineering algorithms and introduces zero AI/LLM runtime dependencies."
+          required: true
+        - label: "I understand that feature proposals undergo review and maintainer prioritization before implementation."
+          required: true

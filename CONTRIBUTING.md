@@ -79,7 +79,7 @@ We welcome feature proposals involving:
 - Documentation generation
 - Security improvements
 
-For major changes, start a discussion before implementation.
+For major changes, start a discussion before implementation per our [Discussions Guide](docs/community/DISCUSSIONS_GUIDE.md).
 
 [Start a Discussion](https://github.com/krishanth7/dera/discussions)
 
@@ -118,12 +118,13 @@ We welcome contributions to:
 
 Before beginning work:
 
-1. Read the README.
-2. Review the Code of Conduct.
-3. Search existing issues and pull requests.
-4. Discuss major architectural changes.
-5. Confirm that your proposal aligns with the project goals.
-6. Avoid duplicating work already in progress.
+1. New to contributing? Check our beginner-friendly [First-Time Contributor Guide](docs/community/FIRST_CONTRIBUTION.md).
+2. Read the README.
+3. Review the Code of Conduct.
+4. Search existing issues and pull requests.
+5. Discuss major architectural changes in [Discussions](docs/community/DISCUSSIONS_GUIDE.md).
+6. Confirm that your proposal aligns with the project goals.
+7. Avoid duplicating work already in progress.
 
 For substantial changes, open an issue describing:
 
