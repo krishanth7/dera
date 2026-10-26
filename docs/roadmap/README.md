@@ -44,7 +44,7 @@ gantt
 | Phase | Milestone Name | Status | Key Deliverables & Focus Areas |
 |---|---|---|---|
 | **Phase 1** | **Repository Foundation & Governance** | **Completed** | Monorepo structure, PEP 621 packaging, Git branching, Conventional Commits, PR qualification gates, community operations (PR #20). |
-| **Phase 2** | **Multilingual Documentation** | **In Progress** | Authoritative primary English README (Phase 2.1 in progress), 10-language technical documentation sync (Phase 2.2). |
+| **Phase 2** | **Multilingual Documentation** | **In Progress** | Authoritative English README (Phase 2.1 completed, PR #21), 9 international translations (Phase 2.2 completed, PR #22), unified 10-language navigation system (Phase 2.3 in progress). |
 | **Phase 3** | **GitHub Actions & DevSecOps** | **Implemented** | Automated CI qualification gate, CodeQL scanning, Bandit SAST, matrix testing (Python 3.12/3.13), secret detection. |
 | **Phase 4** | **Backend & Platform Infrastructure** | Planned | FastAPI gateway endpoints, loopback default bindings, configuration management, health telemetry. |
 | **Phase 5** | **Database Connectors & Metadata Inspection** | Experimental | Read-only catalog extraction for PostgreSQL (`pg_catalog`) and SQLite (`sqlite_master`), query mutation guards. |
@@ -74,8 +74,8 @@ gantt
 
 ### Phase 2 — Multilingual Documentation & Developer Experience
 - [x] **Sub-phase 2.1:** Authoritative English README, truth-in-documentation matrix, architecture visualization, and documentation lifecycle contract ([`docs/development/README_MAINTENANCE.md`](../development/README_MAINTENANCE.md), PR #21).
-- [x] **Sub-phase 2.2 (In Progress):** Synchronize 9 international README translations (`es`, `fr`, `de`, `pt`, `it`, `ja`, `ko`, `zh-CN`, `ru`) in [`docs/i18n/`](../i18n/), replacing Arabic with Italian in the official 10-language matrix.
-- [ ] **Sub-phase 2.3 (Planned):** Ten-Language Documentation Navigation System.
+- [x] **Sub-phase 2.2:** Synchronize 9 international README translations (`es`, `fr`, `de`, `pt`, `it`, `ja`, `ko`, `zh-CN`, `ru`) in [`docs/i18n/`](../i18n/), replacing Arabic with Italian in the official 10-language matrix (PR #22).
+- [x] **Sub-phase 2.3 (In Progress):** Ten-Language Documentation Navigation System with canonical manifest (`languages.json`), deterministic generator (`scripts/docs/generate_language_navigation.py`), and CI validation.
 
 ### Phase 3 — GitHub Actions & DevSecOps
 - [x] CodeQL semantic security analysis for Python and JavaScript/TypeScript.
