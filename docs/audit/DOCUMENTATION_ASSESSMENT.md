@@ -19,7 +19,7 @@ The root `README.md` was audited against technical accuracy and documentation de
 | **Installation Instructions** | Instructions for cloning, virtualenv setup, and testing. | **Accurate for dev setup** |
 | **Technology Stack** | Documents planned and current stack: Python 3.12+, TypeScript, Next.js, FastAPI, SQLGlot. | **Accurate** |
 | **Badges** | MIT License badge, CodeQL badge, Python 3.12+ badge, Zero-AI badge. | **Accurate** |
-| **Maintainer & Governance** | Attributed to Bunga Krishanth (`krishanth7`), links to `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `LICENSE`. | **Accurate** |
+| **Maintainer & Governance** | Attributed to Krishanth (`krishanth7`), links to `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `LICENSE`. | **Accurate** |
 
 ---
 

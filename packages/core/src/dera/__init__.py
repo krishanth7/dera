@@ -5,5 +5,5 @@ Strictly non-AI: Powered by mathematical graph theory, catalog queries, and stat
 """
 
 __version__ = "0.1.0-dev"
-__author__ = "Bunga Krishanth"
+__author__ = "Krishanth"
 __license__ = "MIT"

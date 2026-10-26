@@ -634,14 +634,14 @@ Copyright (c) 2026 Krishanth
 
 ## 👨‍💻 المسؤول عن المشروع
 
-**Bunga Krishanth**  
+**Krishanth**  
 المؤسس والمسؤول الرئيسي عن المشروع
 
 - GitHub: [@krishanth7](https://github.com/krishanth7)  
 - المستودع: [github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
 - البريد الإلكتروني: `krishanth.b.2008@gmail.com`
 
-*مشروع DERA هو مبادرة هندسية مستقلة مفتوحة المصدر يديرها Bunga Krishanth، وتُعتبر مختبرات OVIC Labs جزءًا معترفًا به من النظام البيئي الهندسي الأوسع للمطور.*
+*مشروع DERA هو مبادرة هندسية مستقلة مفتوحة المصدر يديرها Krishanth، وتُعتبر مختبرات OVIC Labs جزءًا معترفًا به من النظام البيئي الهندسي الأوسع للمطور.*
 
 ---
 

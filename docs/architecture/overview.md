@@ -2,7 +2,7 @@
 
 > **Phase:** 1.2 Monorepo Architecture Foundation  
 > **Status:** Authoritative Architectural Specification  
-> **Maintainer:** Bunga Krishanth  
+> **Maintainer:** Krishanth  
 
 ---
 

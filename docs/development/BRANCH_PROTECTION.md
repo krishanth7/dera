@@ -1,7 +1,7 @@
 # DERA Branch Protection & Repository Rulesets
 
 > **Project:** DERA — Database Engineering & Reverse Analysis  
-> **Maintainer:** Bunga Krishanth ([@krishanth7](https://github.com/krishanth7))  
+> **Maintainer:** Krishanth ([@krishanth7](https://github.com/krishanth7))  
 > **Repository:** [https://github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
 > **Target Branch:** `main`  
 

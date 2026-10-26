@@ -2,7 +2,7 @@
   "name": "@dera/contracts",
   "version": "0.1.0-dev",
   "description": "Shared TypeScript schema contracts and protocol definitions for DERA",
-  "author": "Bunga Krishanth <krishanth.b.2008@gmail.com>",
+  "author": "Krishanth <krishanth.b.2008@gmail.com>",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

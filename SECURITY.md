@@ -72,7 +72,7 @@ If GitHub private vulnerability reporting is unavailable, contact:
 
 **Security Contact:** krishanth.b.2008@gmail.com
 
-**Maintainer:** [Bunga Krishanth](https://github.com/krishanth7)
+**Maintainer:** [Krishanth](https://github.com/krishanth7)
 
 **Repository:** https://github.com/krishanth7/dera
 
@@ -444,7 +444,7 @@ Submitting a vulnerability report does not guarantee financial compensation.
 
 For security-related concerns:
 
-**Maintainer:** Bunga Krishanth
+**Maintainer:** Krishanth
 
 **Email:** krishanth.b.2008@gmail.com
 
@@ -477,7 +477,7 @@ Changes may reflect:
 
 **Security by Design. Privacy by Default.**
 
-Maintained by [Bunga Krishanth](https://github.com/krishanth7)
+Maintained by [Krishanth](https://github.com/krishanth7)
 
 © 2026 DERA Contributors
 

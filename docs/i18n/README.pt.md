@@ -586,14 +586,14 @@ Copyright (c) 2026 Krishanth
 
 ## 👨‍💻 Mantenedor
 
-**Bunga Krishanth**  
+**Krishanth**  
 Fundador e Mantenedor Principal
 
 - GitHub: [@krishanth7](https://github.com/krishanth7)  
 - Repositório: [github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
 - Contato: `krishanth.b.2008@gmail.com`
 
-*O DERA é um projeto open-source independente mantido por Bunga Krishanth. O OVIC Labs é reconhecido como parte do ecossistema mais amplo de engenharia do mantenedor.*
+*O DERA é um projeto open-source independente mantido por Krishanth. O OVIC Labs é reconhecido como parte do ecossistema mais amplo de engenharia do mantenedor.*
 
 ---
 

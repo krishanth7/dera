@@ -7,7 +7,7 @@ name = "dera-core"
 version = "0.1.0.dev1"
 description = "Deterministic database reverse engineering and schema analysis platform"
 readme = "README.md"
-authors = [{ name = "Bunga Krishanth", email = "krishanth.b.2008@gmail.com" }]
+authors = [{ name = "Krishanth", email = "krishanth.b.2008@gmail.com" }]
 license = { text = "MIT" }
 requires-python = ">=3.12"
 dependencies = [

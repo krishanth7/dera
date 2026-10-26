@@ -2,7 +2,7 @@
 
 Verifies schema discovery, column nullability, primary key constraints,
 foreign key resolution, unique/non-unique indexes, and quoted identifiers.
-Copyright (c) 2026 Bunga Krishanth. All rights reserved.
+Copyright (c) 2026 Krishanth. All rights reserved.
 Licensed under the MIT License.
 """
 

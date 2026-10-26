@@ -586,14 +586,14 @@ Copyright (c) 2026 Krishanth
 
 ## 👨‍💻 项目维护者
 
-**Bunga Krishanth**  
+**Krishanth**  
 创始人与首席维护者
 
 - GitHub 主页: [@krishanth7](https://github.com/krishanth7)  
 - 代码仓库: [github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
 - 联络邮箱: `krishanth.b.2008@gmail.com`
 
-*DERA 是由 Bunga Krishanth 独立维护的开源技术项目。OVIC Labs 被认可为维护者更广泛工程生态系统的一部分。*
+*DERA 是由 Krishanth 独立维护的开源技术项目。OVIC Labs 被认可为维护者更广泛工程生态系统的一部分。*
 
 ---
 
