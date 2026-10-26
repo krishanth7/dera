@@ -1,25 +1,8 @@
-# GitHub Issue Forms Configuration for DERA
-# Reference: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
-
 blank_issues_enabled: false
-
 contact_links:
-  - name: "🔒 Security Vulnerability Reporting"
-    url: "https://github.com/krishanth7/dera/security/advisories/new"
-    about: "Privately disclose security vulnerabilities to project maintainers. Do not file public issues for vulnerabilities."
-
   - name: "💬 Community Discussions"
     url: "https://github.com/krishanth7/dera/discussions"
-    about: "Ask general questions, brainstorm ideas, share reverse-engineering projects, or discuss architectural proposals."
-
-  - name: "📖 Contribution Guidelines"
-    url: "https://github.com/krishanth7/dera/blob/main/CONTRIBUTING.md"
-    about: "Learn about the contribution workflow, Conventional Commits, code standards, and local development setup."
-
-  - name: "🗺️ Master Development Roadmap"
-    url: "https://github.com/krishanth7/dera/blob/main/docs/roadmap/README.md"
-    about: "Review DERA's 12-phase development roadmap, planned database connectors, and active milestones."
-
-  - name: "🌐 Multilingual Documentation"
-    url: "https://github.com/krishanth7/dera/blob/main/docs/i18n/README.en.md"
-    about: "Explore DERA documentation available across 10 international languages."
+    about: "Ask questions, share ideas, or discuss database reverse engineering with the community."
+  - name: "🔒 Security Vulnerability Reporting"
+    url: "https://github.com/krishanth7/dera/security/advisories/new"
+    about: "Privately disclose a security vulnerability to the maintainers."
