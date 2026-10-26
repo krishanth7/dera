@@ -101,9 +101,14 @@ python scripts/development/dev.py test
 # Run TypeScript compiler static checks
 python scripts/development/dev.py typecheck
 
-# Validate documentation internal links and translations
+# Validate documentation links, markdown style, and mermaid diagrams
+npm run docs:check
+
+# Validate documentation internal links and translations via dev.py
 python scripts/development/dev.py validate-docs
 ```
+
+When authoring documentation, ensure compliance with our [Documentation Style Guide](./DOCUMENTATION_STYLE_GUIDE.md) and [Documentation Change Policy](./DOCUMENTATION_CHANGE_POLICY.md).
 
 *(Unix developers with Make installed can also run `make test`, `make typecheck`, or `make lint`.)*
 
