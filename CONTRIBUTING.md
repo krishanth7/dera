@@ -607,11 +607,9 @@ Feature requests should explain:
 
 Security vulnerabilities must not be disclosed through public issues before responsible coordination.
 
-Please follow the repository's security reporting policy when available.
+Please follow the repository's security reporting policy in [SECURITY.md](SECURITY.md) and prefer GitHub Private Vulnerability Reporting when reporting vulnerabilities.
 
-Until a dedicated `SECURITY.md` process is published, contact the maintainer privately:
-
-**krishanth.b.2008@gmail.com**
+Direct security contact: **krishanth.b.2008@gmail.com**
 
 Do not include passwords, access tokens, database credentials, or sensitive customer data in public reports.
 
@@ -619,31 +617,32 @@ Do not include passwords, access tokens, database credentials, or sensitive cust
 
 ## Documentation and Translations
 
-DERA plans documentation support for 10 international languages.
+DERA provides documentation support for 10 international languages, maintained in [`docs/i18n/`](docs/i18n/README.en.md).
 
-| Language | Code |
-|---|---|
-| English | en |
-| Spanish | es |
-| French | fr |
-| German | de |
-| Portuguese | pt |
-| Japanese | ja |
-| Korean | ko |
-| Simplified Chinese | zh-CN |
-| Arabic | ar |
-| Russian | ru |
+| Language | Code | File |
+|---|---|---|
+| English | `en` | [`docs/i18n/README.en.md`](docs/i18n/README.en.md) |
+| Spanish | `es` | [`docs/i18n/README.es.md`](docs/i18n/README.es.md) |
+| French | `fr` | [`docs/i18n/README.fr.md`](docs/i18n/README.fr.md) |
+| German | `de` | [`docs/i18n/README.de.md`](docs/i18n/README.de.md) |
+| Portuguese | `pt` | [`docs/i18n/README.pt.md`](docs/i18n/README.pt.md) |
+| Japanese | `ja` | [`docs/i18n/README.ja.md`](docs/i18n/README.ja.md) |
+| Korean | `ko` | [`docs/i18n/README.ko.md`](docs/i18n/README.ko.md) |
+| Simplified Chinese | `zh-CN` | [`docs/i18n/README.zh-CN.md`](docs/i18n/README.zh-CN.md) |
+| Arabic | `ar` | [`docs/i18n/README.ar.md`](docs/i18n/README.ar.md) |
+| Russian | `ru` | [`docs/i18n/README.ru.md`](docs/i18n/README.ru.md) |
 
 Translation contributors should:
 
-1. Preserve technical meaning.
-2. Keep code examples accurate.
-3. Maintain consistent terminology.
-4. Preserve working links.
-5. Avoid translating code identifiers.
-6. Update translations when source documentation changes.
+1. Preserve technical meaning and formatting.
+2. Keep code examples, SQL commands, and paths untranslated.
+3. Maintain consistent international terminology.
+4. Preserve relative working links.
+5. Avoid translating code identifiers and parameters.
+6. For Arabic (`README.ar.md`), keep code blocks and tables in left-to-right format.
+7. Update translations when source documentation changes.
 
-English remains the reference language for technical specifications.
+English remains the reference language for technical specifications. Detailed guidance is available in [docs/contributing/guide.md](docs/contributing/guide.md).
 
 ---
 
