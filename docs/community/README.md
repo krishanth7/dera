@@ -40,6 +40,8 @@ flowchart TD
 | Guide | Focus & Scope | Target Audience |
 |---|---|---|
 | [**First-Time Contributor Guide**](FIRST_CONTRIBUTION.md) | Step-by-step walkthrough for cloning, local verification, branching, testing, and opening your first PR. | New contributors and open-source newcomers. |
+| [**Contribution Areas Map**](CONTRIBUTION_AREAS.md) | Skill-based guide mapping contributor capabilities (Python, SQL, Docs, Translations) to active and planned work. | Prospective and returning contributors. |
+| [**Contributor FAQ**](CONTRIBUTOR_FAQ.md) | Answers to frequently asked questions regarding branching, CI checks, tests, and reviews. | All contributors. |
 | [**Discussions Guide**](DISCUSSIONS_GUIDE.md) | How to use GitHub Discussions categories, propose architectural enhancements, and ask technical questions. | All community members, architects, and users. |
 | [**Issue Triage Policy**](ISSUE_TRIAGE.md) | Triage lifecycle, priority and severity matrix, duplicate handling, and clarification workflows. | Maintainers and active issue reporters. |
 | [**Community Operations & Labels**](COMMUNITY_OPERATIONS.md) | Standard label taxonomy (`type/*`, `priority/*`, `status/*`, `component/*`), milestone tracking, and release management. | Maintainers and reviewers. |
