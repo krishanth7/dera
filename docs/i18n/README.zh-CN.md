@@ -1,4 +1,4 @@
-**阅读此语言的文档：** [English](../../README.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [العربية](README.ar.md) | [Русский](README.ru.md)
+**阅读此语言的文档：** [English (Root)](../../README.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
 
 ---
 
@@ -8,31 +8,33 @@
 
 ### Database Engineering & Reverse Analysis
 
-**洞悉每一个架构。工程化每一次变更。**
+**洞悉每个模式，掌控每次变更。**
 
-面向开发者、数据库工程师、系统架构师及工程团队的企业级开源、确定性数据库逆向工程平台。
+面向软件工程师、数据库架构师和工程团队的独立开源、确定性数据库工程与逆向分析平台。
 
-探索数据库结构、可视化实体关系、分析表结构、识别架构风险并自动生成工程文档 —— 纯粹确定性，不依赖任何 AI 大模型或外部 AI 推理 API。
-
-<br/>
-
-[![GitHub Stars](https://img.shields.io/github/stars/krishanth7/dera?style=for-the-badge&logo=github)](https://github.com/krishanth7/dera/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/krishanth7/dera?style=for-the-badge&logo=github)](https://github.com/krishanth7/dera/forks)
-[![GitHub Issues](https://img.shields.io/github/issues/krishanth7/dera?style=for-the-badge&logo=github)](https://github.com/krishanth7/dera/issues)
-[![GitHub License](https://img.shields.io/github/license/krishanth7/dera?style=for-the-badge)](https://github.com/krishanth7/dera/blob/main/LICENSE)
-[![Latest Release](https://img.shields.io/github/v/release/krishanth7/dera?style=for-the-badge)](https://github.com/krishanth7/dera/releases)
-[![CodeQL Security](https://img.shields.io/github/actions/workflow/status/krishanth7/dera/codeql.yml?branch=main&label=CodeQL&style=for-the-badge&logo=githubactions)](https://github.com/krishanth7/dera/actions/workflows/codeql.yml)
-[![Contributors](https://img.shields.io/github/contributors/krishanth7/dera?style=for-the-badge&logo=github)](https://github.com/krishanth7/dera/graphs/contributors)
-[![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/krishanth7)
+探索数据库结构、重建实体关系、评估结构性风险并安全规划模式变更 — 完全基于数学确定性，无需任何 AI 模型或外部推理 API。
 
 <br/>
 
-[项目概览](#-项目概览) ·
-[核心功能](#-核心功能) ·
-[系统架构](#-系统架构) ·
-[可视化流水线](#-可视化流水线) ·
-[安全准则](#-安全准则) ·
-[技术栈](#-技术栈) ·
+[![开源许可证: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](../../LICENSE)
+[![CI Gate](https://img.shields.io/github/actions/workflow/status/krishanth7/dera/ci.yml?branch=main&label=CI%20Gate&style=for-the-badge&logo=githubactions)](https://github.com/krishanth7/dera/actions/workflows/ci.yml)
+[![CodeQL 安全分析](https://img.shields.io/github/actions/workflow/status/krishanth7/dera/codeql.yml?branch=main&label=CodeQL&style=for-the-badge&logo=githubactions)](https://github.com/krishanth7/dera/actions/workflows/codeql.yml)
+[![文档验证](https://img.shields.io/github/actions/workflow/status/krishanth7/dera/documentation.yml?branch=main&label=Docs&style=for-the-badge&logo=githubactions)](https://github.com/krishanth7/dera/actions/workflows/documentation.yml)
+[![Python 3.12 | 3.13](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](../../pyproject.toml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](../../tsconfig.json)
+[![纯确定性无AI](https://img.shields.io/badge/AI-None%20(%E7%A1%AE%E5%AE%9A%E6%80%A7)-orange?style=for-the-badge)](#-严格无ai架构)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](../../CONTRIBUTING.md)
+
+<br/>
+
+[项目概述](#-项目概述) ·
+[功能状态矩阵](#-功能状态矩阵) ·
+[架构总览](#-架构总览) ·
+[代码库结构](#-代码库目录结构) ·
+[快速开始](#-快速开始) ·
+[数据库兼容性](#-数据库兼容性矩阵) ·
+[安全原则](#-安全原则) ·
+[文档导航](#-开发者文档导航) ·
 [开发路线图](#-开发路线图) ·
 [参与贡献](#-参与贡献) ·
 [社区交流](#-社区交流)
@@ -43,540 +45,428 @@
 
 ## 🌍 多语言文档支持
 
-DERA 在全球范围内支持 10 种国际主流语言。您可以通过下表或顶部导航栏直接切换到相应语言的文档：
+DERA 维护着 10 种国际语言的同步文档。英文 README 是依据我们的 [文档维护规范协议](../development/README_MAINTENANCE.md) 制定的官方权威事实源。
 
-| 语言 | 标识码 | 文档链接 | 状态 |
+| 语言 | 代码 | 文档链接 | 状态 |
 |---|---|---|---|
-| 🇬🇧 English | `en` | [English Primary (Root)](../../README.md) · [Synchronized Copy](README.en.md) | 主参考文档 |
+| 🇬🇧 English | `en` | [English Primary (Root)](../../README.md) · [Synchronized Copy](README.en.md) | **官方权威事实源 (Authoritative)** |
 | 🇪🇸 Español | `es` | [Documentación en Español](README.es.md) | 完整翻译 |
 | 🇫🇷 Français | `fr` | [Documentation en Français](README.fr.md) | 完整翻译 |
 | 🇩🇪 Deutsch | `de` | [Dokumentation auf Deutsch](README.de.md) | 完整翻译 |
 | 🇵🇹 Português | `pt` | [Documentação em Português](README.pt.md) | 完整翻译 |
+| 🇮🇹 Italiano | `it` | [Documentazione in Italiano](README.it.md) | 完整翻译 |
 | 🇯🇵 日本語 | `ja` | [日本語ドキュメント](README.ja.md) | 完整翻译 |
 | 🇰🇷 한국어 | `ko` | [한국어 문서](README.ko.md) | 完整翻译 |
 | 🇨🇳 简体中文 | `zh-CN` | [简体中文文档](README.zh-CN.md) | 完整翻译 |
-| 🇸🇦 العربية | `ar` | [الوثائق باللغة العربية](README.ar.md) | 完整翻译 |
 | 🇷🇺 Русский | `ru` | [Документация на русском](README.ru.md) | 完整翻译 |
 
 ---
 
-## 📖 项目概览
+## 📖 项目概述
 
-现代关系型数据库是软件基础设施的核心基石，但要完全理清一个不断演进且庞大陌生系统的架构往往极具挑战。企业级系统通常包含数百张数据表、数万个字段、错综复杂的外键关系、索引、约束、视图及对象间的跨层依赖。
+现代关系型数据库是软件基础设施的核心支柱。然而，理解不熟悉、遗留或快速演进的复杂数据库模式是一个艰巨的工程挑战：
+- **复杂模式：** 企业级数据库往往包含数百张表、数千个列以及未记录的隐式外键关系。
+- **架构技术债务：** 循环外键依赖、缺失主键、未建立索引的外键以及冗余索引会随时间悄然积累。
+- **变更与迁移风险：** 在缺乏完整拓扑关系图的情况下修改模式，极易引发锁升级、数据损坏和级联约束冲突。
+- **数据隐私与安全：** 企业绝不能冒着泄露生产凭据或客户实际数据行的风险使用外部云端 AI 接口。
 
-人工调查和审计这些结构不仅耗费大量工程师精力，而且极易遗漏关键隐患。
+**DERA 专为通过数学确定性解决这些挑战而打造。**
 
-**DERA 正是为解决这一严峻挑战而构建。**
+DERA 提供了一个模块化的开源平台，能够安全检查关系型数据库系统目录、重建依赖关系图、评估结构性风险，并基于可重现的算法生成迁移预览。
 
-DERA 依托严谨的确定性算法，提供了一个统一且高度安全的工作空间，用于探索数据库架构、重构实体关系、评估结构性隐患并生成规范的工程文档。
+### 核心工程原则
 
-### 我们的使命
-
-让数据库逆向工程对每一位软件工程师、数据库管理员（DBA）和系统架构师而言，都变得易于访问、透明、可复现且完全值得信赖。
-
-### 核心设计哲学
-
-- **天生确定性 (Deterministic by Design)** — 基于数学图论算法和静态规则，保证分析结果绝对可复现。
-- **严禁生成式 AI** — 坚决不使用 LLM、机器学习模型或外部 AI 推理接口。
-- **隐私至上** — 仅分析数据库系统元数据。默认绝不提取或存储任何客户业务数据行。
-- **开源协作** — 基于宽松的 MIT 许可证，坚持透明工程与开放社区协作。
-- **开发者为先** — 紧密贴合软件工程师和 DBA 的日常真实研发工作流。
-- **安全为本** — 强制只读事务、凭据全程加密与隔离的沙箱工作进程。
-- **工程严谨性** — 每一项诊断均建立在系统目录的铁证之上，彻底消除 AI 幻觉。
+1. **确定性设计 (Deterministic by Design)：** 每一个模式快照、拓扑排序和诊断报告都完全可重现，并建立在严格的关系代数之上。
+2. **纯粹无 AI (Strictly Non-AI)：** 绝无生成式 AI、无大语言模型 (LLM)、无向量数据库、无外部推理 API 依赖。
+3. **只读安全连接：** 连接级别强制只读保护、AST 抽象语法树静态拦截危险修改操作，并仅查询系统元数据目录。
+4. **零客户数据行提取：** 纯粹的元数据自省 (`information_schema`, `pg_catalog`, `sqlite_master`)。绝不提取、传输或存储业务数据行。
+5. **解耦的 Monorepo 架构：** 核心图算法、隔离的数据库适配器、API 网关和可视化前端之间具备清晰的架构边界。
+6. **开源宽松授权：** 基于宽松友好的 [MIT 许可证](../../LICENSE) 发布。
 
 ---
 
-## ✨ 核心功能
+## 🧠 严格无 AI 架构
 
-以下列出 DERA 平台的规划功能矩阵。各项功能的交付将严格依照开发阶段和发布版本推进。
-
-| 功能模块 | 状态 | 功能描述 |
-|---|---|---|
-| **数据库发现与探查** | 规划中 | 原生提取数据表、字段、约束及索引等系统目录元数据 |
-| **逆向工程核心** | 规划中 | 规范化架构建模、对象智能分类与拓扑依赖解析 |
-| **可视化 ER 工作台** | 规划中 | 交互式实体关系图、自动排版布局、条件过滤与图表导出 |
-| **确定性诊断引擎** | 规划中 | 静态规则评估，精准检测主键缺失、冗余索引及命名缺陷 |
-| **架构快照与差异比对**| 规划中 | 版本化架构快照存储与结构性变更影响面深度分析 |
-| **SQL 性能工程** | 规划中 | 复杂查询审查、执行计划可视化与索引优化方案推荐 |
-| **文档自动生成** | 规划中 | 自动化导出 Markdown、HTML、JSON、SQL DDL 及矢量 SVG |
-| **企业安全架构** | 规划中 | 基于角色的权限控制 (RBAC)、只读强制保障与隔离执行容器 |
-
-### 🔍 数据库发现与探查
-
-全面检查受支持的数据库引擎，并提取关键的系统目录结构信息：
-
-- 数据库、Schema 命名空间与安装的扩展插件
-- 表、分区表与视图 (View)
-- 字段名、数据类型、可空性 (Nullability) 及默认值表达式
-- 主键 (PK)、外键 (FK) 以及级联动作 (`CASCADE`, `RESTRICT`)
-- 唯一约束 (UNIQUE)、检查约束 (CHECK) 与排他约束
-- 索引（B-tree、Hash、GIN、GiST）、唯一索引与部分索引条件
-- 序列 (Sequence)、自增标识列与触发器 (Trigger)
-
-### 🧬 逆向工程核心
-
-运用原生目录查询与确定性算法，无损重建数据库逻辑模型：
-
-- 独立于具体数据库引擎的规范化逻辑模型
-- 结构化元数据标准化处理
-- 构建有向无环图 (DAG) 以进行深度依赖分析
-- 准确映射单列及复合外键关系网络
-- 生成带有加密哈希签名的不可变架构快照
-- 确定性反向还原完整的 SQL DDL 语句
-
-### 🕸️ 可视化 ER 工作台
-
-通过现代化交互式实体关系画布探索架构拓扑：
-
-- 交互式数据表节点，清晰展示列名、类型与约束图标
-- 带有基数（一对一、一对多）显式标记的关系连线
-- 确定性自动图布局算法（层次化与力导向布局）
-- 支持按 Schema 分组、业务域标签与子图过滤隔离
-- 实时搜索、类型筛选与依赖关系高亮追踪
-- 导出超高分辨率的 SVG 矢量图与 PNG 渲染图像
-
-### 🛡️ 确定性数据库诊断引擎
-
-依据可配置的工程规则矩阵对架构元数据展开全面审计，消除潜在设计隐患：
-
-| 诊断规则 | 类别 | 规则说明 |
-|---|---|---|
-| **缺失主键** | 完整性 | 识别未声明显式主键约束的数据表 |
-| **潜在冗余索引** | 性能 | 检测具有重叠列前缀或重复定义的冗余索引 |
-| **未建索引的外键** | 性能 | 标出缺少合适索引覆盖支持的外键列 |
-| **多态关联反模式** | 完整性 | 发现缺少外键约束支持的隐式松散多态关联 |
-| **可空性与默认值异常**| 一致性 | 标出被设为 NOT NULL 却缺少合理默认值的字段 |
-| **命名规范审计** | 标准化 | 识别大小写混乱及偏离团队架构规范的表名和字段 |
-| **权限过度开放** | 安全性 | 标记系统目录对象上配置的过量越权访问权限 |
-
-*所有诊断结果均为基于系统实证的建议，并附带详尽的技术原由与可执行的修复 DDL。*
-
-### 🔄 架构快照与差异对比引擎
-
-精确对比不同环境（开发、测试、生产）或不同版本间的数据库快照：
-
-- 新增、修改和删除的数据表与字段
-- 字段数据类型变更、长度调整与可空性变化
-- 索引的新增、移除及定义属性变更
-- 约束条件的调整与引用完整性变化
-- 破坏性变更等级评定（安全变更 vs 潜在破坏性变更）
-- 依据拓扑依赖关系生成按安全执行顺序排布的迁移变更脚本
-
----
-
-## 🧠 绝无 AI。唯有纯粹工程。
-
-DERA 严格奉行纯粹的计算机工程设计，坚决杜绝任何人工智能或机器学习技术。
+DERA 经过深思熟虑的设计，完全杜绝了人工智能和机器学习组件。
 
 ```text
 ┌───────────────────────────────────────────────────────────┐
-│                 严 格 的 非 AI 构 架 保 证                │
+│                    严格无 AI 确定性架构                   │
 │                                                           │
 │   ❌  不使用 OpenAI、Anthropic Claude 或 Google Gemini    │
-│   ❌  不使用 Groq、DeepSeek 等任何托管大模型推理 API      │
-│   ❌  不使用本地部署 LLM (Ollama, vLLM, llama.cpp)        │
-│   ❌  彻底根绝非确定性的 AI 幻觉 (Hallucination)          │
+│   ❌  不调用 Groq、DeepSeek 等第三方模型 API              │
+│   ❌  不运行本地 LLM (Ollama, vLLM, llama.cpp)            │
+│   ❌  杜绝概率猜测与大模型幻觉 (Hallucinations)           │
+│   ❌  不使用云端向量嵌入与外部 RAG 检索                   │
 │                                                           │
-│   ✅  原生系统目录查询 (information_schema / pg_catalog)  │
-│   ✅  严密的确定性图论算法 (NetworkX)                     │
-│   ✅  精确的抽象语法树 SQL 解析器 (SQLGlot)               │
-│   ✅  严格可复现的静态规则引擎                            │
-│   ✅  形式化的数学架构差异对比算法                        │
+│   ✅  直接查询原生系统目录 (information_schema)           │
+│   ✅  数学图论算法分析 (NetworkX / Tarjan SCC)            │
+│   ✅  抽象语法树 (AST) SQL 解析器 (SQLGlot)               │
+│   ✅  可验证且可重现的静态规则引擎                        │
+│   ✅  加密哈希指纹追踪 (SHA-256)                          │
 └───────────────────────────────────────────────────────────┘
 ```
 
-**为什么 DERA 必须是确定性的：**
-1. **完全可预测：** 相同的快照数据与规则配置，在任何时间运行都必定输出完全一致的结果。
-2. **彻底可审计：** 每一个告警、每一条关联关系和图上的每一条连线，都直接映射到底层系统目录的客观事实。
-3. **数据主权安全：** 企业核心数据库结构与元数据绝不会被发送至任何第三方模型提供商。
-4. **极致性能与零成本：** 零推理延迟、零 Token 账单、无 API 请求频率限制、完全免疫外部服务故障。
+**为什么 DERA 选择确定性设计：**
+- **数学可审计性：** 每项关系判定、循环警告和诊断报告均附带系统目录凭证和确凿的图算法依据。
+- **逐字节可重现性：** 在任何开发机或 CI 流水线上对同一快照执行分析，始终输出百分之百相同的结果。
+- **企业数据主权：** 您的模式结构和拓扑信息绝不会发送给任何第三方模型供应商。
+- **零运行开销：** 零 Token 计费、无 API 调用频率限制、无网络推理延迟。
 
 ---
 
-## 🏗️ 系统架构
+## 📊 功能状态矩阵
 
-DERA 采用模块化单体架构，专注于提供高可维护性、高扩展性与极具防御性的数据库安全连接。
+DERA 坚持透明、求实的工程报告，所有功能状态均基于代码库中实际编写并经受自动化测试检验的代码：
+
+| 能力模块 | 状态 | 实现凭据 | Monorepo 路径 |
+|---|:---:|---|---|
+| **模式核心模型** | **已实现** | 标准 `Column`, `Table`, `ForeignKey`, `Index` 规范模型 | [`packages/core/src/dera/models.py`](../../packages/core/src/dera/models.py) |
+| **依赖关系图引擎** | **已实现** | 具备防循环特性的 DAG 及基于 Tarjan SCC 的拓扑排序 | [`packages/core/src/dera/graph.py`](../../packages/core/src/dera/graph.py) |
+| **修改操作拦截器 (Read-Only)** | **已实现** | 基于 AST 静态分析并拦截修改操作 (`DROP`, `ALTER` 等) | [`packages/connectors/src/dera_connectors/base/`](../../packages/connectors/src/dera_connectors/base/connector.py) |
+| **SQLite 系统目录自省** | **已实现** | 表、字段、PK、FK 及索引的自动化检测 | [`packages/connectors/src/dera_connectors/sqlite/`](../../packages/connectors/src/dera_connectors/sqlite/connector.py) |
+| **PostgreSQL 目录检查** | **进行中** | 针对临时 PostgreSQL 容器的实时集成测试 | [`tests/integration/`](../../tests/integration/) |
+| **API 网关与遥测** | **已实现** | 默认绑定本地环回接口并提供健康监测的 FastAPI 服务 | [`apps/api/src/dera_api/main.py`](../../apps/api/src/dera_api/main.py) |
+| **Web 交互工作室底座** | **已实现** | Next.js 15 TypeScript 项目底座与架构看板卡片 | [`apps/web/src/app/page.tsx`](../../apps/web/src/app/page.tsx) |
+| **共享数据契约** | **已实现** | 版本化 JSON Schema 架构与序列化 DTO | [`packages/contracts/schemas/`](../../packages/contracts/schemas/) |
+| **可视化 ER 画布** | 计划中 | 基于 React Flow 的交互式架构图画布 | 路线图第 7 阶段 |
+| **确定性规则矩阵** | 计划中 | 缺少主键、外键无索引、冗余索引等问题检测 | 路线图第 8 阶段 |
+| **模式快照 Diff 引擎** | 计划中 | 模式语义快照比对与 DDL 变更预览 | 路线图第 9 阶段 |
+| **SQL AST 性能分析器** | 计划中 | 基于 SQLGlot 的查询复杂度分析与执行计划可视化 | 路线图第 10 阶段 |
+
+> **状态说明：**
+> - **`已实现`** &mdash; 代码已合并，经过验证，CI 自动化测试全绿。
+> - **`进行中`** &mdash; 当前里程碑正在进行开发与集成测试。
+> - **`计划中`** &mdash; 已排入 12 阶段主开发路线图。
+
+---
+
+## 🏗️ 架构总览
+
+DERA 依据我们的 [Monorepo 架构设计规范](../architecture/README_ARCHITECTURE.md) 将各项能力划分为高度解耦的工作区：
 
 ```mermaid
 flowchart TD
-    subgraph Client["前端客户端层"]
-        UI["DERA Web 界面 (Next.js / React / TypeScript)"]
-        ERD["可视化 ER 画布 (React Flow / ELK.js)"]
-        Monaco["SQL & DDL 编辑器 (Monaco Editor)"]
+    subgraph Client_Tier["客户端展示层"]
+        WEB["apps/web (Next.js 15 / React / TypeScript)"]
+        STUDIO["Visual ER Studio (React Flow) - 计划中"]
+        WEB -.-> STUDIO
     end
 
-    subgraph Gateway["应用核心服务层"]
-        API["FastAPI 后端网关"]
-        Auth["认证与多租户隔离 (JWT / RBAC)"]
-        Audit["安全审计日志记录器"]
+    subgraph API_Tier["网关服务层"]
+        API["apps/api (FastAPI / Python 3.12+)"]
+        MW["安全中间件 (127.0.0.1 默认绑定 / Headers)"]
+        API --- MW
     end
 
-    subgraph Core["确定性分析引擎"]
-        Discovery["目录发现引擎"]
-        Normalizer["元数据规范化器"]
-        GraphEngine["依赖图引擎 (NetworkX)"]
-        DiagEngine["基于规则的诊断引擎"]
-        DiffEngine["架构 Diff 与差异对比引擎"]
-        ExportEngine["文档与 DDL 生成器"]
+    subgraph Contracts_Tier["共享数据契约"]
+        CONTRACTS["packages/contracts (JSON Schemas & DTOs)"]
     end
 
-    subgraph Worker["隔离任务执行层"]
-        Celery["异步工作进程 (Celery / Redis)"]
-        Vault["加密凭据保险箱"]
-        Connectors["隔离数据库连接器"]
+    subgraph Core_Tier["确定性分析引擎"]
+        CORE["packages/core (规范模型 & 图算法)"]
+        DAG["依赖关系图 (NetworkX / Tarjan SCC)"]
+        NORM["元数据归一化器"]
+        CORE --- DAG
+        CORE --- NORM
     end
 
-    subgraph Databases["目标数据层"]
-        PG[(目标 PostgreSQL)]
-        CustomerDB[(客户业务数据库 - 强制只读)]
-        Storage[(DERA 快照持久化库)]
+    subgraph Connectors_Tier["隔离数据库连接器"]
+        CONN["packages/connectors (只读方言适配器)"]
+        GUARD["静态 SQL 修改拦截器"]
+        SQLITE["SQLite 连接器 (基准实现)"]
+        PG["PostgreSQL 连接器 (进行中)"]
+        CONN --- GUARD
+        CONN --- SQLITE
+        CONN -.-> PG
     end
 
-    UI --> API
-    ERD --> API
-    Monaco --> API
-    API --> Auth
-    API --> Audit
-    API --> Core
-    API --> Celery
-    Celery --> Vault
-    Celery --> Connectors
-    Connectors --> CustomerDB
-    Core --> Storage
-    Discovery --> Normalizer
-    Normalizer --> GraphEngine
-    Normalizer --> DiagEngine
-    Normalizer --> DiffEngine
-    DiffEngine --> ExportEngine
+    subgraph Target_DBs["目标数据层 (只读系统目录)"]
+        TARGET_SQLITE[("SQLite 数据库 (PRAGMA)")]
+        TARGET_PG[("PostgreSQL 系统目录 (pg_catalog)")]
+    end
+
+    WEB -->|HTTP / JSON| API
+    WEB -.->|遵循契约| CONTRACTS
+    API -->|组织调度| CORE
+    API -->|调用| CONN
+    API -.->|校验契约| CONTRACTS
+    CORE -.->|符合标准| CONTRACTS
+    CONN -->|输出规范模型| CORE
+    SQLITE -->|只读 Pragma 检查| TARGET_SQLITE
+    PG -.->|只读目录查询| TARGET_PG
+```
+
+### 架构文字说明（无障碍支持）
+- **客户端展示层 (`apps/web`):** Next.js 15 TypeScript 前端，通过 JSON 与 API 通信，并将提供交互式 ER 画布。
+- **网关服务层 (`apps/api`):** 默认绑定 `127.0.0.1` 的 FastAPI 后端，提供服务健康度监控、系统目录提取路由和安全中间件。
+- **共享数据契约 (`packages/contracts`):** 规定数据表、字段、索引、关联和快照规范标准的 JSON Schema 定义和 TypeScript 接口。
+- **确定性核心引擎 (`packages/core`):** 纯 Python 核心库，实现规范领域模型、Tarjan 强连通分量算法、拓扑排序和元数据标准化。
+- **隔离数据库连接器 (`packages/connectors`):** 安全查询系统目录 (`sqlite_master`, `pg_catalog`) 的插件式适配器，在执行前静态拦截任何写修改指令。
+- **目标数据层（只读）：** 目标数据库。DERA 严格仅使用无特权的只读账号接入。
+
+延伸阅读：
+- [架构设计蓝图指南](../architecture/README_ARCHITECTURE.md)
+- [模块边界与依赖规则](../architecture/MODULE_BOUNDARIES.md)
+- [Monorepo 目录布局](../architecture/MONOREPO_STRUCTURE.md)
+- [架构决策记录 (ADR 0001)](../architecture/adr/0001-monorepo-architecture.md)
+
+---
+
+## 📁 代码库目录结构
+
+DERA Monorepo 真实的项目目录结构如下：
+
+```text
+dera/
+├── apps/
+│   ├── api/                      # FastAPI 后端服务及健康监控
+│   │   ├── src/dera_api/         # 网关路由、中间件与模式定义
+│   │   └── pyproject.toml        # API 打包规范
+│   └── web/                      # Next.js 15 TypeScript 前端交互工作室
+│       ├── src/                  # App 路由、组件和 API 客户端
+│       └── package.json          # Web 工作区配置
+├── packages/
+│   ├── core/                     # 规范模式模型与图计算引擎
+│   │   └── src/dera_core/        # 模式实体模型、DAG 算法和图论计算
+│   ├── connectors/               # 针对各数据库的元数据提取适配器
+│   │   └── src/dera_connectors/  # 基础连接器、变更防护与 SQLite 适配器
+│   └── contracts/                # 共享 JSON 契约与序列化定义
+│       └── schemas/              # 版本化的 API 与快照契约
+├── tests/
+│   ├── architecture/             # AST 导入边界与依赖合规测试
+│   ├── integration/              # SQLite 及 PostgreSQL 真实系统目录测试
+│   ├── regression/               # 确定性 DAG 排序与哈希回归测试
+│   └── unit/                     # 实体模型、PR 标题及准备度单测
+├── scripts/
+│   ├── ci/                       # CI 校验脚本 (文档、国际化、PR 标题)
+│   └── development/              # 跨平台开发统一 CLI 工具 (dev.py)
+├── docs/
+│   ├── audit/                    # 仓库审计、基线报告与完成度审计
+│   ├── architecture/             # 架构蓝图、边界说明与决策记录
+│   ├── development/              # 入门指南、命令手册与 Git 工作流
+│   ├── governance/               # 项目治理、维护者规范与许可证
+│   ├── security/                 # 威胁模型、数据库安全与漏洞响应
+│   ├── community/                # 社区枢纽、讨论指南与 Issue 分类
+│   ├── roadmap/                  # 12 阶段主开发路线图
+│   └── i18n/                     # 同步维护的 10 种语言技术文档
+├── .github/
+│   ├── workflows/                # 企业级 CI/CD、CodeQL 与质量门禁
+│   ├── ISSUE_TEMPLATE/           # 结构化 YAML 问题反馈模板
+│   ├── PULL_REQUEST_TEMPLATE/    # 细分领域的 Pull Request 模板
+│   ├── CODEOWNERS                # 代码所有权定义
+│   └── PULL_REQUEST_TEMPLATE.md  # 标准 PR 合规校验模板
+├── pyproject.toml                # 根 Python 项目配置 (PEP 621)
+├── package.json                  # 根 npm 依赖配置
+├── tsconfig.json                 # 严格模式 TypeScript 配置文件
+├── Makefile                      # 常用操作快捷管理脚本
+├── CONTRIBUTING.md               # 完整的贡献者工作手册
+├── SECURITY.md                   # 漏洞报告与披露政策
+└── LICENSE                       # MIT 许可证
 ```
 
 ---
 
-## 🔬 可视化流水线
+## 🚀 快速开始
 
-DERA 运转透明、可审计且可精确复现的处理流水线，完成元数据探查、关系建模与安全边界校验。
+DERA 提供了统一的跨平台 CLI 脚本 (`scripts/development/dev.py`)，确保在 Windows、Linux 和 macOS 上具备完全一致的测试与运行体验。
 
-### 1. 数据库探查执行流程
+### 环境准备
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Engineer as 数据库工程师
-    participant API as DERA API 网关
-    participant Worker as 探查工作进程
-    participant Target as 目标数据库 (系统目录)
-    participant Storage as 快照存储库
-
-    Engineer->>API: 发起架构探查请求 (目标 ID)
-    API->>Worker: 压入探查作业队列 (只读权限凭据)
-    Worker->>Target: 建立 TLS 加密连接 (强制 TRANSACTION READ ONLY)
-    Worker->>Target: 查询 information_schema 与系统字典
-    Target-->>Worker: 返回元数据元组 (表、字段、键、索引)
-    Worker->>Target: 安全关闭连接会话
-    Worker->>Worker: 净化、规范化并计算元数据哈希指纹
-    Worker->>Storage: 持久化不可变的规范化快照
-    Worker-->>API: 汇报任务完成 (返回快照 ID)
-    API-->>Engineer: 展示探查摘要与规范化模型
-```
-
-### 2. 架构逆向工程处理流水线
-
-```mermaid
-flowchart LR
-    A["原生目录原始数据"] --> B["对象分类器"]
-    B --> C["规范化转换器"]
-    C --> D["约束关联器"]
-    D --> E["依赖关系图 (DAG)"]
-    E --> F["拓扑排序器"]
-    F --> G["ER 模型综合"]
-    G --> H["交互式工作台与 DDL"]
-```
-
-### 3. 元数据诊断处理流水线
-
-```mermaid
-flowchart TD
-    M1["目标元数据快照"] --> M2["规则引擎评估器"]
-    subgraph Rules["确定性规则矩阵"]
-        R1["完整性规则 (PK, FK)"]
-        R2["性能规则 (索引覆盖)"]
-        R3["命名规范规则"]
-        R4["权限偏差规则"]
-    end
-    M2 --> R1
-    M2 --> R2
-    M2 --> R3
-    M2 --> R4
-    R1 --> Out["带具体证据与修复 DDL 的诊断报告"]
-    R2 --> Out
-    R3 --> Out
-    R4 --> Out
-```
-
-### 4. 安全边界与网络隔离架构
-
-```mermaid
-flowchart TD
-    subgraph Public["公共访问区"]
-        WebUser["用户浏览器"]
-    end
-
-    subgraph DMZ["应用防护周界"]
-        ReverseProxy["反向代理 / TLS 终结"]
-        AppServer["DERA API 服务集群"]
-    end
-
-    subgraph SecureNetwork["内部受限网络"]
-        WorkerPool["沙箱化连接器池"]
-        SecretsMgr["加密凭证管理保险箱"]
-        InternalDB[(DERA 内部数据库)]
-    end
-
-    subgraph CustomerVPC["目标数据库网络环境"]
-        TargetDB[(客户目标数据库)]
-    end
-
-    WebUser -->|HTTPS| ReverseProxy
-    ReverseProxy --> AppServer
-    AppServer -->|消息队列| WorkerPool
-    WorkerPool -->|按需内存解密| SecretsMgr
-    WorkerPool -->|内部持久化| InternalDB
-    WorkerPool -.->|只读 TLS 探测| TargetDB
-```
-
-### 5. 软件工程规划生命周期
-
-```mermaid
-flowchart LR
-    P1["阶段一<br/>基石与安全"] --> P2["阶段二<br/>数据库探查"]
-    P2 --> P3["阶段三<br/>逆向工程工作台"]
-    P3 --> P4["阶段四<br/>诊断与差异对比"]
-    P4 --> P5["阶段五<br/>SQL 与迁移"]
-    P5 --> P6["阶段六<br/>加固与正式发布"]
-```
-
----
-
-## 🔒 安全准则
-
-由于 DERA 直接接入承载关键业务的数据库，安全性始终被作为第一优先级贯穿于架构之中。
-
-- **强制只读事务:** 所有探测会话严格执行只读模式声明 (`SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY`)。
-- **绝不读取用户行数据:** 探查操作仅查询系统目录元数据 (`information_schema`, `pg_catalog`)，坚决不触碰、不提取任何实际业务数据。
-- **代码中绝无明文密钥:** 凭据使用 AES-256-GCM 算法静态加密保存，绝不打印至日志、绝不导出、绝不提交至代码仓库。
-- **严格防御 SSRF 攻击:** 严格校验目标主机与 IP 地址，坚决防范针对内网敏感设施及云上元数据服务 (169.254.169.254) 的探测。
-- **最小权限访问原则:** 提供详尽的手册，指导用户仅为 DERA 分配不具备任何管理权限的审计只读专用账号。
-- **全方位审计日志:** 每一笔探查任务、每一次导出和所有配置变更，均生成不可篡改的安全审计流水。
-
-*完整的安全漏洞披露流程与指引，请参阅 [SECURITY.md](../../SECURITY.md)。*
-
----
-
-## 🛠️ 技术栈
-
-| 分层 | 组件 | 技术选型 | 用途定位 | 状态 |
-|---|---|---|---|---|
-| **前端展现层** | 框架 | Next.js, React, TypeScript | 现代化响应式 Web 应用程序 | 规划中 |
-| | 样式库 | Tailwind CSS | 一致且优雅的自适应界面设计系统 | 规划中 |
-| | UI 组件库 | shadcn/ui | 高可访问性标准组件 | 规划中 |
-| | 图形可视化 | React Flow, ELK.js | 交互式关系图谱与智能排版引擎 | 规划中 |
-| | 代码编辑器 | Monaco Editor | SQL 语法高亮与 DDL 代码预览 | 规划中 |
-| **后端服务层** | API 框架 | Python 3.12+, FastAPI | 高性能全异步 REST API 服务 | 规划中 |
-| | 目录探查 | SQLAlchemy, psycopg | 元数据抽取与连接池管理 | 规划中 |
-| | SQL 语法解析 | SQLGlot | 跨数据库引擎的 SQL AST 生成与解析 | 规划中 |
-| | 图论算法 | NetworkX | 拓扑依赖排序与环路检测 | 规划中 |
-| | 异步任务队列 | Celery, Redis | 隔离运行的异步探测工作进程 | 规划中 |
-| **持久化存储** | DERA 数据存储 | PostgreSQL | 存储架构快照、用户会话与安全审计日志 | 规划中 |
-| | 数据库迁移 | Alembic | DERA 自身数据库架构的版本演进管理 | 规划中 |
-| **运维与测试** | 容器化 | Docker, Docker Compose | 100% 可复现的本地开发与生产部署镜像 | 规划中 |
-| | 静态代码分析 | CodeQL, Dependabot | 自动化代码安全扫描与依赖漏洞告警 | 已实现 |
-| | 质量测试体系 | Pytest, Playwright | 后端单元测试与前端端到端 UI 测试 | 规划中 |
-
----
-
-## 🗄️ 数据库兼容性矩阵
-
-DERA 采用高度模块化的插件式连接器架构，旨在支持当代各类主流关系型与分布式数据库：
-
-| 数据库引擎 | 连接器状态 | 元数据源 | 计划交付版本 |
+| 工具 | 最低版本 | 推荐版本 | 版本验证指令 |
 |---|---|---|---|
-| **PostgreSQL** (v12 - v17) | 正在开发中 | `pg_catalog`, `information_schema` | 阶段二 (MVP) |
-| **Supabase PostgreSQL** | 正在开发中 | PostgreSQL 原生连接器通道 | 阶段二 (MVP) |
-| **MySQL** (v8.0+) | 规划中 | `information_schema`, `performance_schema` | 阶段五 |
-| **SQLite** (v3.35+) | 规划中 | `sqlite_master`, `PRAGMA` 表结构命令 | 阶段五 |
-| **MariaDB** (v10.5+) | 规划中 | `information_schema` | 阶段五 |
-| **Microsoft SQL Server** | 规划中 | `sys.tables`, `INFORMATION_SCHEMA` | 阶段五 |
-| **Oracle Database** | 技术评估中 | 数据字典视图 (`ALL_*`, `DBA_*`) | 未来版本规划 |
+| **Python** | `3.12+` | `3.12` 或 `3.13` | `python --version` |
+| **Node.js** | `20.x LTS` | `20.x` 或 `22.x LTS` | `node --version` |
+| **Git** | `2.30+` | 最新稳定版 | `git --version` |
 
----
-
-## 🚀 快速上手
-
-DERA 目前正处于底层架构与核心能力的基础构建阶段。随各个里程碑版本发布后，我们将提供正式生产环境的安装手册。
-
-### 运行环境准备（规划中）
-
-- Python 3.12 或更高版本
-- Node.js LTS (v20+)
-- PostgreSQL 15+
-- Docker 及 Docker Compose
-- Git
-
-### 克隆仓库
+### 1. 克隆代码库
 
 ```bash
 git clone https://github.com/krishanth7/dera.git
 cd dera
 ```
 
-### 本地开发环境启动（规划中）
+### 2. 初始化环境配置
+
+复制安全的环境变量模板：
 
 ```bash
-# 复制并配置文件模板
-cp .env.example .env
+# Windows PowerShell
+Copy-Item .env.example .env
 
-# 通过 Docker Compose 启动全套开发容器栈
-docker compose -f infrastructure/docker/docker-compose.dev.yml up --build
+# Linux / macOS
+cp .env.example .env
 ```
 
-> **注意：** 应用程序核心代码正在紧锣密鼓开发中，请关注 [开发路线图](#-开发路线图) 获取最新进度。
+### 3. 配置 Python 虚拟环境
+
+```bash
+# Linux / macOS
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+
+# Windows PowerShell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+```
+
+### 4. 安装 Node.js 依赖
+
+```bash
+npm install
+```
+
+### 5. 运行完整验证套件
+
+一键验证所有 Python 模块编译、TypeScript 类型检查、自动化测试和文档链接有效性：
+
+```bash
+python scripts/development/dev.py all
+```
+
+**预期输出：**
+```text
+Ran 32 tests in 0.25s
+OK (skipped=2)
+Validating 69 markdown documentation files...
+SUCCESS: All 69 markdown documentation files are valid.
+Validating 10 multilingual documentation files in i18n...
+SUCCESS: All 10 language documentation files verified with valid navigation and parity.
+[SUCCESS]: All development baseline checks passed successfully.
+```
+
+### 6. 开发者常用命令手册
+
+| 目标任务 | 跨平台 CLI (`dev.py`) | GNU Make (UNIX / macOS) |
+|---|---|---|
+| **运行所有测试** | `python scripts/development/dev.py test` | `make test` |
+| **执行 TypeScript 类型检查** | `python scripts/development/dev.py typecheck` | `make typecheck` |
+| **编译 Python 字节码** | `python scripts/development/dev.py compile` | `make build` |
+| **校验全量文档链接** | `python scripts/development/dev.py validate-docs` | `make lint` |
+| **验证提交 / PR 标题格式** | `python scripts/development/dev.py validate-title "<title>"` | `make validate-title TITLE="..."` |
+| **启动本地 API 服务** | `python -m uvicorn dera_api.main:app --reload --port 8000` | `make dev-api` |
+| **启动前端 Studio 工作室** | `npm run dev --workspace=apps/web` | `npm run dev --workspace=apps/web` |
+
+更详细的入门指引请参考 [新手入门指南](../development/GETTING_STARTED.md) 和 [开发命令清单](../development/COMMANDS.md)。
 
 ---
 
-## 📁 仓库目录结构
+## 🗄️ 数据库兼容性矩阵
 
-```text
-dera/
-├── .github/
-│   ├── ISSUE_TEMPLATE/           # 规范化 GitHub 议题模版
-│   ├── workflows/                # CodeQL、依赖安全审计及持续集成流水线
-│   ├── PULL_REQUEST_TEMPLATE.md  # 规范化合并请求模板
-│   ├── dependabot.yml            # Dependabot 自动更新配置
-│   └── FUNDING.yml               # 维护者赞助通道配置文件
-├── docs/
-│   ├── README.md                 # 完整文档索引导航中枢
-│   ├── i18n/                     # 同步维护的多语言文档目录
-│   │   ├── README.en.md          # 英文同步基准文档
-│   │   ├── README.es.md          # 西班牙语完整文档
-│   │   ├── README.fr.md          # 法语完整文档
-│   │   ├── README.de.md          # 德语完整文档
-│   │   ├── README.pt.md          # 葡萄牙语完整文档
-│   │   ├── README.ja.md          # 日语完整文档
-│   │   ├── README.ko.md          # 韩语完整文档
-│   │   ├── README.zh-CN.md       # 简体中文完整文档
-│   │   ├── README.ar.md          # 阿拉伯语完整文档（完美适配 RTL）
-│   │   └── README.ru.md          # 俄语完整文档
-│   ├── architecture/             # 系统架构技术规范书
-│   ├── development/              # 本地搭建与研发编码规范
-│   ├── security/                 # 威胁建模与安全开发手册
-│   └── contributing/             # 贡献者指引指南
-├── CODE_OF_CONDUCT.md            # Contributor Covenant 行为准则
-├── CONTRIBUTING.md               # 贡献者指南详细说明
-├── LICENSE                       # MIT 开源许可证
-├── README.md                     # 项目仓库官方主页
-├── SECURITY.md                   # 综合企业安全政策
-└── .gitignore                    # Git 忽略配置规则
-```
+DERA 遵循模块化的可插拔连接器架构。各项支持等级均基于实际可用代码与自动化测试：
+
+| 数据库引擎 | 支持版本 | 连接器状态 | 元数据自省机制 | 只读安全保障机制 |
+|---|:---:|:---:|---|---|
+| **SQLite** | 3.35+ | **已实现** | `sqlite_master`, `PRAGMA table_info`, `PRAGMA foreign_key_list` | 静态 AST 拦截与 `PRAGMA query_only = ON` |
+| **PostgreSQL** | 12 – 17 | **进行中** | `pg_catalog`, `information_schema` | `SET default_transaction_read_only = ON` 与只读账号角色 |
+| **Supabase PostgreSQL** | 云端 / 本地 | **进行中** | 原生 PostgreSQL 系统目录提取 | 连接会话级别强制只读与非特权角色 |
+| **MySQL** | 8.0+ | 计划中 | `information_schema`, `performance_schema` | 只读会话事务隔离机制 |
+| **MariaDB** | 10.5+ | 计划中 | `information_schema` | 只读会话事务隔离机制 |
+| **Microsoft SQL Server** | 2019+ | 计划中 | `sys.tables`, `INFORMATION_SCHEMA` | 只读用户专属权限配置 |
+
+> [!NOTE]
+> 标记为 **`进行中`** 的连接器会在 CI 流水线中针对临时容器持续运行测试；标记为 **`计划中`** 的连接器已排入路线图第 5 阶段。
+
+---
+
+## 🔒 安全原则
+
+安全是 DERA 最为优先的工程基石。在与数据库架构交互的过程中，我们执行严密的深度防御策略：
+
+1. **静态 SQL 变更拦截器：** 在向目标数据库发送任何 SQL 之前，查询会先经过 AST 语法树拦截器。包含 `DROP`, `ALTER`, `TRUNCATE`, `INSERT`, `UPDATE`, `DELETE`, `GRANT`, `REVOKE` 等修改指令的查询将被立即阻断。
+2. **纯粹限定系统目录：** 检查范围严格限制在系统元数据目录 (`information_schema`, `pg_catalog`, `sqlite_master`)。绝不查询任何业务数据记录。
+3. **默认绑定本地环回接口：** 开发服务和 API 接口默认仅绑定 `127.0.0.1`，防止在不知情的情况下暴露在公网上。
+4. **最小权限数据库账户：** DERA 仅依靠无管理特权的普通只读账号运行，绝不索取任何多余权限。
+5. **严禁凭据入库：** 任何密钥或凭据均不会写入磁盘、提交至 Git 或输出到运行日志中。
+6. **负责任的漏洞披露：** 遵循严格的 [安全策略](../../SECURITY.md)，通过安全私密渠道接收并响应漏洞。
+
+> [!NOTE]
+> DERA 践行成熟的开源安全规范（包括 CodeQL、Bandit SAST、密钥防泄漏扫描等）。我们并未声明任何商业性第三方认证（如 SOC 2 或 ISO 27001）。
+
+专门的安全规范文件：
+- [**数据库安全规范**](../security/DATABASE_SECURITY.md) — 系统目录只读自省与凭据隔离。
+- [**安全开发工程标准**](../security/SECURE_DEVELOPMENT.md) — 输入参数化防御与 CI 门禁。
+- [**安全漏洞响应流程**](../security/VULNERABILITY_RESPONSE.md) — 五阶段响应机制与私密通报流程。
+- [**威胁模型矩阵**](../security/model.md) — 攻击路径分析与防御措施。
+
+---
+
+## 📚 开发者文档导航
+
+查阅 DERA 完整的文档体系：
+
+| 领域 | 核心手册 |
+|---|---|
+| **系统架构** | [Monorepo 架构蓝图](../architecture/README_ARCHITECTURE.md) · [模块边界规则](../architecture/MODULE_BOUNDARIES.md) · [目录结构说明](../architecture/MONOREPO_STRUCTURE.md) · [架构决策记录](../architecture/adr/0001-monorepo-architecture.md) |
+| **工程开发** | [快速入门指南](../development/GETTING_STARTED.md) · [开发命令清单](../development/COMMANDS.md) · [环境配置指南](../development/ENVIRONMENT.md) · [排错手册](../development/TROUBLESHOOTING.md) |
+| **文档管理** | [文档维护规范协议](../development/README_MAINTENANCE.md) · [技术写作标准](../development/README_GUIDELINES.md) |
+| **项目治理** | [维护者管理规范](../governance/MAINTAINERS.md) · [治理决议记录](../governance/GOVERNANCE_DECISIONS.md) · [第三方许可证清单](../governance/THIRD_PARTY_LICENSES.md) |
+| **安全合规** | [安全合规政策](../../SECURITY.md) · [数据库安全规范](../security/DATABASE_SECURITY.md) · [安全开发标准](../security/SECURE_DEVELOPMENT.md) · [漏洞处理响应流程](../security/VULNERABILITY_RESPONSE.md) |
+| **社区共建** | [贡献者完整指南](../../CONTRIBUTING.md) · [讨论区参与准则](https://github.com/krishanth7/dera/discussions) · [Issue 分类处理](https://github.com/krishanth7/dera/issues) · [行为准则](../../CODE_OF_CONDUCT.md) |
+| **审计与验收** | [审计报告清单](../audit/README.md) · [2.1 阶段 README 审计](../audit/PHASE_2_1_README_AUDIT.md) · [项目代码基线](../audit/BASELINE.md) |
+| **开发路线** | [12 阶段主开发路线图](../roadmap/README.md) |
 
 ---
 
 ## 🗺️ 开发路线图
 
-### 阶段一 — 基石与安全规范
-- [x] 确立正式的项目定位与宽松的 MIT 许可证
-- [x] 搭建 CodeQL 静态应用安全测试 (SAST) 自动化流水线
-- [x] 制定行为准则与严格的企业级安全披露政策
-- [x] 建立 10 种语言互通的国际化文档体系
-- [ ] 初始化单体多包应用程序目录结构 (`apps/web`, `apps/api`)
-- [ ] 配置 Docker 本地开发套件与基础 CI 流程
+DERA 正在按照系统化的 **12 阶段开发路线图** 稳步构建新一代数据库逆向分析平台：
 
-### 阶段二 — 数据库探查核心
-- [ ] 研发 PostgreSQL 原生元数据提取连接器
-- [ ] 探查提取数据表、字段、约束、索引与视图
-- [ ] 建立引擎无关的标准架构规范化模型
-- [ ] 实现具备防篡改校验哈希的不可变架构快照存储
-- [ ] 构建只读会话强校验机制与查询超时防护网
+- [x] **第 1 阶段：代码库基石与工程治理**
+  - [x] 1.1 阶段：全仓库深度审计与技术基线确立
+  - [x] 1.2 阶段：企业级 Monorepo 目录架构建立 (`apps/`, `packages/`)
+  - [x] 1.3 阶段：Git 分支规范、Conventional Commits 语义化提交与 PR 门禁
+  - [x] 1.4 阶段：专业级 README、品牌规范与系统架构图谱
+  - [x] 1.5 阶段：安全政策、漏洞反馈响应体系与维护者治理
+  - [x] 1.6 阶段：结构化 Issue 表单、讨论区治理与社区运维 (PR #20)
+- [ ] **第 2 阶段：多语言技术文档与开发者体验**
+  - [x] 2.1 阶段：官方权威英文 README 与核心文档基底 (PR #21)
+  - [x] 2.2 阶段：9 种国际语言 README 同步更新 (进行中)
+- [x] **第 3 阶段：GitHub Actions、CI/CD 自动化与 DevSecOps**
+- [ ] **第 4 阶段：后端核心服务与平台基础设施**
+- [ ] **第 5 阶段：数据库适配连接器与元数据自省**
+- [ ] **第 6 阶段：逆向工程计算引擎内核**
+- [ ] **第 7 阶段：可视化前端与图形化架构工作室**
+- [ ] **第 8 阶段：智能结构诊断与规范检查**
+- [ ] **第 9 阶段：模式差异比对与迁移工程引擎**
+- [ ] **第 10 阶段：SQL 语法分析与性能工程工具**
+- [ ] **第 11 阶段：企业级可靠性、安全加固与大规模 QA**
+- [ ] **第 12 阶段：版本发布、部署运维与开源生态建设**
 
-### 阶段三 — 逆向工程工作室
-- [ ] 基于 React Flow 打造交互式 ER 关系画布
-- [ ] 研发自动分层排版布局算法
-- [ ] 支持按 Schema 过滤、全文模糊搜索与业务域分组
-- [ ] 构建有向无环依赖图 (DAG) 的遍历与可视化
-- [ ] 支持导出高保真 SVG 矢量图与 PNG 图像
-
-### 阶段四 — 确定性诊断与差异对比
-- [ ] 研发纯确定性规则驱动的诊断引擎
-- [ ] 交付内置核心规则：缺失主键、冗余索引、外键缺少索引支持
-- [ ] 实现架构快照差异比较算法 (Snapshot Diff)
-- [ ] 生成结构化的 DDL 迁移变更影响预览
-- [ ] 导出 Markdown、JSON 和 HTML 格式的诊断审计报告
-
-### 阶段五 — 高级工程功能与新引擎连接器
-- [ ] 基于 SQLGlot 引入 SQL AST 查询解析与复杂度指标分析
-- [ ] 构建查询执行计划可视化工具 (`EXPLAIN ANALYZE`)
-- [ ] 研发 MySQL 和 SQLite 专用数据库连接器
-- [ ] 研发基于依赖图顺序的智能 DDL 迁移生成器
-
-### 阶段六 — 生产环境加固
-- [ ] 开展全方位第三方安全审计与渗透测试
-- [ ] 完成超大规模复杂 Schema（1,000+ 数据表）性能基准测试
-- [ ] 严格验证多租户数据隔离机制与审计日志防篡改性
-- [ ] 正式发布 v1.0.0 生产环境容器镜像与部署白皮书
-
----
-
-## 🧪 测试与质量保证策略
-
-DERA 依赖可重复的自动化测试体系保障企业级工程品质：
-
-- **单元测试:** 使用合成元数据全量测试解析器、图论环路检测和所有诊断规则。
-- **集成测试:** 启动真实的 PostgreSQL、MySQL、SQLite 容器实例检验连接器的鲁棒性。
-- **确定性验证:** 严密保证相同的输入快照在任何时刻都能算出完全相同的哈希签名与诊断报告。
-- **代码安全测试:** CodeQL 持续自动化分析、依赖组件已知漏洞扫描及密钥泄漏检测。
-- **端到端测试 (E2E):** 使用 Playwright 在无头浏览器中验证图表交互性与跨分辨率自适应能力。
+关于各里程碑的详细计划，请参阅 [开发路线图全文](../roadmap/README.md)。
 
 ---
 
 ## 🤝 参与贡献
 
-我们热烈欢迎来自全球的软件工程师、数据库专家、技术作家和安全研究人员参与共同建设。
+我们真诚欢迎来自全球的软件工程师、数据库管理员、安全研究人员和技术写作者参与 DERA 的共建！
 
-提交 Pull Request 之前，请务必仔细阅读我们的 [CONTRIBUTING.md](../../CONTRIBUTING.md) 贡献指南与 [行为准则](../../CODE_OF_CONDUCT.md)。
+### 贡献者核心资料
 
-### 标准贡献流程
-
-1. 在 GitHub 上 Fork 本项目仓库。
-2. 创建独立的特性分支：`git checkout -b feat/your-feature-name`。
-3. 遵循 [Conventional Commits](../../CONTRIBUTING.md#commit-message-guidelines) 规范编写清晰的提交信息。
-4. 编写对应的单元测试或集成测试用例。
-5. 确保 CodeQL 静态检查与所有文档校验通过。
-6. 向 `main` 分支提交 Pull Request，等待维护者审查合并。
+- **[贡献指南](../../CONTRIBUTING.md):** 完整的参与准则与质量门禁要求。
+- **[贡献工作流程](../development/CONTRIBUTION_WORKFLOW.md):** 本地开发、测试运行与 PR 提交全流程指导。
+- **[分支管理策略](../development/BRANCHING_STRATEGY.md):** 基于主干的开发模式与分支命名准则 (`feat/...`, `fix/...`)。
+- **[提交信息规范](../development/COMMIT_CONVENTIONS.md):** Conventional Commits 1.0.0 规范与版本号映射。
+- **[代码审查规范](../development/CODE_REVIEW_POLICY.md):** 同行评审考核要点与 Code Owner 准入原则。
+- **[社区行为准则](../../CODE_OF_CONDUCT.md):** 友善、包容的开源社区行为标准。
 
 ---
 
 ## 💬 社区交流
 
-- [GitHub Discussions](https://github.com/krishanth7/dera/discussions) — 提问答疑、创意碰撞与数据库工程技术研讨。
-- [GitHub Issues](https://github.com/krishanth7/dera/issues) — 提交 Bug 反馈或申请新功能特性。
-- [GitHub Pull Requests](https://github.com/krishanth7/dera/pulls) — 提交高质量的代码与文档贡献。
-- [Releases](https://github.com/krishanth7/dera/releases) — 跟踪官方版本发布与更新日志。
-
----
-
-## ❤️ 支持本项目
-
-DERA 是由个人发起的独立开源软件工程项目。您可以通过以下方式支持它的长足演进：
-
-- 在 GitHub 上为本项目点亮一颗星（Star）
-- 将项目推荐给您身边的研发团队和技术同行
-- 贡献新的数据库连接器、诊断规则或参与文档维护
-- [通过 GitHub Sponsors 赞助支持维护者](https://github.com/sponsors/krishanth7)
+- [GitHub Discussions](https://github.com/krishanth7/dera/discussions) — 技术交流、构想探讨及数据库逆向工程话题探讨。
+- [GitHub Issues](https://github.com/krishanth7/dera/issues) — 提交问题报告或发起功能提案。
+- [GitHub Pull Requests](https://github.com/krishanth7/dera/pulls) — 提交代码、测试或文档改进贡献。
+- [私密安全报告渠道](https://github.com/krishanth7/dera/security/advisories/new) — 负责任地通报潜在安全缺陷。
+- [治理决议记录](../governance/GOVERNANCE_DECISIONS.md) — 查阅架构决策与社区管理决议。
 
 ---
 
 ## 📜 开源许可证
 
-DERA 遵循自由宽松的 **[MIT 许可证](../../LICENSE)** 开放源代码。
+DERA 遵循自由宽松的 **[MIT 许可证](../../LICENSE)** 发布。
 
 ```text
 Copyright (c) 2026 Krishanth
@@ -587,13 +477,13 @@ Copyright (c) 2026 Krishanth
 ## 👨‍💻 项目维护者
 
 **Krishanth**  
-创始人与首席维护者
+项目创始人 & 首席维护者
 
-- GitHub 主页: [@krishanth7](https://github.com/krishanth7)  
-- 代码仓库: [github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
+- GitHub: [@krishanth7](https://github.com/krishanth7)  
+- 官方仓库: [github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
 - 联络邮箱: `krishanth.b.2008@gmail.com`
 
-*DERA 是由 Krishanth 独立维护的开源技术项目。OVIC Labs 被认可为维护者更广泛工程生态系统的一部分。*
+*DERA 是由 Krishanth 独立发起并维护的开源项目。OVIC Labs 被列为维护者广泛工程体系的重要组成部分。*
 
 ---
 
@@ -601,12 +491,12 @@ Copyright (c) 2026 Krishanth
 
 ### DERA — Database Engineering & Reverse Analysis
 
-**洞悉每一个架构。工程化每一次变更。**
+**洞悉每个模式，掌控每次变更。**
 
-*以工程精确度、数学确定性与开源透明性精心铸就。*
+*立足于数学确定性、扎实的工程标准与完全透明的开源精神。*
 
-© 2026 DERA 贡献者团队. Distributed under the MIT License.
+© 2026 DERA 贡献者团队。基于 MIT 许可证分发。
 
-[回到顶部](#dera)
+[返回顶部](#dera)
 
 </div>

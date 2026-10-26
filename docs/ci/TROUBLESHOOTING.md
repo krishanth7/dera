@@ -39,12 +39,12 @@ This guide helps contributors and maintainers quickly diagnose and resolve faili
 ---
 
 ### Failure 4: Multilingual Parity Fails (`DERA | Multilingual Validation`)
-* **Error:** `Missing navigation link to README.<lang>.md` or `Arabic documentation must specify RTL direction`.
+* **Error:** `Missing navigation link to README.<lang>.md` or `Missing required language documentation file`.
 * **Local Reproduction:**
   ```bash
   python scripts/ci/validate_i18n.py
   ```
-* **Remediation:** Ensure all 10 language documents maintain bidirectional navigation in their top menu and `README.ar.md` includes `dir="rtl"`.
+* **Remediation:** Ensure all 10 language documents maintain bidirectional navigation in their top menu according to [`docs/i18n/TRANSLATION_POLICY.md`](../i18n/TRANSLATION_POLICY.md).
 
 ---
 

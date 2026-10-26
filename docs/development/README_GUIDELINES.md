@@ -51,16 +51,16 @@ DERA maintains documentation in 10 international languages (`docs/i18n/`):
 | French | `fr` | `docs/i18n/README.fr.md` | Full translation, preserve technical terms |
 | German | `de` | `docs/i18n/README.de.md` | Full translation, maintain compound terms |
 | Portuguese | `pt` | `docs/i18n/README.pt.md` | Full translation, consistent database terms |
+| Italian | `it` | `docs/i18n/README.it.md` | Full translation, standard database terms |
 | Japanese | `ja` | `docs/i18n/README.ja.md` | Full translation, preserve ASCII symbols |
 | Korean | `ko` | `docs/i18n/README.ko.md` | Full translation, standard IT terminology |
 | Simplified Chinese | `zh-CN` | `docs/i18n/README.zh-CN.md` | Full translation, standard Chinese database terms |
-| Arabic | `ar` | `docs/i18n/README.ar.md` | RTL text layout, LTR code and table blocks |
 | Russian | `ru` | `docs/i18n/README.ru.md` | Full translation, Cyrillic typography |
 
 **Translation Rules:**
 - Keep code identifiers, SQL queries, file paths, and environment variable names untranslated.
 - Preserve identical relative file links across all language READMEs.
-- For Arabic (`README.ar.md`), ensure code blocks and tables maintain left-to-right (LTR) rendering.
+- Strictly adhere to [`docs/i18n/TERMINOLOGY.md`](../i18n/TERMINOLOGY.md) for technical terms.
 
 ---
 

@@ -1,4 +1,4 @@
-**Diese Dokumentation lesen auf:** [English](../../README.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [العربية](README.ar.md) | [Русский](README.ru.md)
+**Diese Dokumentation lesen auf:** [English (Root)](../../README.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
 
 ---
 
@@ -8,32 +8,34 @@
 
 ### Database Engineering & Reverse Analysis
 
-**Verstehe jedes Schema. Gestalte jede Änderung.**
+**Verstehe jedes Schema. Entwickle jede Änderung.**
 
-Eine deterministische Open-Source-Plattform für Datenbank-Reverse-Engineering, entwickelt für Softwareentwickler, Datenbankingenieure, Architekten und Entwicklungsteams.
+Eine unabhängige, deterministische Open-Source-Plattform für Datenbank-Engineering und Reverse Engineering, entwickelt für Softwareentwickler, Datenbankarchitekten und Ingenieurteams.
 
-Erforschen Sie Datenbankstrukturen, visualisieren Sie Beziehungen, analysieren Sie Schemata, identifizieren Sie strukturelle Risiken und generieren Sie technische Dokumentationen — vollständig deterministisch, ohne KI-Modelle oder externe KI-Inferenz-APIs.
+Erkunden Sie Datenbankstrukturen, rekonstruieren Sie Entitätsbeziehungen, bewerten Sie strukturelle Risiken und planen Sie Schemaänderungen — vollständig deterministisch, ohne KI-Modelle oder externe Inferenz-APIs.
 
 <br/>
 
-[![GitHub Stars](https://img.shields.io/github/stars/krishanth7/dera?style=for-the-badge&logo=github)](https://github.com/krishanth7/dera/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/krishanth7/dera?style=for-the-badge&logo=github)](https://github.com/krishanth7/dera/forks)
-[![GitHub Issues](https://img.shields.io/github/issues/krishanth7/dera?style=for-the-badge&logo=github)](https://github.com/krishanth7/dera/issues)
-[![GitHub License](https://img.shields.io/github/license/krishanth7/dera?style=for-the-badge)](https://github.com/krishanth7/dera/blob/main/LICENSE)
-[![Latest Release](https://img.shields.io/github/v/release/krishanth7/dera?style=for-the-badge)](https://github.com/krishanth7/dera/releases)
+[![Lizenz: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](../../LICENSE)
+[![CI Gate](https://img.shields.io/github/actions/workflow/status/krishanth7/dera/ci.yml?branch=main&label=CI%20Gate&style=for-the-badge&logo=githubactions)](https://github.com/krishanth7/dera/actions/workflows/ci.yml)
 [![CodeQL Security](https://img.shields.io/github/actions/workflow/status/krishanth7/dera/codeql.yml?branch=main&label=CodeQL&style=for-the-badge&logo=githubactions)](https://github.com/krishanth7/dera/actions/workflows/codeql.yml)
-[![Contributors](https://img.shields.io/github/contributors/krishanth7/dera?style=for-the-badge&logo=github)](https://github.com/krishanth7/dera/graphs/contributors)
-[![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/krishanth7)
+[![Dokumentation](https://img.shields.io/github/actions/workflow/status/krishanth7/dera/documentation.yml?branch=main&label=Docs&style=for-the-badge&logo=githubactions)](https://github.com/krishanth7/dera/actions/workflows/documentation.yml)
+[![Python 3.12 | 3.13](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](../../pyproject.toml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](../../tsconfig.json)
+[![Streng ohne KI](https://img.shields.io/badge/AI-None%20(Deterministisch)-orange?style=for-the-badge)](#-streng-ohne-ki-architektur)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](../../CONTRIBUTING.md)
 
 <br/>
 
 [Überblick](#-überblick) ·
-[Funktionen](#-funktionen) ·
-[Architektur](#-architektur) ·
-[Visuelle Pipelines](#-visuelle-pipelines) ·
+[Funktionsmatrix](#-statusmatrix-der-funktionen) ·
+[Architektur](#-architekturübersicht) ·
+[Monorepo-Struktur](#-repository-struktur) ·
+[Erste Schritte](#-erste-schritte) ·
+[Datenbankkompatibilität](#-datenbank-kompatibilitätsmatrix) ·
 [Sicherheit](#-sicherheitsprinzipien) ·
-[Technologie-Stack](#-technologie-stack) ·
-[Roadmap](#-entwicklungs-roadmap) ·
+[Dokumentations-Hub](#-entwickler-dokumentationsnavigation) ·
+[Roadmap](#-master-roadmap) ·
 [Mitwirken](#-mitwirken) ·
 [Community](#-community)
 
@@ -43,540 +45,428 @@ Erforschen Sie Datenbankstrukturen, visualisieren Sie Beziehungen, analysieren S
 
 ## 🌍 Sprachunterstützung
 
-DERA stellt eine umfassende Dokumentation in 10 internationalen Sprachen bereit. Nutzen Sie die nachfolgende Tabelle oder die obere Navigationsleiste, um zur lokalisierten Dokumentation zu gelangen:
+DERA stellt eine synchronisierte Dokumentation in 10 internationalen Sprachen bereit. Die englische README-Datei dient gemäß unserem [Dokumentations-Wartungsvertrag](../development/README_MAINTENANCE.md) als maßgebliche Referenz.
 
 | Sprache | Code | Dokumentationslink | Status |
 |---|---|---|---|
-| 🇬🇧 English | `en` | [English Primary (Root)](../../README.md) · [Synchronized Copy](README.en.md) | Hauptreferenz |
+| 🇬🇧 English | `en` | [English Primary (Root)](../../README.md) · [Synchronized Copy](README.en.md) | **Maßgebliche Referenzquelle** |
 | 🇪🇸 Español | `es` | [Documentación en Español](README.es.md) | Vollständige Übersetzung |
 | 🇫🇷 Français | `fr` | [Documentation en Français](README.fr.md) | Vollständige Übersetzung |
 | 🇩🇪 Deutsch | `de` | [Dokumentation auf Deutsch](README.de.md) | Vollständige Übersetzung |
 | 🇵🇹 Português | `pt` | [Documentação em Português](README.pt.md) | Vollständige Übersetzung |
+| 🇮🇹 Italiano | `it` | [Documentazione in Italiano](README.it.md) | Vollständige Übersetzung |
 | 🇯🇵 日本語 | `ja` | [日本語ドキュメント](README.ja.md) | Vollständige Übersetzung |
 | 🇰🇷 한국어 | `ko` | [한국어 문서](README.ko.md) | Vollständige Übersetzung |
 | 🇨🇳 简体中文 | `zh-CN` | [简体中文文档](README.zh-CN.md) | Vollständige Übersetzung |
-| 🇸🇦 العربية | `ar` | [الوثائق باللغة العربية](README.ar.md) | Vollständige Übersetzung |
 | 🇷🇺 Русский | `ru` | [Документация на русском](README.ru.md) | Vollständige Übersetzung |
 
 ---
 
 ## 📖 Überblick
 
-Moderne relationale Datenbanken bilden das solide Rückgrat moderner Softwareinfrastrukturen. Dennoch ist das Verstehen eines unbekannten oder historisch gewachsenen Schemas oft eine erhebliche Herausforderung. Unternehmenssysteme umfassen regelmäßig hunderte Tabellen, tausende Spalten, komplexe Fremdschlüsselbeziehungen, Indizes, Integritätsbedingungen, Ansichten (Views) und weitreichende Abhängigkeiten.
+Moderne relationale Datenbanken bilden das Rückgrat jeder Softwareinfrastruktur. Das Verständnis unbekannter, historisch gewachsener oder sich schnell verändernder Schemata stellt jedoch erhebliche Herausforderungen dar:
+- **Komplexe Schemata:** Unternehmensdatenbanken umfassen häufig Hunderte von Tabellen, Tausende Spalten und undokumentierte Fremdschlüsselbeziehungen.
+- **Architekturschulden:** Zirkuläre Fremdschlüsselabhängigkeiten, fehlende Primärschlüssel, nicht indizierte Fremdschlüssel und redundante Indizes häufen sich unbemerkt an.
+- **Migrationsrisiken:** Schemaänderungen ohne vollständigen topologischen Graphen bergen Risiken wie Sperren-Eskalationen, Datenverlust und kaskadierende Constraint-Verletzungen.
+- **Datenschutz & Sicherheit:** Unternehmen dürfen Produktionsanmeldeinformationen und vertrauliche Datensätze keinesfalls externen Cloud-KI-Diensten aussetzen.
 
-Diese Strukturen manuell zu erfassen und zu auditieren, bindet wertvolle Entwicklungszeit und birgt Risiken menschlicher Fehler.
+**DERA wurde entwickelt, um diese Probleme durch mathematischen Determinismus zu lösen.**
 
-**DERA wurde entwickelt, um dieses Problem gezielt zu lösen.**
+DERA bietet eine modulare Open-Source-Plattform, die Kataloge relationaler Datenbanken untersucht, Abhängigkeitsgraphen rekonstruiert, strukturelle Risiken bewertet und Migrationen anhand überprüfbarer Algorithmen simuliert.
 
-DERA bietet einen einheitlichen und sicheren Arbeitsbereich, um Datenbankarchitekturen zu untersuchen, Entity-Relationship-Modelle zu rekonstruieren, strukturelle Entwurfsrisiken aufzudecken und technische Dokumentationen anhand deterministischer Algorithmen zu erstellen.
+### Wesentliche Ingenieursprinzipien
 
-### Unsere Mission
-
-Datenbank-Reverse-Engineering zugänglich, transparent, reproduzierbar und verlässlich für jeden Softwareentwickler, Datenbankadministrator und Systemarchitekten zu machen.
-
-### Unsere Philosophie
-
-- **Deterministisch durch Design** — Reproduzierbare Analysen basierend auf mathematischen Graphenalgorithmen und statischen Regelsätzen.
-- **Strikt ohne generative KI** — Keine Large Language Models (LLMs), keine Machine-Learning-Modelle und keine externen KI-Inferenz-APIs.
-- **Datenschutz an erster Stelle** — Reine Analyse von Strukturmetadaten. Es werden standardmäßig keine Datensätze oder Tabelleninhalte von Kunden ausgelesen.
-- **Open Source** — Transparente Ingenieursarbeit unter der freien MIT-Lizenz.
-- **Fokus auf Entwickler** — Praxisnahe Workflows für Softwareingenieure und DBAs.
-- **Sicherheit als Fundament** — Erzwungene Nur-Lese-Verbindungen, verschlüsselte Zugangsdaten und isolierte Ausführungsumgebungen.
-- **Technische Verlässlichkeit** — Evidenzbasierte Diagnoseergebnisse statt halluzinierter Erklärungen.
+1. **Deterministisch durch Design:** Jeder Schema-Snapshot, jede topologische Graphsortierung und jeder Diagnosebericht ist reproduzierbar und fußt auf relationaler Algebra.
+2. **Streng ohne KI:** Keine generative KI, keine Large Language Models (LLMs), keine Vektordatenbanken und keine externen Inferenz-APIs.
+3. **Schreibgeschützte Datenbanksicherheit:** Durchsetzung von reinem Lesezugriff auf Verbindungsebene, statische AST-Abfrageblockierung von Mutationen und ausschließliche Metadaten-Katalogabfragen.
+4. **Keine Extraktion von Kundenzeilendaten:** Reine Metadaten-Introspektion (`information_schema`, `pg_catalog`, `sqlite_master`). Anwendungsdatensätze werden niemals abgefragt, übertragen oder gespeichert.
+5. **Entkoppelte Monorepo-Architektur:** Klare Modulgrenzen isolieren Graphalgorithmen, Konnektoren, das API-Gateway und das Visual Studio.
+6. **Open Source & Permissiv:** Unabhängige Software unter der liberalen [MIT-Lizenz](../../LICENSE).
 
 ---
 
-## ✨ Funktionen
+## 🧠 Streng ohne KI-Architektur
 
-Im Folgenden werden die geplanten Plattformfähigkeiten von DERA beschrieben. Ihre Verfügbarkeit richtet sich nach der jeweiligen Entwicklungsphase und den veröffentlichten Releases.
-
-| Funktionsbereich | Status | Beschreibung |
-|---|---|---|
-| **Datenbank-Discovery** | Geplant | Native Extraktion von Metadaten zu Tabellen, Spalten, Constraints und Indizes |
-| **Reverse-Engineering-Kern** | Geplant | Kanonische Schemamodellierung, Objektklassifizierung und Auflösung von Abhängigkeiten |
-| **Visuelles ER-Studio** | Geplant | Interaktive Entity-Relationship-Diagramme, automatisches Layout, Filter und Exporte |
-| **Deterministische Diagnostik** | Geplant | Statische Regelauswertung zur Erkennung fehlender Primärschlüssel, redundanter Indizes und Entwurfsfehlern |
-| **Schema-Snapshots & Diff** | Geplant | Versionierte Schema-Snapshots und Auswirkungsanalysen struktureller Änderungen |
-| **SQL-Performance-Engineering**| Geplant | Abfrageprüfung, Ausführungsplan-Visualisierung und Indexempfehlungen |
-| **Dokumentationsgenerator** | Geplant | Automatisierte Exporte nach Markdown, HTML, JSON, SQL-DDL und SVG-Diagramme |
-| **Sicherheitsarchitektur** | Geplant | Rollenbasierte Zugriffskontrolle, garantierter Nur-Lese-Zugriff und isolierte Worker |
-
-### 🔍 Datenbank-Discovery
-
-Untersuchen Sie unterstützte Datenbank-Engines und extrahieren Sie strukturelle Kataloginformationen:
-
-- Datenbanken, Schemata und Erweiterungen
-- Tabellen, Partitionen und Ansichten (Views)
-- Spalten, Datentypen, Nullierbarkeit und Standardausdrücke (Defaults)
-- Primärschlüssel, Fremdschlüssel und referenzielle Aktionen (`CASCADE`, `RESTRICT`)
-- Unique-Constraints, Check-Constraints und Exklusions-Bedingungen
-- Indizes (B-Tree, Hash, GIN, GiST), Unique-Indizes und partielle Index-Prädikate
-- Sequenzen, Identitätsspalten und Trigger
-
-### 🧬 Reverse-Engineering-Kern
-
-Rekonstruieren Sie Schemamodelle mittels nativer Systemkatalogabfragen und deterministischer Algorithmen:
-
-- Kanonische, engine-agnostische Schemarepräsentation
-- Standardisierte Normalisierung struktureller Metadaten
-- Aufbau gerichteter azyklischer Abhängigkeitsgraphen (DAG)
-- Zuordnung einfacher und zusammengesetzter Fremdschlüsselbeziehungen
-- Generierung unveränderlicher, kryptografisch gesicherter Schema-Snapshots
-- Deterministische Rekonstruktion von SQL-DDL-Anweisungen
-
-### 🕸️ Visuelles ER-Studio
-
-Erforschen Sie die Schematopologie über eine interaktive Entity-Relationship-Oberfläche:
-
-- Interaktive Tabellenknoten mit Anzeige von Spalten, Datentypen und Constraints
-- Visuelle Fremdschlüsselverbinder mit exakter Kardinalitätsanzeige
-- Deterministische automatische Layout-Algorithmen (hierarchisch und kraftbasiert)
-- Schemabasierte Gruppierung, Tagging und domänenspezifische Teilgraphen
-- Interaktive Volltextsuche, Typfilterung und Pfadanalyse von Abhängigkeiten
-- Hochauflösende Exporte in den Vektorformaten SVG und Pixelgrafiken PNG
-
-### 🛡️ Deterministische Datenbank-Diagnostik
-
-Analysieren Sie Schema-Metadaten anhand konfigurierbarer Entwurfsregeln zur Identifikation struktureller Risiken:
-
-| Diagnoseregel | Kategorie | Beschreibung |
-|---|---|---|
-| **Fehlender Primärschlüssel** | Integrität | Erkennt Tabellen ohne deklarierte Primärschlüssel-Bedingung |
-| **Potenziell redundanter Index** | Performance | Findet überlappende oder redundante Spaltenpräfixe in Indizes |
-| **Nicht-indizierter Fremdschlüssel**| Performance | Markiert Fremdschlüsselspalten ohne passenden unterstützenden Index |
-| **Polymorphe Anti-Patterns** | Integrität | Erkennt lose Fremdschlüsselbeziehungen ohne relationale Integritätsregeln |
-| **Nullierbarkeit & Default-Anomalien**| Konsistenz | Meldet Not-Null-Spalten ohne sinnvolle Standardwertdefinitionen |
-| **Namenskonventions-Audit** | Standardisierung | Findet Abweichungen von einheitlichen Architektur- und Benennungsstandards |
-| **Rechte- und Berechtigungsabweichungen** | Sicherheit | Weist auf übermäßige Berechtigungen auf Katalogobjekten hin |
-
-*Alle Diagnosebefunde sind evidenzbasierte Empfehlungen inklusive technischer Begründung und konkreten DDL-Behebungsanweisungen.*
-
-### 🔄 Schema-Vergleich & Diff-Engine
-
-Vergleichen Sie Datenbank-Snapshots über verschiedene Umgebungen (Entwicklung, Staging, Produktion) oder Versionsstände hinweg:
-
-- Hinzugefügte, geänderte und entfernte Tabellen sowie Spalten
-- Modifikationen von Datentypen, Größen und Nullierbarkeitsvorgaben
-- Erstellung, Löschung und Anpassung von Indexdefinitionen
-- Constraint-Modifikationen und Anpassungen referenzieller Integritätsregeln
-- Klassifizierung von Breaking Changes (abwärtskompatibel vs. potenziell destruktiv)
-- Vorschau geordneter Migrationsskripte unter Einhaltung topologischer Abhängigkeiten
-
----
-
-## 🧠 Keine KI. Reine Ingenieurskunst.
-
-DERA verzichtet bewusst und vollständig auf künstliche Intelligenz und Machine-Learning-Modelle.
+DERA ist bewusst ohne Komponenten für künstliche Intelligenz oder maschinelles Lernen konzipiert.
 
 ```text
 ┌───────────────────────────────────────────────────────────┐
-│               STRIKTE ARCHITEKTUR OHNE KI                 │
+│              STRENG OHNE KI-ARCHITEKTUR                   │
 │                                                           │
 │   ❌  Kein OpenAI, Anthropic Claude oder Google Gemini    │
-│   ❌  Keine gehosteten Inferenz-APIs wie Groq o. DeepSeek │
+│   ❌  Keine Groq-, DeepSeek- oder gehosteten Modell-APIs  │
 │   ❌  Keine lokalen LLMs (Ollama, vLLM, llama.cpp)        │
-│   ❌  Keine nicht-deterministischen Halluzinationen       │
+│   ❌  Keine stochastischen Schätzungen / Halluzinationen  │
+│   ❌  Keine Cloud-Vektoreinbettungen oder externes RAG    │
 │                                                           │
-│   ✅  Native Systemkatalog-Abfragen (information_schema)  │
-│   ✅  Deterministische Graphenalgorithmen (NetworkX)      │
-│   ✅  Formale SQL-AST-Parser (SQLGlot)                    │
-│   ✅  Reproduzierbare statische Regelsysteme              │
-│   ✅  Mathematische Schema-Vergleichsalgorithmen          │
+│   ✅  Native Systemkatalogabfragen (information_schema)   │
+│   ✅  Mathematische Graphalgorithmen (NetworkX / Tarjan)  │
+│   ✅  Abstract Syntax Tree SQL-Parser (SQLGlot)           │
+│   ✅  Reproduzierbare statische Regel-Engines             │
+│   ✅  Kryptografische Hash-Fingerabdrücke (SHA-256)       │
 └───────────────────────────────────────────────────────────┘
 ```
 
-**Warum DERA deterministisch arbeitet:**
-1. **Vorhersehbarkeit:** Ein identischer Schema-Snapshot und dieselbe Regelkonfiguration liefern ausnahmslos identische Analyseergebnisse.
-2. **Nachvollziehbarkeit:** Jede Warnung, Beziehung und Graphenkante verweist direkt auf konkrete Systemkatalogdaten.
-3. **Datensouveränität:** Ihre Unternehmensschemata und Metadaten verlassen zu keinem Zeitpunkt Ihr Netzwerk in Richtung dritter Modellanbieter.
-4. **Effizienz & Kosten:** Keine Inferenzlatenz, keine Token-Abrechnung, keine API-Ratenbegrenzungen und keine Abhängigkeit von Cloud-Diensten.
+**Warum DERA deterministisch ist:**
+- **Mathematische Nachvollziehbarkeit:** Jede Beziehung, Warnung vor Zyklen und Diagnose stützt sich auf konkrete Katalogbeweise und exakte Graphalgorithmen.
+- **Byte-für-Byte-Reproduzierbarkeit:** Eine Prüfung desselben Schema-Snapshots liefert auf jeder Entwickler- und CI-Umgebung stets identische Ergebnisse.
+- **Datensouveränität für Unternehmen:** Schemata und Topologien verlassen niemals Ihr Netzwerk in Richtung externer Modellanbieter.
+- **Keine Betriebskosten für KI:** Keine Tokenkosten, keine Ratenbegrenzungen und keine Latenzen durch externe Inferenz.
 
 ---
 
-## 🏗️ Architektur
+## 📊 Statusmatrix der Funktionen
 
-DERA basiert auf einer modularen Architektur, die für hohe Wartbarkeit, Erweiterbarkeit und maximale Sicherheit beim Datenbankzugriff ausgelegt ist.
+DERA pflegt eine transparente Berichterstattung auf Basis von im Repository vorhandenem und automatisiert getestetem Code:
+
+| Funktion | Status | Implementierungsnachweis | Monorepo-Pfad |
+|---|:---:|---|---|
+| **Kanonische Schemamodelle** | **Implementiert** | Kanonische Modelle `Column`, `Table`, `ForeignKey`, `Index` | [`packages/core/src/dera/models.py`](../../packages/core/src/dera/models.py) |
+| **Abhängigkeitsgraph-Engine** | **Implementiert** | Zyklenfester DAG & topologische Sortierung (Tarjan SCC) | [`packages/core/src/dera/graph.py`](../../packages/core/src/dera/graph.py) |
+| **Mutations-Abfangprüfer (Read-Only)** | **Implementiert** | Statische AST-Prüfung blockiert destruktives SQL (`DROP`, `ALTER` etc.) | [`packages/connectors/src/dera_connectors/base/`](../../packages/connectors/src/dera_connectors/base/connector.py) |
+| **SQLite-Katalogintrospektion** | **Implementiert** | Erkennung von Tabellen, Spalten, PK, FK und Indizes | [`packages/connectors/src/dera_connectors/sqlite/`](../../packages/connectors/src/dera_connectors/sqlite/connector.py) |
+| **PostgreSQL-Katalogprüfung** | **In Arbeit** | Integrationstests mit temporärem PostgreSQL-Container | [`tests/integration/`](../../tests/integration/) |
+| **API-Gateway & Telemetrie** | **Implementiert** | FastAPI-Dienst mit Localhost-Bindung und Integritäts-Endpoints | [`apps/api/src/dera_api/main.py`](../../apps/api/src/dera_api/main.py) |
+| **Web-Studio-Anwendungsbasis** | **Implementiert** | Next.js 15 TypeScript-Basis & Architektur-Statuskarte | [`apps/web/src/app/page.tsx`](../../apps/web/src/app/page.tsx) |
+| **Gemeinsame Datenverträge** | **Implementiert** | Versionierte JSON-Schemas und Serialisierungs-DTOs | [`packages/contracts/schemas/`](../../packages/contracts/schemas/) |
+| **Visuelle ER-Studio-Leinwand** | Geplant | Interaktive Diagrammleinwand basierend auf React Flow | Phase 7 Roadmap |
+| **Deterministische Regelmatrix** | Geplant | Erkennung fehlender PK, unindizierter FK und redundanter Indizes | Phase 8 Roadmap |
+| **Snapshot-Diff-Engine** | Geplant | Semantischer Snapshot-Vergleich & DDL-Vorschau | Phase 9 Roadmap |
+| **SQL-AST-Leistungsanalyse** | Geplant | SQLGlot-Abfragekomplexität & Ausführungsplan-Visualisierer | Phase 10 Roadmap |
+
+> **Status-Legende:**
+> - **`Implementiert`** &mdash; Im Code realisiert, verifiziert und durch Tests in der CI abgedeckt.
+> - **`In Arbeit`** &mdash; In aktiver Entwicklung und Integrationstestung im aktuellen Meilenstein.
+> - **`Geplant`** &mdash; Eingeplant in der 12-Phasen-Entwicklungs-Roadmap.
+
+---
+
+## 🏗️ Architekturübersicht
+
+DERA gliedert seine Funktionalitäten in entkoppelte Bereiche gemäß unserer [Monorepo-Architektur-Spezifikation](../architecture/README_ARCHITECTURE.md):
 
 ```mermaid
 flowchart TD
-    subgraph Client["Client-Schicht"]
-        UI["DERA Web-UI (Next.js / React / TypeScript)"]
-        ERD["Visuelles ER-Studio (React Flow / ELK.js)"]
-        Monaco["SQL- & DDL-Betrachter (Monaco Editor)"]
+    subgraph Client_Tier["Client-Präsentationsebene"]
+        WEB["apps/web (Next.js 15 / React / TypeScript)"]
+        STUDIO["Visual ER Studio (React Flow) - Geplant"]
+        WEB -.-> STUDIO
     end
 
-    subgraph Gateway["Anwendungsdienste"]
-        API["FastAPI Backend-Gateway"]
-        Auth["Authentifizierung & Mandantentrennung (JWT / RBAC)"]
-        Audit["Sicherheits-Audit-Protokollierung"]
+    subgraph API_Tier["Anwendungs-Gateway-Ebene"]
+        API["apps/api (FastAPI / Python 3.12+)"]
+        MW["Sicherheits-Middleware (127.0.0.1 default / Header)"]
+        API --- MW
     end
 
-    subgraph Core["Deterministische Analyse-Engine"]
-        Discovery["Katalog-Discovery-Engine"]
-        Normalizer["Metadaten-Normalisierer"]
-        GraphEngine["Abhängigkeitsgraphen-Engine (NetworkX)"]
-        DiagEngine["Regelbasierte Diagnose-Engine"]
-        DiffEngine["Schema-Diff- & Vergleichs-Engine"]
-        ExportEngine["Dokumentations- & DDL-Generator"]
+    subgraph Contracts_Tier["Gemeinsame Datenverträge"]
+        CONTRACTS["packages/contracts (JSON-Schemas & DTOs)"]
     end
 
-    subgraph Worker["Isolierte Ausführungsschicht"]
-        Celery["Hintergrund-Worker (Celery / Redis)"]
-        Vault["Verschlüsselter Zugangsdatenspeicher"]
-        Connectors["Isolierte Datenbank-Konnektoren"]
+    subgraph Core_Tier["Deterministische Analyse-Engine"]
+        CORE["packages/core (Kanonische Modelle & Graphalgorithmen)"]
+        DAG["Abhängigkeitsgraph (NetworkX / Tarjan SCC)"]
+        NORM["Metadaten-Normalisierer"]
+        CORE --- DAG
+        CORE --- NORM
     end
 
-    subgraph Databases["Zieldatenbank-Schicht"]
-        PG[(Ziel-PostgreSQL)]
-        CustomerDB[(Kundendatenbanken - Nur Lesen)]
-        Storage[(DERA Snapshot-Datenbank)]
+    subgraph Connectors_Tier["Isolierte Datenbank-Konnektoren"]
+        CONN["packages/connectors (Read-Only Dialekt-Adapter)"]
+        GUARD["Statischer SQL-Mutations-Abfangprüfer"]
+        SQLITE["SQLite-Konnektor (Funktionsfähig)"]
+        PG["PostgreSQL-Konnektor (In Arbeit)"]
+        CONN --- GUARD
+        CONN --- SQLITE
+        CONN -.-> PG
     end
 
-    UI --> API
-    ERD --> API
-    Monaco --> API
-    API --> Auth
-    API --> Audit
-    API --> Core
-    API --> Celery
-    Celery --> Vault
-    Celery --> Connectors
-    Connectors --> CustomerDB
-    Core --> Storage
-    Discovery --> Normalizer
-    Normalizer --> GraphEngine
-    Normalizer --> DiagEngine
-    Normalizer --> DiffEngine
-    DiffEngine --> ExportEngine
+    subgraph Target_DBs["Zieldatenebene (Schreibgeschützte Kataloge)"]
+        TARGET_SQLITE[("SQLite-Datenbank (PRAGMA)")]
+        TARGET_PG[("PostgreSQL-Kataloge (pg_catalog)")]
+    end
+
+    WEB -->|HTTP / JSON| API
+    WEB -.->|Konsumiert Verträge| CONTRACTS
+    API -->|Koordiniert| CORE
+    API -->|Ruft auf| CONN
+    API -.->|Validiert durch| CONTRACTS
+    CORE -.->|Konform zu| CONTRACTS
+    CONN -->|Erzeugt kanonische Modelle| CORE
+    SQLITE -->|Schreibgeschütztes Pragma| TARGET_SQLITE
+    PG -.->|Schreibgeschützte Kataloge| TARGET_PG
 ```
+
+### Textuelle Architekturbeschreibung (Barrierefreiheit)
+- **Client-Präsentationsebene (`apps/web`):** Next.js 15 TypeScript-Frontend, das per JSON mit der API kommuniziert und die interaktive ER-Studio-Leinwand bereitstellen wird.
+- **Anwendungs-Gateway-Ebene (`apps/api`):** FastAPI-Backend, standardmäßig an `127.0.0.1` gebunden, für Zustandsüberwachung, Katalogrouten und Sicherheits-Middleware.
+- **Gemeinsame Datenverträge (`packages/contracts`):** JSON-Schema-Definitionen und TypeScript-Schnittstellen für Tabellen, Spalten, Indizes und Snapshots.
+- **Deterministische Core-Engine (`packages/core`):** Reine Python-Bibliothek für Domänenmodelle, Tarjans SCC-Algorithmus, topologische Sortierung und Normalisierung.
+- **Isolierte Datenbank-Konnektoren (`packages/connectors`):** Modulare Adapter für Katalogabfragen (`sqlite_master`, `pg_catalog`) mit vorangehender AST-Prüfung gegen SQL-Mutationen.
+- **Zieldatenebene (Schreibgeschützt):** Die Zieldatenbanken des Nutzers. DERA verbindet sich ausschließlich mit unprivilegierten Nur-Lese-Rechten.
+
+Weiterführende Dokumentation:
+- [Architektur- und Blueprint-Leitfaden](../architecture/README_ARCHITECTURE.md)
+- [Modulgrenzen und Abhängigkeitsregeln](../architecture/MODULE_BOUNDARIES.md)
+- [Verzeichnisstruktur des Monorepos](../architecture/MONOREPO_STRUCTURE.md)
+- [Architecture Decision Record (ADR 0001)](../architecture/adr/0001-monorepo-architecture.md)
 
 ---
 
-## 🔬 Visuelle Pipelines
+## 📁 Repository-Struktur
 
-DERA führt deterministische, auditierbare Prozesse zur Metadateninspektion, Beziehungssynthese und Sicherheitsvalidierung durch.
+Der reale Aufbau des DERA-Monorepos gestaltet sich wie folgt:
 
-### 1. Ablauf der Datenbankinspektion
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Engineer as Datenbankingenieur
-    participant API as DERA API
-    participant Worker as Inspektions-Worker
-    participant Target as Zieldatenbank (Systemkatalog)
-    participant Storage as Snapshot-Speicher
-
-    Engineer->>API: Schemainspektion anfordern (Ziel-ID)
-    API->>Worker: Inspektionsauftrag einreihen (Nur-Lese-Zugang)
-    Worker->>Target: TLS-Verbindung herstellen (Erzwungener Nur-Lese-Modus)
-    Worker->>Target: information_schema & Systemkataloge abfragen
-    Target-->>Worker: Katalog-Tupel (Tabellen, Spalten, Schlüssel, Indizes)
-    Worker->>Target: Verbindung sicher beenden
-    Worker->>Worker: Bereinigen, normalisieren und Hashwert berechnen
-    Worker->>Storage: Unveränderlichen kanonischen Snapshot persistieren
-    Worker-->>API: Auftrag abgeschlossen (Snapshot-ID)
-    API-->>Engineer: Zusammenfassung und kanonisches Modell übermitteln
+```text
+dera/
+├── apps/
+│   ├── api/                      # FastAPI-Backend und Health-Endpoints
+│   │   ├── src/dera_api/         # Gateway-Routen, Middleware und Schemas
+│   │   └── pyproject.toml        # API-Paketspezifikation
+│   └── web/                      # Next.js 15 TypeScript Frontend Studio
+│       ├── src/                  # App-Router, Komponenten und API-Client
+│       └── package.json          # Web-Workspace-Konfiguration
+├── packages/
+│   ├── core/                     # Kanonische Modelle und Graphverarbeitung
+│   │   └── src/dera_core/        # Schemamodelle, DAG-Algorithmen und Graphentheorie
+│   ├── connectors/               # Adapter zur Metadaten-Extraktion
+│   │   └── src/dera_connectors/  # Basis-Konnektor, Mutationsschutz und SQLite
+│   └── contracts/                # Gemeinsame JSON-Schemas und Verträge
+│       └── schemas/              # Versionierte Verträge für APIs und Snapshots
+├── tests/
+│   ├── architecture/             # Tests auf AST-Importgrenzen
+│   ├── integration/              # Integrationstests für SQLite und PostgreSQL
+│   ├── regression/               # Deterministische Regressionsprüfungen für DAGs
+│   └── unit/                     # Unit-Tests für Modelle, Titel und Readiness
+├── scripts/
+│   ├── ci/                       # CI-Validierungsskripte (Docs, i18n, PR-Güte)
+│   └── development/              # Plattformübergreifender CLI-Runner (dev.py)
+├── docs/
+│   ├── audit/                    # Repository-Audits, Baselines und Berichte
+│   ├── architecture/             # Monorepo-Blueprint, Grenzen und ADRs
+│   ├── development/              # Onboarding, Befehle und Git-Workflow
+│   ├── governance/               # Governance, Maintainer, GAD-Aufzeichnungen
+│   ├── security/                 # Bedrohungsmodell, DB-Sicherheit und Meldeprozesse
+│   ├── community/                # Community-Hub, Richtlinien und Issue-Triage
+│   ├── roadmap/                  # Master-Entwicklungs-Roadmap in 12 Phasen
+│   └── i18n/                     # Synchronisierte Dokumentation in 10 Sprachen
+├── .github/
+│   ├── workflows/                # Enterprise CI/CD, CodeQL und Gates
+│   ├── ISSUE_TEMPLATE/           # Strukturierte YAML-Vorlagen für Meldungen
+│   ├── PULL_REQUEST_TEMPLATE/    # Spezialisierte PR-Vorlagen
+│   ├── CODEOWNERS                # Code-Eigentümerschaften
+│   └── PULL_REQUEST_TEMPLATE.md  # Standard-PR-Qualifikationsvorlage
+├── pyproject.toml                # Haupt-Python-Konfiguration (PEP 621)
+├── package.json                  # Haupt-npm-Konfiguration
+├── tsconfig.json                 # Strikte TypeScript-Konfiguration
+├── Makefile                      # Standard-Befehlsautomatisierung
+├── CONTRIBUTING.md               # Ausführlicher Leitfaden für Mitwirkende
+├── SECURITY.md                   # Sicherheitsrichtlinie und Meldewege
+└── LICENSE                       # MIT-Lizenz
 ```
-
-### 2. Schema-Reverse-Engineering-Pipeline
-
-```mermaid
-flowchart LR
-    A["Rohdaten aus Katalog"] --> B["Objekt-Klassifizierer"]
-    B --> C["Kanonischer Normalisierer"]
-    C --> D["Constraint-Verknüpfer"]
-    D --> E["Abhängigkeitsgraph (DAG)"]
-    E --> F["Topologische Sortierung"]
-    F --> G["ER-Modell-Synthese"]
-    G --> H["Interaktives Studio & DDL-Export"]
-```
-
-### 3. Metadatenverarbeitungs- & Diagnose-Pipeline
-
-```mermaid
-flowchart TD
-    M1["Ziel-Metadaten-Snapshot"] --> M2["Regel-Engine-Auswerter"]
-    subgraph Rules["Deterministische Regelmatrix"]
-        R1["Integritätsregeln (PK, FK)"]
-        R2["Performance-Regeln (Indizes)"]
-        R3["Namenskonventions-Regeln"]
-        R4["Berechtigungsabweichungs-Regeln"]
-    end
-    M2 --> R1
-    M2 --> R2
-    M2 --> R3
-    M2 --> R4
-    R1 --> Out["Diagnosebericht mit Nachweisen und Behebungs-DDL"]
-    R2 --> Out
-    R3 --> Out
-    R4 --> Out
-```
-
-### 4. Sicherheitsgrenzen & Isolation
-
-```mermaid
-flowchart TD
-    subgraph Public["Öffentliche Zone"]
-        WebUser["Benutzer-Browser"]
-    end
-
-    subgraph DMZ["Anwendungsgrenze"]
-        ReverseProxy["Reverse Proxy / TLS-Terminierung"]
-        AppServer["DERA API-Dienst"]
-    end
-
-    subgraph SecureNetwork["Internes isoliertes Netzwerk"]
-        WorkerPool["Gekapselte Konnektoren"]
-        SecretsMgr["Verschlüsselter Zugangsdatenspeicher"]
-        InternalDB[(Interne DERA-Datenbank)]
-    end
-
-    subgraph CustomerVPC["Zieldatenbank-Umgebung"]
-        TargetDB[(Kundendatenbank)]
-    end
-
-    WebUser -->|HTTPS| ReverseProxy
-    ReverseProxy --> AppServer
-    AppServer -->|Nachrichten-Warteschlange| WorkerPool
-    WorkerPool -->|Entschlüsselung bei Bedarf| SecretsMgr
-    WorkerPool -->|Interner Speicher| InternalDB
-    WorkerPool -.->|Nur-Lese-TLS-Inspektion| TargetDB
-```
-
-### 5. Geplanter Entwicklungslebenszyklus
-
-```mermaid
-flowchart LR
-    P1["Phase 1<br/>Fundament & Sicherheit"] --> P2["Phase 2<br/>Datenbankinspektion"]
-    P2 --> P3["Phase 3<br/>Reverse-Engineering-Studio"]
-    P3 --> P4["Phase 4<br/>Diagnostik & Vergleich"]
-    P4 --> P5["Phase 5<br/>SQL & Migrationen"]
-    P5 --> P6["Phase 6<br/>Härtung & Release"]
-```
-
----
-
-## 🔒 Sicherheitsprinzipien
-
-Da DERA Verbindungen zu geschäftskritischen Datenbanken herstellt, bildet Sicherheit das zentrale Fundament der gesamten Plattformarchitektur.
-
-- **Erzwungener Nur-Lese-Modus:** Verbindungssitzungen setzen zwingend transaktionale Nur-Lese-Modi durch (`SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY`).
-- **Kein Auslesen von Datensätzen:** Es werden ausschließlich Systemkataloge (`information_schema`, `pg_catalog`) inspiziert. Anwendungsdatenzeilen werden weder abgefragt noch gespeichert.
-- **Keine Passwörter im Klartext:** Zugangsdaten werden im Ruhezustand via AES-256-GCM verschlüsselt und niemals in Protokolldateien geschrieben, exportiert oder versioniert.
-- **SSRF-Prävention:** Verbindungsziele werden streng validiert, um unautorisierte Scans interner Netze oder Zugriffe auf Cloud-Metadatendienste zu unterbinden.
-- **Prinzip der geringsten Rechte:** Leitfäden für das Einrichten unprivilegierter, auditierbarer Nur-Lese-Rollen ohne administrative Befugnisse.
-- **Revisionssichere Protokollierung:** Jede Inspektion, jeder Export und jede Konfigurationsänderung erzeugt einen unveränderbaren Audit-Eintrag.
-
-*Vollständige Richtlinien zur Meldung von Sicherheitslücken finden Sie in [SECURITY.md](../../SECURITY.md).*
-
----
-
-## 🛠️ Technologie-Stack
-
-| Schicht | Komponente | Technologie | Einsatzzweck | Status |
-|---|---|---|---|---|
-| **Frontend** | Framework | Next.js, React, TypeScript | Interaktive Webanwendung | Geplant |
-| | Styling | Tailwind CSS | Konsistentes, responsives Designsystem | Geplant |
-| | Komponenten | shadcn/ui | Barrierefreie Benutzeroberfläche | Geplant |
-| | ER-Visualisierung | React Flow, ELK.js | Graphendarstellung & automatisches Layout | Geplant |
-| | Code-Editor | Monaco Editor | SQL-Syntax-Highlighting und DDL-Ansicht | Geplant |
-| **Backend** | API-Framework | Python 3.12+, FastAPI | Asynchrone Hochleistungs-APIs | Geplant |
-| | Kataloginspektion | SQLAlchemy, psycopg | Metadatenextraktion & Verbindungspooling | Geplant |
-| | SQL-Parsing | SQLGlot | Engine-unabhängige SQL-AST-Generierung | Geplant |
-| | Graphenalgorithmen | NetworkX | Zyklenprüfung und topologische Sortierung | Geplant |
-| | Task-Queue | Celery, Redis | Isolierte asynchrone Inspektions-Worker | Geplant |
-| **Speicher** | DERA-Datenbank | PostgreSQL | Speicherung von Snapshots, Sitzungen und Audit-Logs | Geplant |
-| | Migrationen | Alembic | Versionierte Migrationen der DERA-Systemdatenbank | Geplant |
-| **DevOps & QA** | Container | Docker, Docker Compose | Reproduzierbare Entwicklung und Bereitstellung | Geplant |
-| | SAST & Sicherheit | CodeQL, Dependabot | Automatische Sicherheits- und Abhängigkeitsprüfungen | Implementiert |
-| | Testing | Pytest, Playwright | Backend-Unit-Tests und Frontend-E2E-Tests | Geplant |
-
----
-
-## 🗄️ Datenbank-Kompatibilität
-
-DERA verfügt über eine modulare Konnektor-Architektur zur Anbindung moderner relationaler und verteilter Datenbanksysteme:
-
-| Datenbank-Engine | Konnektor-Status | Katalogquelle | Ziel-Meilenstein |
-|---|---|---|---|
-| **PostgreSQL** (v12 - v17) | In Entwicklung | `pg_catalog`, `information_schema` | Phase 2 (MVP) |
-| **Supabase PostgreSQL** | In Entwicklung | Nativer PostgreSQL-Konnektor | Phase 2 (MVP) |
-| **MySQL** (v8.0+) | Geplant | `information_schema`, `performance_schema` | Phase 5 |
-| **SQLite** (v3.35+) | Geplant | `sqlite_master`, `PRAGMA`-Befehle | Phase 5 |
-| **MariaDB** (v10.5+) | Geplant | `information_schema` | Phase 5 |
-| **Microsoft SQL Server** | Geplant | `sys.tables`, `INFORMATION_SCHEMA` | Phase 5 |
-| **Oracle Database** | In Prüfung | Data-Dictionary-Views (`ALL_*`, `DBA_*`) | Zukünftige Evaluierung |
 
 ---
 
 ## 🚀 Erste Schritte
 
-DERA befindet sich derzeit in der Phase des architektonischen und konzeptionellen Aufbaus. Konfigurationen für den Produktiveinsatz werden mit Erreichen der jeweiligen Versionen bereitgestellt.
+DERA enthält ein plattformübergreifendes CLI-Werkzeug (`scripts/development/dev.py`), um das Monorepo unter Windows, Linux und macOS einheitlich zu prüfen und zu starten.
 
-### Voraussetzungen (Geplant)
+### Voraussetzungen
 
-- Python 3.12 oder neuer
-- Node.js LTS (v20+)
-- PostgreSQL 15+
-- Docker und Docker Compose
-- Git
+| Werkzeug | Mindestversion | Empfohlene Version | Prüfbefehl |
+|---|---|---|---|
+| **Python** | `3.12+` | `3.12` oder `3.13` | `python --version` |
+| **Node.js** | `20.x LTS` | `20.x` oder `22.x LTS` | `node --version` |
+| **Git** | `2.30+` | Neueste | `git --version` |
 
-### Repository klonen
+### 1. Repository klonen
 
 ```bash
 git clone https://github.com/krishanth7/dera.git
 cd dera
 ```
 
-### Lokale Entwicklungsumgebung (Geplant)
+### 2. Umgebung einrichten
+
+Kopieren Sie die Vorlage für eine sichere Umgebung:
 
 ```bash
-# Umgebungsvorlage vorbereiten
+# Windows PowerShell
+Copy-Item .env.example .env
+
+# Linux / macOS
 cp .env.example .env
-
-# Entwicklungsstack via Docker Compose starten
-docker compose -f infrastructure/docker/docker-compose.dev.yml up --build
 ```
 
-> **Hinweis:** Die Anwendungsbasis befindet sich im aktiven Aufbau. Verfolgen Sie den Fortschritt in der [Entwicklungs-Roadmap](#-entwicklungs-roadmap).
+### 3. Python-Umgebung erstellen
 
----
+```bash
+# Linux / macOS
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
 
-## 📁 Repository-Struktur
+# Windows PowerShell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+```
 
+### 4. Node.js-Abhängigkeiten installieren
+
+```bash
+npm install
+```
+
+### 5. Vollständige Validierungssuite ausführen
+
+Überprüfen Sie alle Python-Module, TypeScript-Typen, Tests und Dokumentationslinks:
+
+```bash
+python scripts/development/dev.py all
+```
+
+**Erwartetes Ergebnis:**
 ```text
-dera/
-├── .github/
-│   ├── ISSUE_TEMPLATE/           # Strukturierte GitHub-Issue-Vorlagen
-│   ├── workflows/                # Workflows für CodeQL, Dependency Review und CI
-│   ├── PULL_REQUEST_TEMPLATE.md  # Standardisierte Pull-Request-Vorlage
-│   ├── dependabot.yml            # Automatische Abhängigkeitsaktualisierungen
-│   └── FUNDING.yml               # Sponsoring-Konfiguration des Maintainers
-├── docs/
-│   ├── README.md                 # Umfassender Dokumentationsindex
-│   ├── i18n/                     # Synchronisierte mehrsprachige Dokumentation
-│   │   ├── README.en.md          # Synchronisierte englische Referenzkopie
-│   │   ├── README.es.md          # Spanische Dokumentation
-│   │   ├── README.fr.md          # Französische Dokumentation
-│   │   ├── README.de.md          # Deutsche Dokumentation
-│   │   ├── README.pt.md          # Portugiesische Dokumentation
-│   │   ├── README.ja.md          # Japanische Dokumentation
-│   │   ├── README.ko.md          # Koreanische Dokumentation
-│   │   ├── README.zh-CN.md       # Chinesische Dokumentation (Vereinfacht)
-│   │   ├── README.ar.md          # Arabische Dokumentation (RTL-konform)
-│   │   └── README.ru.md          # Russische Dokumentation
-│   ├── architecture/             # Architekturspezifikationen
-│   ├── development/              # Setup-Anleitungen und Entwicklungsstandards
-│   ├── security/                 # Bedrohungsmodelle und Sicherheitsrichtlinien
-│   └── contributing/             # Leitfäden für Mitwirkende
-├── CODE_OF_CONDUCT.md            # Verhaltenskodex (Contributor Covenant)
-├── CONTRIBUTING.md               # Ausführliche Beitragsrichtlinien
-├── LICENSE                       # MIT-Lizenz
-├── README.md                     # Hauptseite des Repositories
-├── SECURITY.md                   # Umfassende Sicherheitsrichtlinie
-└── .gitignore                    # Git-Ausschlussregeln
+Ran 32 tests in 0.25s
+OK (skipped=2)
+Validating 69 markdown documentation files...
+SUCCESS: All 69 markdown documentation files are valid.
+Validating 10 multilingual documentation files in i18n...
+SUCCESS: All 10 language documentation files verified with valid navigation and parity.
+[SUCCESS]: All development baseline checks passed successfully.
 ```
 
----
+### 6. Wichtige Entwicklerbefehle
 
-## 🗺️ Entwicklungs-Roadmap
+| Aufgabe | Multiplattform-CLI (`dev.py`) | GNU Make (UNIX / macOS) |
+|---|---|---|
+| **Alle Tests ausführen** | `python scripts/development/dev.py test` | `make test` |
+| **TypeScript prüfen** | `python scripts/development/dev.py typecheck` | `make typecheck` |
+| **Python kompilieren** | `python scripts/development/dev.py compile` | `make build` |
+| **Dokumentation prüfen** | `python scripts/development/dev.py validate-docs` | `make lint` |
+| **PR- / Commit-Titel prüfen** | `python scripts/development/dev.py validate-title "<titel>"` | `make validate-title TITLE="..."` |
+| **Lokalen API-Server starten** | `python -m uvicorn dera_api.main:app --reload --port 8000` | `make dev-api` |
+| **Web-Studio-Frontend starten** | `npm run dev --workspace=apps/web` | `npm run dev --workspace=apps/web` |
 
-### Phase 1 — Fundament & Sicherheit
-- [x] Offizielle Identität und MIT-Lizenzierung etablieren
-- [x] Statische CodeQL-Sicherheitsanalyse einrichten
-- [x] Verhaltenskodex und Sicherheitsrichtlinien implementieren
-- [x] Internationale 10-Sprachen-Dokumentationsarchitektur aufbauen
-- [ ] Monorepo-Struktur für Anwendungen initialisieren (`apps/web`, `apps/api`)
-- [ ] Docker-Entwicklungsumgebung und Basis-CI konfigurieren
-
-### Phase 2 — Datenbank-Inspektions-Engine
-- [ ] Nativ-Konnektor für PostgreSQL-Metadaten entwickeln
-- [ ] Tabellen, Spalten, Constraints, Indizes und Views extrahieren
-- [ ] Kanonisches Modell zur Schemanormalisierung implementieren
-- [ ] Unveränderlichen, kryptografischen Snapshot-Speicher aufbauen
-- [ ] Nur-Lese-Garantien und Abfrage-Timeouts implementieren
-
-### Phase 3 — Reverse-Engineering-Studio
-- [ ] Interaktives ER-Studio auf Basis von React Flow entwickeln
-- [ ] Algorithmen für automatisierte hierarchische Layouts erstellen
-- [ ] Schema-Filterung, Suche und Domänengruppierung integrieren
-- [ ] Traversierung und Visualisierung von Abhängigkeitsgraphen (DAG)
-- [ ] Hochauflösenden Diagrammexport nach SVG und PNG implementieren
-
-### Phase 4 — Diagnostik & Schema-Vergleich
-- [ ] Deterministische, regelbasierte Diagnose-Engine entwickeln
-- [ ] Grundregeln etablieren: Fehlende PKs, redundante Indizes, unindizierte FKs
-- [ ] Algorithmus für Schema-Snapshot-Vergleiche implementieren
-- [ ] Strukturierte Vorschauen für DDL-Migrationsänderungen erstellen
-- [ ] Diagnoseberichte im Markdown-, JSON- und HTML-Format exportieren
-
-### Phase 5 — Fortgeschrittenes Engineering & Konnektoren
-- [ ] SQL-AST-Abfrageanalyse und Komplexitätsmetriken via SQLGlot integrieren
-- [ ] Ausführungsplan-Visualisierer (`EXPLAIN ANALYZE`) bereitstellen
-- [ ] Datenbank-Konnektoren für MySQL und SQLite entwickeln
-- [ ] Automatische Generierung abhängigkeitsgeprüfter Migrationsskripte
-
-### Phase 6 — Produktionshärtung
-- [ ] Umfassende Sicherheitstests und Penetrationstests durchführen
-- [ ] Leistungsbenchmarks mit Großschemata (über 1.000 Tabellen) abschließen
-- [ ] Mandantenisolierung und lückenlose Audit-Protokollierung validieren
-- [ ] Offizielle v1.0.0-Container-Images und Bereitstellungsanleitungen veröffentlichen
+Detaillierte Anweisungen finden Sie im [Leitfaden für die ersten Schritte](../development/GETTING_STARTED.md) und im [Befehlskatalog](../development/COMMANDS.md).
 
 ---
 
-## 🧪 Test- & Qualitätsstrategie
+## 🗄️ Datenbank-Kompatibilitätsmatrix
 
-DERA gewährleistet hohe Softwarequalität durch automatisierte und reproduzierbare Tests:
+DERA setzt auf eine modulare Konnektor-Architektur. Die Unterstützungsstufen basieren auf realem Code und Testabdeckung:
 
-- **Unit-Tests:** Überprüfen Metadaten-Parser, Zyklenfreiheit in Graphen und Diagnoseregeln mit synthetischen Testdaten.
-- **Integrationstests:** Validieren das Konnektorverhalten gegen containerisierte Instanzen von PostgreSQL, MySQL und SQLite.
-- **Deterministische Verifikation:** Stellt sicher, dass identische Schema-Snapshots ausnahmslos identische Hashwerte und Diagnoseergebnisse liefern.
-- **Sicherheitsprüfungen:** Kontinuierliches CodeQL-Scanning, automatisierte Dependency-Reviews und Secret-Leak-Checks.
-- **End-to-End-Tests:** Playwright-Browsertests zur Validierung von Diagramminteraktionen und reaktivem Verhalten.
+| Datenbanksystem | Unterstützte Versionen | Konnektor-Status | Introspektionsmechanismus | Nur-Lese-Schutzmaßnahme |
+|---|:---:|:---:|---|---|
+| **SQLite** | 3.35+ | **Implementiert** | `sqlite_master`, `PRAGMA table_info`, `PRAGMA foreign_key_list` | Statische AST-Blockierung & `PRAGMA query_only = ON` |
+| **PostgreSQL** | 12 – 17 | **In Arbeit** | `pg_catalog`, `information_schema` | `SET default_transaction_read_only = ON` & Lese-Rollen |
+| **Supabase PostgreSQL** | Cloud / Lokal | **In Arbeit** | Native PostgreSQL-Katalogabfragen | Lesezugriff auf Verbindungsebene & unprivilegierte Rollen |
+| **MySQL** | 8.0+ | Geplant | `information_schema`, `performance_schema` | Transaktionsmodus für reinen Lesezugriff |
+| **MariaDB** | 10.5+ | Geplant | `information_schema` | Transaktionsmodus für reinen Lesezugriff |
+| **Microsoft SQL Server** | 2019+ | Geplant | `sys.tables`, `INFORMATION_SCHEMA` | Reine Benutzer-Leseberechtigungen |
+
+> [!NOTE]
+> Konnektoren im Status **`In Arbeit`** werden kontinuierlich gegen temporäre Container in der CI getestet. Als **`Geplant`** markierte Konnektoren sind Teil von Phase 5 der Roadmap.
+
+---
+
+## 🔒 Sicherheitsprinzipien
+
+Sicherheit bildet das zentrale Fundament von DERA. Bei der Interaktion mit Datenbanksystemen greifen mehrschichtige Schutzmechanismen:
+
+1. **Statischer Abfrage-Mutations-Abfangprüfer:** Vor jeder Ausführung eines SQL-Befehls prüft ein AST-Parser die Schlüsselwörter. Anweisungen wie `DROP`, `ALTER`, `TRUNCATE`, `INSERT`, `UPDATE`, `DELETE`, `GRANT` oder `REVOKE` werden sofort abgewiesen.
+2. **Reine Katalogabfragen:** Die Analyse beschränkt sich ausnahmslos auf Systemmetadaten (`information_schema`, `pg_catalog`, `sqlite_master`). Anwendungsdatensätze werden nie abgefragt.
+3. **Standardmäßige Loopback-Bindung:** Entwicklungs- und API-Server binden standardmäßig an `127.0.0.1`, um eine unbeabsichtigte Freigabe im Netzwerk zu verhindern.
+4. **Datenbankkonten mit minimalen Rechten:** DERA arbeitet ausschließlich mit unprivilegierten Nur-Lese-Rollen ohne administrative Befugnisse.
+5. **Keine gespeicherten Zugangsdaten:** Anmeldedaten werden weder auf Datenträger geschrieben noch in Git oder Logs festgehalten.
+6. **Verantwortungsvolle Offenlegung:** Sicherheitslücken werden vertraulich über unsere [Sicherheitsrichtlinie](../../SECURITY.md) gemeldet.
+
+> [!NOTE]
+> DERA wendet bewährte Open-Source-Sicherheitsverfahren an (CodeQL, Bandit SAST, Secret Scanning). Es werden keine kommerziellen Drittzertifizierungen (wie SOC 2 oder ISO 27001) beansprucht.
+
+Spezifische Sicherheitsdokumente:
+- [**Datenbank-Sicherheitsrichtlinie**](../security/DATABASE_SECURITY.md) — Kataloginspektion und Sitzungsisolation.
+- [**Standards für sichere Entwicklung**](../security/SECURE_DEVELOPMENT.md) — Eingabevalidierung und DevSecOps-Gates.
+- [**Reaktionsprozess bei Schwachstellen**](../security/VULNERABILITY_RESPONSE.md) — 5-stufiger Triage-Workflow und Advisorys.
+- [**Bedrohungsmodell-Matrix**](../security/model.md) — Angriffsvektoren und Schutzmaßnahmen.
+
+---
+
+## 📚 Entwickler-Dokumentationsnavigation
+
+Übersicht über die strukturierte Dokumentation:
+
+| Bereich | Zentrale Leitfäden |
+|---|---|
+| **Architektur** | [Monorepo-Blueprint](../architecture/README_ARCHITECTURE.md) · [Modulgrenzen](../architecture/MODULE_BOUNDARIES.md) · [Monorepo-Struktur](../architecture/MONOREPO_STRUCTURE.md) · [ADRs](../architecture/adr/0001-monorepo-architecture.md) |
+| **Entwicklung** | [Erste Schritte](../development/GETTING_STARTED.md) · [Befehlskatalog](../development/COMMANDS.md) · [Umgebungseinrichtung](../development/ENVIRONMENT.md) · [Fehlerbehebung](../development/TROUBLESHOOTING.md) |
+| **Dokumentationslebenszyklus** | [Wartungsvertrag](../development/README_MAINTENANCE.md) · [Technische Richtlinien](../development/README_GUIDELINES.md) |
+| **Governance & Betreuung** | [Maintainer-Richtlinie](../governance/MAINTAINERS.md) · [Governance-Entscheidungen](../governance/GOVERNANCE_DECISIONS.md) · [Drittanbieter-Lizenzen](../governance/THIRD_PARTY_LICENSES.md) |
+| **Sicherheit** | [Sicherheitsrichtlinie](../../SECURITY.md) · [Datenbanksicherheit](../security/DATABASE_SECURITY.md) · [Sichere Entwicklung](../security/SECURE_DEVELOPMENT.md) · [Meldeprozesse](../security/VULNERABILITY_RESPONSE.md) |
+| **Community & Triage** | [Leitfaden für Mitwirkende](../../CONTRIBUTING.md) · [Diskussionsleitfaden](https://github.com/krishanth7/dera/discussions) · [Issue-Triage](https://github.com/krishanth7/dera/issues) · [Verhaltenskodex](../../CODE_OF_CONDUCT.md) |
+| **Audits & Prüfung** | [Audit-Übersicht](../audit/README.md) · [Phase 2.1 README-Audit](../audit/PHASE_2_1_README_AUDIT.md) · [Repository-Baseline](../audit/BASELINE.md) |
+| **Roadmap** | [Master-Roadmap in 12 Phasen](../roadmap/README.md) |
+
+---
+
+## 🗺️ Master-Roadmap
+
+DERA folgt einer strukturierten **12-Phasen-Roadmap** zur Entwicklung einer vollständigen Plattform für Datenbank-Reverse-Engineering:
+
+- [x] **Phase 1: Repository-Fundament und Governance**
+  - [x] Phase 1.1: Vollständiges Repository-Audit und Baseline
+  - [x] Phase 1.2: Enterprise-Monorepo-Architektur (`apps/`, `packages/`)
+  - [x] Phase 1.3: Git-Branching, Conventional Commits und PR-Gates
+  - [x] Phase 1.4: Professionelle README, Projektidentität und Architekturdiagramme
+  - [x] Phase 1.5: Sicherheitsrichtlinie, Schwachstellenmeldung und Maintainer-Regeln
+  - [x] Phase 1.6: Strukturierte Issue-Vorlagen, Diskussionsregeln und Community-Workflows (PR #20)
+- [ ] **Phase 2: Mehrsprachige Dokumentation & Entwicklererlebnis**
+  - [x] Phase 2.1: Maßgebliche englische README und Dokumentationsbasis (PR #21)
+  - [x] Phase 2.2: Synchronisierte internationale Dokumentation in 9 Sprachen (In Arbeit)
+- [x] **Phase 3: GitHub Actions, CI/CD-Automatisierung & DevSecOps**
+- [ ] **Phase 4: Backend- & Plattform-Infrastruktur**
+- [ ] **Phase 5: Datenbank-Konnektoren & Metadaten-Inspektion**
+- [ ] **Phase 6: Reverse-Engineering-Kern-Engine**
+- [ ] **Phase 7: Frontend & Visuelles Engineering-Studio**
+- [ ] **Phase 8: Diagnose & Schema-Intelligenz**
+- [ ] **Phase 9: Schema-Vergleich & Migrations-Engineering**
+- [ ] **Phase 10: SQL-Analyse & Engineering-Werkzeuge**
+- [ ] **Phase 11: Enterprise-Sicherheit, Zuverlässigkeit & Qualitätssicherung**
+- [ ] **Phase 12: Release, Bereitstellung & Open-Source-Wachstum**
+
+Weitere Einzelheiten finden Sie in der [Entwicklungs-Roadmap](../roadmap/README.md).
 
 ---
 
 ## 🤝 Mitwirken
 
-Beiträge von Entwicklern, Datenbankspezialisten, technischen Redakteuren und Sicherheitsforschern aus der ganzen Welt sind herzlich willkommen.
+Wir freuen uns über Beiträge von Softwareentwicklern, Datenbankadministratoren, Sicherheitsforschern und technischen Redakteuren weltweit!
 
-Bitte lesen Sie unseren [CONTRIBUTING.md](../../CONTRIBUTING.md)-Leitfaden und den [Verhaltenskodex](../../CODE_OF_CONDUCT.md), bevor Sie einen Pull Request einreichen.
+### Ressourcen für Mitwirkende
 
-### Entwicklungs-Workflow
-
-1. Forken Sie das Repository auf GitHub.
-2. Erstellen Sie einen fokussierten Branch: `git checkout -b feat/ihr-feature-name`.
-3. Folgen Sie den Vorgaben für [Conventional Commits](../../CONTRIBUTING.md#commit-message-guidelines).
-4. Fügen Sie entsprechende Unit- oder Integrationstests hinzu.
-5. Stellen Sie sicher, dass CodeQL-Analysen und Dokumentationstests fehlerfrei durchlaufen.
-6. Eröffnen Sie einen Pull Request gegen den `main`-Branch zur Begutachtung durch die Maintainer.
+- **[Leitfaden für Mitwirkende](../../CONTRIBUTING.md):** Umfassende Anleitungen und Standards für Beteiligungen.
+- **[Beitrags-Workflow](../development/CONTRIBUTION_WORKFLOW.md):** Technische Richtlinien für Entwicklung, Tests und PR-Qualifikation.
+- **[Branching-Strategie](../development/BRANCHING_STRATEGY.md):** Trunk-basierte Entwicklung und Namenskonventionen (`feat/...`, `fix/...`).
+- **[Commit-Konventionen](../development/COMMIT_CONVENTIONS.md):** Conventional Commits 1.0.0 Spezifikation und SemVer-Zuordnung.
+- **[Code-Review-Richtlinie](../development/CODE_REVIEW_POLICY.md):** Kriterien für Peer-Reviews und Genehmigungen.
+- **[Verhaltenskodex](../../CODE_OF_CONDUCT.md):** Gemeinschaftsstandards und Durchsetzungsrichtlinien.
 
 ---
 
 ## 💬 Community
 
-- [GitHub Discussions](https://github.com/krishanth7/dera/discussions) — Fragen stellen, Ideen einbringen und über Datenbank-Engineering diskutieren.
-- [GitHub Issues](https://github.com/krishanth7/dera/issues) — Fehlerberichte oder Funktionsanfragen einreichen.
-- [GitHub Pull Requests](https://github.com/krishanth7/dera/pulls) — Code- und Dokumentationsbeiträge einreichen.
-- [Releases](https://github.com/krishanth7/dera/releases) — Offizielle Versionshinweise verfolgen.
-
----
-
-## ❤️ Projekt unterstützen
-
-DERA ist ein unabhängiges Open-Source-Ingenieursprojekt. Sie können die Weiterentwicklung aktiv unterstützen durch:
-
-- Vergabe eines Sterns (Star) für das Repository auf GitHub
-- Teilen des Projekts in Ihren fachlichen Netzwerken
-- Beisteuern von Konnektoren, Diagnoseregeln oder Dokumentationsbeiträgen
-- [Sponsoring über GitHub Sponsors](https://github.com/sponsors/krishanth7)
+- [GitHub Discussions](https://github.com/krishanth7/dera/discussions) — Fragen stellen, Ideen austauschen und über Datenbank-Engineering diskutieren.
+- [GitHub Issues](https://github.com/krishanth7/dera/issues) — Fehler melden oder neue Funktionen vorschlagen.
+- [GitHub Pull Requests](https://github.com/krishanth7/dera/pulls) — Code-, Test- und Dokumentationsbeiträge einreichen.
+- [Private Sicherheitshinweise](https://github.com/krishanth7/dera/security/advisories/new) — Sicherheitslücken vertraulich melden.
+- [Governance-Entscheidungen](../governance/GOVERNANCE_DECISIONS.md) — Architektur- und Community-Beschlüsse einsehen.
 
 ---
 
 ## 📜 Lizenz
 
-DERA wird unter der freien **[MIT-Lizenz](../../LICENSE)** bereitgestellt.
+DERA wird unter der liberalen **[MIT-Lizenz](../../LICENSE)** bereitgestellt.
 
 ```text
 Copyright (c) 2026 Krishanth
@@ -587,13 +477,13 @@ Copyright (c) 2026 Krishanth
 ## 👨‍💻 Maintainer
 
 **Krishanth**  
-Gründer & Haupt-Maintainer
+Gründer & Leitender Maintainer
 
 - GitHub: [@krishanth7](https://github.com/krishanth7)  
 - Repository: [github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
 - Kontakt: `krishanth.b.2008@gmail.com`
 
-*DERA ist ein unabhängiges Open-Source-Projekt, das von Krishanth gepflegt wird. OVIC Labs wird als Teil des übergeordneten Entwicklungs-Ökosystems des Maintainers anerkannt.*
+*DERA ist ein unabhängiges Open-Source-Projekt, das von Krishanth gepflegt wird. OVIC Labs wird als Teil des weiteren Ingenieur-Ökosystems des Maintainers anerkannt.*
 
 ---
 
@@ -601,11 +491,11 @@ Gründer & Haupt-Maintainer
 
 ### DERA — Database Engineering & Reverse Analysis
 
-**Verstehe jedes Schema. Gestalte jede Änderung.**
+**Verstehe jedes Schema. Entwickle jede Änderung.**
 
-*Entwickelt mit technischer Präzision, mathematischem Determinismus und Open-Source-Transparenz.*
+*Erbaut mit mathematischem Determinismus, Ingenieurspräzision und Open-Source-Transparenz.*
 
-© 2026 DERA-Mitwirkende. Lizenziert unter der MIT-Lizenz.
+© 2026 DERA-Mitwirkende. Bereitgestellt unter der MIT-Lizenz.
 
 [Nach oben](#dera)
 

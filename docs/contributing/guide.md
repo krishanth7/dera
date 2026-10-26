@@ -34,7 +34,7 @@ DERA supports 10 international languages in `docs/i18n/`. When submitting transl
 - Preserve all code blocks, command names, URLs, and file paths without translation.
 - Maintain identical section structures and headings.
 - Verify relative Markdown links.
-- For Arabic documentation (`README.ar.md`), ensure that code snippets and diagrams remain in left-to-right formatting blocks.
+- Maintain terminology consistency as specified in [docs/i18n/TERMINOLOGY.md](../i18n/TERMINOLOGY.md) and [docs/i18n/TRANSLATION_POLICY.md](../i18n/TRANSLATION_POLICY.md).
 
 ---
 

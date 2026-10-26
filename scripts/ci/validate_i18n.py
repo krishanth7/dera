@@ -16,10 +16,10 @@ REQUIRED_LANGUAGES = {
     "fr": "README.fr.md",
     "de": "README.de.md",
     "pt": "README.pt.md",
+    "it": "README.it.md",
     "ja": "README.ja.md",
     "ko": "README.ko.md",
     "zh-CN": "README.zh-CN.md",
-    "ar": "README.ar.md",
     "ru": "README.ru.md",
 }
 
@@ -49,13 +49,12 @@ def validate_i18n_docs(i18n_dir: Path) -> list[str]:
         for other_code, other_file in REQUIRED_LANGUAGES.items():
             if other_code == code:
                 continue
-            if other_file not in content and f"/{other_file}" not in content:
-                errors.append(f"{filename}: Missing navigation link to {other_file} ({other_code})")
-
-        # Arabic RTL validation
-        if code == "ar":
-            if 'dir="rtl"' not in content and "direction: rtl" not in content:
-                errors.append(f"{filename}: Arabic documentation must specify RTL direction (dir=\"rtl\").")
+            if other_code == "en":
+                if other_file not in content and "README.md" not in content:
+                    errors.append(f"{filename}: Missing navigation link to English (README.md / {other_file})")
+            else:
+                if other_file not in content and f"/{other_file}" not in content:
+                    errors.append(f"{filename}: Missing navigation link to {other_file} ({other_code})")
 
     return errors
 
