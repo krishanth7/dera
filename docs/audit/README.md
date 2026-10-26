@@ -38,6 +38,7 @@ The Phase 1.1 audit comprises twelve specialized technical assessments and one a
 | 10 | [RISK_REGISTER.md](./RISK_REGISTER.md) | Prioritized risk register covering security, CI, dependency, architectural, and operational vectors | **Verified Complete** |
 | 11 | [GAP_ANALYSIS.md](./GAP_ANALYSIS.md) | Comprehensive delta analysis mapping current repository state against the 12-phase roadmap | **Verified Complete** |
 | 12 | [PHASE_1_1_ACCEPTANCE.md](./PHASE_1_1_ACCEPTANCE.md) | Verifiable checklist and sign-off criteria for Phase 1.1 Definition of Done | **Verified Complete** |
+| 13 | [PHASE_2_1_README_AUDIT.md](./PHASE_2_1_README_AUDIT.md) | Authoritative English README content audit, badge checks, and technical baseline | **Verified Complete** |
 
 ---
 
