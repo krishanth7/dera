@@ -10,12 +10,11 @@
 
 | Document | Purpose | Status |
 |---|---|---|
-| [OVERVIEW.md](./OVERVIEW.md) | Platform architectural philosophy, core pillars, and subsystem breakdown | **Active** |
+| [overview.md](./overview.md) | Platform architectural philosophy, core pillars, and subsystem breakdown | **Active** |
 | [MONOREPO_STRUCTURE.md](./MONOREPO_STRUCTURE.md) | Authoritative monorepo directory layout, package responsibilities, and tooling mapping | **Active** |
 | [MODULE_BOUNDARIES.md](./MODULE_BOUNDARIES.md) | Unidirectional dependency rules, forbidden import matrix, and contributor extension guide | **Active** |
 | [DEPENDENCY_GRAPH.md](./DEPENDENCY_GRAPH.md) | Mermaid dependency graphs, end-to-end data flows, and non-AI boundaries | **Active** |
 | [adr/0001-monorepo-architecture.md](./adr/0001-monorepo-architecture.md) | Formal Architecture Decision Record for selecting the Modular Monolith structure | **Proposed** |
-| [overview.md](./overview.md) | Legacy architecture specification baseline | **Maintained** |
 
 ---
 

@@ -16,7 +16,7 @@ class ApiSettings:
     version: str = "0.1.0-dev"
     environment: str = os.getenv("DERA_ENV", "development")
     api_prefix: str = "/api/v1"
-    host: str = os.getenv("DERA_API_HOST", "0.0.0.0")
+    host: str = os.getenv("DERA_API_HOST", "127.0.0.1")
     port: int = int(os.getenv("DERA_API_PORT", "8000"))
     cors_origins: List[str] = field(
         default_factory=lambda: [
