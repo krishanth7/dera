@@ -125,3 +125,11 @@ class SchemaSnapshot:
         }
         serialized = json.dumps(canonical_dict, sort_keys=True)
         return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+# Ergonomic canonical aliases
+Column = DatabaseColumn
+Table = DatabaseTable
+ForeignKey = ForeignKeyConstraint
+Index = TableIndex
+

@@ -5,12 +5,27 @@ and read-only database inspection endpoints.
 """
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import dera
+from dera_api.core.config import get_settings
+from dera_api.middleware.security import SecurityHeadersMiddleware
+
+settings = get_settings()
 
 app = FastAPI(
     title="DERA API",
     description="Deterministic Database Engineering & Reverse Analysis Platform API",
     version=dera.__version__,
+)
+
+# Attach security and CORS middleware
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 
@@ -30,4 +45,17 @@ def platform_info() -> dict[str, str]:
         "maintainer": "Bunga Krishanth",
         "philosophy": "Deterministic, non-AI database reverse engineering",
         "version": dera.__version__,
+    }
+
+
+@app.get("/api/v1/meta")
+def platform_meta() -> dict[str, object]:
+    """Returns extended platform capabilities and deterministic constraints."""
+    return {
+        "name": settings.app_name,
+        "version": settings.version,
+        "environment": settings.environment,
+        "zero_ai_policy": settings.zero_ai_policy_enforced,
+        "read_only_enforced": settings.read_only_enforced,
+        "supported_dialects": ["sqlite", "postgresql", "mysql", "mariadb"],
     }
