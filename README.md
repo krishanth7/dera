@@ -1,6 +1,6 @@
-<div align="center"> <!-- DERA:I18N_NAV:START -->
+<!-- DERA:I18N_NAV:START -->
 **English** | [Español](docs/i18n/README.es.md) | [Français](docs/i18n/README.fr.md) | [Deutsch](docs/i18n/README.de.md) | [Português](docs/i18n/README.pt.md) | [Italiano](docs/i18n/README.it.md) | [日本語](docs/i18n/README.ja.md) | [한국어](docs/i18n/README.ko.md) | [简体中文](docs/i18n/README.zh-CN.md) | [Русский](docs/i18n/README.ru.md)
-<!-- DERA:I18N_NAV:END --></div>
+<!-- DERA:I18N_NAV:END -->
 
 ---
 
