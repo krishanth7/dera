@@ -85,13 +85,16 @@ Every translated README must mirror the English baseline across the following re
 
 ## 7. Contributor Workflow for Translations
 
-1. Create a dedicated branch: `docs/i18n-<lang>-<topic>`.
-2. Inspect the latest English [`README.md`](../../README.md) for changes.
-3. Consult [`TERMINOLOGY.md`](TERMINOLOGY.md) for approved technical vocabulary.
-4. Update the target `docs/i18n/README.<lang>.md`.
-5. Run automated validation:
+1. Review the step-by-step [Translation Contributor Guide](CONTRIBUTING_TRANSLATIONS.md).
+2. Create a dedicated branch: `docs/i18n-<lang>-<topic>`.
+3. Inspect the authoritative English [`README.md`](../../README.md) for changes.
+4. Consult [`TERMINOLOGY.md`](TERMINOLOGY.md) for approved technical vocabulary.
+5. Update the target `docs/i18n/README.<lang>.md`.
+6. Run automated validation:
    ```bash
    python scripts/ci/validate_i18n.py
    python scripts/ci/validate_docs.py
+   npm run docs:check
    ```
-6. Open a pull request targeting `main` with prefix `docs(i18n): ...`.
+7. Open a pull request targeting `main` with prefix `docs(i18n): ...`.
+8. Maintainers will review the PR per our [Translation Maintenance Procedures](TRANSLATION_MAINTENANCE.md).
