@@ -73,7 +73,7 @@ gantt
 - [x] **Sub-phase 2.2:** Synchronize 9 international README translations (`es`, `fr`, `de`, `pt`, `it`, `ja`, `ko`, `zh-CN`, `ru`) in [`docs/i18n/`](../i18n/), replacing Arabic with Italian in the official 10-language matrix (PR #22).
 - [x] **Sub-phase 2.3:** Ten-Language Documentation Navigation System with canonical manifest (`languages.json`), deterministic generator (`scripts/docs/generate_language_navigation.py`), and CI validation (PR #23).
 - [x] **Sub-phase 2.4:** Complete Architecture & Developer Documentation knowledge base, system component diagrams, backend/frontend guides, core/connector architectures, and audit acceptance.
-- [ ] **Sub-phase 2.5:** Documentation Linting & Link Validation CI automation.
+- [x] **Sub-phase 2.5:** Documentation Linting, Link Validation & Quality Gates (markdownlint-cli2, internal link and heading anchor validation, Mermaid diagram syntax validation, isolated external link health checks, regression fixtures, and contributor guide in [`docs/development/DOCUMENTATION_VALIDATION.md`](../development/DOCUMENTATION_VALIDATION.md)).
 
 ### Phase 3 — GitHub Actions & DevSecOps
 - [x] CodeQL semantic security analysis for Python and JavaScript/TypeScript.
