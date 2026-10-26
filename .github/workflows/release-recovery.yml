@@ -1,0 +1,57 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Release Recovery & Verification
+#
+# Purpose:
+#   Audits existing releases against repository tags and
+#   recomputes artifact checksums to verify integrity.
+# ============================================================
+
+name: "DERA | Release Recovery"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag to recover and verify (e.g., v0.1.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-recovery-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  verify-release:
+    name: "Audit Release Artifact Integrity"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "Checkout Release Tag"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
+          persist-credentials: false
+
+      - name: "Audit Tag Commit Existence"
+        run: |
+          echo "Verified commit SHA: $(git rev-parse HEAD)"
+
+      - name: "Download and Verify Published Release Assets"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ inputs.release_tag }}
+        run: |
+          mkdir -p release-audit
+          gh release download "${TAG_NAME}" --dir release-audit/
+          cd release-audit
+          if [ -f SHA256SUMS.txt ]; then
+            sha256sum --check SHA256SUMS.txt
+            echo "SUCCESS: Checksums verified against SHA256SUMS.txt manifest."
+          else
+            echo "NOTICE: No SHA256SUMS.txt manifest found in release assets."
+          fi
