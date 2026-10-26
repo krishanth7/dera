@@ -52,9 +52,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: false
+          load: true
           tags: dera-api:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: "Validate Non-Root User"
         run: |
