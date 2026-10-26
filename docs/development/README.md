@@ -18,5 +18,7 @@
 | [COMMANDS.md](./COMMANDS.md) | Full catalog of developer commands (`dev.py`, `Makefile`, `npm`, `python`) | All Contributors |
 | [ENVIRONMENT.md](./ENVIRONMENT.md) | Deep dive into `.env.example` configurations, variable categories, and security | Backend & DevOps |
 | [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | Common setup errors, environment issues, and recovery procedures | All Contributors |
+| [README_GUIDELINES.md](./README_GUIDELINES.md) | Technical documentation guidelines, style guide, and validation standards | All Contributors |
 | [setup.md](./setup.md) | Quick local development setup guide | Quick Reference |
+
 
