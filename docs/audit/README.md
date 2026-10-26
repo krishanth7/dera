@@ -42,6 +42,8 @@ The repository audit log comprises eighteen technical assessments, audit reports
 | 16 | [PHASE_2_3_NAVIGATION_AUDIT.md](./PHASE_2_3_NAVIGATION_AUDIT.md) | Ten-language documentation navigation system audit, generator validation, path safety | **Verified Complete** |
 | 17 | [PHASE_2_4_ARCHITECTURE_AUDIT.md](./PHASE_2_4_ARCHITECTURE_AUDIT.md) | Architecture & developer documentation audit, truth-in-documentation gap analysis | **Verified Complete** |
 | 18 | [PHASE_2_4_ACCEPTANCE.md](./PHASE_2_4_ACCEPTANCE.md) | Phase 2.4 acceptance certificate, test telemetry, and definition of done verification | **Verified Complete** |
+| 19 | [PHASE_2_5_VALIDATION_BASELINE.md](./PHASE_2_5_VALIDATION_BASELINE.md) | Phase 2.5 documentation validation audit, gap analysis, and layered quality architecture | **Verified Complete** |
+| 20 | [PHASE_2_5_ACCEPTANCE.md](./PHASE_2_5_ACCEPTANCE.md) | Phase 2.5 acceptance certificate, verification telemetry, and Definition of Done sign-off | **Verified Complete** |
 
 ---
 
