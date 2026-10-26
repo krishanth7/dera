@@ -57,5 +57,5 @@ jobs:
 
       - name: "Validate Non-Root User"
         run: |
-          docker run --rm dera-api:test id -u | grep -q "10001"
+          docker run --rm --entrypoint id dera-api:test -u | grep -q "10001"
           echo "Verified: Container runs as non-root UID 10001."
