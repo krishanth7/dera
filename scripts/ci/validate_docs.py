@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validates internal markdown links, heading hierarchy, and UTF-8 encoding in DERA docs.
 
-Copyright (c) 2026 Bunga Krishanth. All rights reserved.
+Copyright (c) 2026 Krishanth. All rights reserved.
 Licensed under the MIT License.
 """
 

@@ -8,7 +8,7 @@ Reads PR metadata from environment variables passed securely from GitHub Actions
 - PR_DRAFT
 - PR_LABELS
 
-Copyright (c) 2026 Bunga Krishanth. All rights reserved.
+Copyright (c) 2026 Krishanth. All rights reserved.
 Licensed under the MIT License.
 """
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validates completeness, navigation links, and RTL support across DERA's 10 documentation languages.
 
-Copyright (c) 2026 Bunga Krishanth. All rights reserved.
+Copyright (c) 2026 Krishanth. All rights reserved.
 Licensed under the MIT License.
 """
 

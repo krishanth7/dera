@@ -3,7 +3,7 @@
 > **Project:** DERA — Database Engineering & Reverse Analysis  
 > **Tagline:** Understand Every Schema. Engineer Every Change.  
 > **Repository:** [https://github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
-> **Maintainer:** Bunga Krishanth (`krishanth7`)  
+> **Maintainer:** Krishanth (`krishanth7`)  
 > **Audit Standard:** Professional, enterprise-oriented, evidence-based, reproducible  
 > **Audit Timestamp:** `2026-10-26T08:29:15Z`  
 > **Audited Commit SHA:** [`52dcc8df395f464172ea019b3df716e36b62134f`](https://github.com/krishanth7/dera/commit/52dcc8df395f464172ea019b3df716e36b62134f)  
