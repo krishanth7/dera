@@ -21,6 +21,9 @@ dependencies = [
 Homepage = "https://github.com/krishanth7/dera"
 Repository = "https://github.com/krishanth7/dera"
 
+[tool.setuptools.packages.find]
+where = ["packages/core/src", "apps/api/src"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["packages/core/src", "apps/api/src"]
