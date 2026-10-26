@@ -11,7 +11,7 @@
 
 ## 1. Overview & Objectives
 
-DERA's Secure Development Lifecycle (SDLC) establishes technical requirements and review practices to prevent security vulnerabilities from entering the codebase. 
+DERA's Secure Development Lifecycle (SDLC) establishes technical requirements and review practices to prevent security vulnerabilities from entering the codebase.
 
 Because DERA handles sensitive database metadata and network connections, every contributor and maintainer must adhere to these secure development standards.
 

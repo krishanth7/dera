@@ -17,7 +17,7 @@ All test commands below were directly executed in the repository workspace. Ever
 | `python -m compileall packages/ apps/ tests/` | Root | Python 3.12 | `0` | `0.42s` | **Syntax clean** across all Python packages |
 | `python -c "import glob, yaml; [yaml.safe_load(open(f, encoding='utf-8')) for f in glob.glob('.github/**/*.yml', recursive=True)]"` | Root | Python 3.12 / PyYAML | `0` | `0.18s` | **7 YAML files valid** (`codeql.yml`, `dependabot.yml`, issue forms) |
 | `python -c "import subprocess, re; ..."` | Root | Git / Python 3.12 | `0` | `0.22s` | **46 tracked files scanned; 0 secret matches** |
-| `git log -p | python -c "import sys, re; ..."` | Root | Git / Python 3.12 | `0` | `0.35s` | **13 commits scanned; 0 secret patterns found** |
+| `git log -p \| python -c "import sys, re; ..."` | Root | Git / Python 3.12 | `0` | `0.35s` | **13 commits scanned; 0 secret patterns found** |
 
 ---
 

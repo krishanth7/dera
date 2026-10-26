@@ -13,7 +13,7 @@ DERA's end-to-end metadata processing lifecycle transforms raw database catalog 
 
 The full processing pipeline consists of 8 discrete stages:
 
-```
+```text
 [1. Connection Configuration]
            │
            ▼

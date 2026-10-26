@@ -119,7 +119,7 @@ for f in findings:
 
 All exceptions inherit from `DeraError`:
 
-```
+```text
 DeraError (Base domain exception with message and details dict)
 ├── SchemaParsingError (DDL parsing or metadata extraction failure)
 ├── CycleDetectedError (Circular dependency in foreign-key graph)

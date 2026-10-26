@@ -1,0 +1,65 @@
+{
+  // ============================================================
+  // DERA — Database Engineering & Reverse Analysis
+  // Markdownlint Configuration (.markdownlint-cli2.jsonc)
+  //
+  // Purpose: Enforces consistent, readable technical documentation
+  //          with justified exceptions for tables, code blocks,
+  //          navigation markers, and multilingual content.
+  // ============================================================
+  "config": {
+    "default": true,
+
+    // MD013: Line length - disabled to allow long technical URLs, tables, and ASCII/Mermaid diagrams
+    "MD013": false,
+
+    // MD033: Inline HTML - disabled to allow GitHub navigation markers (<!-- DERA:I18N_NAV:START -->),
+    // badges, and alignment tags
+    "MD033": false,
+
+    // MD024: Multiple headings with the same content - allowed under different parent sections
+    "MD024": {
+      "siblings_only": true
+    },
+
+    // MD041: First line in file should be a top-level heading - disabled because localized READMEs
+    // and documentation files begin with the managed 10-language navigation comment
+    "MD041": false,
+
+    // MD060: Table column style - disabled to support standard GitHub compact markdown tables
+    "MD060": false,
+
+    // MD034: Bare URLs - disabled to allow plain URL citations in reference links
+    "MD034": false,
+
+    // MD001: Heading level increment - disabled to allow subtitle headings (h1 followed by h3 subtitle)
+    "MD001": false,
+
+    // MD051: Link fragments - disabled here because GitHub heading anchors are validated
+    // with exact GitHub slugging in scripts/ci/validate_docs.py
+    "MD051": false,
+
+    // MD022, MD031, MD032: Blanks around headings, fences, and lists - disabled to preserve
+    // compact GitHub presentation and avoid massive repository-wide churn across translations
+    "MD022": false,
+    "MD031": false,
+    "MD032": false,
+
+    // MD036: Emphasis used instead of a heading - disabled for inline label formatting and centered footers
+    "MD036": false
+  },
+  "globs": [
+    "README.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    "docs/**/*.md"
+  ],
+  "ignores": [
+    "node_modules/**",
+    ".venv/**",
+    "dist/**",
+    "build/**",
+    "tests/fixtures/**"
+  ]
+}

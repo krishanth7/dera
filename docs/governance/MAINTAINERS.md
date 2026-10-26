@@ -11,7 +11,7 @@
 
 ## 1. Project Stewardship Model
 
-DERA currently operates under a **maintainer-led open-source governance model** appropriate for an early-stage database engineering platform. 
+DERA currently operates under a **maintainer-led open-source governance model** appropriate for an early-stage database engineering platform.
 
 The primary maintainer provides architectural coherence, software supply chain security, and quality control while actively welcoming community contributions.
 

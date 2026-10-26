@@ -10,7 +10,7 @@
 
 Below is the verified directory structure of the repository on `main` at commit `52dcc8d`:
 
-```
+```text
 dera/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/

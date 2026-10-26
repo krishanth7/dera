@@ -25,7 +25,7 @@ As DERA expands, the engineering team requires an architectural structure that e
 
 We choose to implement a **Modular Monolith Monorepo** architecture managed through a unified Git repository containing discrete Python and TypeScript packages:
 
-```
+```text
 dera/
 ├── apps/
 │   ├── api/          # FastAPI HTTP gateway

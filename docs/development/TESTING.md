@@ -16,7 +16,7 @@ Because DERA operates under a strict **Zero-AI mandate**, all test suites are co
 - **Fast Execution:** The entire 47-test suite executes in approximately **0.5 to 0.8 seconds** on standard developer hardware.
 - **Hermetic Isolation:** Database tests execute against SQLite `:memory:` connections or temporary in-process test fixtures that leave zero persistent state.
 
-```
+```text
                   ┌───────────────────────────────┐
                   │    Architecture & Boundary    │  (tests/architecture/)
                   │     Zero-AI, Core Isolation   │  1 Test File, 5 Test Cases
