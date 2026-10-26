@@ -34,10 +34,15 @@ DERA operates under a defense-in-depth security model designed specifically for 
 
 ---
 
-## 3. Vulnerability Reporting
+## 3. Security Policies & Vulnerability Reporting
+
+For detailed technical policies and operational procedures:
+- [Root Security Policy](../../SECURITY.md)
+- [Database Security & Access Policy](DATABASE_SECURITY.md)
+- [Secure Development Standards](SECURE_DEVELOPMENT.md)
+- [Vulnerability Response & Incident Disclosure](VULNERABILITY_RESPONSE.md)
 
 Security vulnerabilities should be reported privately via:
 - **GitHub Private Vulnerability Reporting:** [Report a Vulnerability](https://github.com/krishanth7/dera/security/advisories/new)
 - **Security Contact:** `krishanth.b.2008@gmail.com`
 
-See [SECURITY.md](../../SECURITY.md) for complete details.
