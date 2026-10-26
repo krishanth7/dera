@@ -11,6 +11,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "jsx": "preserve",
     "paths": {
       "@dera/contracts": ["./packages/contracts/src/index.ts"]
     }

@@ -1,97 +1,76 @@
-# DERA Architecture Specification
+# DERA System Architecture & Core Principles
 
-**Project:** DERA — Database Engineering & Reverse Analysis  
-**Status:** Architectural Specification (Phase 1 Baseline)  
-**License:** [MIT License](../../LICENSE)
+> **Phase:** 1.2 Monorepo Architecture Foundation  
+> **Status:** Authoritative Architectural Specification  
+> **Maintainer:** Bunga Krishanth  
 
 ---
 
-## 1. Architectural Overview
+## 1. Executive Summary
 
-DERA is engineered as a modular platform for deterministic database inspection, schema graph reconstruction, structural diagnostics, and migration engineering.
+**DERA (Database Engineering & Reverse Analysis)** is a deterministic platform designed to inspect database schemas, discover relationships, generate entity-relationship diagrams, detect anti-patterns, and plan migrations.
+
+Unlike modern trends that introduce probabilistic large language models into schema analysis, DERA adheres to a strict non-negotiable directive:
+**Zero AI models, zero LLMs, zero cloud inference API calls, and zero probabilistic recommendations.**
+
+Database engineering requires absolute precision, reproducibility, and auditability. When analyzing mission-critical schemas or generating migration scripts, non-deterministic outputs introduce dangerous risks of data loss, migration failures, or unrepeatable executions. DERA achieves deep schema intelligence through formal abstract syntax tree (AST) SQL parsing, directed acyclic graph (DAG) topological theory, catalog querying, and rule-based diagnostic linting.
+
+---
+
+## 2. Core Architectural Pillars
+
+1. **Modular Monolith:** Single repository housing clear, independent packages with unidirectional dependency flow.
+2. **Metadata-Only Introspection:** Introspection extracts structural schemas, column types, and constraints without touching or storing customer application data.
+3. **Read-Only Database Safety:** Database connectors operate under session-level read-only constraints (`SET TRANSACTION READ ONLY` / `PRAGMA query_only = ON`). DDL and DML mutation statements are blocked by static query interceptors.
+4. **Strong Typing & Contract Parity:** Python core primitives and TypeScript visualizer interfaces are synchronized via formal data contracts (`packages/contracts`).
+5. **Cross-Platform Reproducibility:** Tooling runs consistently on Windows, Linux, and macOS without Unix-only toolchain dependencies.
+
+---
+
+## 3. System Layers & Subsystems
 
 ```mermaid
-flowchart TD
-    subgraph Client["Presentation Tier"]
-        UI["Web UI (Next.js / React)"]
-        ERD["ER Studio (React Flow / ELK.js)"]
-        Editor["SQL / DDL Viewer (Monaco)"]
+graph TD
+    subgraph Presentation Layer
+        WEB[apps/web - Next.js Studio & ERD Canvas]
     end
 
-    subgraph API["Application Services"]
-        Gateway["FastAPI Gateway"]
-        Auth["Auth & Tenant Isolation (RBAC)"]
-        Audit["Audit Logger"]
+    subgraph Transport & API Layer
+        API[apps/api - FastAPI Gateway with Security Headers]
     end
 
-    subgraph Core["Deterministic Processing Core"]
-        Normalizer["Metadata Normalizer"]
-        Graph["Dependency Graph Engine (NetworkX)"]
-        Diagnostics["Static Diagnostics Engine"]
-        Diff["Schema Diff & Comparison Engine"]
-        Exporter["Documentation & DDL Generator"]
+    subgraph Contract Layer
+        CONTRACTS[packages/contracts - JSON Schemas & TypeScript Types]
     end
 
-    subgraph Execution["Worker Tier"]
-        Queue["Task Queue (Redis / Celery)"]
-        Vault["Encrypted Secrets Vault"]
-        Workers["Sandboxed Connectors"]
+    subgraph Domain Engine Layer
+        CORE[packages/core - Graph DAG, Cycle Detection & Diagnostics]
+        DIFF[packages/diff - Schema Comparison Engine - Planned]
+        PARSER[packages/sql-parser - SQLGlot Dialect Transpiler - Planned]
     end
 
-    subgraph Storage["Data Tier"]
-        Target[(Target DB - Read Only)]
-        DERADB[(DERA Snapshot DB)]
+    subgraph Database Connector Layer
+        CONN_BASE[packages/connectors/base - Read-Only BaseConnector]
+        CONN_SQLITE[packages/connectors/sqlite - SQLite Introspection]
+        CONN_PG[packages/connectors/postgresql - PostgreSQL Adapter - In Progress]
+        CONN_MYSQL[packages/connectors/mysql - MySQL Adapter - Planned]
     end
 
-    Client --> API
-    API --> Core
-    API --> Execution
-    Execution --> Target
-    Core --> Storage
+    WEB --> CONTRACTS
+    API --> CONTRACTS
+    API --> CORE
+    API --> CONN_BASE
+    CONN_BASE --> CORE
+    CONN_SQLITE --> CONN_BASE
+    CONN_PG --> CONN_BASE
+    CONN_MYSQL --> CONN_BASE
 ```
 
 ---
 
-## 2. Core Subsystems
+## 4. Key Architectural Documents
 
-### 2.1 Metadata Extraction & Normalization
-Database connectors query native system catalogs (such as `pg_catalog` and `information_schema` in PostgreSQL). Raw catalog tuples are sanitized, cast into engine-agnostic canonical models, and cryptographically hashed for snapshot immutability.
-
-### 2.2 Schema Graph Engine
-Using NetworkX, foreign keys and object references are transformed into Directed Acyclic Graphs (DAGs):
-- **Cycle Detection:** Identifies circular foreign-key dependencies.
-- **Topological Sorting:** Determines correct table creation and deletion sequences for migrations.
-- **Transitive Reduction:** Simplifies complex entity relationship paths for clean visual rendering.
-
-### 2.3 Rule-Based Diagnostics Engine
-A deterministic rule matrix inspects normalized schema models against static engineering heuristics:
-- **Missing Primary Keys:** Ensures relational entity identification.
-- **Redundant Indexes:** Identifies overlapping column prefixes.
-- **Unindexed Foreign Keys:** Prevents table-scan bottlenecks during join operations.
-- **Naming Conventions:** Enforces organizational standards across identifiers.
-
-### 2.4 Schema Diff & Versioning
-Snapshots are treated as immutable mathematical sets. DERA computes set differences across tables, columns, constraints, and indexes, categorizing each difference as backward-compatible (safe) or breaking (destructive).
-
----
-
-## 3. Pluggable Connector Architecture
-
-Connectors implement a strict interface:
-1. `validate_connection(target_config)` — Verifies TLS handshake and read-only status.
-2. `extract_catalog_metadata()` — Executes read-only queries against system catalogs.
-3. `normalize_to_canonical()` — Converts raw results into DERA's unified schema model.
-4. `disconnect()` — Immediately terminates connections.
-
----
-
-## 4. Implementation Status
-
-| Component | Status | Target Phase |
-|---|---|---|
-| PostgreSQL Connector | In Development | Phase 2 (MVP) |
-| Canonical Schema Model | In Development | Phase 2 (MVP) |
-| Visual ER Studio | Planned | Phase 3 |
-| Rule Diagnostic Engine | Planned | Phase 4 |
-| Schema Diff Engine | Planned | Phase 4 |
-| MySQL / SQLite Connectors | Planned | Phase 5 |
+- [ADR 0001: Monorepo Architecture](adr/0001-monorepo-architecture.md)
+- [Monorepo Structure Specification](MONOREPO_STRUCTURE.md)
+- [Module Boundaries & Dependency Rules](MODULE_BOUNDARIES.md)
+- [Package Dependency Graph & Data Flow](DEPENDENCY_GRAPH.md)
