@@ -610,20 +610,20 @@ DERA provides documentation support for 10 international languages, maintained i
 | French | `fr` | [`docs/i18n/README.fr.md`](docs/i18n/README.fr.md) |
 | German | `de` | [`docs/i18n/README.de.md`](docs/i18n/README.de.md) |
 | Portuguese | `pt` | [`docs/i18n/README.pt.md`](docs/i18n/README.pt.md) |
+| Italian | `it` | [`docs/i18n/README.it.md`](docs/i18n/README.it.md) |
 | Japanese | `ja` | [`docs/i18n/README.ja.md`](docs/i18n/README.ja.md) |
 | Korean | `ko` | [`docs/i18n/README.ko.md`](docs/i18n/README.ko.md) |
 | Simplified Chinese | `zh-CN` | [`docs/i18n/README.zh-CN.md`](docs/i18n/README.zh-CN.md) |
-| Arabic | `ar` | [`docs/i18n/README.ar.md`](docs/i18n/README.ar.md) |
 | Russian | `ru` | [`docs/i18n/README.ru.md`](docs/i18n/README.ru.md) |
 
 Translation contributors should:
 
 1. Preserve technical meaning and formatting.
 2. Keep code examples, SQL commands, and paths untranslated.
-3. Maintain consistent international terminology.
+3. Maintain consistent international terminology based on [`docs/i18n/TERMINOLOGY.md`](docs/i18n/TERMINOLOGY.md).
 4. Preserve relative working links.
 5. Avoid translating code identifiers and parameters.
-6. For Arabic (`README.ar.md`), keep code blocks and tables in left-to-right format.
+6. Adhere to [`docs/i18n/TRANSLATION_POLICY.md`](docs/i18n/TRANSLATION_POLICY.md).
 7. Update translations when source documentation changes.
 
 English remains the reference language for technical specifications. Detailed guidance is available in [docs/contributing/guide.md](docs/contributing/guide.md).

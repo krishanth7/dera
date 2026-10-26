@@ -73,9 +73,9 @@ gantt
 >>>>>>> 94e552e (docs(devex): improve getting started instructions and roadmap alignment)
 
 ### Phase 2 — Multilingual Documentation & Developer Experience
-- [x] **Sub-phase 2.1 (In Progress):** Authoritative English README, truth-in-documentation matrix, architecture visualization, and documentation lifecycle contract ([`docs/development/README_MAINTENANCE.md`](../development/README_MAINTENANCE.md)).
-- [ ] **Sub-phase 2.2 (Planned):** Synchronize 9 international README translations (`es`, `fr`, `de`, `pt`, `ja`, `ko`, `zh-CN`, `ar`, `ru`) in [`docs/i18n/`](../i18n/).
-- [ ] Maintain continuous RTL formatting validation for Arabic (`README.ar.md`).
+- [x] **Sub-phase 2.1:** Authoritative English README, truth-in-documentation matrix, architecture visualization, and documentation lifecycle contract ([`docs/development/README_MAINTENANCE.md`](../development/README_MAINTENANCE.md), PR #21).
+- [x] **Sub-phase 2.2 (In Progress):** Synchronize 9 international README translations (`es`, `fr`, `de`, `pt`, `it`, `ja`, `ko`, `zh-CN`, `ru`) in [`docs/i18n/`](../i18n/), replacing Arabic with Italian in the official 10-language matrix.
+- [ ] **Sub-phase 2.3 (Planned):** Ten-Language Documentation Navigation System.
 
 ### Phase 3 — GitHub Actions & DevSecOps
 - [x] CodeQL semantic security analysis for Python and JavaScript/TypeScript.

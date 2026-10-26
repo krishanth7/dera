@@ -1,4 +1,4 @@
-**Read this documentation in:** [English](README.md) | [Español](docs/i18n/README.es.md) | [Français](docs/i18n/README.fr.md) | [Deutsch](docs/i18n/README.de.md) | [Português](docs/i18n/README.pt.md) | [日本語](docs/i18n/README.ja.md) | [한국어](docs/i18n/README.ko.md) | [简体中文](docs/i18n/README.zh-CN.md) | [العربية](docs/i18n/README.ar.md) | [Русский](docs/i18n/README.ru.md)
+**Read this documentation in:** [English](README.md) | [Español](docs/i18n/README.es.md) | [Français](docs/i18n/README.fr.md) | [Deutsch](docs/i18n/README.de.md) | [Português](docs/i18n/README.pt.md) | [Italiano](docs/i18n/README.it.md) | [日本語](docs/i18n/README.ja.md) | [한국어](docs/i18n/README.ko.md) | [简体中文](docs/i18n/README.zh-CN.md) | [Русский](docs/i18n/README.ru.md)
 
 ---
 
@@ -54,10 +54,10 @@ DERA maintains synchronized documentation in 10 international languages. The Eng
 | 🇫🇷 Français | `fr` | [Documentation en Français](docs/i18n/README.fr.md) | Complete Translation |
 | 🇩🇪 Deutsch | `de` | [Dokumentation auf Deutsch](docs/i18n/README.de.md) | Complete Translation |
 | 🇵🇹 Português | `pt` | [Documentação em Português](docs/i18n/README.pt.md) | Complete Translation |
+| 🇮🇹 Italiano | `it` | [Documentazione in Italiano](docs/i18n/README.it.md) | Complete Translation |
 | 🇯🇵 日本語 | `ja` | [日本語ドキュメント](docs/i18n/README.ja.md) | Complete Translation |
 | 🇰🇷 한국어 | `ko` | [한국어 문서](docs/i18n/README.ko.md) | Complete Translation |
 | 🇨🇳 简体中文 | `zh-CN` | [简体中文文档](docs/i18n/README.zh-CN.md) | Complete Translation |
-| 🇸🇦 العربية | `ar` | [الوثائق باللغة العربية](docs/i18n/README.ar.md) | Complete Translation (RTL) |
 | 🇷🇺 Русский | `ru` | [Документация на русском](docs/i18n/README.ru.md) | Complete Translation |
 
 ---

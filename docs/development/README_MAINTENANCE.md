@@ -69,9 +69,9 @@ Documentation integrity is strictly enforced via CI:
 
 International translations in [`docs/i18n/`](../i18n/) are synchronized according to the following triggers:
 
-1. **Major / Minor Release:** Prior to tagging a new version (e.g. `v0.2.0`), all 9 international README translations (Spanish, French, German, Portuguese, Japanese, Korean, Simplified Chinese, Arabic, Russian) must be reviewed and synchronized with the English README.
+1. **Major / Minor Release:** Prior to tagging a new version (e.g. `v0.2.0`), all 9 international README translations (Spanish, French, German, Portuguese, Italian, Japanese, Korean, Simplified Chinese, Russian) must be reviewed and synchronized with the English README.
 2. **Significant Architectural Changes:** When core architecture diagrams, quick-start workflows, or security principles are updated, a translation tracking issue is automatically created under the `type/docs` label.
-3. **Arabic RTL Preservation:** Arabic translations ([`README.ar.md`](../i18n/README.ar.md)) must retain proper right-to-left directional tags (`dir="rtl"`) and formatting conventions.
+3. **Terminology Parity:** All translations must maintain strict terminology parity defined in [`docs/i18n/TERMINOLOGY.md`](../i18n/TERMINOLOGY.md) and adhere to [`docs/i18n/TRANSLATION_POLICY.md`](../i18n/TRANSLATION_POLICY.md).
 
 ---
 

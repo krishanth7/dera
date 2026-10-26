@@ -33,10 +33,10 @@ DERA maintains synchronized documentation in 10 international languages:
 - 🇫🇷 **Français:** [French Documentation](i18n/README.fr.md)
 - 🇩🇪 **Deutsch:** [German Documentation](i18n/README.de.md)
 - 🇵🇹 **Português:** [Portuguese Documentation](i18n/README.pt.md)
+- 🇮🇹 **Italiano:** [Italian Documentation](i18n/README.it.md)
 - 🇯🇵 **日本語:** [Japanese Documentation](i18n/README.ja.md)
 - 🇰🇷 **한국어:** [Korean Documentation](i18n/README.ko.md)
 - 🇨🇳 **简体中文:** [Simplified Chinese Documentation](i18n/README.zh-CN.md)
-- 🇸🇦 **العربية:** [Arabic Documentation](i18n/README.ar.md)
 - 🇷🇺 **Русский:** [Russian Documentation](i18n/README.ru.md)
 
 ---
