@@ -2,27 +2,45 @@
 
 > **Project:** DERA — Database Engineering & Reverse Analysis  
 > **Tagline:** Understand Every Schema. Engineer Every Change.  
-> **Maintainer:**  Krishanth  
+> **Maintainer:** Krishanth  
+> **Last Verified:** 2026-10-26 (Commit `e550fdd`)  
 
 ---
 
-## Architecture Specifications Index
+## 1. Architecture Specifications Index
 
 | Document | Purpose | Status |
 |---|---|---|
-| [overview.md](./overview.md) | Platform architectural philosophy, core pillars, and subsystem breakdown | **Active** |
-| [README_ARCHITECTURE.md](./README_ARCHITECTURE.md) | Architecture & engineering blueprint, isolation, and extension guide | **Active** |
-| [MONOREPO_STRUCTURE.md](./MONOREPO_STRUCTURE.md) | Authoritative monorepo directory layout, package responsibilities, and tooling mapping | **Active** |
-| [MODULE_BOUNDARIES.md](./MODULE_BOUNDARIES.md) | Unidirectional dependency rules, forbidden import matrix, and contributor extension guide | **Active** |
-| [DEPENDENCY_GRAPH.md](./DEPENDENCY_GRAPH.md) | Mermaid dependency graphs, end-to-end data flows, and non-AI boundaries | **Active** |
-| [adr/0001-monorepo-architecture.md](./adr/0001-monorepo-architecture.md) | Formal Architecture Decision Record for selecting the Modular Monolith structure | **Proposed** |
-
+| [**SYSTEM_OVERVIEW.md**](./SYSTEM_OVERVIEW.md) | Platform architectural philosophy, core pillars, component diagram, and subsystem breakdown | **Active** |
+| [**MONOREPO_STRUCTURE.md**](./MONOREPO_STRUCTURE.md) | Authoritative monorepo directory layout, package responsibilities, and tooling mapping | **Active** |
+| [**MODULE_BOUNDARIES.md**](./MODULE_BOUNDARIES.md) | Unidirectional dependency rules, forbidden import matrix, and contributor extension guide | **Active** |
+| [**DATA_FLOW.md**](./DATA_FLOW.md) | End-to-end metadata inspection lifecycle and sequence architecture diagrams | **Active** |
+| [**DEPENDENCY_GRAPH.md**](./DEPENDENCY_GRAPH.md) | Detailed dependency graphs, package hierarchy, and non-AI boundaries | **Active** |
+| [**TECHNOLOGY_DECISIONS.md**](./TECHNOLOGY_DECISIONS.md) | Technology choices, selection rationale, limitations, and future considerations | **Active** |
+| [**adr/README.md**](./adr/README.md) | Architecture Decision Record (ADR) index and submission policy | **Active** |
+| [**adr/0001-monorepo-architecture.md**](./adr/0001-monorepo-architecture.md) | ADR 0001: Modular Monolith Monorepo Architecture for DERA | **Accepted** |
+| [overview.md](./overview.md) | Historical Phase 1.2 architecture overview baseline | **Archived Baseline** |
+| [README_ARCHITECTURE.md](./README_ARCHITECTURE.md) | Historical Phase 1.2 architectural blueprint reference | **Archived Baseline** |
 
 ---
 
-## Core Architectural Invariants
+## 2. Core Architectural Invariants
 
-1. **Deterministic Execution:** No AI models, LLMs, or non-deterministic inference services.
-2. **Read-Only Database Safety:** Introspection connectors execute under strict read-only constraints with static mutation interception.
-3. **Framework Independence of Core:** Domain models and graph algorithms depend exclusively on the Python standard library.
-4. **Contract Synchronization:** Shared contracts ensure type parity between Python backend services and TypeScript frontend studios.
+1. **Strict Deterministic Execution:** Zero artificial intelligence, zero large language models, zero vector databases, and zero probabilistic inference.
+2. **Read-Only Database Safety:** Connectors execute exclusively under session-level read-only constraints (`SET TRANSACTION READ ONLY;`, `PRAGMA query_only = ON;`) backed by static SQL mutation interception.
+3. **Framework Independence of Core:** Domain models, graph algorithms, and diagnostic rules depend solely on the Python standard library.
+4. **Contract Synchronization:** Shared schemas (`packages/contracts`) guarantee type parity across Python backend services and TypeScript frontend studios.
+5. **Loopback Security by Default:** The backend API binds strictly to `127.0.0.1` by default to prevent unintended network exposure.
+
+---
+
+## 3. Related Documentation Hubs
+
+- [Developer Guide](../development/README.md)
+- [Backend Architecture](../backend/README.md)
+- [Frontend Architecture](../frontend/README.md)
+- [Core Engine Guide](../core/README.md)
+- [Database Connectors Guide](../connectors/README.md)
+- [Shared Contracts](../contracts/README.md)
+- [Security Architecture](../security/README.md)
+- [Repository Audit Log](../audit/README.md)
