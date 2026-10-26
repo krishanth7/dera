@@ -43,7 +43,7 @@ gantt
 
 | Phase | Milestone Name | Status | Key Deliverables & Focus Areas |
 |---|---|---|---|
-| **Phase 1** | **Repository Foundation & Governance** | **In Progress** | Monorepo structure, PEP 621 packaging, Git branching, Conventional Commits, PR qualification gates. |
+| **Phase 1** | **Repository Foundation & Governance** | **Completed** | Monorepo structure, PEP 621 packaging, Git branching, Conventional Commits, PR gates, security policies, community operations. |
 | **Phase 2** | **Multilingual Documentation** | Planned | 10-language technical documentation sync (English, Spanish, French, German, Portuguese, Japanese, Korean, Chinese, Arabic, Russian). |
 | **Phase 3** | **GitHub Actions & DevSecOps** | **Implemented** | Automated CI qualification gate, CodeQL scanning, Bandit SAST, matrix testing (Python 3.12/3.13), secret detection. |
 | **Phase 4** | **Backend & Platform Infrastructure** | Planned | FastAPI gateway endpoints, loopback default bindings, configuration management, health telemetry. |
@@ -65,7 +65,8 @@ gantt
 - [x] **Sub-phase 1.2:** Monorepo architecture establishment (`packages/core`, `packages/connectors`, `packages/contracts`, `apps/api`, `apps/web`) and cross-platform developer CLI ([`docs/architecture/`](../architecture/README.md)).
 - [x] **Sub-phase 1.3:** Git branching strategy, Conventional Commits standard, PR title validation, CODEOWNERS, and review policies ([`docs/development/`](../development/README.md)).
 - [x] **Sub-phase 1.4:** Professional README, transparent capability matrix, verified badges, and visual architecture diagrams.
-- [x] **Sub-phase 1.5:** Formal security policy, vulnerability disclosure workflows, and community governance ([`docs/security/`](../security/README.md), [`docs/governance/`](../governance/README.md)) (Current Milestone).
+- [x] **Sub-phase 1.5:** Formal security policy, vulnerability disclosure workflows, and community governance ([`docs/security/`](../security/README.md), [`docs/governance/`](../governance/README.md)).
+- [x] **Sub-phase 1.6:** GitHub issue forms, Discussions guide, pull request templates, and community operations ([`docs/community/`](../community/README.md), [`docs/audit/PHASE_1_COMPLETION.md`](../audit/PHASE_1_COMPLETION.md)) (Completed Phase 1).
 
 ### Phase 2 — Multilingual Documentation
 - [x] Establish 10-language international navigation index (`docs/i18n/`).
