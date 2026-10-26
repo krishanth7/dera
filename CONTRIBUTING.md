@@ -29,6 +29,7 @@ Whether you are fixing a typo, reporting a bug, proposing a feature, or implemen
 - [Security](#security)
 - [Documentation and Translations](#documentation-and-translations)
 - [Review and Maintainer Policies](#review-and-maintainer-policies)
+- [Contributor Rights & Intellectual Property](#contributor-rights-intellectual-property)
 - [Recognition](#recognition)
 - [Getting Help](#getting-help)
 
@@ -588,6 +589,11 @@ Please follow the repository's security reporting policy in [SECURITY.md](SECURI
 
 Direct security contact: **krishanth.b.2008@gmail.com**
 
+For our complete security architecture and engineering policies:
+- [Database Security & Access Policy](docs/security/DATABASE_SECURITY.md)
+- [Secure Development Standards](docs/security/SECURE_DEVELOPMENT.md)
+- [Vulnerability Response Workflow](docs/security/VULNERABILITY_RESPONSE.md)
+
 Do not include passwords, access tokens, database credentials, or sensitive customer data in public reports.
 
 ---
@@ -651,7 +657,28 @@ Detailed criteria are governed by our [Code Review Policy](docs/development/CODE
 - Security-sensitive aspects are explicitly assessed.
 - The contribution is approved by code owner [@krishanth7](https://github.com/krishanth7).
 
-Maintainers may decline contributions that conflict with the project's scope, deterministic mandate, or security requirements.
+Maintainers may decline contributions that conflict with the project's scope, deterministic mandate, or security requirements. Detailed repository stewardship is documented in [Maintainer Governance](docs/governance/MAINTAINERS.md).
+
+---
+
+## Contributor Rights & Intellectual Property
+
+### 1. Inbound = Outbound MIT Licensing
+DERA is distributed under the [MIT License](LICENSE). By submitting a pull request, issue, or documentation change to this repository, you agree that your contribution is licensed under the same MIT License terms without additional conditions or restrictions.
+
+### 2. Code Ownership & Authorship
+- You retain copyright in your individual contributions.
+- Full authorship attribution is permanently preserved in Git commit history and release changelogs.
+- No Contributor License Agreement (CLA) or copyright assignment is required.
+
+### 3. Developer Certificate of Origin (DCO)
+By contributing to DERA, you certify that:
+1. The contribution was created in whole or in part by you and you have the right to submit it under the MIT License; or
+2. The contribution is based upon previous work that is covered under an appropriate open-source license compatible with MIT (see [Third-Party Licenses](docs/governance/THIRD_PARTY_LICENSES.md)); or
+3. The contribution was provided directly to you by a person who certified (1) or (2) and you have not modified it.
+
+### 4. Third-Party Code Attribution
+If your contribution incorporates third-party code, fonts, or assets, you must verify that their license is compatible with MIT and explicitly document the origin and license in [docs/governance/THIRD_PARTY_LICENSES.md](docs/governance/THIRD_PARTY_LICENSES.md).
 
 ---
 
