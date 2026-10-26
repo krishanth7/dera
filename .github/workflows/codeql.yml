@@ -1,0 +1,124 @@
+
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# CodeQL Advanced Security Analysis
+#
+# Purpose:
+#   Automated static application security testing (SAST)
+#   for Python, JavaScript/TypeScript, and GitHub Actions.
+#
+# Security principles:
+#   - Least-privilege workflow permissions
+#   - No external AI services
+#   - No production database credentials
+#   - No application build or execution required
+#   - Extended security analysis
+#
+# Maintainer: DERA Contributors
+# ============================================================
+
+name: "DERA | CodeQL Advanced Security"
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+  schedule:
+    # Every Thursday at 08:42 UTC
+    - cron: "42 8 * * 4"
+
+  workflow_dispatch:
+
+# Default to minimum permissions.
+permissions:
+  contents: read
+
+# Avoid overlapping runs for the same branch or pull request.
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: "Security Scan | ${{ matrix.language }}"
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 60
+
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+          # FastAPI, Python services, database connectors
+          - language: python
+            build-mode: none
+
+          # Next.js, React, JavaScript and TypeScript
+          - language: javascript-typescript
+            build-mode: none
+
+          # GitHub Actions workflow security
+          - language: actions
+            build-mode: none
+
+    steps:
+      # ------------------------------------------------------
+      # 1. Checkout source code
+      # ------------------------------------------------------
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      # ------------------------------------------------------
+      # 2. Initialize CodeQL
+      # ------------------------------------------------------
+      - name: "Initialize CodeQL Security Engine"
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+          # Includes default and extended security queries.
+          queries: security-extended
+
+      # ------------------------------------------------------
+      # 3. Perform static security analysis
+      # ------------------------------------------------------
+      - name: "Execute CodeQL Security Analysis"
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{ matrix.language }}"
+          output: codeql-results
+          upload: always
+
+      # ------------------------------------------------------
+      # 4. Preserve SARIF reports for review
+      # ------------------------------------------------------
+      - name: "Upload Security Analysis Artifacts"
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-sarif-${{ matrix.language }}
+          path: codeql-results/
+          retention-days: 30
+          if-no-files-found: ignore
