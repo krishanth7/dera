@@ -176,19 +176,29 @@ git remote -v
 
 ### Create a Feature Branch
 
+Always start from the latest default `main` branch. Detailed guidelines are in [Branching Strategy](docs/development/BRANCHING_STRATEGY.md) and [Contribution Workflow](docs/development/CONTRIBUTION_WORKFLOW.md).
+
 ```bash
+git checkout main
+git pull --ff-only upstream main
 git checkout -b feat/your-feature-name
 ```
 
-Examples:
+Branch naming prefixes:
+- `feat/` — New capability or connector
+- `fix/` — Bug fix or error resolution
+- `docs/` — Documentation additions or translations
+- `refactor/` — Code restructuring without functional changes
+- `test/` — Unit, integration, or architecture tests
+- `ci/` — CI/CD workflows and DevSecOps tooling
+- `security/` — Security hardening or vulnerability fixes
+- `chore/` — Tooling configuration or cleanup
 
-```text
-feat/postgresql-connector
-feat/schema-visualization
-fix/foreign-key-parser
-docs/installation-guide
-test/schema-diff
-```
+Examples:
+- `feat/postgresql-schema-inspection`
+- `fix/composite-foreign-key`
+- `docs/branching-strategy`
+- `test/sqlite-dialect`
 
 ### Environment Configuration
 
@@ -430,7 +440,7 @@ The repository will publish executable test commands as its tooling is implement
 
 ## Commit Message Guidelines
 
-DERA recommends Conventional Commits.
+DERA strictly enforces the [Conventional Commits](docs/development/COMMIT_CONVENTIONS.md) 1.0.0 specification for all commits and pull request titles.
 
 ### Format
 
@@ -438,110 +448,77 @@ DERA recommends Conventional Commits.
 type(scope): short description
 ```
 
-### Supported Types
-
-| Type | Purpose |
-|---|---|
-| feat | New feature |
-| fix | Bug fix |
-| docs | Documentation |
-| refactor | Code restructuring |
-| test | Tests |
-| perf | Performance improvement |
-| build | Build system |
-| ci | CI/CD changes |
-| chore | Maintenance |
-| security | Security improvement |
-
-### Examples
-
+Breaking changes are designated by appending `!` before the colon:
 ```text
-feat(connector): add PostgreSQL schema inspection
-fix(graph): correct composite foreign-key mapping
-docs(readme): improve installation documentation
-test(schema): add schema normalization tests
-perf(erd): optimize large graph rendering
-security(api): enforce organization access checks
+feat(api)!: revise schema snapshot response data contract
 ```
 
-Use concise, meaningful commit messages.
+### Supported Types
+
+| Type | Purpose | SemVer Impact |
+|---|---|---|
+| `feat` | New deterministic capability, model, or connector | Minor (`0.x.0`) |
+| `fix` | Bug fix or deterministic calculation repair | Patch (`0.0.x`) |
+| `docs` | Documentation additions or translations | None |
+| `refactor` | Code restructuring without functional changes | None |
+| `perf` | Deterministic performance improvements | Patch (`0.0.x`) |
+| `test` | Adding, updating, or expanding test coverage | None |
+| `build` | Packaging metadata or build tooling | None |
+| `ci` | CI/CD workflows, DevSecOps gates, or scripts | None |
+| `chore` | Maintenance, formatting, or tool configuration | None |
+| `security` | Security controls, loopback bindings, or permission checks | Patch (`0.0.x`) |
+| `revert` | Reverting a previous commit | Patch (`0.0.x`) |
+| `deps` | Package dependencies or lockfile updates | None / Patch |
+
+### Local Commit Validation
+
+You can validate any commit message or PR title locally using:
+
+```bash
+# Test a title string
+python scripts/development/dev.py validate-title "feat(connectors): add SQLite metadata support"
+
+# Install automated local Git commit-msg hook
+python scripts/development/dev.py install-hooks
+```
+
+For complete scope definitions, examples, and breaking change rules, see [docs/development/COMMIT_CONVENTIONS.md](docs/development/COMMIT_CONVENTIONS.md).
 
 ---
 
 ## Pull Request Process
 
-### Step 1 — Create a Branch
+Detailed step-by-step instructions for contributors are documented in [Contribution Workflow](docs/development/CONTRIBUTION_WORKFLOW.md) and [Code Review Policy](docs/development/CODE_REVIEW_POLICY.md).
 
-Create a feature or fix branch from the latest main branch.
-
-### Step 2 — Implement the Change
-
-Keep changes focused and avoid unrelated modifications.
-
-### Step 3 — Add Tests
-
-Include tests covering the changed behavior.
-
-### Step 4 — Update Documentation
-
-Update relevant documentation when functionality or configuration changes.
-
-### Step 5 — Verify Your Changes
-
-Run applicable tests, formatting checks, and linting tools.
-
-### Step 6 — Open a Pull Request
-
-Open a pull request against the main branch.
-
-[Create a Pull Request](https://github.com/krishanth7/dera/compare)
-
-### Pull Request Template
-
-Use the following structure:
-
-```markdown
-## Summary
-
-Describe the changes.
-
-## Related Issue
-
-Closes #
-
-## Changes Made
-
-- 
-- 
-- 
-
-## Testing
-
-Explain how the changes were tested.
-
-## Screenshots
-
-Add screenshots for UI changes, if applicable.
-
-## Checklist
-
-- [ ] Code follows project standards
-- [ ] Tests added or updated
-- [ ] Documentation updated
-- [ ] No secrets or sensitive data included
-- [ ] Security implications reviewed
-- [ ] Breaking changes documented
+### Step 1 — Create a Feature Branch
+Create a branch with an approved prefix from the latest `upstream/main`:
+```bash
+git checkout main
+git pull --ff-only upstream main
+git checkout -b feat/your-feature-name
 ```
 
-### Pull Request Expectations
+### Step 2 — Implement & Verify Locally
+Keep changes focused on a single logical concern. Before committing, run the complete baseline validation suite:
+```bash
+python scripts/development/dev.py all
+```
 
-- Keep PRs focused.
-- Explain the motivation.
-- Include relevant tests.
-- Respond respectfully to review feedback.
-- Avoid unrelated formatting changes.
-- Document breaking changes.
-- Do not include secrets or private customer data.
+### Step 3 — Commit with Conventional Commits
+```bash
+git add .
+git commit -m "feat(connectors): implement SQLite table introspection"
+```
+
+### Step 4 — Open a Pull Request
+Push your branch to your fork and open a pull request against `main`. Fill out the [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md) completely, including:
+- Summary & Motivation
+- Change Type checkboxes
+- Testing Performed
+- Security & Deterministic Non-AI confirmations
+
+### Step 5 — Code Review & CI Qualification
+All automated CI checks must pass and at least one code owner approval is required before your PR is squash-merged into `main`.
 
 Maintainers may request revisions before merging.
 
@@ -665,15 +642,16 @@ Contributions may be evaluated for:
 
 ### Merge Policy
 
-A pull request may be merged when:
+Detailed criteria are governed by our [Code Review Policy](docs/development/CODE_REVIEW_POLICY.md) and [Branch Protection Rules](docs/development/BRANCH_PROTECTION.md). A pull request may be squash-merged into `main` when:
 
-- Required checks pass.
-- Review feedback is resolved.
-- Changes meet project standards.
-- Security concerns are addressed.
-- The contribution is approved by an authorized maintainer.
+- All required CI status checks pass with 100% success.
+- Pull request title adheres to Conventional Commits.
+- PR readiness checks pass.
+- All review feedback and conversations are resolved.
+- Security-sensitive aspects are explicitly assessed.
+- The contribution is approved by code owner [@krishanth7](https://github.com/krishanth7).
 
-Maintainers may decline contributions that conflict with the project's scope or security requirements.
+Maintainers may decline contributions that conflict with the project's scope, deterministic mandate, or security requirements.
 
 ---
 
