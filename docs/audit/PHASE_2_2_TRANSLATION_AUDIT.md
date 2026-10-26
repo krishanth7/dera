@@ -6,7 +6,7 @@
 > **Maintainer:** Krishanth (`krishanth7`)  
 > **Audit Standard:** Professional, enterprise-oriented, evidence-based, reproducible  
 > **Audit Timestamp:** `2026-10-26T11:35:00Z`  
-> **Baseline English Commit SHA:** [`8fa39371d7c3558c7e909564883395d909404cb1`](https://github.com/krishanth7/dera/commit/8fa39371d7c3558c7e909564883395d909404cb1)  
+> **Baseline English Commit SHA:** `8fa39371d7c3558c7e909564883395d909404cb1`  
 > **Working Branch:** `docs/phase-2.2-international-readmes`  
 > **Authoritative English Source:** [`README.md`](../../README.md) (`SHA256: 5C4348C984F27A53F821E0199977EE8FC9F78902131CF127FF33B22934BCEE38`)  
 
@@ -121,7 +121,7 @@ Each translation was verified against the authoritative English baseline across 
 | **Simplified Chinese (`zh-CN`)** | `docs/i18n/README.zh-CN.md` | 10 | 14 | 4 | 6 | 1 | **100% Match** |
 | **Russian (`ru`)** | `docs/i18n/README.ru.md` | 10 | 14 | 4 | 6 | 1 | **100% Match** |
 
-### Verified Structural Elements Across All Translations:
+### Verified Structural Elements Across All Translations
 - **Project Identity:** Official name `DERA` and tagline *"Understand Every Schema. Engineer Every Change."* accurately preserved.
 - **Feature Matrix:** 10 discrete capabilities with identical status markers (`Stable v0.1.0`, `Beta v0.2.0`, `Planned v0.3.0`, `Planned v0.4.0`).
 - **Compatibility Matrix:** PostgreSQL (Production Grade), SQLite (Production Grade), MySQL / MariaDB (Beta v0.2.0), SQL Server (Planned v0.3.0), Oracle (Planned v0.4.0).

@@ -6,7 +6,7 @@
 > **Maintainer:** Krishanth (`krishanth7`)  
 > **Audit Standard:** Professional, enterprise-oriented, evidence-based, reproducible  
 > **Audit Timestamp:** `2026-10-26T12:20:00Z`  
-> **Baseline Commit SHA:** [`2213d4212ad126a642e977f6b92a2a0eb927ee78`](https://github.com/krishanth7/dera/commit/2213d4212ad126a642e977f6b92a2a0eb927ee78)  
+> **Baseline Commit SHA:** `2213d4212ad126a642e977f6b92a2a0eb927ee78`  
 > **Working Branch:** `docs/phase-2.3-language-navigation`  
 > **Canonical Language Manifest:** [`docs/i18n/languages.json`](../i18n/languages.json)  
 
