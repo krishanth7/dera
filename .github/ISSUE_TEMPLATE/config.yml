@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "💬 Community Discussions"
+    url: "https://github.com/krishanth7/dera/discussions"
+    about: "Ask questions, share ideas, or discuss database reverse engineering with the community."
+  - name: "🔒 Security Vulnerability Reporting"
+    url: "https://github.com/krishanth7/dera/security/advisories/new"
+    about: "Privately disclose a security vulnerability to the maintainers."
