@@ -1,0 +1,25 @@
+{
+  "name": "dera-monorepo",
+  "version": "0.1.0-dev",
+  "private": true,
+  "description": "DERA — Database Engineering & Reverse Analysis",
+  "author": "Bunga Krishanth <krishanth.b.2008@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/krishanth7/dera",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krishanth7/dera.git"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run --workspaces --if-present build",
+    "typecheck": "tsc --noEmit",
+    "lint": "npm run --workspaces --if-present lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
