@@ -14,8 +14,12 @@ Welcome to the official technical documentation for **DERA — Database Engineer
 |---|---|---|
 | **Architecture** | System components, data pipelines, deterministic processing engine, and database connectors | [docs/architecture/overview.md](architecture/overview.md) |
 | **Development** | Local development environment, coding standards, tooling, and testing strategy | [docs/development/setup.md](development/setup.md) |
+| **Documentation Lifecycle** | English source-of-truth policy, truth-in-documentation, and PR doc standards | [docs/development/README_MAINTENANCE.md](development/README_MAINTENANCE.md) |
 | **Security** | Threat modeling, credential encryption, read-only guarantees, SSRF defense, and audit logging | [docs/security/model.md](security/model.md) |
 | **Contributing** | Contribution guidelines, connector development, and code review criteria | [docs/contributing/guide.md](contributing/guide.md) |
+| **Governance** | Project stewardship, code owners, decision records, and third-party license inventory | [docs/governance/README.md](governance/README.md) |
+| **Roadmap** | Master 12-Phase development roadmap, milestone targets, and delivery timeline | [docs/roadmap/README.md](roadmap/README.md) |
+| **Audit & Baseline** | Repository audit reports, risk registers, and Phase 1 completion evidence | [docs/audit/README.md](audit/README.md) |
 | **Multilingual Documentation** | Complete synchronized documentation in 10 international languages | [docs/i18n/](i18n/README.en.md) |
 
 ---
