@@ -45,4 +45,3 @@ For detailed technical policies and operational procedures:
 Security vulnerabilities should be reported privately via:
 - **GitHub Private Vulnerability Reporting:** [Report a Vulnerability](https://github.com/krishanth7/dera/security/advisories/new)
 - **Security Contact:** `krishanth.b.2008@gmail.com`
-

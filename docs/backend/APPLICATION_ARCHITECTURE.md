@@ -24,7 +24,7 @@ The backend is deliberately designed as a **stateless, thin transport layer**:
 
 ## 2. Directory Layout & Module Structure
 
-```
+```text
 apps/api/
 ├── pyproject.toml                     # Python package metadata and dependencies
 └── src/

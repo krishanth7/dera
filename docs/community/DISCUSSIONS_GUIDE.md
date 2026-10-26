@@ -10,7 +10,7 @@
 
 ## 1. Overview
 
-**GitHub Discussions** is DERA's open community forum for open-ended questions, brainstorming, architectural debates, and community collaboration. 
+**GitHub Discussions** is DERA's open community forum for open-ended questions, brainstorming, architectural debates, and community collaboration.
 
 While GitHub Issues is reserved for actionable bugs and tracked feature milestones, Discussions provides a space for conversations before concrete code or tasks are defined.
 

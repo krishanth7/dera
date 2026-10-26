@@ -26,6 +26,7 @@ The following settings should be configured in GitHub under **Repository Setting
 - **Bypass List:** None (even repository administrators must adhere to pull request reviews and automated CI checks).
 
 ### B. Pull Request Requirements
+
 | Setting | Recommended Value | Rationale |
 |---|---|---|
 | **Require a pull request before merging** | **Enabled** | Prevents direct commits to `main`. |
@@ -51,6 +52,7 @@ All designated CI checks must pass before a pull request can be merged:
 12. **`Python Tests (3.13)`**: Automated test suite on Python 3.13.
 
 ### D. History & Integrity
+
 | Setting | Recommended Value | Rationale |
 |---|---|---|
 | **Require linear history** | **Enabled** | Preserves bisectable git history; enforces squash merging. |

@@ -37,11 +37,13 @@ def cmd_compile(args: argparse.Namespace) -> int:
 
 
 def cmd_validate_docs(args: argparse.Namespace) -> int:
-    """Run documentation link and internationalization parity checks."""
-    code1 = run_cmd([sys.executable, "scripts/ci/validate_docs.py"])
-    code2 = run_cmd([sys.executable, "scripts/docs/generate_language_navigation.py", "--check"])
-    code3 = run_cmd([sys.executable, "scripts/ci/validate_i18n.py"])
-    return code1 or code2 or code3
+    """Run markdown linting, internal links, mermaid diagrams, and i18n parity checks."""
+    code_lint = run_cmd(["npx", "markdownlint-cli2"])
+    code_docs = run_cmd([sys.executable, "scripts/ci/validate_docs.py"])
+    code_mermaid = run_cmd([sys.executable, "scripts/ci/validate_mermaid.py"])
+    code_nav = run_cmd([sys.executable, "scripts/docs/generate_language_navigation.py", "--check"])
+    code_i18n = run_cmd([sys.executable, "scripts/ci/validate_i18n.py"])
+    return code_lint or code_docs or code_mermaid or code_nav or code_i18n
 
 
 def cmd_validate_title(args: argparse.Namespace) -> int:

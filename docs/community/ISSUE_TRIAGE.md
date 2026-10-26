@@ -9,7 +9,7 @@
 
 ## 1. Overview
 
-Issue triage is the collaborative process of reviewing, classifying, prioritizing, and progressing incoming bug reports, feature requests, and maintenance tasks. 
+Issue triage is the collaborative process of reviewing, classifying, prioritizing, and progressing incoming bug reports, feature requests, and maintenance tasks.
 
 DERA follows an objective, evidence-based triage workflow designed to ensure rapid feedback for contributors while keeping the issue tracker focused on actionable engineering work.
 

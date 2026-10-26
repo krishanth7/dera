@@ -11,7 +11,7 @@
 
 ## 1. Security Overview
 
-Database reverse engineering requires connecting directly to enterprise and production database instances to inspect schemas, analyze relationships, and verify constraints. 
+Database reverse engineering requires connecting directly to enterprise and production database instances to inspect schemas, analyze relationships, and verify constraints.
 
 Because databases store critical business assets, DERA enforces a **defense-in-depth security model** anchored in least-privilege access, static mutation prevention, zero customer data extraction, and strict credential isolation.
 
@@ -60,7 +60,7 @@ A common misconception in database tooling is that executing `SET TRANSACTION RE
 ### 2.2 Database User Role Privileges (Primary Defense)
 **The database user account provided to DERA must be provisioned with the absolute minimum privileges required to inspect system catalogs.**
 
-#### PostgreSQL Least-Privilege Provisioning Example:
+#### PostgreSQL Least-Privilege Provisioning Example
 ```sql
 -- 1. Create a dedicated read-only inspection role
 CREATE ROLE dera_inspector WITH LOGIN PASSWORD 'STRONG_RANDOMLY_GENERATED_PASSWORD' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION;
@@ -110,7 +110,7 @@ DERA is strictly a **metadata inspection engine**. Permitted inspection objects 
 - Index definitions, uniqueness flags, and indexed column sequences
 
 ### 4.2 Zero Customer Row-Data Extraction
-**DERA inspection routines must never issue `SELECT *` or unrestricted record-scanning queries against customer application tables.** 
+**DERA inspection routines must never issue `SELECT *` or unrestricted record-scanning queries against customer application tables.**
 
 All reverse-engineering algorithms must operate strictly on metadata retrieved from system catalogs (e.g., `information_schema`, `pg_catalog`, `sqlite_master`, `mysql.schema`).
 

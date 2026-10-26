@@ -17,9 +17,16 @@
   "scripts": {
     "build": "npm run --workspaces --if-present build",
     "typecheck": "tsc --noEmit",
-    "lint": "npm run --workspaces --if-present lint"
+    "lint": "npm run --workspaces --if-present lint",
+    "docs:lint": "markdownlint-cli2 \"README.md\" \"docs/**/*.md\"",
+    "docs:links": "python scripts/ci/validate_docs.py",
+    "docs:mermaid": "python scripts/ci/validate_mermaid.py",
+    "docs:i18n": "python scripts/ci/validate_i18n.py",
+    "docs:check": "npm run docs:lint && python scripts/ci/validate_docs.py && python scripts/ci/validate_mermaid.py && python scripts/docs/generate_language_navigation.py --check && python scripts/ci/validate_i18n.py",
+    "docs:links:external": "python scripts/ci/validate_external_links.py"
   },
   "devDependencies": {
+    "markdownlint-cli2": "^0.17.2",
     "typescript": "^7.0.2"
   }
 }

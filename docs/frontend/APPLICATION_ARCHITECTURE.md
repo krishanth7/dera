@@ -26,7 +26,7 @@ In the current phase (Phase 2.4 baseline), `apps/web` operates as a **clean, lig
 
 ## 2. Directory Structure & Key Files
 
-```
+```text
 apps/web/
 ├── package.json                       # npm workspace manifest (@dera/web)
 ├── tsconfig.json                      # Next.js & TypeScript compiler settings

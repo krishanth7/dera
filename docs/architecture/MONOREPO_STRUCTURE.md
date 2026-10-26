@@ -20,7 +20,7 @@ Key architectural motivations for this structure:
 
 ## 2. Directory Layout Overview
 
-```
+```text
 dera/
 ├── .github/                      # GitHub configuration, issue templates, and CI/CD workflows
 ├── apps/                         # Deployable application workspaces

@@ -1,0 +1,46 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# External Link Health Check (Isolated Workflow)
+#
+# Purpose:
+#   Validates external HTTP and HTTPS links on a weekly schedule
+#   or on manual dispatch. Explicitly isolated from pull request
+#   gates to prevent PR failures caused by transient third-party
+#   network outages.
+# ============================================================
+
+name: "DERA | External Link Health Check"
+
+on:
+  schedule:
+    # Run every Monday at 04:00 UTC
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: external-links-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-external-links:
+    name: "External Link Health Check"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: "Validate External Documentation Links"
+        run: |
+          python scripts/ci/validate_external_links.py --concurrency 5 --timeout 8.0

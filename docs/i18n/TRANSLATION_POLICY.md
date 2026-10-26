@@ -2,7 +2,7 @@
 
 ## 1. Overview & Purpose
 
-DERA (*Database Engineering & Reverse Analysis*) is committed to providing accurate, complete, and synchronized technical documentation for the global developer community. 
+DERA (*Database Engineering & Reverse Analysis*) is committed to providing accurate, complete, and synchronized technical documentation for the global developer community.
 
 This policy establishes the governance standards, synchronization triggers, parity criteria, and review requirements for maintaining DERA's multilingual documentation suite in [`docs/i18n/`](README.en.md).
 
