@@ -42,8 +42,10 @@ Closes #
 
 ## Documentation Impact
 
-- [ ] Documentation in `docs/` updated or verified.
-- [ ] Markdown link validation passed (`python scripts/ci/validate_docs.py`).
+- [ ] Documentation in `docs/` updated or verified where required (e.g., API specs, CLI options, connector guides).
+- [ ] Code examples, diagrams, and CLI commands verified for technical accuracy.
+- [ ] Documentation linting and link validation passed (`npm run docs:check` or `python scripts/ci/validate_docs.py`).
+- [ ] Translation impact considered (English source-of-truth; translations tracked if core matrix changes).
 - [ ] No documentation updates required for this change.
 
 ## Breaking Changes
