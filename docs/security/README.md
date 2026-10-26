@@ -2,6 +2,7 @@
 
 **Project:** DERA — Database Engineering & Reverse Analysis  
 **Repository:** [https://github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
+**Maintainer:** Krishanth  
 **Security Contact:** `krishanth.b.2008@gmail.com`  
 **Reporting URL:** [https://github.com/krishanth7/dera/security/advisories/new](https://github.com/krishanth7/dera/security/advisories/new)  
 **License:** [MIT License](../../LICENSE)  
@@ -16,19 +17,21 @@ DERA enforces a **defense-in-depth security model** built on:
 - Least-privilege, read-only metadata catalog access.
 - Static SQL mutation interception.
 - Zero customer row-data extraction.
-- AES-256-GCM credential encryption at rest.
 - Strictly deterministic, non-AI execution with zero cloud inference transmission.
+- Loopback-by-default network binding.
 
 ```mermaid
 flowchart TD
     SEC[DERA Security Architecture]
     POLICY[Root Security Policy: SECURITY.md]
-    DB_SEC[Database Security & Access]
-    DEV_SEC[Secure Development Standards]
-    RESP[Vulnerability Response Workflow]
-    THREAT[Threat Model Matrix]
+    ARCH[System Security Architecture: SECURITY_ARCHITECTURE.md]
+    DB_SEC[Database Security & Access: DATABASE_SECURITY.md]
+    DEV_SEC[Secure Development Standards: SECURE_DEVELOPMENT.md]
+    RESP[Vulnerability Response Workflow: VULNERABILITY_RESPONSE.md]
+    THREAT[Threat Model Matrix: model.md]
 
     SEC --> POLICY
+    SEC --> ARCH
     SEC --> DB_SEC
     SEC --> DEV_SEC
     SEC --> RESP
@@ -41,6 +44,7 @@ flowchart TD
 
 | Document | Scope & Focus | Key Principles |
 |---|---|---|
+| [**SECURITY_ARCHITECTURE.md**](SECURITY_ARCHITECTURE.md) | Comprehensive security architecture & threat mitigation specification | Trust boundaries, read-only enforcement, credential handling, zero-AI assurance, attack surface analysis. |
 | [**SECURITY.md**](../../SECURITY.md) | Official project security policy & disclosure rules | Supported versions table, GitHub private advisory reporting, CVSS severity ratings, responsible disclosure. |
 | [**DATABASE_SECURITY.md**](DATABASE_SECURITY.md) | Database connection & catalog access standards | Why `READ ONLY` transactions alone are insufficient, database role provisioning, credential lifecycle, query safety. |
 | [**SECURE_DEVELOPMENT.md**](SECURE_DEVELOPMENT.md) | Secure development lifecycle & coding standards | Pydantic input validation, SQL parameterization, sanitized error handling, DevSecOps CI gates (Bandit, CodeQL). |

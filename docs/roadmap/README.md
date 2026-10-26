@@ -44,7 +44,7 @@ gantt
 | Phase | Milestone Name | Status | Key Deliverables & Focus Areas |
 |---|---|---|---|
 | **Phase 1** | **Repository Foundation & Governance** | **Completed** | Monorepo structure, PEP 621 packaging, Git branching, Conventional Commits, PR qualification gates, community operations (PR #20). |
-| **Phase 2** | **Multilingual Documentation** | **In Progress** | Authoritative English README (Phase 2.1 completed, PR #21), 9 international translations (Phase 2.2 completed, PR #22), unified 10-language navigation system (Phase 2.3 in progress). |
+| **Phase 2** | **Multilingual Documentation & Developer Experience** | **In Progress** | Authoritative English README (PR #21), 9 international translations (PR #22), 10-language navigation (PR #23), Architecture & Developer Documentation (Phase 2.4). |
 | **Phase 3** | **GitHub Actions & DevSecOps** | **Implemented** | Automated CI qualification gate, CodeQL scanning, Bandit SAST, matrix testing (Python 3.12/3.13), secret detection. |
 | **Phase 4** | **Backend & Platform Infrastructure** | Planned | FastAPI gateway endpoints, loopback default bindings, configuration management, health telemetry. |
 | **Phase 5** | **Database Connectors & Metadata Inspection** | Experimental | Read-only catalog extraction for PostgreSQL (`pg_catalog`) and SQLite (`sqlite_master`), query mutation guards. |
@@ -66,16 +66,14 @@ gantt
 - [x] **Sub-phase 1.3:** Git branching strategy, Conventional Commits standard, PR title validation, CODEOWNERS, and review policies ([`docs/development/`](../development/README.md)).
 - [x] **Sub-phase 1.4:** Professional README, transparent capability matrix, verified badges, and visual architecture diagrams.
 - [x] **Sub-phase 1.5:** Formal security policy, vulnerability disclosure workflows, and community governance ([`docs/security/`](../security/README.md), [`docs/governance/`](../governance/README.md)).
-<<<<<<< HEAD
-- [x] **Sub-phase 1.6:** GitHub issue forms, Discussions guide, pull request templates, and community operations ([`docs/community/`](../community/README.md), [`docs/audit/PHASE_1_COMPLETION.md`](../audit/PHASE_1_COMPLETION.md)) (Completed Phase 1).
-=======
-- [x] **Sub-phase 1.6:** Structured issue forms, discussions governance, specialized PR templates, and community operations ([`docs/audit/`](../audit/README.md), pending review in PR #20).
->>>>>>> 94e552e (docs(devex): improve getting started instructions and roadmap alignment)
+- [x] **Sub-phase 1.6:** GitHub issue forms, Discussions guide, pull request templates, and community operations ([`docs/community/`](../community/README.md), [`docs/audit/PHASE_1_COMPLETION.md`](../audit/PHASE_1_COMPLETION.md)) (Completed Phase 1 via PR #20).
 
 ### Phase 2 — Multilingual Documentation & Developer Experience
 - [x] **Sub-phase 2.1:** Authoritative English README, truth-in-documentation matrix, architecture visualization, and documentation lifecycle contract ([`docs/development/README_MAINTENANCE.md`](../development/README_MAINTENANCE.md), PR #21).
 - [x] **Sub-phase 2.2:** Synchronize 9 international README translations (`es`, `fr`, `de`, `pt`, `it`, `ja`, `ko`, `zh-CN`, `ru`) in [`docs/i18n/`](../i18n/), replacing Arabic with Italian in the official 10-language matrix (PR #22).
-- [x] **Sub-phase 2.3 (In Progress):** Ten-Language Documentation Navigation System with canonical manifest (`languages.json`), deterministic generator (`scripts/docs/generate_language_navigation.py`), and CI validation.
+- [x] **Sub-phase 2.3:** Ten-Language Documentation Navigation System with canonical manifest (`languages.json`), deterministic generator (`scripts/docs/generate_language_navigation.py`), and CI validation (PR #23).
+- [x] **Sub-phase 2.4:** Complete Architecture & Developer Documentation knowledge base, system component diagrams, backend/frontend guides, core/connector architectures, and audit acceptance.
+- [ ] **Sub-phase 2.5:** Documentation Linting & Link Validation CI automation.
 
 ### Phase 3 — GitHub Actions & DevSecOps
 - [x] CodeQL semantic security analysis for Python and JavaScript/TypeScript.

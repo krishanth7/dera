@@ -9,26 +9,28 @@
 Welcome to the official technical documentation for **DERA — Database Engineering & Reverse Analysis**.
 
 **Tagline:** Understand Every Schema. Engineer Every Change.  
+**Maintainer:** Krishanth  
 **Repository:** [https://github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
-**License:** [MIT License](../LICENSE)
+**License:** [MIT License](../LICENSE)  
+**Last Verified:** 2026-10-26 (Commit `e550fdd`)  
 
 ---
 
-## 📚 Documentation Directory
+## 📚 Technical Documentation Hubs
 
-| Section | Description | Verified Link |
+| Hub | Description | Primary Reference |
 |---|---|---|
-| **Getting Started** | Quickstart walkthrough, environment verification, and local execution | [docs/development/GETTING_STARTED.md](development/GETTING_STARTED.md) |
-| **Architecture** | System components, data pipelines, deterministic processing engine, and database connectors | [docs/architecture/overview.md](architecture/overview.md) |
-| **Development** | Local development environment, coding standards, tooling, and testing strategy | [docs/development/setup.md](development/setup.md) |
-| **Documentation Lifecycle** | English source-of-truth policy, truth-in-documentation, and PR doc standards | [docs/development/README_MAINTENANCE.md](development/README_MAINTENANCE.md) |
-| **Navigation Maintenance** | Canonical language manifest schema, navigation generator, and CI validation | [docs/i18n/NAVIGATION_MAINTENANCE.md](i18n/NAVIGATION_MAINTENANCE.md) |
-| **Security** | Threat modeling, credential encryption, read-only guarantees, SSRF defense, and audit logging | [docs/security/model.md](security/model.md) |
-| **Contributing** | Contribution guidelines, connector development, and code review criteria | [docs/contributing/guide.md](contributing/guide.md) |
-| **Governance** | Project stewardship, code owners, decision records, and third-party license inventory | [docs/governance/README.md](governance/README.md) |
-| **Roadmap** | Master 12-Phase development roadmap, milestone targets, and delivery timeline | [docs/roadmap/README.md](roadmap/README.md) |
-| **Audit & Baseline** | Repository audit reports, risk registers, and Phase 1 completion evidence | [docs/audit/README.md](audit/README.md) |
-| **Multilingual Documentation** | Complete synchronized documentation in 10 international languages | [docs/i18n/](i18n/README.en.md) |
+| **System Architecture** | Architectural philosophy, component diagrams, monorepo structure, and data flows | [docs/architecture/SYSTEM_OVERVIEW.md](architecture/SYSTEM_OVERVIEW.md) |
+| **Backend Gateway** | FastAPI application structure, security middleware, and verified REST API contracts | [docs/backend/APPLICATION_ARCHITECTURE.md](backend/APPLICATION_ARCHITECTURE.md) |
+| **Frontend Studio** | Next.js 15 studio scaffold, component hierarchy, and typed API client | [docs/frontend/APPLICATION_ARCHITECTURE.md](frontend/APPLICATION_ARCHITECTURE.md) |
+| **Deterministic Core** | Pure Python canonical domain models, Kahn DAG algorithms, and rule diagnostics | [docs/core/README.md](core/README.md) |
+| **Database Connectors** | Read-only connection lifecycle, query mutation safety, and capability matrix | [docs/connectors/CONNECTOR_ARCHITECTURE.md](connectors/CONNECTOR_ARCHITECTURE.md) |
+| **Shared Contracts** | JSON Schema exchange specifications and TypeScript protocol definitions | [docs/contracts/SCHEMA_CONTRACTS.md](contracts/SCHEMA_CONTRACTS.md) |
+| **Developer Experience** | Onboarding guides, commands catalog, testing guides, and troubleshooting | [docs/development/GETTING_STARTED.md](development/GETTING_STARTED.md) |
+| **Security Architecture** | Threat modeling, read-only guarantees, credential safety, and vulnerability triage | [docs/security/SECURITY_ARCHITECTURE.md](security/SECURITY_ARCHITECTURE.md) |
+| **Audit & Baseline Reports** | Phase audit reports, baseline assessments, and acceptance certificates | [docs/audit/README.md](audit/README.md) |
+| **Roadmap & Milestones** | Master 12-Phase development roadmap and engineering delivery schedule | [docs/roadmap/README.md](roadmap/README.md) |
+| **International Documentation** | Synchronized technical documentation in 10 international languages | [docs/i18n/](i18n/README.en.md) |
 
 ---
 
@@ -53,7 +55,7 @@ DERA maintains synchronized documentation in 10 international languages:
 
 1. **Deterministic by Design:** Every schema snapshot, graph resolution, and diagnostic report is reproducible and rule-based.
 2. **Strictly Non-AI:** DERA contains no machine learning, generative AI, LLMs, or external AI inference dependencies.
-3. **Metadata-First & Privacy:** Analysis examines database system catalogs (`information_schema`, `pg_catalog`). Customer data rows are never extracted by default.
+3. **Metadata-First & Privacy:** Analysis examines database system catalogs (`information_schema`, `sqlite_master`). Customer data rows are never extracted by default.
 4. **Least Privilege & Read-Only:** Database operations enforce read-only execution at the connection level.
 
 ---

@@ -1,85 +1,126 @@
 # DERA Development Commands Reference
 
-> **Phase:** 1.2 Monorepo Architecture Foundation  
+> **Project:** DERA — Database Engineering & Reverse Analysis  
+> **Maintainer:** Krishanth  
 > **Status:** Official Developer Command Catalog  
+> **Last Verified:** 2026-10-26 (Commit `e550fdd`)  
 
 ---
 
-## 1. Unified Cross-Platform CLI (`dev.py`)
+## 1. Unified Cross-Platform Runner (`scripts/development/dev.py`)
 
-DERA provides a dedicated cross-platform runner (`scripts/development/dev.py`) that operates consistently on Windows PowerShell/cmd, Linux, and macOS:
+DERA provides a dedicated cross-platform command runner (`scripts/development/dev.py`) designed to operate identically on Windows PowerShell, macOS, and Linux without requiring GNU Make.
 
-| Command | Purpose | Underlying Subcommands |
-|---|---|---|
-| `python scripts/development/dev.py test` | Run all test suites | `python -m unittest discover tests/` |
-| `python scripts/development/dev.py typecheck` | Run static TypeScript compiler typecheck | `npx -p typescript tsc --noEmit` |
-| `python scripts/development/dev.py compile` | Byte-compile all Python packages | `python -m compileall packages/ apps/ tests/` |
-| `python scripts/development/dev.py validate-docs` | Validate documentation markdown links and i18n parity | `scripts/ci/validate_docs.py` & `validate_i18n.py` |
-| `python scripts/development/dev.py validate-title "<title>"` | Validate a commit or PR title against Conventional Commits | `scripts/ci/validate_pr_title.py "<title>"` |
-| `python scripts/development/dev.py install-hooks` | Install local Git commit-msg hook for Conventional Commits | Writes `.git/hooks/commit-msg` |
-| `python scripts/development/dev.py all` | Execute full baseline verification suite | Runs compile, tests, typecheck, and doc validation sequentially |
-
----
-
-## 2. Standard `Makefile` Commands (UNIX / macOS)
-
-For contributors using Linux or macOS with GNU Make installed:
-
-| Target | Description | Example |
-|---|---|---|
-| `make help` | Print summary of all Makefile targets | `make help` |
-| `make install` | Install Python dev extras and Node workspaces | `make install` |
-| `make lint` | Run Ruff linter and documentation link checkers | `make lint` |
-| `make format` | Auto-format Python source with Ruff | `make format` |
-| `make typecheck` | Execute TypeScript compiler check | `make typecheck` |
-| `make test` | Run Python unit, integration, and architecture tests | `make test` |
-| `make build` | Compile Python packages and build Node workspaces | `make build` |
-| `make dev-api` | Launch FastAPI gateway server with reload | `make dev-api` |
-| `make validate-title` | Validate PR or commit title (pass `TITLE="..."`) | `make validate-title TITLE="feat(core): test"` |
-| `make install-hooks` | Install local Git commit-msg hook | `make install-hooks` |
-| `make clean` | Remove `__pycache__`, `.pytest_cache`, `.ruff_cache`, and build directories | `make clean` |
+| Command | Purpose | Prerequisites | Exact Syntax | Expected Behavior | Exit Code | Troubleshooting |
+|---|---|---|---|---|---|---|
+| **Run All Baseline Checks** | Executes compile, tests, typecheck, and doc validation sequentially | Python 3.12+, Node 20+, npm packages installed | `python scripts/development/dev.py all` | Runs 5 checks in sequence and reports overall pass/fail status | `0` on success; `1` on failure | Run individual failing check to isolate the issue |
+| **Run Test Suite** | Discovers and executes all 47 automated tests | Python 3.12+ | `python scripts/development/dev.py test` | Runs `unittest discover tests/` | `0` on pass; `1` on test failure | Inspect traceback for failing test assertion |
+| **Run TypeScript Typecheck** | Compiles TypeScript workspaces without emitting files | Node.js 20+, `npx` | `python scripts/development/dev.py typecheck` | Executes `npx -p typescript tsc --noEmit` | `0` on pass; `1` on type error | Ensure `npm install` was run in repo root |
+| **Byte-Compile Python** | Compiles all `.py` files to detect syntax errors | Python 3.12+ | `python scripts/development/dev.py compile` | Executes `compileall` on `packages/`, `apps/`, `tests/` | `0` on pass; `1` on syntax error | Check line indicated in syntax error |
+| **Validate Documentation** | Validates internal markdown links and 10-language parity | Python 3.12+ | `python scripts/development/dev.py validate-docs` | Runs `validate_docs.py`, `generate_language_navigation.py --check`, `validate_i18n.py` | `0` on pass; `1` on broken link | Check path and anchor spelling in reported files |
+| **Validate Commit/PR Title** | Asserts Conventional Commits format | Python 3.12+ | `python scripts/development/dev.py validate-title "<title>"` | Verifies type, scope, and description syntax | `0` on pass; `1` on invalid format | Ensure format matches `<type>(<scope>): <desc>` |
+| **Install Git Hooks** | Installs local commit-msg hook | Git | `python scripts/development/dev.py install-hooks` | Writes executable `.git/hooks/commit-msg` | `0` on success | Check write permissions in `.git/hooks/` |
 
 ---
 
-## 3. Pre-Commit Hook Tooling (Optional)
+## 2. Native Direct Commands
 
-Contributors who use the standard `pre-commit` framework can enable automated local git hooks:
+Contributors who prefer executing native toolchain commands directly can use the following commands:
 
+### 2.1 Python Dependency Installation & Environment
 ```bash
-# Install pre-commit
-pip install pre-commit
+# Create virtual environment
+python -m venv .venv
 
-# Install git hook scripts into .git/hooks
-pre-commit install
+# Activate on Linux/macOS
+source .venv/bin/activate
 
-# Run checks manually against all files
-pre-commit run --all-files
+# Activate on Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+
+# Install package in editable mode with development extras
+pip install -e ".[dev]"
 ```
 
-
----
-
-## 4. Direct Native Commands
-
-Contributors who prefer running native commands directly can use:
-
-### Python Commands
+### 2.2 Running Python Tests
 ```bash
-# Run unit & architecture tests
+# Run all tests (unit, integration, architecture, regression, docs)
 python -m unittest discover tests/
 
-# Compile Python code
-python -m compileall packages/ apps/ tests/
+# Run unit tests only
+python -m unittest discover tests/unit
 
-# Run API gateway locally
-python -m uvicorn dera_api.main:app --reload --port 8000
+# Run architecture boundary and non-AI enforcement tests
+python -m unittest tests/architecture/test_module_boundaries.py
+
+# Run SQLite connector integration tests
+python -m unittest tests/integration/test_sqlite_connector.py
+
+# Run SHA-256 schema hash regression tests
+python -m unittest discover tests/regression
+
+# Run 10-language navigation tests
+python -m unittest discover tests/docs
 ```
 
-### Node.js / TypeScript Commands
+### 2.3 Running the API Gateway
 ```bash
-# Typecheck all TypeScript workspaces
+# Run FastAPI server with hot-reload on loopback 127.0.0.1:8000
+python -m uvicorn dera_api.main:app --reload --host 127.0.0.1 --port 8000
+
+# Run API server on custom port
+python -m uvicorn dera_api.main:app --port 8080
+```
+
+### 2.4 Running the Web Frontend
+```bash
+# Install npm dependencies across workspaces
+npm install
+
+# Typecheck all TypeScript code
 npx -p typescript tsc --noEmit
 
-# Run web studio development server (when web dependencies installed)
+# Launch Next.js web studio in development mode
 npm run --workspace=@dera/web dev
+
+# Build production bundle for web studio
+npm run --workspace=@dera/web build
 ```
+
+### 2.5 Documentation & Internationalization Validation
+```bash
+# Validate internal markdown links and H1 heading hierarchy
+python scripts/ci/validate_docs.py
+
+# Check 10-language navigation synchronization across READMEs
+python scripts/docs/generate_language_navigation.py --check
+
+# Synchronize 10-language navigation banner across all target files
+python scripts/docs/generate_language_navigation.py --write
+
+# Validate international README translations and language manifest
+python scripts/ci/validate_i18n.py
+```
+
+---
+
+## 3. Standard `Makefile` Commands (UNIX / macOS)
+
+For contributors working on Linux or macOS systems with GNU Make installed:
+
+| Target | Underlying Command | Description |
+|---|---|---|
+| `make test` | `python -m unittest discover tests/` | Runs full Python test suite |
+| `make typecheck` | `npx -p typescript tsc --noEmit` | Compiles TypeScript workspaces |
+| `make build` | `python -m compileall packages/ apps/ tests/ && npm run --workspace=@dera/web build` | Compiles Python and builds web bundle |
+| `make dev-api` | `python -m uvicorn dera_api.main:app --reload --port 8000` | Launches API development server |
+| `make clean` | Removes `__pycache__`, `.pytest_cache`, build artifacts | Cleans temporary cache directories |
+
+---
+
+## 4. Related Documentation
+
+- [Getting Started Guide](GETTING_STARTED.md)
+- [Testing Architecture Guide](TESTING.md)
+- [Development Troubleshooting](TROUBLESHOOTING.md)
+- [Contribution Workflow](CONTRIBUTION_WORKFLOW.md)

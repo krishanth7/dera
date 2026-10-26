@@ -1,8 +1,8 @@
 # ADR 0001: Modular Monolith Monorepo Architecture for DERA
 
-> **Status:** Proposed (Under Review by Maintainer Krishanth)  
+> **Status:** Accepted  
 > **Date:** 2026-10-26  
-> **Deciders:** Principal Software Architect, DevSecOps Architect, Maintainer  
+> **Deciders:** Principal Software Architect, DevSecOps Architect, Maintainer Krishanth  
 > **Technical Scope:** Repository Architecture, Module Boundaries, Package Organization  
 
 ---
