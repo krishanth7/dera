@@ -39,8 +39,9 @@ def cmd_compile(args: argparse.Namespace) -> int:
 def cmd_validate_docs(args: argparse.Namespace) -> int:
     """Run documentation link and internationalization parity checks."""
     code1 = run_cmd([sys.executable, "scripts/ci/validate_docs.py"])
-    code2 = run_cmd([sys.executable, "scripts/ci/validate_i18n.py"])
-    return code1 or code2
+    code2 = run_cmd([sys.executable, "scripts/docs/generate_language_navigation.py", "--check"])
+    code3 = run_cmd([sys.executable, "scripts/ci/validate_i18n.py"])
+    return code1 or code2 or code3
 
 
 def cmd_validate_title(args: argparse.Namespace) -> int:

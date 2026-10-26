@@ -1,10 +1,10 @@
 # ============================================================
 # DERA — Database Engineering & Reverse Analysis
-# Multilingual Documentation (10 Languages) Parity
+# Multilingual Documentation & Navigation (10 Languages)
 #
 # Purpose:
-#   Validates existence, cross-navigation, encoding integrity,
-#   and structural parity for all 10 supported documentation languages.
+#   Validates canonical language manifest, navigation generator
+#   synchronization, managed markers, and cross-navigation parity.
 # ============================================================
 
 name: "DERA | Multilingual Validation"
@@ -14,14 +14,24 @@ on:
     branches:
       - main
     paths:
+      - "README.md"
+      - "docs/README.md"
       - "docs/i18n/**"
+      - "scripts/docs/**"
       - "scripts/ci/validate_i18n.py"
+      - "tests/docs/**"
+      - ".github/workflows/i18n.yml"
   pull_request:
     branches:
       - main
     paths:
+      - "README.md"
+      - "docs/README.md"
       - "docs/i18n/**"
+      - "scripts/docs/**"
       - "scripts/ci/validate_i18n.py"
+      - "tests/docs/**"
+      - ".github/workflows/i18n.yml"
   workflow_dispatch:
 
 permissions:
@@ -33,7 +43,7 @@ concurrency:
 
 jobs:
   validate-i18n:
-    name: "10-Language Parity Verification"
+    name: "10-Language Parity & Navigation Verification"
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -41,13 +51,21 @@ jobs:
       - name: "Checkout DERA Repository"
         uses: actions/checkout@v7
         with:
-          persist-credentials: false
+            persist-credentials: false
 
       - name: "Set up Python"
         uses: actions/setup-python@v7
         with:
           python-version: "3.13"
 
+      - name: "Verify Navigation Synchronization"
+        run: |
+          python scripts/docs/generate_language_navigation.py --check
+
       - name: "Validate i18n Suite"
         run: |
           python scripts/ci/validate_i18n.py
+
+      - name: "Run Language Navigation Unit Tests"
+        run: |
+          python -m unittest tests/docs/test_language_navigation.py

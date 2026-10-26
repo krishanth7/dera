@@ -1,3 +1,9 @@
+<!-- DERA:I18N_NAV:START -->
+[English](../README.md) | [Español](i18n/README.es.md) | [Français](i18n/README.fr.md) | [Deutsch](i18n/README.de.md) | [Português](i18n/README.pt.md) | [Italiano](i18n/README.it.md) | [日本語](i18n/README.ja.md) | [한국어](i18n/README.ko.md) | [简体中文](i18n/README.zh-CN.md) | [Русский](i18n/README.ru.md)
+<!-- DERA:I18N_NAV:END -->
+
+---
+
 # DERA Documentation Index
 
 Welcome to the official technical documentation for **DERA — Database Engineering & Reverse Analysis**.
@@ -8,13 +14,15 @@ Welcome to the official technical documentation for **DERA — Database Engineer
 
 ---
 
-## 📚 Documentation Sections
+## 📚 Documentation Directory
 
-| Section | Description | Link |
+| Section | Description | Verified Link |
 |---|---|---|
+| **Getting Started** | Quickstart walkthrough, environment verification, and local execution | [docs/development/GETTING_STARTED.md](development/GETTING_STARTED.md) |
 | **Architecture** | System components, data pipelines, deterministic processing engine, and database connectors | [docs/architecture/overview.md](architecture/overview.md) |
 | **Development** | Local development environment, coding standards, tooling, and testing strategy | [docs/development/setup.md](development/setup.md) |
 | **Documentation Lifecycle** | English source-of-truth policy, truth-in-documentation, and PR doc standards | [docs/development/README_MAINTENANCE.md](development/README_MAINTENANCE.md) |
+| **Navigation Maintenance** | Canonical language manifest schema, navigation generator, and CI validation | [docs/i18n/NAVIGATION_MAINTENANCE.md](i18n/NAVIGATION_MAINTENANCE.md) |
 | **Security** | Threat modeling, credential encryption, read-only guarantees, SSRF defense, and audit logging | [docs/security/model.md](security/model.md) |
 | **Contributing** | Contribution guidelines, connector development, and code review criteria | [docs/contributing/guide.md](contributing/guide.md) |
 | **Governance** | Project stewardship, code owners, decision records, and third-party license inventory | [docs/governance/README.md](governance/README.md) |

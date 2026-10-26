@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "default_language": "en",
+  "languages": [
+    {
+      "code": "en",
+      "name": "English",
+      "native_name": "English",
+      "path": "README.md"
+    },
+    {
+      "code": "es",
+      "name": "Spanish",
+      "native_name": "Español",
+      "path": "docs/i18n/README.es.md"
+    },
+    {
+      "code": "fr",
+      "name": "French",
+      "native_name": "Français",
+      "path": "docs/i18n/README.fr.md"
+    },
+    {
+      "code": "de",
+      "name": "German",
+      "native_name": "Deutsch",
+      "path": "docs/i18n/README.de.md"
+    },
+    {
+      "code": "pt",
+      "name": "Portuguese",
+      "native_name": "Português",
+      "path": "docs/i18n/README.pt.md"
+    },
+    {
+      "code": "it",
+      "name": "Italian",
+      "native_name": "Italiano",
+      "path": "docs/i18n/README.it.md"
+    },
+    {
+      "code": "ja",
+      "name": "Japanese",
+      "native_name": "日本語",
+      "path": "docs/i18n/README.ja.md"
+    },
+    {
+      "code": "ko",
+      "name": "Korean",
+      "native_name": "한국어",
+      "path": "docs/i18n/README.ko.md"
+    },
+    {
+      "code": "zh-CN",
+      "name": "Simplified Chinese",
+      "native_name": "简体中文",
+      "path": "docs/i18n/README.zh-CN.md"
+    },
+    {
+      "code": "ru",
+      "name": "Russian",
+      "native_name": "Русский",
+      "path": "docs/i18n/README.ru.md"
+    }
+  ]
+}
