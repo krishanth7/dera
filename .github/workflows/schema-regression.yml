@@ -1,0 +1,57 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Deterministic Schema Regression Engine
+#
+# Purpose:
+#   Validates canonical normalization, SHA-256 fingerprinting,
+#   and topological DAG order repeatability over versioned fixtures.
+# ============================================================
+
+name: "DERA | Schema Regression"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/core/src/**"
+      - "fixtures/schemas/**"
+      - "tests/regression/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "packages/core/src/**"
+      - "fixtures/schemas/**"
+      - "tests/regression/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: schema-regression-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression-suite:
+    name: "Deterministic Hash & DAG Regression"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python 3.13"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Run Schema Regression Suite"
+        env:
+          PYTHONPATH: packages/core/src:apps/api/src
+        run: |
+          python -m unittest discover tests/regression/
