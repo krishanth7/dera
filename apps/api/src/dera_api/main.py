@@ -42,7 +42,7 @@ def platform_info() -> dict[str, str]:
         "project": "DERA",
         "name": "Database Engineering & Reverse Analysis",
         "tagline": "Understand Every Schema. Engineer Every Change.",
-        "maintainer": "Bunga Krishanth",
+        "maintainer": "Krishanth",
         "philosophy": "Deterministic, non-AI database reverse engineering",
         "version": dera.__version__,
     }

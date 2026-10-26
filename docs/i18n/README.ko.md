@@ -586,14 +586,14 @@ Copyright (c) 2026 Krishanth
 
 ## 👨‍💻 메인테이너
 
-**Bunga Krishanth**  
+**Krishanth**  
 창립자 및 리드 메인테이너
 
 - GitHub: [@krishanth7](https://github.com/krishanth7)  
 - Repository: [github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
 - Contact: `krishanth.b.2008@gmail.com`
 
-*DERA는 Bunga Krishanth에 의해 독립적으로 유지보수되는 오픈 소스 프로젝트입니다. OVIC Labs는 메인테이너의 광범위한 엔지니어링 생태계의 일부로 인정됩니다.*
+*DERA는 Krishanth에 의해 독립적으로 유지보수되는 오픈 소스 프로젝트입니다. OVIC Labs는 메인테이너의 광범위한 엔지니어링 생태계의 일부로 인정됩니다.*
 
 ---
 

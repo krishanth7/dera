@@ -586,14 +586,14 @@ Copyright (c) 2026 Krishanth
 
 ## 👨‍💻 Мейнтейнер
 
-**Bunga Krishanth**  
+**Krishanth**  
 Основатель и ведущий мейнтейнер
 
 - GitHub: [@krishanth7](https://github.com/krishanth7)  
 - Репозиторий: [github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
 - Контактный email: `krishanth.b.2008@gmail.com`
 
-*DERA — независимый проект с открытым исходным кодом, развиваемый Bunga Krishanth. OVIC Labs признается частью более широкой инженерной экосистемы автора.*
+*DERA — независимый проект с открытым исходным кодом, развиваемый Krishanth. OVIC Labs признается частью более широкой инженерной экосистемы автора.*
 
 ---
 

@@ -697,7 +697,7 @@ Our goal is to make database engineering more transparent, accessible, reliable,
 
 **DERA — Database Engineering & Reverse Analysis**
 
-Maintained by [Bunga Krishanth](https://github.com/krishanth7)
+Maintained by [Krishanth](https://github.com/krishanth7)
 
 © 2026 DERA Contributors
 

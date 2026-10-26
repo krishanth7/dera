@@ -3,7 +3,7 @@
 
 Uses the GitHub CLI to inspect cache key prefixes, total storage footprint,
 and prune stale caches when total size exceeds policy thresholds.
-Copyright (c) 2026 Bunga Krishanth. All rights reserved.
+Copyright (c) 2026 Krishanth. All rights reserved.
 Licensed under the MIT License.
 """
 

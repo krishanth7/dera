@@ -1,7 +1,7 @@
 """Unit tests for DERA FastAPI gateway.
 
 Deterministic endpoint validation.
-Copyright (c) 2026 Bunga Krishanth. All rights reserved.
+Copyright (c) 2026 Krishanth. All rights reserved.
 Licensed under the MIT License.
 """
 
@@ -33,7 +33,7 @@ class TestDeraApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["project"], "DERA")
-        self.assertEqual(data["maintainer"], "Bunga Krishanth")
+        self.assertEqual(data["maintainer"], "Krishanth")
         self.assertIn("Deterministic", data["philosophy"])
 
 

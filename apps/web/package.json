@@ -2,7 +2,7 @@
   "name": "@dera/web",
   "version": "0.1.0-dev",
   "description": "Interactive Web Canvas & Schema Visualizer for DERA",
-  "author": "Bunga Krishanth <krishanth.b.2008@gmail.com>",
+  "author": "Krishanth <krishanth.b.2008@gmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "tsc"
