@@ -1,0 +1,44 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Lychee External Link Validator Configuration (.lychee.toml)
+#
+# Purpose: Validates external HTTP/HTTPS documentation links in
+#          an isolated, scheduled/manual GitHub Actions workflow.
+# ============================================================
+
+# Request timeout in seconds
+timeout = 10
+
+# Maximum number of retries per URL
+max_retries = 2
+
+# Wait time between retries in seconds
+retry_wait_time = 1
+
+# Maximum number of concurrent network requests
+max_concurrency = 8
+
+# Custom User-Agent to prevent anti-bot blocking by documentation hosts
+user_agent = "DERA-DocsValidator/1.0 (+https://github.com/krishanth7/dera)"
+
+# Accept 200-204, 301, 302, 307, 308 as valid HTTP response codes
+accept = [200, 201, 202, 203, 204, 301, 302, 307, 308]
+
+# Disallow private and loopback IP addresses for security
+exclude_all_private = true
+
+# Narrowly scoped exclusions with explicit reasons
+exclude = [
+  # 1. GitHub Private Security Advisory submission endpoint requires maintainer login
+  "^https://github\\.com/krishanth7/dera/security/advisories/new$",
+
+  # 2. Dynamic Shields.io badges frequently rate-limit automated HEAD requests
+  "^https://img\\.shields\\.io/",
+
+  # 3. Standard RFC 2606 illustrative examples
+  "^https?://example\\.com",
+
+  # 4. Localhost and loopback bindings used in documentation examples
+  "^https?://127\\.0\\.0\\.1",
+  "^https?://localhost"
+]
