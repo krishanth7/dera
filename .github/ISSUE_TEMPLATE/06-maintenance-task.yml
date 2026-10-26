@@ -1,0 +1,69 @@
+name: "🧹 Maintenance Task"
+description: "Propose code refactoring, build tooling updates, CI/CD improvements, or technical debt reduction."
+title: "[Maint]: "
+labels: ["type/maintenance", "status/triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Repository Maintenance & Quality Engineering
+        This form is intended for maintainers and contributors tracking non-functional engineering improvements, dependency upgrades, DevSecOps hardening, or code refactoring.
+        - **Do not report security vulnerabilities here.** Disclose vulnerabilities privately via [GitHub Security Advisories](https://github.com/krishanth7/dera/security/advisories/new).
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "Maintenance Category"
+      description: "Select the primary category for this task."
+      options:
+        - "Technical Debt & Architectural Refactoring"
+        - "Dependency Updates & Supply Chain Hygiene"
+        - "CI/CD & GitHub Actions Automation"
+        - "Test Coverage Expansion & Flaky Test Fixing"
+        - "Build Tooling & Packaging Standards"
+        - "Static Analysis & Linter Configuration"
+        - "Documentation Maintenance & Link Health"
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: "Task Summary & Motivation"
+      description: "Explain why this maintenance is necessary and what technical debt or operational inefficiency it addresses."
+      placeholder: "Upgrade Ruff configuration to enable new security rules; remove deprecated typing constructs..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_changes
+    attributes:
+      label: "Proposed Technical Changes"
+      description: "List the specific files, configurations, or packages to be modified."
+      placeholder: |
+        - Update `pyproject.toml` tool.ruff section with `UP` and `B` rules...
+        - Run `ruff check --fix` across `packages/core/src`...
+        - Add unit test asserting compliance...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      description: "How will maintainers know this task is successfully completed?"
+      placeholder: |
+        - [ ] All Python files pass `ruff check` with zero warnings
+        - [ ] Full baseline suite passes (`python scripts/development/dev.py all`)
+        - [ ] No regression in test execution time
+    validations:
+      required: true
+
+  - type: textarea
+    id: risk_assessment
+    attributes:
+      label: "Risk Assessment & Compatibility Impact"
+      description: "Could these changes break downstream consumers, external APIs, or CI workflows?"
+      placeholder: "Low risk; strictly internal dev tooling change with no public API impact."
+    validations:
+      required: true
