@@ -116,7 +116,7 @@ jobs:
       - name: "Upload Security Analysis Artifacts"
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: codeql-sarif-${{ matrix.language }}
           path: codeql-results/
