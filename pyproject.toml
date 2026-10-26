@@ -15,11 +15,15 @@ dependencies = [
     "networkx>=3.0",
     "sqlglot>=20.0.0",
     "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
 ]
 
 [project.urls]
 Homepage = "https://github.com/krishanth7/dera"
 Repository = "https://github.com/krishanth7/dera"
+
+[tool.setuptools.packages.find]
+where = ["packages/core/src", "apps/api/src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

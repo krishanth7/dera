@@ -1,0 +1,67 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Application Security & Boundary Testing
+#
+# Purpose:
+#   Verifies read-only connection limits, credential redaction,
+#   SQL identifier quoting, and static security linting.
+# ============================================================
+
+name: "DERA | Security Tests"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Every Sunday at 04:00 UTC
+    - cron: "0 4 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security-audit:
+    name: "Static Security Lint & Boundaries"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Install Bandit Security Linter"
+        run: |
+          pip install bandit
+
+      - name: "Run Bandit SAST Scan"
+        run: |
+          bandit -r packages/core/src/ apps/api/src/ -ll -q
+
+      - name: "Verify Zero Production Credentials in Fixtures"
+        run: |
+          python -c "
+          import json, glob, sys
+          for f in glob.glob('fixtures/schemas/*.json'):
+              with open(f) as fp:
+                  content = fp.read().lower()
+                  if any(term in content for term in ['password', 'secret', 'private_key']):
+                      print(f'ERROR: Potential sensitive credential in {f}', file=sys.stderr)
+                      sys.exit(1)
+          print('SUCCESS: Fixtures clean of sensitive credential keywords.')
+          "

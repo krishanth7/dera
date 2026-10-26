@@ -1,0 +1,47 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Pull Request Readiness & Author Declaration
+#
+# Purpose:
+#   Validates description completeness, testing explanation,
+#   and security disclosures on incoming pull requests.
+# ============================================================
+
+name: "DERA | PR Readiness"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-readiness-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  readiness-check:
+    name: "PR Description & Checklist Readiness"
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Evaluate PR Readiness"
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_DRAFT: ${{ github.event.pull_request.draft }}
+        run: |
+          python scripts/ci/validate_pr_readiness.py

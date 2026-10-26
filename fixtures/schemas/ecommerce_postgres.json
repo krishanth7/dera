@@ -1,0 +1,119 @@
+{
+  "database": "ecommerce_prod",
+  "engine": "postgresql",
+  "expected_sha256": "893c5c5e8869c4a4a58ff093b58beaf2a3ebcc617e997f8c0ff8289417937508",
+  "tables": [
+    {
+      "schema": "public",
+      "name": "users",
+      "columns": [
+        {"name": "id", "data_type": "BIGINT", "is_nullable": false},
+        {"name": "email", "data_type": "VARCHAR(255)", "is_nullable": false},
+        {"name": "created_at", "data_type": "TIMESTAMP WITH TIME ZONE", "is_nullable": false}
+      ],
+      "primary_key": {"name": "pk_users", "columns": ["id"]},
+      "foreign_keys": [],
+      "indexes": [{"name": "idx_users_email", "columns": ["email"], "is_unique": true}]
+    },
+    {
+      "schema": "public",
+      "name": "categories",
+      "columns": [
+        {"name": "id", "data_type": "INT", "is_nullable": false},
+        {"name": "parent_id", "data_type": "INT", "is_nullable": true},
+        {"name": "name", "data_type": "VARCHAR(100)", "is_nullable": false}
+      ],
+      "primary_key": {"name": "pk_categories", "columns": ["id"]},
+      "foreign_keys": [
+        {
+          "name": "fk_categories_parent",
+          "source_columns": ["parent_id"],
+          "target_schema": "public",
+          "target_table": "categories",
+          "target_columns": ["id"],
+          "on_delete": "SET NULL"
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "schema": "public",
+      "name": "products",
+      "columns": [
+        {"name": "id", "data_type": "BIGINT", "is_nullable": false},
+        {"name": "category_id", "data_type": "INT", "is_nullable": false},
+        {"name": "title", "data_type": "VARCHAR(200)", "is_nullable": false},
+        {"name": "sku", "data_type": "VARCHAR(50)", "is_nullable": false}
+      ],
+      "primary_key": {"name": "pk_products", "columns": ["id"]},
+      "foreign_keys": [
+        {
+          "name": "fk_products_category",
+          "source_columns": ["category_id"],
+          "target_schema": "public",
+          "target_table": "categories",
+          "target_columns": ["id"],
+          "on_delete": "RESTRICT"
+        }
+      ],
+      "indexes": [
+        {"name": "idx_products_category", "columns": ["category_id"], "is_unique": false},
+        {"name": "idx_products_sku", "columns": ["sku"], "is_unique": true}
+      ]
+    },
+    {
+      "schema": "public",
+      "name": "orders",
+      "columns": [
+        {"name": "id", "data_type": "BIGINT", "is_nullable": false},
+        {"name": "user_id", "data_type": "BIGINT", "is_nullable": false},
+        {"name": "status", "data_type": "VARCHAR(20)", "is_nullable": false}
+      ],
+      "primary_key": {"name": "pk_orders", "columns": ["id"]},
+      "foreign_keys": [
+        {
+          "name": "fk_orders_user",
+          "source_columns": ["user_id"],
+          "target_schema": "public",
+          "target_table": "users",
+          "target_columns": ["id"],
+          "on_delete": "CASCADE"
+        }
+      ],
+      "indexes": [{"name": "idx_orders_user", "columns": ["user_id"], "is_unique": false}]
+    },
+    {
+      "schema": "public",
+      "name": "order_items",
+      "columns": [
+        {"name": "id", "data_type": "BIGINT", "is_nullable": false},
+        {"name": "order_id", "data_type": "BIGINT", "is_nullable": false},
+        {"name": "product_id", "data_type": "BIGINT", "is_nullable": false},
+        {"name": "quantity", "data_type": "INT", "is_nullable": false}
+      ],
+      "primary_key": {"name": "pk_order_items", "columns": ["id"]},
+      "foreign_keys": [
+        {
+          "name": "fk_order_items_order",
+          "source_columns": ["order_id"],
+          "target_schema": "public",
+          "target_table": "orders",
+          "target_columns": ["id"],
+          "on_delete": "CASCADE"
+        },
+        {
+          "name": "fk_order_items_product",
+          "source_columns": ["product_id"],
+          "target_schema": "public",
+          "target_table": "products",
+          "target_columns": ["id"],
+          "on_delete": "RESTRICT"
+        }
+      ],
+      "indexes": [
+        {"name": "idx_order_items_order", "columns": ["order_id"], "is_unique": false},
+        {"name": "idx_order_items_product", "columns": ["product_id"], "is_unique": false}
+      ]
+    }
+  ]
+}

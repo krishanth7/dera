@@ -1,0 +1,61 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Container Build Validation
+#
+# Purpose:
+#   Validates Dockerfile syntax, non-root user execution,
+#   and multi-stage image build without pushing on untrusted PRs.
+# ============================================================
+
+name: "DERA | Docker Validation"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker-build:
+    name: "Dockerfile Syntax & Build Validation"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v3
+
+      - name: "Build Container Image (Dry Run)"
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: dera-api:test
+
+      - name: "Validate Non-Root User"
+        run: |
+          docker run --rm --entrypoint id dera-api:test -u | grep -q "10001"
+          echo "Verified: Container runs as non-root UID 10001."

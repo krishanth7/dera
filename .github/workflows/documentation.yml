@@ -1,0 +1,53 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Documentation Integrity Verification
+#
+# Purpose:
+#   Validates internal markdown links, heading hierarchy,
+#   and UTF-8 encoding across all documentation files.
+# ============================================================
+
+name: "DERA | Documentation Validation"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - "*.md"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - "*.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-docs:
+    name: "Internal Markdown Link & Structure Check"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Run Documentation Validator"
+        run: |
+          python scripts/ci/validate_docs.py

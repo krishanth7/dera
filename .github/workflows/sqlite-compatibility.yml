@@ -1,0 +1,64 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# SQLite Runtime Compatibility
+#
+# Purpose:
+#   Validates DERA SQLite connector across supported Python versions,
+#   in-memory databases, and file-based read-only URIs.
+# ============================================================
+
+name: "DERA | SQLite Runtime Compatibility"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/core/src/dera/connectors/sqlite.py"
+      - "tests/integration/test_sqlite_connector.py"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "packages/core/src/dera/connectors/sqlite.py"
+      - "tests/integration/test_sqlite_connector.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sqlite-compat-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sqlite-runtime:
+    name: "SQLite Runtime Matrix (Python ${{ matrix.python-version }})"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python ${{ matrix.python-version }}"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Verify SQLite Library Version"
+        run: |
+          python -c "import sqlite3; print(f'SQLite runtime: {sqlite3.sqlite_version}')"
+
+      - name: "Execute SQLite Connector Tests"
+        env:
+          PYTHONPATH: packages/core/src:apps/api/src
+        run: |
+          python -m unittest tests/integration/test_sqlite_connector.py

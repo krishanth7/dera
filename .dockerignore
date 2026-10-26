@@ -1,0 +1,27 @@
+# Git & GitHub
+.git/
+.github/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+env/
+
+# Node.js caches
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# Documentation
+docs/
+
+# Local secrets & configs
+.env*
+*.pem
+*.key

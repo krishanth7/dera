@@ -1,0 +1,44 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Conventional Pull Request Title Enforcement
+#
+# Purpose:
+#   Validates that all PR titles adhere to Conventional Commits
+#   to power automated changelogs and semantic release notes.
+# ============================================================
+
+name: "DERA | PR Title Validator"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate-title:
+    name: "Conventional PR Title"
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Validate Title"
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          python scripts/ci/validate_pr_title.py

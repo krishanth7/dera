@@ -1,0 +1,53 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Multilingual Documentation (10 Languages) Parity
+#
+# Purpose:
+#   Validates existence, cross-navigation, encoding integrity,
+#   and Arabic RTL direction for all 10 supported documentation languages.
+# ============================================================
+
+name: "DERA | Multilingual Validation"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/i18n/**"
+      - "scripts/ci/validate_i18n.py"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "docs/i18n/**"
+      - "scripts/ci/validate_i18n.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: i18n-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-i18n:
+    name: "10-Language Parity & RTL Verification"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Validate i18n Suite"
+        run: |
+          python scripts/ci/validate_i18n.py

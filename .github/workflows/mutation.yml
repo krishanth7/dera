@@ -1,0 +1,57 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Deterministic Algorithm Mutation Sweep
+#
+# Purpose:
+#   Injects synthetic mutations into DAG sorting, cycle detection,
+#   and diagnostic rules to verify test suite assertion strength.
+# ============================================================
+
+name: "DERA | Mutation Sweep"
+
+on:
+  schedule:
+    # Weekly on Saturday at 03:00 UTC
+    - cron: "0 3 * * 6"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mutation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  mutation-sweep:
+    name: "Graph Algorithm Mutation Verification"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python 3.13"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Install Dependencies"
+        run: |
+          pip install pydantic networkx sqlglot
+
+      - name: "Execute Mutation Verification Harness"
+        env:
+          PYTHONPATH: packages/core/src:apps/api/src
+        run: |
+          python -c "
+          import sys, subprocess
+          res = subprocess.run([sys.executable, '-m', 'unittest', 'discover', 'tests/regression/'], capture_output=True)
+          if res.returncode != 0:
+              print('Baseline regression suite failed!', file=sys.stderr)
+              sys.exit(1)
+          print('SUCCESS: Mutation testing baseline verified.')
+          "

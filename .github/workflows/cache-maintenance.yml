@@ -1,0 +1,47 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Actions Cache Maintenance & Retention
+#
+# Purpose:
+#   Audits GitHub Actions cache utilization, reports storage usage,
+#   and avoids resource bloat for open-source maintainers.
+# ============================================================
+
+name: "DERA | Cache Maintenance"
+
+on:
+  schedule:
+    # Every Sunday at 02:00 UTC
+    - cron: "0 2 * * 0"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: cache-maintenance
+  cancel-in-progress: true
+
+jobs:
+  cache-audit:
+    name: "Audit Cache Size & Retention"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Run Cache Maintenance Audit"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/ci/cache_maintenance.py
