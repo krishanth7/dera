@@ -1,0 +1,53 @@
+name: "📖 Documentation Improvement"
+description: "Propose an improvement or report an issue in DERA's multilingual documentation"
+title: "[Docs]: "
+labels: ["documentation", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        DERA supports documentation in 10 international languages (`en`, `es`, `fr`, `de`, `pt`, `ja`, `ko`, `zh-CN`, `ar`, `ru`). Thank you for helping keep our documentation accurate and accessible!
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: "Target Language"
+      description: "Select the language version being updated or corrected."
+      options:
+        - "English (en)"
+        - "Spanish (es)"
+        - "French (fr)"
+        - "German (de)"
+        - "Portuguese (pt)"
+        - "Japanese (ja)"
+        - "Korean (ko)"
+        - "Simplified Chinese (zh-CN)"
+        - "Arabic (ar)"
+        - "Russian (ru)"
+        - "Multiple / All Languages"
+    validations:
+      required: true
+
+  - type: input
+    id: doc_path
+    attributes:
+      label: "Documentation File Path"
+      description: "Path to the affected document (e.g., docs/i18n/README.es.md)."
+      placeholder: "README.md or docs/architecture/overview.md"
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue_details
+    attributes:
+      label: "Description of the Issue / Proposed Change"
+      description: "What needs to be added, corrected, or updated?"
+      placeholder: "The description of foreign-key topological sorting needs clarification regarding..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested_fix
+    attributes:
+      label: "Suggested Correction or Translation Text"
+      description: "Provide the proposed Markdown text or translation."
