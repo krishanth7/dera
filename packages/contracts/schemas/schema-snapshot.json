@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SchemaSnapshot",
+  "description": "Deterministic canonical database schema snapshot exchange format",
+  "type": "object",
+  "properties": {
+    "database_name": {
+      "type": "string",
+      "description": "Target database identifier"
+    },
+    "engine": {
+      "type": "string",
+      "description": "Database dialect (e.g., sqlite, postgresql, mysql)"
+    },
+    "version": {
+      "type": "string",
+      "description": "Snapshot schema specification version"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp of introspection"
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "schema": { "type": "string" },
+          "name": { "type": "string" },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "data_type": { "type": "string" },
+                "is_nullable": { "type": "boolean" },
+                "default_expression": { "type": ["string", "null"] }
+              },
+              "required": ["name", "data_type", "is_nullable"]
+            }
+          },
+          "primary_key": {
+            "type": ["object", "null"],
+            "properties": {
+              "name": { "type": "string" },
+              "columns": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "foreign_keys": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "source_columns": { "type": "array", "items": { "type": "string" } },
+                "target_schema": { "type": "string" },
+                "target_table": { "type": "string" },
+                "target_columns": { "type": "array", "items": { "type": "string" } },
+                "on_update": { "type": "string" },
+                "on_delete": { "type": "string" }
+              },
+              "required": ["name", "source_columns", "target_table", "target_columns"]
+            }
+          },
+          "indexes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "columns": { "type": "array", "items": { "type": "string" } },
+                "is_unique": { "type": "boolean" },
+                "index_type": { "type": "string" }
+              },
+              "required": ["name", "columns", "is_unique"]
+            }
+          }
+        },
+        "required": ["name", "columns"]
+      }
+    }
+  },
+  "required": ["database_name", "engine", "tables"]
+}
