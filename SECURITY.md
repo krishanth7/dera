@@ -160,6 +160,8 @@ Public disclosure may occur after a fix or appropriate mitigation is available, 
 
 > Response times are best-effort targets, not guaranteed service-level agreements.
 
+For the full operational triage workflow, CVSS evaluation criteria, and private patch procedures, see [Vulnerability Response Process](docs/security/VULNERABILITY_RESPONSE.md).
+
 ---
 
 ## Severity Classification
@@ -239,6 +241,8 @@ Database credentials must:
 - Support rotation and revocation.
 
 Use environment variables or a secure secrets-management solution for local and production deployments.
+
+For full database security standards, credential handling rules, and system catalog access policies, see [Database Security Policy](docs/security/DATABASE_SECURITY.md).
 
 ---
 
@@ -408,6 +412,8 @@ Contributors should follow secure software engineering principles.
 - SQL safety testing.
 - Container security scanning.
 
+For comprehensive engineering standards, input validation rules, and automated CI gates, see [Secure Development Standards](docs/security/SECURE_DEVELOPMENT.md).
+
 ---
 
 ## Security Updates and Advisories
@@ -453,6 +459,17 @@ For security-related concerns:
 **Repository:** https://github.com/krishanth7/dera
 
 Please use private reporting channels for vulnerabilities.
+
+---
+
+## Security Documentation Index
+
+The following detailed security specifications are maintained in the repository:
+
+- [**docs/security/DATABASE_SECURITY.md**](docs/security/DATABASE_SECURITY.md) — Database connection, catalog access, and credential isolation standards.
+- [**docs/security/SECURE_DEVELOPMENT.md**](docs/security/SECURE_DEVELOPMENT.md) — Secure coding guidelines, input validation, and DevSecOps gates.
+- [**docs/security/VULNERABILITY_RESPONSE.md**](docs/security/VULNERABILITY_RESPONSE.md) — Operational response workflow, triage, and disclosure.
+- [**docs/security/model.md**](docs/security/model.md) — Architectural threat modeling matrix.
 
 ---
 

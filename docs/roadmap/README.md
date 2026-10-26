@@ -64,8 +64,8 @@ gantt
 - [x] **Sub-phase 1.1:** Complete repository audit, asset inventory, and baseline verification ([`docs/audit/`](../audit/README.md)).
 - [x] **Sub-phase 1.2:** Monorepo architecture establishment (`packages/core`, `packages/connectors`, `packages/contracts`, `apps/api`, `apps/web`) and cross-platform developer CLI ([`docs/architecture/`](../architecture/README.md)).
 - [x] **Sub-phase 1.3:** Git branching strategy, Conventional Commits standard, PR title validation, CODEOWNERS, and review policies ([`docs/development/`](../development/README.md)).
-- [x] **Sub-phase 1.4:** Professional README, transparent capability matrix, verified badges, and visual architecture diagrams (Current Milestone).
-- [ ] **Sub-phase 1.5:** Formal security policy, vulnerability disclosure workflows, and community governance.
+- [x] **Sub-phase 1.4:** Professional README, transparent capability matrix, verified badges, and visual architecture diagrams.
+- [x] **Sub-phase 1.5:** Formal security policy, vulnerability disclosure workflows, and community governance ([`docs/security/`](../security/README.md), [`docs/governance/`](../governance/README.md)) (Current Milestone).
 
 ### Phase 2 — Multilingual Documentation
 - [x] Establish 10-language international navigation index (`docs/i18n/`).

@@ -332,6 +332,12 @@ Security is the primary engineering pillar of DERA. Because the platform interac
 5. **Zero Committed Secrets:** Credentials are never written to disk, included in version control, or logged in application traces.
 6. **Responsible Disclosure:** Security vulnerabilities are handled through coordinated private reporting via our [Security Policy](SECURITY.md).
 
+For specialized security architecture and policy documents:
+- [**Database Security Policy**](docs/security/DATABASE_SECURITY.md) — Catalog-only inspection, credential encryption, and session isolation.
+- [**Secure Development Standards**](docs/security/SECURE_DEVELOPMENT.md) — Pydantic input validation, parameterization, and DevSecOps gates.
+- [**Vulnerability Response Process**](docs/security/VULNERABILITY_RESPONSE.md) — 5-stage triage workflow and private advisory disclosure.
+- [**Threat Model Matrix**](docs/security/model.md) — Attack vector analysis and defensive mitigations.
+
 ---
 
 ## 🗺️ Master Roadmap
@@ -342,8 +348,8 @@ DERA is executing a structured **12-Phase Roadmap** to build a complete database
   - [x] Phase 1.1: Complete repository audit & baseline verification
   - [x] Phase 1.2: Enterprise monorepo folder architecture (`apps/`, `packages/`)
   - [x] Phase 1.3: Git branching, Conventional Commits, and PR governance
-  - [x] Phase 1.4: Professional README, project identity, and architecture diagrams (Current)
-  - [ ] Phase 1.5: Security policy, vulnerability reporting, and community governance
+  - [x] Phase 1.4: Professional README, project identity, and architecture diagrams
+  - [x] Phase 1.5: Security policy, vulnerability reporting, and community governance (Current)
 - [ ] **Phase 2: Multilingual Documentation & Internationalization**
 - [x] **Phase 3: GitHub Actions, CI/CD & DevSecOps Automation**
 - [ ] **Phase 4: Backend & Platform Infrastructure**
@@ -370,6 +376,9 @@ We warmly welcome contributions from software engineers, database administrators
 - **[Branching Strategy](docs/development/BRANCHING_STRATEGY.md):** Trunk-based development and branch naming conventions (`feat/...`, `fix/...`).
 - **[Commit Conventions](docs/development/COMMIT_CONVENTIONS.md):** Conventional Commits 1.0.0 format specification and SemVer mapping.
 - **[Code Review Policy](docs/development/CODE_REVIEW_POLICY.md):** Peer review criteria, code owner approval, and qualification gates.
+- **[Maintainer Governance](docs/governance/MAINTAINERS.md):** Project stewardship, review SLAs, security escalation, and release authority.
+- **[Third-Party License Compliance](docs/governance/THIRD_PARTY_LICENSES.md):** Open-source licensing inventory and MIT compatibility.
+- **[Governance Decisions](docs/governance/GOVERNANCE_DECISIONS.md):** Formal decision records (GADs) guiding architecture and policy.
 - **[Code of Conduct](CODE_OF_CONDUCT.md):** Community standards and professional conduct guidelines.
 
 ---
