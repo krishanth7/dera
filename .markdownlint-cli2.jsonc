@@ -46,7 +46,10 @@
     "MD032": false,
 
     // MD036: Emphasis used instead of a heading - disabled for inline label formatting and centered footers
-    "MD036": false
+    "MD036": false,
+
+    // MD059: Descriptive link text - disabled to prevent false positives on link citations
+    "MD059": false
   },
   "globs": [
     "README.md",

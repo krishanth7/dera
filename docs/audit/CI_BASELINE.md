@@ -62,19 +62,19 @@ Real run history audited from GitHub Actions API on `krishanth7/dera`:
 
 | Run ID | Workflow Name | Event | Commit | Conclusion | Duration | Run URL |
 |---|---|---|---|---|---|---|
-| `40290949828` | Documentation Validation | `pull_request` | `d6a58aa` | **Success** | 8s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949828) |
-| `40290949799` | CodeQL Advanced Security | `pull_request` | `d6a58aa` | **Success** | 53s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949799) |
-| `40290949790` | Full PR Qualification | `pull_request` | `d6a58aa` | **Skipped** | 1s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949790) |
-| `40290949774` | Schema Regression | `pull_request` | `d6a58aa` | **Success** | 8s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949774) |
-| `40290949769` | Security Tests | `pull_request` | `d6a58aa` | **Success** | 12s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949769) |
-| `40290949749` | Database Integration | `pull_request` | `d6a58aa` | **Success** | 29s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949749) |
-| `40290949725` | PR Readiness | `pull_request` | `d6a58aa` | **Success** | 9s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949725) |
-| `40290949720` | PR Title Validator | `pull_request` | `d6a58aa` | **Success** | 10s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949720) |
-| `40290949708` | SQLite Runtime Matrix | `pull_request` | `d6a58aa` | **Success** | 11s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949708) |
-| `40290949705` | Multilingual Validation | `pull_request` | `d6a58aa` | **Success** | 11s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949705) |
-| `40290949698` | Docker Validation | `pull_request` | `d6a58aa` | **Success** | 63s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949698) |
-| `40290949692` | Dependency Review | `pull_request` | `d6a58aa` | **Success** | 12s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949692) |
-| `40290949689` | CI Matrix Gate | `pull_request` | `d6a58aa` | **Success** | 25s | [Link](https://github.com/krishanth7/dera/actions/runs/40290949689) |
+| `40290949828` | Documentation Validation | `pull_request` | `d6a58aa` | **Success** | 8s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949828) |
+| `40290949799` | CodeQL Advanced Security | `pull_request` | `d6a58aa` | **Success** | 53s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949799) |
+| `40290949790` | Full PR Qualification | `pull_request` | `d6a58aa` | **Skipped** | 1s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949790) |
+| `40290949774` | Schema Regression | `pull_request` | `d6a58aa` | **Success** | 8s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949774) |
+| `40290949769` | Security Tests | `pull_request` | `d6a58aa` | **Success** | 12s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949769) |
+| `40290949749` | Database Integration | `pull_request` | `d6a58aa` | **Success** | 29s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949749) |
+| `40290949725` | PR Readiness | `pull_request` | `d6a58aa` | **Success** | 9s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949725) |
+| `40290949720` | PR Title Validator | `pull_request` | `d6a58aa` | **Success** | 10s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949720) |
+| `40290949708` | SQLite Runtime Matrix | `pull_request` | `d6a58aa` | **Success** | 11s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949708) |
+| `40290949705` | Multilingual Validation | `pull_request` | `d6a58aa` | **Success** | 11s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949705) |
+| `40290949698` | Docker Validation | `pull_request` | `d6a58aa` | **Success** | 63s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949698) |
+| `40290949692` | Dependency Review | `pull_request` | `d6a58aa` | **Success** | 12s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949692) |
+| `40290949689` | CI Matrix Gate | `pull_request` | `d6a58aa` | **Success** | 25s | [Run Details](https://github.com/krishanth7/dera/actions/runs/40290949689) |
 
 ---
 
