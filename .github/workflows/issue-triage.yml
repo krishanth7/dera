@@ -1,0 +1,42 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Safe Issue Triage & Initial Classification Workflow
+#
+# Purpose:
+#   Automatically applies initial triage and routing labels
+#   to newly opened issues based on structured issue form data.
+#
+# Security Invariants:
+#   - Minimal token permissions: issues: write (restricted scope)
+#   - Zero external third-party actions
+#   - Zero execution or evaluation of untrusted issue body text
+#   - No spammy comments; strictly metadata labeling
+# ============================================================
+
+name: "DERA | Issue Triage"
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+concurrency:
+  group: issue-triage-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    name: "Initial Issue Classification"
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: "Apply Default Triage Label"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+        run: |
+          # Apply standard triage status label to all newly opened issues
+          gh issue edit "$ISSUE_URL" --add-label "status/triage"
