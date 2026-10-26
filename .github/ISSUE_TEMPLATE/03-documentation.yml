@@ -1,0 +1,79 @@
+name: "📚 Documentation Request"
+description: "Report a documentation typo, broken link, outdated guide, or translation issue."
+title: "[Docs]: "
+labels: ["type/docs", "status/triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Improve DERA Documentation
+        Clear, accurate, and accessible documentation is essential for database engineers worldwide.
+        Use this form to report broken internal links, clarify ambiguous architectural diagrams, propose new tutorials, or correct international translations.
+
+  - type: input
+    id: page
+    attributes:
+      label: "Affected Document Path or URL"
+      description: "Path in repository or documentation link (e.g., `docs/architecture/README_ARCHITECTURE.md`, `README.md`)."
+      placeholder: "e.g., docs/security/DATABASE_SECURITY.md"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "Documentation Domain"
+      description: "Select the category that best describes the affected material."
+      options:
+        - "Getting Started & Commands (docs/development/)"
+        - "Architecture & Engineering Blueprints (docs/architecture/)"
+        - "Database Connectors & Dialects (docs/connectors/)"
+        - "Security & Threat Mitigation (docs/security/)"
+        - "Governance & Community Stewardship (docs/governance/)"
+        - "Multilingual Translations (docs/i18n/)"
+        - "API & Schema Contracts (packages/contracts/)"
+        - "Roadmap & Releases (docs/roadmap/)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: "Documentation Language"
+      description: "Which language edition does this report affect?"
+      options:
+        - "English (en) [Authoritative Reference]"
+        - "Spanish (es)"
+        - "French (fr)"
+        - "German (de)"
+        - "Portuguese (pt)"
+        - "Japanese (ja)"
+        - "Korean (ko)"
+        - "Simplified Chinese (zh-CN)"
+        - "Arabic (ar) [RTL]"
+        - "Russian (ru)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description of the Issue"
+      description: "Explain what is missing, inaccurate, broken, or unclear."
+      placeholder: "The connection pooling code example in DATABASE_SECURITY.md references a parameter that was renamed in 0.1.0..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested_correction
+    attributes:
+      label: "Suggested Correction or Proposed Text"
+      description: "Provide the corrected text or markdown snippet if known."
+      placeholder: "Update snippet to: `max_connections = 10`..."
+
+  - type: checkboxes
+    id: contribution_interest
+    attributes:
+      label: "Contribution Willingness"
+      options:
+        - label: "I would be willing to submit a pull request to resolve this documentation issue."

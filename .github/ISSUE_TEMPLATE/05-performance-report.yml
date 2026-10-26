@@ -1,0 +1,99 @@
+name: "⚡ Performance Report"
+description: "Report excessive latency, memory overhead, or scaling bottlenecks during schema analysis."
+title: "[Perf]: "
+labels: ["type/performance", "status/triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Report a Performance Bottleneck
+        DERA aims for high throughput and predictable memory usage even on enterprise schemas with hundreds of tables and relationships.
+        - **Sanitized Data Only:** Never upload proprietary schema dumps or customer records to substantiate performance claims.
+        - Please provide quantitative measurements (timing in milliseconds/seconds, memory usage in MB) rather than subjective statements.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: "Affected Component"
+      description: "Where does the performance bottleneck occur?"
+      options:
+        - "Database Connector Introspection (Network / Catalog Query)"
+        - "Core Graph Engine (DAG construction, topological sort, cycle detection)"
+        - "Schema Snapshot Serialization (JSON encoding / Pydantic validation)"
+        - "Backend API (Endpoint latency, Uvicorn throughput)"
+        - "Web Canvas (React Flow rendering, node clustering, 60fps interaction)"
+        - "Developer CLI (Startup overhead, test suite execution)"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: "DERA Version or Commit SHA"
+      description: "Specify the exact version tested."
+      placeholder: "e.g., main @ 810d6e3"
+    validations:
+      required: true
+
+  - type: input
+    id: schema_scale
+    attributes:
+      label: "Approximate Schema Scale"
+      description: "Approximate number of tables, columns, foreign keys, and indexes."
+      placeholder: "e.g., 250 tables, 1,800 columns, 420 foreign keys, 310 indexes"
+    validations:
+      required: true
+
+  - type: input
+    id: hardware
+    attributes:
+      label: "Hardware & Environment"
+      description: "CPU architecture, cores, memory, operating system."
+      placeholder: "e.g., 8 vCPU AMD64, 16 GB RAM, Ubuntu 24.04 LTS, Docker container"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "Reproduction Steps & Benchmark Methodology"
+      description: "How was the benchmark executed? (CLI command, API payload, synthetic schema generator)"
+      placeholder: |
+        1. Generated synthetic schema with 200 tables using `fixtures/enterprise_schema.sql`...
+        2. Executed: `python -m dera.cli inspect --db sqlite:///test.db`...
+        3. Measured total elapsed wall-clock time...
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed_metrics
+    attributes:
+      label: "Observed Performance Metrics"
+      description: "Provide measured execution times, memory peak, or CPU saturation."
+      placeholder: "Introspection took 42.8 seconds; memory spiked to 1.8 GB during graph cycle detection..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_metrics
+    attributes:
+      label: "Expected Baseline or SLA"
+      description: "What timing or memory consumption would be acceptable?"
+      placeholder: "Expected introspection to complete within 5 seconds with under 200 MB RSS..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: profile_data
+    attributes:
+      label: "Sanitized Profiling Logs / Traces"
+      description: "Paste `cProfile` output, timing logs, or memory profiler reports here."
+      render: shell
+
+  - type: checkboxes
+    id: data_hygiene
+    attributes:
+      label: "Data Hygiene Confirmation"
+      options:
+        - label: "I confirm that all metrics, logs, and schemas provided in this report are sanitized and free of proprietary customer data."
+          required: true
