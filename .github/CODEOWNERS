@@ -1,0 +1,39 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Repository Code Ownership (CODEOWNERS)
+#
+# Primary Maintainer: Krishanth (@krishanth7)
+# Reference: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# ============================================================
+
+# Default fallback owner for all files across the repository
+* @krishanth7
+
+# Core Engineering Engine & Schema Domain Models
+/packages/core/ @krishanth7
+
+# Database Connectors & Vendor Adapters (PostgreSQL, SQLite, MySQL)
+/packages/connectors/ @krishanth7
+
+# Shared Interface Contracts & JSON Schemas
+/packages/contracts/ @krishanth7
+
+# Applications
+/apps/api/ @krishanth7
+/apps/web/ @krishanth7
+
+# Background Workers
+/workers/ @krishanth7
+
+# CI/CD Workflows, GitHub Actions & Security Automation
+/.github/ @krishanth7
+
+# Architecture, Engineering & Multilingual Documentation
+/docs/ @krishanth7
+
+# Automated Test Suites & Fixtures
+/tests/ @krishanth7
+/fixtures/ @krishanth7
+
+# Developer Tooling & Build Scripts
+/scripts/ @krishanth7

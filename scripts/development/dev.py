@@ -43,6 +43,44 @@ def cmd_validate_docs(args: argparse.Namespace) -> int:
     return code1 or code2
 
 
+def cmd_validate_title(args: argparse.Namespace) -> int:
+    """Validate a commit or PR title against Conventional Commits."""
+    title = getattr(args, "title", None)
+    cmd = [sys.executable, "scripts/ci/validate_pr_title.py"]
+    if title:
+        cmd.append(title)
+    return run_cmd(cmd)
+
+
+def cmd_install_hooks(args: argparse.Namespace) -> int:
+    """Install local Git hooks for commit message validation."""
+    git_hooks_dir = os.path.join(REPO_ROOT, ".git", "hooks")
+    if not os.path.isdir(git_hooks_dir):
+        print(f"[FAIL]: Git hooks directory not found at {git_hooks_dir}. Are you in a Git repository?")
+        return 1
+
+    commit_msg_hook = os.path.join(git_hooks_dir, "commit-msg")
+    hook_script = (
+        "#!/usr/bin/env sh\n"
+        "# DERA Local Commit Message Hook\n"
+        'MSG=$(head -n 1 "$1")\n'
+        'python scripts/ci/validate_pr_title.py "$MSG"\n'
+    )
+
+    try:
+        with open(commit_msg_hook, "w", encoding="utf-8", newline="\n") as f:
+            f.write(hook_script)
+        # On POSIX, make executable
+        if os.name != "nt":
+            mode = os.stat(commit_msg_hook).st_mode
+            os.chmod(commit_msg_hook, mode | 0o111)
+        print(f"[SUCCESS]: Installed Conventional Commit hook at {commit_msg_hook}")
+        return 0
+    except OSError as err:
+        print(f"[FAIL]: Could not install hook: {err}")
+        return 1
+
+
 def cmd_all(args: argparse.Namespace) -> int:
     """Run full baseline validation suite (compile, test, typecheck, docs)."""
     checks = [
@@ -71,6 +109,11 @@ def main() -> None:
     subparsers.add_parser("typecheck", help="Run TypeScript type checking")
     subparsers.add_parser("compile", help="Compile Python packages")
     subparsers.add_parser("validate-docs", help="Validate documentation links and i18n parity")
+
+    title_parser = subparsers.add_parser("validate-title", help="Validate commit/PR title against Conventional Commits")
+    title_parser.add_argument("title", nargs="?", help="Commit or PR title string to validate")
+
+    subparsers.add_parser("install-hooks", help="Install local Git commit-msg hook")
     subparsers.add_parser("all", help="Run all verification checks")
 
     args = parser.parse_args()
@@ -80,6 +123,8 @@ def main() -> None:
         "typecheck": cmd_typecheck,
         "compile": cmd_compile,
         "validate-docs": cmd_validate_docs,
+        "validate-title": cmd_validate_title,
+        "install-hooks": cmd_install_hooks,
         "all": cmd_all,
     }
 
@@ -89,3 +134,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
