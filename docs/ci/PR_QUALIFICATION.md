@@ -55,7 +55,7 @@ To prevent arbitrary or misspelled scopes while allowing domain-specific clarity
 
 - **Architecture & System:** `core`, `api`, `web`, `contracts`, `cli`, `governance`, `architecture`, `release`
 - **Data & Connectors:** `connectors`, `database`, `sqlite`, `postgres`, `postgresql`, `mysql`, `mariadb`, `models`, `erd`, `graph`, `diagnostics`
-- **Quality & Operations:** `docs`, `i18n`, `security`, `ci`, `deps`, `repo`, `python`, `npm`, `github`, `actions`, `docker`
+- **Quality & Operations:** `docs`, `i18n`, `security`, `ci`, `pr`, `deps`, `repo`, `python`, `npm`, `github`, `actions`, `docker`
 - **Hierarchical Scopes:** Sub-packages and compound scopes are fully supported (e.g., `connectors/postgres`, `deps,npm`, `actions/deps`).
 
 Scope omission is allowed when a change broadly spans multiple subsystems (e.g., `ci: improve PR qualification gates`).
