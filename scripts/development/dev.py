@@ -21,8 +21,8 @@ def run_cmd(cmd: list[str], cwd: str = REPO_ROOT) -> int:
 
 
 def cmd_test(args: argparse.Namespace) -> int:
-    """Run unit, integration, and architecture test suites."""
-    return run_cmd([sys.executable, "-m", "unittest", "discover", "tests/"])
+    """Run unit, integration, and architecture test suites with telemetry."""
+    return run_cmd([sys.executable, "scripts/ci/test_reporter.py"])
 
 
 def cmd_typecheck(args: argparse.Namespace) -> int:
