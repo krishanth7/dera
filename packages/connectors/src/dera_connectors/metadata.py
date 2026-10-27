@@ -389,3 +389,42 @@ class PartitionInfo(BaseModel):
         default_factory=dict,
         description="Engine-specific partition attributes.",
     )
+
+
+class TriggerInfo(BaseModel):
+    """Metadata describing a database trigger."""
+
+    model_config = ConfigDict(frozen=True)
+
+    schema_name: str = Field(
+        ...,
+        description="Schema name owning the trigger.",
+    )
+    table_name: str = Field(
+        ...,
+        description="Table identifier that fires the trigger.",
+    )
+    trigger_name: str = Field(
+        ...,
+        description="Canonical trigger identifier.",
+    )
+    timing: str = Field(
+        default="BEFORE",
+        description="Trigger activation timing (BEFORE, AFTER, INSTEAD OF).",
+    )
+    event: str = Field(
+        default="INSERT",
+        description="Trigger triggering event (INSERT, UPDATE, DELETE).",
+    )
+    definition: str | None = Field(
+        default=None,
+        description="SQL definition or body of the trigger (metadata text only; never executed).",
+    )
+    is_enabled: bool = Field(
+        default=True,
+        description="Whether the trigger is active and enabled.",
+    )
+    engine_specific: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Engine-specific trigger properties.",
+    )
