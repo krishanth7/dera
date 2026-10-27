@@ -49,6 +49,8 @@ from dera_connectors.lifecycle import (
     ConnectionState,
     InvalidLifecycleTransitionError,
 )
+from dera_connectors.mariadb.adapter import MariaDbConnector
+from dera_connectors.mariadb.configuration import MariaDbConnectorConfig
 from dera_connectors.metadata import (
     CheckConstraintInfo,
     ColumnInfo,
@@ -63,6 +65,8 @@ from dera_connectors.metadata import (
     UniqueConstraintInfo,
     ViewInfo,
 )
+from dera_connectors.mysql.adapter import MySqlConnector
+from dera_connectors.mysql.configuration import MySqlConnectorConfig
 from dera_connectors.postgresql.adapter import PostgresConnector
 from dera_connectors.postgresql.configuration import (
     PostgresConnectorConfig,
@@ -98,6 +102,11 @@ __all__ = [
     "PostgresConnector",
     "PostgresConnectorConfig",
     "SupabasePoolerMode",
+    # MySQL & MariaDB
+    "MySqlConnector",
+    "MySqlConnectorConfig",
+    "MariaDbConnector",
+    "MariaDbConnectorConfig",
     # Protocol & engine
     "DatabaseConnector",
     "DatabaseEngine",
