@@ -495,6 +495,9 @@ def main() -> int:
 
     all_errors: list[ValidationError] = []
 
+    struct_errors: list[ValidationError] = []
+    cons_errors: list[ValidationError] = []
+
     # 1. Structure validation
     if not args.file:
         struct_errors = validator.validate_structure()
@@ -512,14 +515,36 @@ def main() -> int:
 
     print(f"Validating {len(files_to_check)} markdown documentation files...")
 
+    file_errors: list[ValidationError] = []
     for file_path in files_to_check:
         errs = validator.validate_file(file_path)
-        all_errors.extend(errs)
+        file_errors.extend(errs)
+
+    all_errors.extend(file_errors)
+
+    # Domain evaluations
+    struct_status = "PASS" if not struct_errors else "FAIL"
+    cons_status = "PASS" if not cons_errors else "FAIL"
+    link_errs = [e for e in file_errors if e.code.startswith("DOC-LINK")]
+    anch_errs = [e for e in file_errors if e.code.startswith("DOC-ANCH")]
+    fence_errs = [e for e in file_errors if e.code.startswith("DOC-FENCE")]
+
+    link_status = "PASS" if not link_errs else "FAIL"
+    anch_status = "PASS" if not anch_errs else "FAIL"
+    fence_status = "PASS" if not fence_errs else "FAIL"
+    overall_status = "PASS" if not all_errors else "FAIL"
+
+    print("\nDERA Documentation CI")
+    print("=====================")
+    print(f"Documentation structure:    {struct_status}")
+    print(f"Technical consistency:      {cons_status}")
+    print(f"Internal links:             {link_status}")
+    print(f"Heading anchors:            {anch_status}")
+    print(f"Code fence integrity:       {fence_status}")
+    print(f"Overall: {overall_status}\n")
 
     if all_errors:
-        print(
-            f"\nFAILED: Found {len(all_errors)} documentation validation issues:", file=sys.stderr
-        )
+        print(f"FAILED: Found {len(all_errors)} documentation validation issues:", file=sys.stderr)
         for err in all_errors:
             print(f"  {err}", file=sys.stderr)
         return 1
