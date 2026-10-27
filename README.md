@@ -211,6 +211,7 @@ For comprehensive technical specifications:
 - [Architecture & Blueprint Guide](docs/architecture/README_ARCHITECTURE.md)
 - [Module Boundaries & Dependency Rules](docs/architecture/MODULE_BOUNDARIES.md)
 - [Monorepo Directory Layout](docs/architecture/MONOREPO_STRUCTURE.md)
+- [Platform Database & Migrations](docs/database/README.md)
 - [Architecture Decision Record (ADR 0001)](docs/architecture/adr/0001-monorepo-architecture.md)
 
 ---
