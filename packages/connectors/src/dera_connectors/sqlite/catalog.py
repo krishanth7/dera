@@ -13,6 +13,7 @@ from typing import Any
 
 from dera_connectors.engine import DatabaseEngine, DatabaseIdentity, DatabaseProvider
 from dera_connectors.metadata import (
+    ColumnInfo,
     SchemaInfo,
     TableInfo,
 )
@@ -22,7 +23,10 @@ from dera_connectors.sqlite.queries import (
     QUERY_DATABASE_LIST,
     QUERY_SQLITE_VERSION,
     QUERY_TABLE_BY_NAME,
+    build_pragma_table_info,
+    build_pragma_table_xinfo,
 )
+from dera_connectors.sqlite.types import determine_sqlite_affinity
 
 # Regex to detect STRICT and WITHOUT ROWID options at the close of CREATE TABLE statements
 _STRICT_TABLE_REGEX = re.compile(r"\bSTRICT\b", re.IGNORECASE)
@@ -132,3 +136,62 @@ async def introspect_tables(
         )
 
     return sorted(tables, key=lambda t: (t.schema_name, t.table_name))
+
+
+async def introspect_columns(
+    conn_mgr: SqliteConnectionManager,
+    table: str,
+    schema: str | None = None,
+) -> list[ColumnInfo]:
+    """Inspect table columns using PRAGMA table_xinfo with table_info fallback."""
+    target_schema = schema or "main"
+
+    try:
+        rows = await conn_mgr.execute_query(build_pragma_table_xinfo(table))
+    except Exception:
+        # Fallback to standard table_info on older SQLite versions
+        rows = await conn_mgr.execute_query(build_pragma_table_info(table))
+
+    columns: list[ColumnInfo] = []
+    for row in rows:
+        cid = int(row["cid"])
+        col_name = str(row["name"])
+        declared_type = str(row["type"]) if row["type"] is not None else ""
+        notnull = bool(row["notnull"])
+        dflt_value = str(row["dflt_value"]) if row["dflt_value"] is not None else None
+        pk_pos = int(row["pk"])
+
+        # Determine hidden flag (0=normal, 1=hidden, 2=stored generated, 3=virtual generated)
+        hidden_flag = int(row["hidden"]) if "hidden" in row.keys() else 0
+        is_generated = hidden_flag in (2, 3)
+
+        affinity = determine_sqlite_affinity(declared_type)
+
+        engine_specific: dict[str, Any] = {
+            "affinity": affinity.value,
+            "hidden_flag": hidden_flag,
+            "pk_order": pk_pos,
+        }
+        if is_generated:
+            engine_specific["generation_type"] = "STORED" if hidden_flag == 2 else "VIRTUAL"
+
+        columns.append(
+            ColumnInfo(
+                schema_name=target_schema,
+                table_name=table,
+                column_name=col_name,
+                ordinal_position=cid + 1,  # 1-based indexing for standard DERA contract
+                data_type=affinity.value.lower(),
+                native_type=declared_type or affinity.value,
+                is_nullable=not notnull,
+                default_value=dflt_value,
+                is_primary_key=pk_pos > 0,
+                is_identity=False,
+                is_generated=is_generated,
+                comment=None,
+                engine_specific=engine_specific,
+            )
+        )
+
+    return sorted(columns, key=lambda c: c.ordinal_position)
+
