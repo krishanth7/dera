@@ -116,4 +116,4 @@ All acceptance criteria defined in the Phase 3.5 charter have been verified thro
 * [x] Regression tests implemented in `tests/ci/test_artifact_and_cache.py`
 * [x] Full development suite verified clean
 * [x] Acceptance audit completed ([`PHASE_3_5_PERFORMANCE_ACCEPTANCE.md`](PHASE_3_5_PERFORMANCE_ACCEPTANCE.md))
-* [x] Reviewable GitHub pull request opened
+* [x] Reviewable GitHub pull request opened ([PR #35](https://github.com/krishanth7/dera/pull/35))
