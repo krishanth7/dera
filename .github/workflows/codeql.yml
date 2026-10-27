@@ -118,7 +118,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
-          name: codeql-sarif-${{ matrix.language }}
+          name: dera-security-codeql-${{ matrix.language }}-linux-${{ github.run_id }}-${{ github.run_attempt }}
           path: codeql-results/
           retention-days: 30
           if-no-files-found: ignore

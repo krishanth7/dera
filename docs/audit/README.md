@@ -54,6 +54,8 @@ The repository audit log comprises thirty technical assessments, audit reports, 
 | 28 | [PHASE_3_3_SECURITY_ACCEPTANCE.md](./PHASE_3_3_SECURITY_ACCEPTANCE.md) | Phase 3.3 security acceptance report, test telemetry, and DevSecOps verification sign-off | **Verified Complete** |
 | 29 | [PHASE_3_4_DOCS_CI_BASELINE.md](./PHASE_3_4_DOCS_CI_BASELINE.md) | Phase 3.4 documentation CI architecture audit, consolidation analysis, and gap baseline | **Verified Complete** |
 | 30 | [PHASE_3_4_DOCS_I18N_ACCEPTANCE.md](./PHASE_3_4_DOCS_I18N_ACCEPTANCE.md) | Phase 3.4 documentation & i18n acceptance report, test telemetry, and verification sign-off | **Verified Complete** |
+| 31 | [PHASE_3_5_CI_PERFORMANCE_BASELINE.md](./PHASE_3_5_CI_PERFORMANCE_BASELINE.md) | Phase 3.5 CI performance, cache utilization, and artifact baseline audit | **Verified Complete** |
+| 32 | [PHASE_3_5_PERFORMANCE_ACCEPTANCE.md](./PHASE_3_5_PERFORMANCE_ACCEPTANCE.md) | Phase 3.5 CI performance, cache optimization, and artifact acceptance report | **Verified Complete** |
 
 ---
 

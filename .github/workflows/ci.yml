@@ -80,11 +80,44 @@ jobs:
 
       - name: "Execute Unit, Architecture & Regression Test Suite"
         run: |
-          python -m unittest discover tests/
+          python scripts/ci/test_reporter.py --test-dir tests/
+
+      - name: "Generate Test Artifact Integrity Manifest"
+        if: always()
+        run: |
+          python scripts/ci/artifact_manager.py manifest reports/ --output reports/manifest.json
+
+      - name: "Upload Test Execution Artifacts"
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dera-test-results-linux-${{ matrix.python-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/
+          retention-days: 14
+          if-no-files-found: ignore
 
       - name: "Validate Distribution Build (sdist & wheel)"
         run: |
           python -m build --sdist --wheel
+          python scripts/ci/artifact_manager.py manifest dist/ --output dist/manifest.json
+
+      - name: "Upload Distribution Build Artifacts"
+        if: success() && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v7
+        with:
+          name: dera-build-linux-${{ matrix.python-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: dist/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: "Upload Failure Diagnostics"
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dera-diagnostics-python-${{ matrix.python-version }}-linux-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/
+          retention-days: 5
+          if-no-files-found: ignore
 
   # ----------------------------------------------------------
   # 2. Frontend & Monorepo Workspaces Qualification
@@ -117,6 +150,16 @@ jobs:
       - name: "Validate Workspace Package Builds"
         run: |
           npm run build
+
+      - name: "Upload Frontend Failure Diagnostics"
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dera-diagnostics-frontend-linux-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            npm-debug.log*
+          retention-days: 5
+          if-no-files-found: ignore
 
   # ----------------------------------------------------------
   # 3. Canonical Schema Contracts & Architecture Boundaries
@@ -179,6 +222,7 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.13"
+          cache: "pip"
 
       - name: "Install Connector Dependencies"
         run: |
