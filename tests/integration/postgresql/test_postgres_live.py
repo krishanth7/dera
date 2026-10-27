@@ -8,6 +8,7 @@ views, materialized views, sequences, partitions, unicode identifiers, and read-
 import os
 import unittest
 
+from dera_connectors.configuration import TLSSettings
 from dera_connectors.engine import DatabaseEngine
 from dera_connectors.postgresql.adapter import PostgresConnector
 from dera_connectors.postgresql.configuration import PostgresConnectorConfig
@@ -153,12 +154,14 @@ class TestPostgresLiveIntegration(unittest.IsolatedAsyncioTestCase):
                 pass
 
     def _get_test_connector(self) -> PostgresConnector:
+        ssl_mode = os.getenv("DERA_TEST_POSTGRES_SSL", "disable")
         config = PostgresConnectorConfig(
             database=POSTGRES_DB,
             host=POSTGRES_HOST,
             port=POSTGRES_PORT,
             username=POSTGRES_USER,
             password=SecretStr(POSTGRES_PASSWORD),
+            tls=TLSSettings(ssl_mode=ssl_mode),
         )
         return PostgresConnector(config=config, allow_loopback=True)
 
