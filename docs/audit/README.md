@@ -20,7 +20,7 @@ All database reverse-engineering, schema diagnostics, graph algorithms, and migr
 
 ## 2. Master Audit Reports Index
 
-The repository audit log comprises thirty-five technical assessments, audit reports, and milestone acceptance certificates:
+The repository audit log comprises thirty-seven technical assessments, audit reports, and milestone acceptance certificates:
 
 | # | Audit Document | Description | Status |
 |---|---|---|---|
@@ -59,6 +59,8 @@ The repository audit log comprises thirty-five technical assessments, audit repo
 | 33 | [PHASE_3_6_RELEASE_BASELINE.md](./PHASE_3_6_RELEASE_BASELINE.md) | Phase 3.6 release infrastructure, versioning, tag history, and recovery baseline audit | **Verified Complete** |
 | 34 | [PHASE_3_6_RELEASE_ACCEPTANCE.md](./PHASE_3_6_RELEASE_ACCEPTANCE.md) | Phase 3.6 release qualification, artifact integrity, and recovery acceptance report | **Verified Complete** |
 | 35 | [PHASE_3_COMPLETION.md](./PHASE_3_COMPLETION.md) | Comprehensive audit and milestone certification for all Phase 3 sub-phases (3.1–3.6) | **Verified Complete** |
+| 36 | [PHASE_4_1_BACKEND_BASELINE.md](./PHASE_4_1_BACKEND_BASELINE.md) | Phase 4.1 FastAPI backend foundation architecture, inventory, and gap baseline audit | **Verified Complete** |
+| 37 | [PHASE_4_1_ACCEPTANCE.md](./PHASE_4_1_ACCEPTANCE.md) | Phase 4.1 backend application foundation final acceptance report and verification matrix | **Verified Complete** |
 
 ---
 
