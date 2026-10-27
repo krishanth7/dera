@@ -69,6 +69,7 @@ flowchart TD
 
 ## 3. Documentation Navigation
 
+* [PR_QUALIFICATION.md](PR_QUALIFICATION.md) — Authoritative pull request title, scope, draft lifecycle, and review readiness guide.
 * [MAIN_CI.md](MAIN_CI.md) — Authoritative primary CI workflow architecture and job specifications.
 * [LOCAL_CI.md](LOCAL_CI.md) — Local reproduction guide and commands for offline qualification.
 * [WORKFLOWS.md](WORKFLOWS.md) — Comprehensive technical inventory of all active workflows.

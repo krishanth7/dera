@@ -20,7 +20,7 @@ All database reverse-engineering, schema diagnostics, graph algorithms, and migr
 
 ## 2. Master Audit Reports Index
 
-The repository audit log comprises twenty-four technical assessments, audit reports, and milestone acceptance certificates:
+The repository audit log comprises twenty-six technical assessments, audit reports, and milestone acceptance certificates:
 
 | # | Audit Document | Description | Status |
 |---|---|---|---|
@@ -48,6 +48,8 @@ The repository audit log comprises twenty-four technical assessments, audit repo
 | 22 | [PHASE_2_COMPLETION.md](./PHASE_2_COMPLETION.md) | Comprehensive audit and acceptance certificate for all Phase 2 sub-phases (2.1–2.6) | **Verified Complete** |
 | 23 | [PHASE_3_1_CI_BASELINE.md](./PHASE_3_1_CI_BASELINE.md) | GitHub Actions CI architecture audit, workflow inventory, gaps, and consolidation plan | **Verified Complete** |
 | 24 | [PHASE_3_1_CI_ACCEPTANCE.md](./PHASE_3_1_CI_ACCEPTANCE.md) | Phase 3.1 acceptance certificate, test telemetry, and qualification gate sign-off | **Verified Complete** |
+| 25 | [PHASE_3_2_PR_GOVERNANCE_BASELINE.md](./PHASE_3_2_PR_GOVERNANCE_BASELINE.md) | Phase 3.2 pull request title, scope, template, and readiness governance baseline audit | **Verified Complete** |
+| 26 | [PHASE_3_2_PR_QUALIFICATION.md](./PHASE_3_2_PR_QUALIFICATION.md) | Phase 3.2 PR qualification acceptance report, test telemetry, and verification sign-off | **Verified Complete** |
 
 ---
 
