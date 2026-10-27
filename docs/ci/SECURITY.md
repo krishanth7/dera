@@ -46,8 +46,7 @@ run: echo "${{ github.event.pull_request.title }}"
 
 | Workflow | `contents` | `pull-requests` | `security-events` | `actions` | Rationale |
 |---|---|---|---|---|---|
-| `ci.yml` | `read` | None | None | None | Source checkout and test execution |
-| `ci-full-pr.yml` | `read` | None | None | None | Deep qualification on PR source |
+| `ci.yml` | `read` | None | None | None | Source checkout, test execution, database integration |
 | `codeql.yml` | `read` | None | `write` | `read` | SAST SARIF upload to Security Tab |
 | `pr-title.yml` | `read` | None | None | None | PR title format verification |
 | `pr-readiness.yml` | `read` | None | None | None | Description checklist audit |
@@ -55,7 +54,6 @@ run: echo "${{ github.event.pull_request.title }}"
 | `i18n.yml` | `read` | None | None | None | Read multilingual markdown docs |
 | `dependency-review.yml` | `read` | `read` | None | None | Audit PR dependency diffs |
 | `security-tests.yml` | `read` | None | None | None | Static security linting |
-| `database-integration.yml`| `read` | None | None | None | Execute ephemeral tests |
 | `schema-regression.yml` | `read` | None | None | None | Execute regression fixtures |
 | `sqlite-compatibility.yml`| `read` | None | None | None | Execute SQLite matrix |
 | `docker.yml` | `read` | None | None | None | Validate Dockerfile syntax |

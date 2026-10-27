@@ -26,16 +26,22 @@ Navigate to **Settings → Branches → Add classic branch protection rule** (or
 
 ## 2. Stable Required Status Check Names
 
-Configure the following exact job names as **Required** in GitHub branch protection:
+To prevent pull requests from hanging due to path-filtered triggers, DERA separates **Always Required Qualification Checks** (which execute on every pull request targeting `main`) from **Conditional / Path-Filtered Checks**:
 
-1. `CI Gate` (`ci.yml`) — Aggregates Python matrix and TypeScript typecheck.
-2. `Conventional PR Title` (`pr-title.yml`) — Enforces Conventional Commit format.
-3. `PR Description & Checklist Readiness` (`pr-readiness.yml`) — Validates completeness.
-4. `Security Scan | python` (`codeql.yml`) — Advanced SAST scan for Python.
-5. `Security Scan | javascript-typescript` (`codeql.yml`) — SAST scan for TypeScript.
-6. `Internal Markdown Link & Structure Check` (`documentation.yml`) — Markdown integrity.
-7. `10-Language Parity & RTL Verification` (`i18n.yml`) — Multilingual documentation.
-8. `Deterministic Hash & DAG Regression` (`schema-regression.yml`) — Schema hash regression.
+### A. Always Required for Merge (Configured in Branch Protection)
+
+1. **`Qualification Gate`** (`ci.yml`) — Authoritative aggregate gate evaluating Python 3.12 & 3.13, Frontend builds, Contracts & boundaries, Database integration (SQLite + Postgres 16), and full Documentation quality.
+2. **`Conventional PR Title`** (`pr-title.yml`) — Validates pull request title adherence to Conventional Commits.
+3. **`PR Description & Checklist Readiness`** (`pr-readiness.yml`) — Validates description length, testing explanation, and security declarations.
+
+### B. Conditional / Specialized Quality Checks
+
+These specialized checks trigger on targeted file path modifications or cron schedules to provide fast localized feedback:
+- `Security Scan | python` (`codeql.yml`)
+- `Security Scan | javascript-typescript` (`codeql.yml`)
+- `Documentation Quality Gates` (`documentation.yml`)
+- `Deterministic Hash & DAG Regression` (`schema-regression.yml`)
+- `SQLite Runtime Matrix` (`sqlite-compatibility.yml`)
 
 ---
 

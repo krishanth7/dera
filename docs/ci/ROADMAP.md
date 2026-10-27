@@ -4,16 +4,16 @@ This document outlines active, in-progress, and deferred GitHub Actions workflow
 
 ---
 
-## 1. Active Workflows (18 Complete)
+## 1. Active Workflows (Authoritative & Specialized)
 
-All 18 core workflows are fully implemented, verified, and active:
-* **Core Quality:** `ci.yml`, `ci-full-pr.yml`
+The active workflow suites are fully verified and maintained:
+* **Authoritative Main CI:** `ci.yml` (consolidates Python matrix, frontend, contracts, database integration, and docs)
 * **Security:** `codeql.yml`, `dependency-review.yml`, `security-tests.yml`
 * **Governance:** `pr-title.yml`, `pr-readiness.yml`
-* **Documentation & i18n:** `documentation.yml`, `i18n.yml`
-* **Database & Engine:** `database-integration.yml`, `schema-regression.yml`, `sqlite-compatibility.yml`
+* **Documentation & i18n:** `documentation.yml`, `i18n.yml`, `external-links.yml`
+* **Database & Engine:** `schema-regression.yml`, `sqlite-compatibility.yml`
 * **Packaging & Container:** `docker.yml`, `release.yml`, `release-recovery.yml`
-* **Reliability & Maintenance:** `mutation.yml`, `ci-performance.yml`, `cache-maintenance.yml`
+* **Reliability & Maintenance:** `mutation.yml`, `ci-performance.yml`, `cache-maintenance.yml`, `issue-triage.yml`
 
 ---
 
