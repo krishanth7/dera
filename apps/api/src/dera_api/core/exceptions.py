@@ -202,6 +202,8 @@ async def dera_exception_handler(request: Request, exc: DeraError) -> JSONRespon
     )
     title_map = {
         400: "Bad Request",
+        401: "Unauthorized",
+        403: "Forbidden",
         404: "Resource Not Found",
         405: "Method Not Allowed",
         409: "Conflict",

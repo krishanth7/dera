@@ -32,10 +32,26 @@ flowchart TD
     DB_SEC[Database Security & Access: DATABASE_SECURITY.md]
     DEV_SEC[Secure Development Standards: SECURE_DEVELOPMENT.md]
     RESP[Vulnerability Response Workflow: VULNERABILITY_RESPONSE.md]
+    AUTH[Auth Architecture: AUTHENTICATION_ARCHITECTURE.md]
+    SESS[Session Management: SESSION_MANAGEMENT.md]
+    RBAC[RBAC Policy: RBAC_POLICY.md]
+    TENANT[Tenant Isolation: TENANT_ISOLATION.md]
+    CSRF[CSRF Protection: CSRF_PROTECTION.md]
+    ID_THREAT[Identity Threat Model: IDENTITY_THREAT_MODEL.md]
+    AUDIT_EV[Security Audit Events: SECURITY_AUDIT_EVENTS.md]
+    AUTH_TEST[Auth Testing Guide: AUTH_TESTING.md]
     THREAT[Threat Model Matrix: model.md]
 
     SEC --> POLICY
     SEC --> ARCH
+    SEC --> AUTH
+    SEC --> SESS
+    SEC --> RBAC
+    SEC --> TENANT
+    SEC --> CSRF
+    SEC --> ID_THREAT
+    SEC --> AUDIT_EV
+    SEC --> AUTH_TEST
     SEC --> DEP_SEC
     SEC --> TRIAGE
     SEC --> LEAK
@@ -52,6 +68,14 @@ flowchart TD
 
 | Document | Scope & Focus | Key Principles |
 |---|---|---|
+| [**AUTHENTICATION_ARCHITECTURE.md**](AUTHENTICATION_ARCHITECTURE.md) | Platform identity & authentication architecture | NIST SP 800-63B, Argon2id hashing, server-managed sessions, conservative email validation. |
+| [**SESSION_MANAGEMENT.md**](SESSION_MANAGEMENT.md) | Opaque session tokens & browser cookie controls | 256-bit CSPRNG hex tokens, SHA-256 database storage, HttpOnly/Secure/SameSite cookies, single/global revocation. |
+| [**RBAC_POLICY.md**](RBAC_POLICY.md) | Centralized role-based access control engine | Default-deny policy, Owner/Admin/Editor/Viewer role hierarchy, escalation prevention, owner safeguards. |
+| [**TENANT_ISOLATION.md**](TENANT_ISOLATION.md) | Multi-tenant workspace data boundaries | URL-scoped workspaces, `require_workspace_permission`, zero cross-tenant query leakage. |
+| [**CSRF_PROTECTION.md**](CSRF_PROTECTION.md) | Double-Submit CSRF cookie & header defense | Signed/high-entropy Double-Submit tokens, constant-time compare, state-changing method protection. |
+| [**IDENTITY_THREAT_MODEL.md**](IDENTITY_THREAT_MODEL.md) | Identity STRIDE threat modeling & mitigations | Credential stuffing, session hijacking, BOLA, privilege escalation mitigations. |
+| [**SECURITY_AUDIT_EVENTS.md**](SECURITY_AUDIT_EVENTS.md) | Forensic security event logging | Immutable event logging in PostgreSQL, zero secret leakage, correlation tracking. |
+| [**AUTH_TESTING.md**](AUTH_TESTING.md) | Security test automation & verification guide | Unit, integration, session security, and negative authorization test matrix. |
 | [**SECURITY_ARCHITECTURE.md**](SECURITY_ARCHITECTURE.md) | Comprehensive security architecture & threat mitigation specification | Trust boundaries, read-only enforcement, credential handling, zero-AI assurance, attack surface analysis. |
 | [**SECURITY.md**](../../SECURITY.md) | Official project security policy & disclosure rules | Supported versions table, GitHub private advisory reporting, CVSS severity ratings, responsible disclosure. |
 | [**DEPENDENCY_SECURITY_POLICY.md**](DEPENDENCY_SECURITY_POLICY.md) | Third-party dependency security & vulnerability policy | CVSS severity thresholds, reachability analysis, SLA remediation targets, lockfile integrity rules. |

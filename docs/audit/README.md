@@ -20,7 +20,7 @@ All database reverse-engineering, schema diagnostics, graph algorithms, and migr
 
 ## 2. Master Audit Reports Index
 
-The repository audit log comprises thirty-seven technical assessments, audit reports, and milestone acceptance certificates:
+The repository audit log comprises forty-three technical assessments, audit reports, and milestone acceptance certificates:
 
 | # | Audit Document | Description | Status |
 |---|---|---|---|
@@ -65,6 +65,8 @@ The repository audit log comprises thirty-seven technical assessments, audit rep
 | 39 | [PHASE_4_2_API_ACCEPTANCE.md](./PHASE_4_2_API_ACCEPTANCE.md) | Phase 4.2 API contracts and validation final acceptance report and verification matrix | **Verified Complete** |
 | 40 | [PHASE_4_3_DATABASE_BASELINE.md](./PHASE_4_3_DATABASE_BASELINE.md) | Phase 4.3 platform PostgreSQL database, engine, and migration baseline audit | **Verified Complete** |
 | 41 | [PHASE_4_3_DATABASE_ACCEPTANCE.md](./PHASE_4_3_DATABASE_ACCEPTANCE.md) | Phase 4.3 platform PostgreSQL database & migrations final acceptance report | **Verified Complete** |
+| 42 | [PHASE_4_4_IDENTITY_BASELINE.md](./PHASE_4_4_IDENTITY_BASELINE.md) | Phase 4.4 platform identity, session, RBAC, and access control baseline audit | **Verified Complete** |
+| 43 | [PHASE_4_4_IDENTITY_ACCEPTANCE.md](./PHASE_4_4_IDENTITY_ACCEPTANCE.md) | Phase 4.4 platform authentication, authorization & RBAC final acceptance report | **Verified Complete** |
 
 ---
 
