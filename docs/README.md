@@ -32,6 +32,7 @@ Welcome to the official technical documentation for **DERA — Database Engineer
 | **Security Architecture** | Threat modeling, read-only guarantees, credential safety, and vulnerability triage | [docs/security/SECURITY_ARCHITECTURE.md](security/SECURITY_ARCHITECTURE.md) |
 | **Community & Contributing** | First contribution walkthrough, contribution categories, and contributor FAQ | [docs/community/README.md](community/README.md) |
 | **Documentation Governance** | Ownership, review standards, style guide, release docs, and lifecycle policies | [docs/governance/README.md](governance/README.md) |
+| **Release Engineering** | Release lifecycle, SemVer policy, qualification gates, and disaster recovery | [docs/releases/README.md](releases/README.md) |
 | **International Documentation** | 10-language translations, translation maintenance, and translation guides | [docs/i18n/README.en.md](i18n/README.en.md) |
 | **Audit & Baseline Reports** | Phase audit reports, baseline assessments, and acceptance certificates | [docs/audit/README.md](audit/README.md) |
 | **Roadmap & Milestones** | Master 12-Phase development roadmap and engineering delivery schedule | [docs/roadmap/README.md](roadmap/README.md) |
