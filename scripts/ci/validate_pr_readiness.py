@@ -25,7 +25,6 @@ TEMPLATE_HEADER_PATTERN = re.compile(
     re.IGNORECASE | re.MULTILINE,
 )
 
-<<<<<<< HEAD
 HTML_COMMENT_PATTERN = re.compile(r"<!--.*?-->", re.DOTALL)
 
 
@@ -63,14 +62,6 @@ def check_readiness(
         author = os.environ.get("PR_AUTHOR", "").strip()
     if labels is None:
         labels = os.environ.get("PR_LABELS", "").strip()
-=======
-
-def check_readiness() -> tuple[bool, list[str]]:
-    title = os.environ.get("PR_TITLE", "").strip()
-    body = os.environ.get("PR_BODY", "").strip()
-    is_draft = os.environ.get("PR_DRAFT", "false").lower() == "true"
-    labels_raw = os.environ.get("PR_LABELS", "")
->>>>>>> origin/main
 
     errors: list[str] = []
 
