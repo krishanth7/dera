@@ -59,6 +59,7 @@ from dera_connectors.metadata import (
     SchemaInfo,
     SequenceInfo,
     TableInfo,
+    TriggerInfo,
     UniqueConstraintInfo,
     ViewInfo,
 )
@@ -131,6 +132,7 @@ __all__ = [
     "CheckConstraintInfo",
     "IndexInfo",
     "ViewInfo",
+    "TriggerInfo",
     "SequenceInfo",
     "PartitionInfo",
     # Results
