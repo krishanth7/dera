@@ -7,9 +7,10 @@ Licensed under the MIT License.
 """
 
 import json
-from pathlib import Path
 import unittest
+from pathlib import Path
 
+from dera.graph import compute_topological_sort
 from dera.models import (
     DatabaseColumn,
     DatabaseTable,
@@ -18,13 +19,11 @@ from dera.models import (
     SchemaSnapshot,
     TableIndex,
 )
-from dera.graph import build_dependency_graph, compute_topological_sort
-from dera.diagnostics import run_all_diagnostics
 
 
 def load_fixture(filename: str) -> SchemaSnapshot:
     fixture_path = Path(__file__).parent.parent.parent / "fixtures" / "schemas" / filename
-    with open(fixture_path, "r", encoding="utf-8") as f:
+    with open(fixture_path, encoding="utf-8") as f:
         data = json.load(f)
 
     tables: list[DatabaseTable] = []
@@ -37,10 +36,14 @@ def load_fixture(filename: str) -> SchemaSnapshot:
             )
             for c in t_data.get("columns", [])
         )
-        pk = PrimaryKeyConstraint(
-            name=t_data["primary_key"]["name"],
-            columns=tuple(t_data["primary_key"]["columns"]),
-        ) if t_data.get("primary_key") else None
+        pk = (
+            PrimaryKeyConstraint(
+                name=t_data["primary_key"]["name"],
+                columns=tuple(t_data["primary_key"]["columns"]),
+            )
+            if t_data.get("primary_key")
+            else None
+        )
 
         fks = tuple(
             ForeignKeyConstraint(

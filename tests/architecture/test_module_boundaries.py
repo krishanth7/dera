@@ -22,14 +22,12 @@ for p in [
     if p not in sys.path:
         sys.path.insert(0, p)
 
+from dera_api.core.config import get_settings
 from dera_connectors.base.connector import BaseConnector, ConnectionConfig
 from dera_core.exceptions import (
     CycleDetectedError,
-    DeraError,
     ReadOnlyViolationError,
-    SchemaParsingError,
 )
-from dera_api.core.config import get_settings
 
 FORBIDDEN_AI_MODULES = {
     "openai",
@@ -60,7 +58,7 @@ class TestArchitectureBoundaries(unittest.TestCase):
 
     def _get_imports_from_file(self, filepath: str) -> set[str]:
         """Extract all top-level imported module names from a Python source file."""
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             try:
                 tree = ast.parse(f.read(), filename=filepath)
             except SyntaxError:
@@ -111,11 +109,19 @@ class TestArchitectureBoundaries(unittest.TestCase):
 
     def test_connector_read_only_query_boundary(self) -> None:
         """Verify that connector query validator rejects mutating SQL statements."""
+
         class DummyConnector(BaseConnector):
-            def connect(self) -> None: pass
-            def disconnect(self) -> None: pass
-            def test_connection(self) -> bool: return True
-            def inspect_tables(self) -> list: return []
+            def connect(self) -> None:
+                pass
+
+            def disconnect(self) -> None:
+                pass
+
+            def test_connection(self) -> bool:
+                return True
+
+            def inspect_tables(self) -> list:
+                return []
 
         config = ConnectionConfig(dialect="sqlite", database=":memory:")
         connector = DummyConnector(config)
@@ -152,7 +158,9 @@ class TestArchitectureBoundaries(unittest.TestCase):
 
     def test_structured_exceptions_serialization(self) -> None:
         """Verify domain exceptions serialize to dictionary correctly."""
-        err = CycleDetectedError("Circular dependency detected", cycle_path=["users", "orders", "users"])
+        err = CycleDetectedError(
+            "Circular dependency detected", cycle_path=["users", "orders", "users"]
+        )
         d = err.to_dict()
         self.assertEqual(d["error_type"], "CycleDetectedError")
         self.assertEqual(d["message"], "Circular dependency detected")

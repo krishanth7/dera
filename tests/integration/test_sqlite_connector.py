@@ -12,8 +12,8 @@ import unittest
 from pathlib import Path
 
 from dera.connectors.sqlite import SqliteConnector
-from dera.graph import compute_topological_sort
 from dera.diagnostics import run_all_diagnostics
+from dera.graph import compute_topological_sort
 
 
 class TestSqliteConnector(unittest.TestCase):
