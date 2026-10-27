@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 START_MARKER = "<!-- DERA:I18N_NAV:START -->"
 END_MARKER = "<!-- DERA:I18N_NAV:END -->"
@@ -33,9 +33,7 @@ OFFICIAL_LANGUAGE_CODES = (
     "ru",
 )
 
-UNSUPPORTED_LANGUAGE_CODES = {
-    "ar", "hi", "te", "ta", "kn", "ml", "mr", "bn", "gu", "pa", "ur"
-}
+UNSUPPORTED_LANGUAGE_CODES = {"ar", "hi", "te", "ta", "kn", "ml", "mr", "bn", "gu", "pa", "ur"}
 
 TARGET_DOCUMENTS = [
     "README.md",
@@ -53,7 +51,9 @@ TARGET_DOCUMENTS = [
 ]
 
 
-def validate_manifest(manifest_path: Path, repo_root: Path) -> tuple[list[dict[str, str]], list[str]]:
+def validate_manifest(
+    manifest_path: Path, repo_root: Path
+) -> tuple[list[dict[str, str]], list[str]]:
     errors: list[str] = []
     languages: list[dict[str, str]] = []
 
@@ -125,12 +125,14 @@ def validate_manifest(manifest_path: Path, repo_root: Path) -> tuple[list[dict[s
         if not resolved_file.is_file():
             errors.append(f"Language file does not exist: '{path_str}' ({resolved_file})")
 
-        languages.append({
-            "code": code,
-            "name": name,
-            "native_name": native_name,
-            "path": path_str.replace("\\", "/"),
-        })
+        languages.append(
+            {
+                "code": code,
+                "name": name,
+                "native_name": native_name,
+                "path": path_str.replace("\\", "/"),
+            }
+        )
 
     return languages, errors
 
@@ -199,11 +201,15 @@ def validate_navigation_in_docs(
         end_count = content.count(END_MARKER)
 
         if start_count == 0 or end_count == 0:
-            errors.append(f"{doc_rel}: Missing navigation markers ({START_MARKER} ... {END_MARKER}).")
+            errors.append(
+                f"{doc_rel}: Missing navigation markers ({START_MARKER} ... {END_MARKER})."
+            )
             continue
 
         if start_count > 1 or end_count > 1:
-            errors.append(f"{doc_rel}: Duplicate navigation markers (found {start_count} START, {end_count} END).")
+            errors.append(
+                f"{doc_rel}: Duplicate navigation markers (found {start_count} START, {end_count} END)."
+            )
             continue
 
         start_pos = content.find(START_MARKER)
@@ -234,9 +240,13 @@ def validate_navigation_in_docs(
                 if lang["code"] == active_code:
                     active_name = lang["native_name"]
                     if f"[{active_name}]" in actual_nav:
-                        errors.append(f"{doc_rel}: Active language '{active_name}' must not link to itself.")
+                        errors.append(
+                            f"{doc_rel}: Active language '{active_name}' must not link to itself."
+                        )
                     if f"**{active_name}**" not in actual_nav:
-                        errors.append(f"{doc_rel}: Active language '{active_name}' must be formatted in bold.")
+                        errors.append(
+                            f"{doc_rel}: Active language '{active_name}' must be formatted in bold."
+                        )
 
     return errors
 
@@ -249,7 +259,9 @@ def main() -> int:
     languages, manifest_errors = validate_manifest(manifest_path, repo_root)
 
     if manifest_errors:
-        print(f"\nManifest validation failed with {len(manifest_errors)} error(s):", file=sys.stderr)
+        print(
+            f"\nManifest validation failed with {len(manifest_errors)} error(s):", file=sys.stderr
+        )
         for err in manifest_errors:
             print(f"  - {err}", file=sys.stderr)
         return 1
@@ -262,7 +274,9 @@ def main() -> int:
             print(f"  - {err}", file=sys.stderr)
         return 1
 
-    print("SUCCESS: Language manifest and 10-language navigation verified across all documentation targets.")
+    print(
+        "SUCCESS: Language manifest and 10-language navigation verified across all documentation targets."
+    )
     return 0
 
 

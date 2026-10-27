@@ -3,9 +3,8 @@
 Defines typed configuration settings for the DERA API gateway.
 """
 
-from dataclasses import dataclass, field
 import os
-from typing import List
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
@@ -18,7 +17,7 @@ class ApiSettings:
     api_prefix: str = "/api/v1"
     host: str = os.getenv("DERA_API_HOST", "127.0.0.1")
     port: int = int(os.getenv("DERA_API_PORT", "8000"))
-    cors_origins: List[str] = field(
+    cors_origins: list[str] = field(
         default_factory=lambda: [
             origin.strip()
             for origin in os.getenv("DERA_CORS_ORIGINS", "http://localhost:3000").split(",")

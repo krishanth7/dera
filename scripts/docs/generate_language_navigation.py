@@ -14,9 +14,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 from typing import Any
 
 START_MARKER = "<!-- DERA:I18N_NAV:START -->"
@@ -68,7 +68,9 @@ def validate_manifest_data(data: dict[str, Any], repo_root: Path) -> list[dict[s
         raise NavigationError(f"Unsupported manifest version: {data.get('version')} (expected 1).")
 
     if data.get("default_language") != "en":
-        raise NavigationError(f"Default language must be 'en', found: {data.get('default_language')}")
+        raise NavigationError(
+            f"Default language must be 'en', found: {data.get('default_language')}"
+        )
 
     languages = data.get("languages")
     if not isinstance(languages, list):
@@ -93,7 +95,9 @@ def validate_manifest_data(data: dict[str, Any], repo_root: Path) -> list[dict[s
         rel_path = lang.get("path")
 
         if not code or not name or not native_name or not rel_path:
-            raise NavigationError(f"Language item #{index} missing required fields (code, name, native_name, path).")
+            raise NavigationError(
+                f"Language item #{index} missing required fields (code, name, native_name, path)."
+            )
 
         expected_code = OFFICIAL_LANGUAGE_CODES[index]
         if code != expected_code:
@@ -113,18 +117,22 @@ def validate_manifest_data(data: dict[str, Any], repo_root: Path) -> list[dict[s
         target_path = (repo_root / rel_path).resolve()
         try:
             target_path.relative_to(repo_root.resolve())
-        except ValueError:
-            raise NavigationError(f"Language path '{rel_path}' escapes repository root.")
+        except ValueError as exc:
+            raise NavigationError(f"Language path '{rel_path}' escapes repository root.") from exc
 
         if not target_path.is_file():
-            raise NavigationError(f"Language file not found: '{rel_path}' (resolved: {target_path})")
+            raise NavigationError(
+                f"Language file not found: '{rel_path}' (resolved: {target_path})"
+            )
 
-        validated_languages.append({
-            "code": code,
-            "name": name,
-            "native_name": native_name,
-            "path": rel_path.replace("\\", "/"),
-        })
+        validated_languages.append(
+            {
+                "code": code,
+                "name": name,
+                "native_name": native_name,
+                "path": rel_path.replace("\\", "/"),
+            }
+        )
 
     return validated_languages
 
@@ -138,9 +146,9 @@ def load_manifest(manifest_path: Path, repo_root: Path) -> list[dict[str, str]]:
         content = manifest_path.read_text(encoding="utf-8")
         data = json.loads(content)
     except json.JSONDecodeError as exc:
-        raise NavigationError(f"Malformed JSON in language manifest: {exc}")
+        raise NavigationError(f"Malformed JSON in language manifest: {exc}") from exc
     except UnicodeDecodeError as exc:
-        raise NavigationError(f"Manifest is not valid UTF-8: {exc}")
+        raise NavigationError(f"Manifest is not valid UTF-8: {exc}") from exc
 
     return validate_manifest_data(data, repo_root)
 
@@ -218,7 +226,9 @@ def update_managed_region(content: str, new_nav_line: str, doc_name: str) -> str
     end_pos = content.find(END_MARKER)
 
     if end_pos < start_pos:
-        raise NavigationError(f"{doc_name}: Malformed markers (END marker appears before START marker).")
+        raise NavigationError(
+            f"{doc_name}: Malformed markers (END marker appears before START marker)."
+        )
 
     managed_block = f"{START_MARKER}\n{new_nav_line}\n{END_MARKER}"
     return MARKER_PATTERN.sub(managed_block, content, count=1)
@@ -230,7 +240,7 @@ def process_documents(
     write: bool = False,
 ) -> tuple[int, list[str]]:
     """Checks or writes navigation for all target documentation files.
-    
+
     Returns:
         tuple of (error_count, diagnostics_messages)
     """
@@ -245,7 +255,7 @@ def process_documents(
 
     for doc_rel in TARGET_DOCUMENTS:
         doc_path = (repo_root / doc_rel).resolve()
-        
+
         # Path safety check
         try:
             doc_path.relative_to(repo_root.resolve())
@@ -328,9 +338,14 @@ def main() -> int:
 
     if args.check:
         if diff_count > 0:
-            print(f"\nFAILED: {diff_count} document(s) out of sync or contain navigation errors.", file=sys.stderr)
+            print(
+                f"\nFAILED: {diff_count} document(s) out of sync or contain navigation errors.",
+                file=sys.stderr,
+            )
             return 1
-        print(f"\nSUCCESS: All {len(TARGET_DOCUMENTS)} documents have verified, synchronized navigation.")
+        print(
+            f"\nSUCCESS: All {len(TARGET_DOCUMENTS)} documents have verified, synchronized navigation."
+        )
         return 0
     else:
         print(f"\nSUCCESS: Navigation processing complete ({diff_count} files modified).")

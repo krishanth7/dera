@@ -5,9 +5,11 @@ Copyright (c) 2026 Krishanth. All rights reserved.
 Licensed under the MIT License.
 """
 
-from datetime import datetime, timezone
 import unittest
+from datetime import UTC, datetime
 
+from dera.diagnostics import run_all_diagnostics
+from dera.graph import build_dependency_graph, compute_topological_sort
 from dera.models import (
     DatabaseColumn,
     DatabaseTable,
@@ -16,8 +18,6 @@ from dera.models import (
     SchemaSnapshot,
     TableIndex,
 )
-from dera.graph import build_dependency_graph, compute_topological_sort
-from dera.diagnostics import run_all_diagnostics, RuleSeverity
 
 
 class TestDeraCore(unittest.TestCase):
@@ -56,7 +56,7 @@ class TestDeraCore(unittest.TestCase):
             database_name="production_db",
             engine="postgresql",
             tables=(users_table, orders_table),
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
         self.assertEqual(len(snapshot.tables), 2)
@@ -120,7 +120,7 @@ class TestDeraCore(unittest.TestCase):
         findings = run_all_diagnostics([orders_table])
         rule_ids = [f.rule_id for f in findings]
 
-        self.assertIn("RULE-INT-001", rule_ids)   # Missing primary key
+        self.assertIn("RULE-INT-001", rule_ids)  # Missing primary key
         self.assertIn("RULE-PERF-002", rule_ids)  # Unindexed foreign key
 
         # Verify remediation DDL is present

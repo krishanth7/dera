@@ -13,11 +13,11 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from pathlib import Path
 import re
 import sys
-from typing import NamedTuple
 import urllib.parse
+from pathlib import Path
+from typing import NamedTuple
 
 try:
     import yaml  # type: ignore
@@ -42,7 +42,9 @@ IMAGE_PATTERN = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
 # Heading pattern: # Heading
 HEADING_PATTERN = re.compile(r"^(#{1,6})[ \t]+(.+)$", re.MULTILINE)
 # HTML anchor tags: <a id="foo"> or <a name="foo">
-HTML_ANCHOR_PATTERN = re.compile(r'<[a-zA-Z0-9]+[^>]+(?:id|name)=["\']([^"\']+)["\']', re.IGNORECASE)
+HTML_ANCHOR_PATTERN = re.compile(
+    r'<[a-zA-Z0-9]+[^>]+(?:id|name)=["\']([^"\']+)["\']', re.IGNORECASE
+)
 
 # Mandatory documentation entry points
 MANDATORY_STRUCTURE = [
@@ -124,11 +126,13 @@ def extract_headings_and_slugs(content: str) -> tuple[list[tuple[int, int, str]]
 
             # Generate GitHub-compatible emoji-stripped anchor variants
             # On GitHub, leading emojis are stripped, often leaving a leading hyphen from the following space
-            emoji_pattern = re.compile(r"[\U00010000-\U0010ffff]|[\u2600-\u27bf]|[\u2300-\u23ff]|[\u2b50-\u2b55]|[\ufe00-\ufe0f]")
+            emoji_pattern = re.compile(
+                r"[\U00010000-\U0010ffff]|[\u2600-\u27bf]|[\u2300-\u23ff]|[\u2b50-\u2b55]|[\ufe00-\ufe0f]"
+            )
             no_emoji = emoji_pattern.sub("", strip_markdown_inline(heading_text).lower())
             no_emoji_punct = re.sub(r"[!\"#$%&'()*+,./:;<=>?@\[\\\]^_`{|}~]", "", no_emoji)
             emoji_slug = re.sub(r"\s+", "-", no_emoji_punct)
-            
+
             slugs.add(emoji_slug)
             slugs.add(emoji_slug.strip("-"))
             if emoji_slug.strip("-"):
@@ -383,7 +387,7 @@ class DocValidator:
             link_text = match.group(1).strip()
             raw_target = match.group(2).strip()
 
-            line_number = masked_content[:match.start()].count("\n") + 1
+            line_number = masked_content[: match.start()].count("\n") + 1
 
             # Ignore empty targets or mailto / external http(s)
             if not raw_target or raw_target.startswith(("http://", "https://", "mailto:")):
@@ -478,9 +482,7 @@ def collect_markdown_files(repo_root: Path) -> list[Path]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Comprehensive documentation validator for DERA."
-    )
+    parser = argparse.ArgumentParser(description="Comprehensive documentation validator for DERA.")
     parser.add_argument(
         "--file",
         type=Path,
@@ -515,7 +517,9 @@ def main() -> int:
         all_errors.extend(errs)
 
     if all_errors:
-        print(f"\nFAILED: Found {len(all_errors)} documentation validation issues:", file=sys.stderr)
+        print(
+            f"\nFAILED: Found {len(all_errors)} documentation validation issues:", file=sys.stderr
+        )
         for err in all_errors:
             print(f"  {err}", file=sys.stderr)
         return 1

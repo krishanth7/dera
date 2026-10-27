@@ -6,10 +6,8 @@ Licensed under the MIT License.
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-import tempfile
 import unittest
+from pathlib import Path
 
 from scripts.docs.generate_language_navigation import (
     END_MARKER,
@@ -35,7 +33,7 @@ class TestLanguageNavigation(unittest.TestCase):
     def test_canonical_manifest_structure_and_count(self) -> None:
         """Verifies canonical manifest loads cleanly and contains exactly 10 official languages."""
         self.assertEqual(len(self.languages), 10)
-        loaded_codes = tuple(l["code"] for l in self.languages)
+        loaded_codes = tuple(lang["code"] for lang in self.languages)
         self.assertEqual(loaded_codes, OFFICIAL_LANGUAGE_CODES)
 
     def test_unsupported_languages_rejected(self) -> None:
@@ -59,7 +57,12 @@ class TestLanguageNavigation(unittest.TestCase):
             "default_language": "en",
             "languages": [
                 {"code": "en", "name": "English", "native_name": "English", "path": "README.md"},
-                {"code": "en", "name": "English2", "native_name": "English2", "path": "docs/README.md"},
+                {
+                    "code": "en",
+                    "name": "English2",
+                    "native_name": "English2",
+                    "path": "docs/README.md",
+                },
             ],
         }
         with self.assertRaises(NavigationError):
@@ -84,8 +87,14 @@ class TestLanguageNavigation(unittest.TestCase):
             "version": 1,
             "default_language": "en",
             "languages": [
-                {"code": "en", "name": "English", "native_name": "English", "path": "nonexistent/file.md"}
-            ] * 10,
+                {
+                    "code": "en",
+                    "name": "English",
+                    "native_name": "English",
+                    "path": "nonexistent/file.md",
+                }
+            ]
+            * 10,
         }
         with self.assertRaises(NavigationError):
             validate_manifest_data(fake_data, self.repo_root)
@@ -96,8 +105,14 @@ class TestLanguageNavigation(unittest.TestCase):
             "version": 1,
             "default_language": "en",
             "languages": [
-                {"code": "en", "name": "English", "native_name": "English", "path": "../../outside.md"}
-            ] * 10,
+                {
+                    "code": "en",
+                    "name": "English",
+                    "native_name": "English",
+                    "path": "../../outside.md",
+                }
+            ]
+            * 10,
         }
         with self.assertRaises(NavigationError):
             validate_manifest_data(fake_data, self.repo_root)
@@ -159,11 +174,7 @@ class TestLanguageNavigation(unittest.TestCase):
 
     def test_update_managed_region_success(self) -> None:
         """Verifies replacing content between markers leaves surrounding text untouched."""
-        content = (
-            "Header before\n\n"
-            f"{START_MARKER}\nOld Navigation\n{END_MARKER}\n\n"
-            "Footer after"
-        )
+        content = f"Header before\n\n{START_MARKER}\nOld Navigation\n{END_MARKER}\n\nFooter after"
         updated = update_managed_region(content, "New Navigation", "test.md")
         self.assertEqual(
             updated,

@@ -6,13 +6,14 @@ to detect structural defects without non-deterministic AI models.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from enum import Enum
-from typing import Iterable
+from enum import StrEnum
+
 from dera.models import DatabaseTable
 
 
-class RuleSeverity(str, Enum):
+class RuleSeverity(StrEnum):
     """Severity classification for diagnostic findings."""
 
     INFO = "INFO"

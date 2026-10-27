@@ -4,9 +4,10 @@ FastAPI entrypoint providing health verification, version info,
 and read-only database inspection endpoints.
 """
 
+import dera
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import dera
+
 from dera_api.core.config import get_settings
 from dera_api.middleware.security import SecurityHeadersMiddleware
 

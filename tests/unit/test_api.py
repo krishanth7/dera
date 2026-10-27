@@ -8,8 +8,9 @@ Licensed under the MIT License.
 import unittest
 
 try:
-    from fastapi.testclient import TestClient
     from dera_api.main import app
+    from fastapi.testclient import TestClient
+
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
@@ -35,6 +36,14 @@ class TestDeraApi(unittest.TestCase):
         self.assertEqual(data["project"], "DERA")
         self.assertEqual(data["maintainer"], "Krishanth")
         self.assertIn("Deterministic", data["philosophy"])
+
+    def test_meta_endpoint(self) -> None:
+        response = self.client.get("/api/v1/meta")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data["zero_ai_policy"])
+        self.assertTrue(data["read_only_enforced"])
+        self.assertIn("sqlite", data["supported_dialects"])
 
 
 if __name__ == "__main__":

@@ -8,9 +8,9 @@ Licensed under the MIT License.
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 # Supported Mermaid diagram types
 VALID_DIAGRAM_TYPES = {
@@ -57,7 +57,9 @@ class MermaidValidationError:
         return f"{self.file_path}:{self.line_number}: ERROR {self.code}: {self.message}"
 
 
-def validate_mermaid_source(source: str, file_path: Path, start_line: int) -> list[MermaidValidationError]:
+def validate_mermaid_source(
+    source: str, file_path: Path, start_line: int
+) -> list[MermaidValidationError]:
     """Validates the syntax and structural integrity of a single Mermaid diagram source."""
     errors: list[MermaidValidationError] = []
     lines = source.splitlines()
@@ -180,7 +182,7 @@ def validate_mermaid_source(source: str, file_path: Path, start_line: int) -> li
         if declaration in {"flowchart", "graph"}:
             # Strip string literals before bracket checks
             stripped_line = re.sub(r'"[^"]*"', '""', line)
-            
+
             # Check brackets
             if stripped_line.count("[") != stripped_line.count("]"):
                 errors.append(
@@ -222,7 +224,7 @@ def validate_markdown_file(file_path: Path) -> list[MermaidValidationError]:
 
     for match in MERMAID_BLOCK_PATTERN.finditer(content):
         # Calculate start line number
-        start_line = content[:match.start()].count("\n") + 1
+        start_line = content[: match.start()].count("\n") + 1
         diagram_source = match.group(1)
         block_errors = validate_mermaid_source(diagram_source, file_path, start_line)
         errors.extend(block_errors)
@@ -289,12 +291,16 @@ def main() -> int:
     print(f"Found {total_diagrams} Mermaid diagrams across {len(files_to_check)} files.")
 
     if all_errors:
-        print(f"\nFAILED: Found {len(all_errors)} Mermaid diagram validation errors:", file=sys.stderr)
+        print(
+            f"\nFAILED: Found {len(all_errors)} Mermaid diagram validation errors:", file=sys.stderr
+        )
         for err in all_errors:
             print(f"  {err}", file=sys.stderr)
         return 1
 
-    print(f"SUCCESS: All {total_diagrams} Mermaid diagrams passed syntax and structural validation.")
+    print(
+        f"SUCCESS: All {total_diagrams} Mermaid diagrams passed syntax and structural validation."
+    )
     return 0
 
 
