@@ -86,6 +86,18 @@ flowchart TD
 | [**SECURE_DEVELOPMENT.md**](SECURE_DEVELOPMENT.md) | Secure development lifecycle & coding standards | Pydantic input validation, SQL parameterization, sanitized error handling, DevSecOps CI gates (Bandit, CodeQL). |
 | [**VULNERABILITY_RESPONSE.md**](VULNERABILITY_RESPONSE.md) | Operational incident response workflow | 5-stage triage workflow, CVSS scoring guidelines, private security forks, coordinated disclosure timelines. |
 | [**model.md**](model.md) | Architectural threat modeling matrix | Threat categories, potential attack vectors, mitigation mechanisms, SSRF prevention. |
+| [**CONNECTOR_THREAT_MODEL.md**](CONNECTOR_THREAT_MODEL.md) | Phase 5.6 cross-connector STRIDE threat model | 18 threat vectors, least privilege, read-only transaction limits, SSRF mitigations, residual risk analysis. |
+| [**CONNECTOR_SECURITY_ARCHITECTURE.md**](CONNECTOR_SECURITY_ARCHITECTURE.md) | Phase 5.6 defense-in-depth connector architecture | 5-layer enforcement model, mandatory pipeline execution order, engine hardening specifications. |
+| [**READ_ONLY_ENFORCEMENT.md**](READ_ONLY_ENFORCEMENT.md) | Read-only SQL query validation & allowlists | Static lexical analysis, comment stripping, literal placeholder immunity, query registry. |
+| [**NETWORK_DESTINATION_POLICY.md**](NETWORK_DESTINATION_POLICY.md) | SSRF egress protection & DNS rebinding defense | Prohibited hostnames, cloud metadata blocking, dangerous port filters, destination IP pinning. |
+| [**SQLITE_FILESYSTEM_ISOLATION.md**](SQLITE_FILESYSTEM_ISOLATION.md) | SQLite storage isolation & traversal guards | Path canonicalization, approved root containment, symlink escape checks, read-only URI generation. |
+| [**CONNECTOR_CREDENTIALS.md**](CONNECTOR_CREDENTIALS.md) | Database credential encapsulation & masking | Ephemeral resolution, repr safety, recursive diagnostic scrubbing, zero log leakage. |
+| [**CONNECTOR_TIMEOUTS.md**](CONNECTOR_TIMEOUTS.md) | Centralized timeout budgets & deadline tracking | Monotonic deadline propagation across multi-query inspections, sub-budget clamping. |
+| [**CONNECTOR_CANCELLATION.md**](CONNECTOR_CANCELLATION.md) | Cooperative cancellation management | Hierarchical cancellation tokens, driver interrupt callbacks, transaction rollback. |
+| [**CONNECTOR_RESOURCE_LIMITS.md**](CONNECTOR_RESOURCE_LIMITS.md) | Resource safety bounds & DoS defense | 50k row limit, 1,024-char identifier cap, 1MB definition cap, 100k entity cap, non-retryable error rules. |
+| [**CONNECTOR_TENANT_ISOLATION.md**](CONNECTOR_TENANT_ISOLATION.md) | Multi-tenant workspace data segregation | Pre-execution workspace matching, tenant-scoped storage roots, cryptographic object ID binding. |
+| [**CONNECTOR_AUDIT_LOGGING.md**](CONNECTOR_AUDIT_LOGGING.md) | Structured security audit telemetry | Immutable security audit events, status classification, duration tracking, credential redaction. |
+| [**CONNECTOR_TESTING.md**](CONNECTOR_TESTING.md) | Connector security testing & verification guide | Unit, adversarial, network, filesystem, tenant isolation, and cross-engine regression matrix. |
 
 ---
 

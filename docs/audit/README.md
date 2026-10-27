@@ -78,6 +78,9 @@ The repository audit log comprises forty-three technical assessments, audit repo
 | 52 | [PHASE_5_4_MYSQL_MARIADB_ACCEPTANCE.md](./PHASE_5_4_MYSQL_MARIADB_ACCEPTANCE.md) | Phase 5.4 MySQL and MariaDB connectors final acceptance report | **Verified Complete** |
 | 53 | [PHASE_5_5_METADATA_BASELINE.md](./PHASE_5_5_METADATA_BASELINE.md) | Phase 5.5 metadata normalization & object identity baseline audit | **Verified Complete** |
 | 54 | [PHASE_5_5_METADATA_ACCEPTANCE.md](./PHASE_5_5_METADATA_ACCEPTANCE.md) | Phase 5.5 metadata normalization & object identity final acceptance report | **Verified Complete** |
+| 55 | [PHASE_5_6_SECURITY_BASELINE.md](./PHASE_5_6_SECURITY_BASELINE.md) | Phase 5.6 connector read-only enforcement, timeouts & safety baseline audit | **Verified Complete** |
+| 56 | [PHASE_5_6_SECURITY_ACCEPTANCE.md](./PHASE_5_6_SECURITY_ACCEPTANCE.md) | Phase 5.6 connector read-only enforcement & safety final acceptance report | **Verified Complete** |
+| 57 | [PHASE_5_COMPLETION.md](./PHASE_5_COMPLETION.md) | Comprehensive audit and milestone certification for all Phase 5 sub-phases (5.1–5.6) | **Verified Complete** |
 
 ---
 
