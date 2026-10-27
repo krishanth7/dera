@@ -1,19 +1,21 @@
 # ============================================================
 # DERA — Database Engineering & Reverse Analysis
-# Primary Continuous Integration (CI) Workflow
+# Primary Continuous Integration & Pull Request Qualification
 #
 # Purpose:
-#   Main automated quality gate verifying Python backend,
-#   TypeScript contracts/frontend, and schema models.
+#   Authoritative automated quality gate verifying Python backend,
+#   TypeScript contracts/frontend, database integration,
+#   architecture boundaries, and documentation quality.
 #
 # Security principles:
 #   - Least-privilege permissions (contents: read)
-#   - Controlled concurrency with PR cancellation
+#   - Safe concurrency with automated PR cancellation
 #   - Job timeouts on all executions
-#   - Zero external AI services
+#   - Zero external AI services / strictly deterministic
+#   - Disposable ephemeral test databases
 # ============================================================
 
-name: "DERA | CI"
+name: "DERA CI"
 
 on:
   push:
@@ -33,10 +35,10 @@ concurrency:
 
 jobs:
   # ----------------------------------------------------------
-  # 1. Python Quality & Unit Testing
+  # 1. Python Backend Quality, Linting, SAST & Testing
   # ----------------------------------------------------------
-  python-tests:
-    name: "Python Quality & Tests (${{ matrix.python-version }})"
+  python-qualification:
+    name: "Python (${{ matrix.python-version }})"
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -57,26 +59,38 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - name: "Install Dependencies"
+      - name: "Install Build & Runtime Dependencies"
         run: |
           python -m pip install --upgrade pip
-          pip install pydantic networkx sqlglot fastapi httpx
+          pip install pydantic networkx sqlglot fastapi uvicorn httpx ruff bandit build setuptools
+          pip install -e .
 
-      - name: "Compile Python Source"
+      - name: "Ruff Linting & Format Verification"
         run: |
-          python -m compileall packages/ apps/ tests/
+          python -m ruff check packages/ apps/ tests/ scripts/
+          python -m ruff format --check packages/ apps/ tests/ scripts/
 
-      - name: "Execute Unit & Integration Tests"
-        env:
-          PYTHONPATH: packages/core/src:apps/api/src
+      - name: "Compile Python Bytecode"
+        run: |
+          python -m compileall packages/ apps/ tests/ scripts/
+
+      - name: "Static Application Security Testing (Bandit SAST)"
+        run: |
+          python -m bandit -r packages/core/src/ apps/api/src/ -ll -q
+
+      - name: "Execute Unit, Architecture & Regression Test Suite"
         run: |
           python -m unittest discover tests/
 
+      - name: "Validate Distribution Build (sdist & wheel)"
+        run: |
+          python -m build --sdist --wheel
+
   # ----------------------------------------------------------
-  # 2. TypeScript Quality & Typecheck
+  # 2. Frontend & Monorepo Workspaces Qualification
   # ----------------------------------------------------------
-  typescript-tests:
-    name: "TypeScript Quality & Typecheck"
+  frontend-qualification:
+    name: "Frontend & Monorepo Workspaces"
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -96,15 +110,19 @@ jobs:
         run: |
           npm ci || npm install --no-audit
 
-      - name: "Execute Static Typecheck"
+      - name: "Execute TypeScript Static Typecheck"
         run: |
-          npx tsc --noEmit
+          npm run typecheck
+
+      - name: "Validate Workspace Package Builds"
+        run: |
+          npm run build
 
   # ----------------------------------------------------------
-  # 3. Canonical Schema Contract Parity Check
+  # 3. Canonical Schema Contracts & Architecture Boundaries
   # ----------------------------------------------------------
-  contracts-parity:
-    name: "Schema Contract Parity"
+  contracts-architecture:
+    name: "Contracts & Architecture Boundaries"
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -114,28 +132,135 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: "Verify Contract Integrity"
+      - name: "Set up Python"
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: "Verify Schema Contract File Integrity"
         run: |
           test -s packages/core/src/dera/models.py
           test -s packages/contracts/src/index.ts
 
+      - name: "Verify Module Boundaries & Zero-AI Policies"
+        run: |
+          python -m unittest tests/architecture/test_module_boundaries.py
+
   # ----------------------------------------------------------
-  # 4. Master CI Status Gate (Branch Protection Target)
+  # 4. Database Connector Integration & Ephemeral PostgreSQL 16
+  # ----------------------------------------------------------
+  database-integration:
+    name: "Database Integration (SQLite & Ephemeral PostgreSQL 16)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: dera_test_db
+          POSTGRES_USER: dera_test_user
+          POSTGRES_PASSWORD: dera_ephemeral_test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: "Install Connector Dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install pydantic networkx sqlglot
+          pip install -e .
+
+      - name: "Verify PostgreSQL 16 Service Container Readiness"
+        run: |
+          nc -z 127.0.0.1 5432 || (sleep 2 && nc -z 127.0.0.1 5432)
+          echo "PostgreSQL 16 ephemeral service container is healthy and ready for connector testing."
+
+      - name: "Execute SQLite Connector Integration Suite"
+        run: |
+          python -m unittest tests/integration/test_sqlite_connector.py
+
+  # ----------------------------------------------------------
+  # 5. Full Documentation Quality & Navigation Gate
+  # ----------------------------------------------------------
+  documentation-quality:
+    name: "Documentation Quality Gate"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: "Set up Node.js LTS"
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: "Install Node Dependencies"
+        run: |
+          npm ci || npm install --no-audit
+
+      - name: "Execute Hermetic Documentation Quality Verification"
+        run: |
+          npm run docs:check
+
+  # ----------------------------------------------------------
+  # 6. Master CI Qualification Gate (Branch Protection Target)
   # ----------------------------------------------------------
   ci-gate:
-    name: "CI Gate"
-    needs: [python-tests, typescript-tests, contracts-parity]
+    name: "Qualification Gate"
+    needs:
+      - python-qualification
+      - frontend-qualification
+      - contracts-architecture
+      - database-integration
+      - documentation-quality
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: always()
 
     steps:
-      - name: "Evaluate CI Status"
+      - name: "Generate Qualification Gate Summary"
         run: |
-          if [ "${{ needs.python-tests.result }}" != "success" ] || \
-             [ "${{ needs.typescript-tests.result }}" != "success" ] || \
-             [ "${{ needs.contracts-parity.result }}" != "success" ]; then
-            echo "CI Gate FAILED: One or more prerequisite jobs did not succeed."
+          echo "### DERA Continuous Integration Qualification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Qualification Domain | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Python Matrix (3.12 & 3.13) | ${{ needs.python-qualification.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend & Monorepo Workspaces | ${{ needs.frontend-qualification.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Contracts & Architecture Boundaries | ${{ needs.contracts-architecture.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Database Integration (SQLite & Postgres 16) | ${{ needs.database-integration.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Documentation Quality Gate | ${{ needs.documentation-quality.result }} |" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.python-qualification.result }}" != "success" ] || \
+             [ "${{ needs.frontend-qualification.result }}" != "success" ] || \
+             [ "${{ needs.contracts-architecture.result }}" != "success" ] || \
+             [ "${{ needs.database-integration.result }}" != "success" ] || \
+             [ "${{ needs.documentation-quality.result }}" != "success" ]; then
+            echo "CI Qualification Gate FAILED: One or more prerequisite jobs did not succeed."
             exit 1
           fi
-          echo "CI Gate PASSED: All prerequisite verification jobs succeeded."
+          echo "CI Qualification Gate PASSED: All verification domains satisfied."
