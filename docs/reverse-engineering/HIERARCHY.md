@@ -4,7 +4,7 @@
 
 `SchemaHierarchy` provides stable, deterministic navigation over the schema registry, traversing the relational database hierarchy:
 
-```
+```text
 Database
    │
    └── Namespaces (Schemas)

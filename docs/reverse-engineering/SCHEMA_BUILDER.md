@@ -14,7 +14,7 @@ from dera.reverse_engineering.builder import SchemaBuilder, SchemaResourceLimits
 
 The construction pipeline follows 10 strict sequential stages:
 
-```
+```text
 [1. Input & Contract Validation]
         │ Verify contract version is supported ('1.0.0').
         ▼

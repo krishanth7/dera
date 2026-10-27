@@ -14,7 +14,7 @@ The Phase 6.1 Schema Representation Layer operates on database metadata. Its thr
 
 ### 1. Cross-Workspace Isolation
 Canonical `ObjectId`s incorporate `workspace_id` in their length-prefixed SHA-256 frame:
-```
+```text
 FRAME = "v1|" + len(engine) + ":" + engine + "|" + len(workspace_id) + ":" + workspace_id + ...
 ```
 Two tenants inspecting an identical schema (e.g. `public.users`) produce distinct `ObjectId`s, completely preventing cross-tenant collisions or state bleed in multi-tenant environments.

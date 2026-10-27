@@ -4,7 +4,7 @@
 
 Phase 6.1 sits between Phase 5 Canonical Metadata and downstream Phase 6 reverse-engineering modules:
 
-```
+```text
 ┌──────────────────────────────────────────────┐
 │  Phase 5.1 - 5.4 Multi-Engine Connectors    │
 │  (PostgreSQL, Supabase, SQLite, MySQL, Maria)│
@@ -64,7 +64,7 @@ DERA strictly adheres to:
 
 All Phase 6.1 errors inherit from `SchemaRepresentationError`, derived from `dera_core.exceptions.DeraError`:
 
-```
+```text
 DeraError
   └── SchemaRepresentationError
         ├── SchemaBuilderError

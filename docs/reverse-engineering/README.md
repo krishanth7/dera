@@ -13,7 +13,7 @@ DERA (Database Engineering & Reverse Analysis) is a deterministic database engin
 
 In Phase 6.1, the schema representation layer bridges the gap between raw catalog metadata and advanced reverse-engineering operations:
 
-```
+```text
 Source Database
      │
      ▼ (Phase 5 Connectors: PostgreSQL, SQLite, MySQL, MariaDB)
