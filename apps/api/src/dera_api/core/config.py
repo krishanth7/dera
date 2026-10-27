@@ -156,6 +156,89 @@ class ApiSettings(BaseSettings):
         description="Enable SQLAlchemy SQL query echo logging (strictly non-production).",
     )
 
+    # -------------------------------------------------------------------------
+    # Phase 4.4: Authentication, Session & Access Control Settings
+    # -------------------------------------------------------------------------
+    auth_session_lifetime_seconds: int = Field(
+        default=604800,  # 7 days
+        ge=300,
+        le=2592000,  # 30 days max
+        validation_alias=AliasChoices(
+            "DERA_AUTH_SESSION_LIFETIME_SECONDS", "AUTH_SESSION_LIFETIME_SECONDS"
+        ),
+        description="Opaque session lifetime in seconds.",
+    )
+    auth_cookie_name: str = Field(
+        default="dera_session",
+        validation_alias=AliasChoices("DERA_AUTH_COOKIE_NAME", "AUTH_COOKIE_NAME"),
+        description="Name of the session cookie used for browser authentication.",
+    )
+    auth_cookie_secure: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("DERA_AUTH_COOKIE_SECURE", "AUTH_COOKIE_SECURE"),
+        description="Enforce Secure flag on authentication cookies (mandatory in production).",
+    )
+    auth_cookie_samesite: str = Field(
+        default="lax",
+        validation_alias=AliasChoices("DERA_AUTH_COOKIE_SAMESITE", "AUTH_COOKIE_SAMESITE"),
+        description="SameSite cookie policy: lax, strict, or none.",
+    )
+    auth_cookie_httponly: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("DERA_AUTH_COOKIE_HTTPONLY", "AUTH_COOKIE_HTTPONLY"),
+        description="Enforce HttpOnly flag on authentication cookies preventing JavaScript access.",
+    )
+    auth_cookie_domain: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("DERA_AUTH_COOKIE_DOMAIN", "AUTH_COOKIE_DOMAIN"),
+        description="Optional domain scope for session cookies.",
+    )
+    auth_cookie_path: str = Field(
+        default="/",
+        validation_alias=AliasChoices("DERA_AUTH_COOKIE_PATH", "AUTH_COOKIE_PATH"),
+        description="Path scope for session cookies.",
+    )
+    auth_csrf_cookie_name: str = Field(
+        default="dera_csrf",
+        validation_alias=AliasChoices("DERA_AUTH_CSRF_COOKIE_NAME", "AUTH_CSRF_COOKIE_NAME"),
+        description="Name of the CSRF token cookie.",
+    )
+    auth_csrf_header_name: str = Field(
+        default="x-csrf-token",
+        validation_alias=AliasChoices("DERA_AUTH_CSRF_HEADER_NAME", "AUTH_CSRF_HEADER_NAME"),
+        description="Name of the expected request header containing the CSRF token.",
+    )
+    auth_csrf_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("DERA_AUTH_CSRF_ENABLED", "AUTH_CSRF_ENABLED"),
+        description="Enable Double-Submit Cookie CSRF validation on state-changing requests.",
+    )
+    auth_rate_limit_max_attempts: int = Field(
+        default=5,
+        ge=1,
+        le=100,
+        validation_alias=AliasChoices(
+            "DERA_AUTH_RATE_LIMIT_MAX_ATTEMPTS", "AUTH_RATE_LIMIT_MAX_ATTEMPTS"
+        ),
+        description="Maximum failed authentication attempts before temporary lockout.",
+    )
+    auth_rate_limit_window_seconds: int = Field(
+        default=300,  # 5 minutes
+        ge=10,
+        le=3600,
+        validation_alias=AliasChoices(
+            "DERA_AUTH_RATE_LIMIT_WINDOW_SECONDS", "AUTH_RATE_LIMIT_WINDOW_SECONDS"
+        ),
+        description="Window in seconds for failed authentication attempt throttling.",
+    )
+    auth_allow_public_registration: bool = Field(
+        default=True,
+        validation_alias=AliasChoices(
+            "DERA_AUTH_ALLOW_PUBLIC_REGISTRATION", "AUTH_ALLOW_PUBLIC_REGISTRATION"
+        ),
+        description="Allow self-service user registration via POST /api/v1/auth/register.",
+    )
+
     @property
     def has_database_configured(self) -> bool:
         """Returns True if a platform database URL has been explicitly specified."""
@@ -232,6 +315,8 @@ class ApiSettings(BaseSettings):
                 raise ValueError(
                     "Database SQL query echo (db_echo) is strictly prohibited in production"
                 )
+            if not self.auth_cookie_secure:
+                self.auth_cookie_secure = True
             if self.docs_enabled is None:
                 self.docs_enabled = False
         else:

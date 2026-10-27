@@ -22,6 +22,7 @@ DERA provides an enterprise-oriented, deterministic, and strongly-typed API arch
 
 | Specification Document | Scope & Focus |
 |---|---|
+| [Authentication & Workspace API](AUTHENTICATION_API.md) | Opaque session authentication, CSRF rules, workspace lifecycle, and member RBAC |
 | [API Contract Standard](API_CONTRACT_STANDARD.md) | Resource naming, HTTP verbs, status codes, field casing, and JSON formatting |
 | [RFC 9457 Error Model](ERROR_MODEL.md) | Problem Details structure, error taxonomy codes, remediation, and retry semantics |
 | [Validation Policy](VALIDATION_POLICY.md) | Pydantic v2 validation rules, bounded collections, identifier syntax, and security |
