@@ -6,7 +6,7 @@ The DERA Job Orchestration architecture implements a dual-store model:
 1. **Durable Platform Persistence (PostgreSQL):** The authoritative system of record for job definitions, state transitions, execution logs, attempt metrics, and transactional outbox events (`dera_jobs`, `dera_job_outbox`).
 2. **Transient Message Broker (Redis / Celery):** High-throughput, distributed dispatch queue used for worker notification and scheduling (`dera_jobs` queue).
 
-```
+```text
 +-------------------------------------------------------------+
 | FastAPI Gateway (API Layer)                                 |
 | POST /api/v1/workspaces/{workspace_id}/jobs                 |

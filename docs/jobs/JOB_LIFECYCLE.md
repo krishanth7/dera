@@ -17,7 +17,7 @@ The DERA Job lifecycle is governed by an explicit finite state machine (`JobStat
 
 The transition graph is strictly enforced by `validate_transition(current, target)`:
 
-```
+```text
 [PENDING] ----> [QUEUED] ----> [RUNNING] ----> [SUCCEEDED]
     |               |               |
     |               |               +--------> [FAILED]
@@ -25,6 +25,6 @@ The transition graph is strictly enforced by `validate_transition(current, targe
     +---------------+---------------+--------> [CANCELLED]
 ```
 
-### Invariants:
+### Invariants
 1. **Terminal Immutability:** Once in `SUCCEEDED`, `FAILED`, or `CANCELLED`, no further transitions are permitted. Any attempt raises `JobAlreadyCompletedError`.
 2. **Atomic CAS Claims:** A worker can only transition a job from `QUEUED` to `RUNNING`. Transitioning from `PENDING` directly to `RUNNING` is rejected with `InvalidStateTransitionError`.

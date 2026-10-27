@@ -4,7 +4,7 @@
 
 To prevent arbitrary remote code execution, DERA enforces an allowlist registry pattern (`TaskRegistry`). Workers will strictly refuse to execute any job type not registered in `default_task_registry`.
 
-### Built-in Tasks (Phase 4.5):
+### Built-in Tasks (Phase 4.5)
 1. **`system.health_probe.v1`**:
    - Performs a deterministic diagnostic health verification.
    - Input Payload: `{"target": str, "echo": Optional[str]}`

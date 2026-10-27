@@ -14,7 +14,7 @@ The DERA Background Jobs & Asynchronous Orchestration subsystem (Phase 4.5) prov
 
 ## Directory Structure
 
-```
+```text
 apps/api/src/dera_api/jobs/
 ├── __init__.py           # Public exports
 ├── enums.py              # JobStatus, JobPriority, OutboxEventStatus, OutboxEventType

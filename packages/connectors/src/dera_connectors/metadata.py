@@ -295,3 +295,97 @@ class ViewInfo(BaseModel):
         default_factory=dict,
         description="Engine-specific view properties (e.g. security options, check options).",
     )
+
+
+class SequenceInfo(BaseModel):
+    """Metadata describing a database sequence object."""
+
+    model_config = ConfigDict(frozen=True)
+
+    schema_name: str = Field(
+        ...,
+        description="Schema name owning the sequence.",
+    )
+    sequence_name: str = Field(
+        ...,
+        description="Canonical sequence identifier.",
+    )
+    data_type: str = Field(
+        default="bigint",
+        description="Native sequence data type (e.g. bigint, integer).",
+    )
+    start_value: int | None = Field(
+        default=None,
+        description="Initial sequence generation value.",
+    )
+    minimum_value: int | None = Field(
+        default=None,
+        description="Minimum permitted value for this sequence.",
+    )
+    maximum_value: int | None = Field(
+        default=None,
+        description="Maximum permitted value for this sequence.",
+    )
+    increment: int = Field(
+        default=1,
+        description="Step increment value between successive numbers.",
+    )
+    is_cycling: bool = Field(
+        default=False,
+        description="True if sequence cycles back to start/min when limit reached.",
+    )
+    comment: str | None = Field(
+        default=None,
+        description="Optional documentation or remark for the sequence.",
+    )
+    engine_specific: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Engine-specific sequence properties (e.g. cache size).",
+    )
+
+
+class PartitionInfo(BaseModel):
+    """Metadata describing table partitioning and parent-child hierarchy."""
+
+    model_config = ConfigDict(frozen=True)
+
+    schema_name: str = Field(
+        ...,
+        description="Schema name owning the partitioned relation.",
+    )
+    table_name: str = Field(
+        ...,
+        description="Table identifier.",
+    )
+    partition_strategy: str = Field(
+        ...,
+        description="Partitioning strategy (e.g. RANGE, LIST, HASH).",
+    )
+    partition_key_columns: list[str] = Field(
+        default_factory=list,
+        description="Columns participating in the partition key.",
+    )
+    partition_expression: str | None = Field(
+        default=None,
+        description="Partition expression string if partitioned by expression.",
+    )
+    parent_schema: str | None = Field(
+        default=None,
+        description="Parent table schema name if this is a leaf/child partition.",
+    )
+    parent_table: str | None = Field(
+        default=None,
+        description="Parent table name if this is a leaf/child partition.",
+    )
+    partition_bound_expression: str | None = Field(
+        default=None,
+        description="Bound specification (e.g. FOR VALUES FROM (...) TO (...)).",
+    )
+    child_partitions: list[str] = Field(
+        default_factory=list,
+        description="Child partition table names if this is a root or intermediate partitioned table.",
+    )
+    engine_specific: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Engine-specific partition attributes.",
+    )
