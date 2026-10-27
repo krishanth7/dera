@@ -1,3 +1,14 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Dependabot Automated Dependency Updates
+#
+# Configured Ecosystems:
+#   - github-actions: CI/CD workflow actions
+#   - pip: Python backend packages (pyproject.toml)
+#   - npm: TypeScript/React frontend & contracts
+#   - docker: Container base images (Dockerfile)
+# ============================================================
+
 version: 2
 updates:
   # GitHub Actions workflows and composite actions
@@ -9,6 +20,9 @@ updates:
       prefix: "ci(actions)"
       include: "scope"
     open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "ci"
     groups:
       actions:
         patterns:
@@ -23,6 +37,9 @@ updates:
       prefix: "deps(python)"
       include: "scope"
     open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "python"
     groups:
       python-dependencies:
         patterns:
@@ -37,7 +54,27 @@ updates:
       prefix: "deps(npm)"
       include: "scope"
     open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
     groups:
       npm-dependencies:
+        patterns:
+          - "*"
+
+  # Docker container base images (Dockerfile)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "build(docker)"
+      include: "scope"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+    groups:
+      docker-dependencies:
         patterns:
           - "*"
