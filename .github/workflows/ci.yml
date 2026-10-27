@@ -85,7 +85,9 @@ jobs:
       - name: "Generate Test Artifact Integrity Manifest"
         if: always()
         run: |
-          python scripts/ci/artifact_manager.py manifest reports/ --output reports/manifest.json
+          if [ -d reports ]; then
+            python scripts/ci/artifact_manager.py manifest reports/ --output reports/manifest.json
+          fi
 
       - name: "Upload Test Execution Artifacts"
         if: always()

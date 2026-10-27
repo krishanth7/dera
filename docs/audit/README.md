@@ -20,7 +20,7 @@ All database reverse-engineering, schema diagnostics, graph algorithms, and migr
 
 ## 2. Master Audit Reports Index
 
-The repository audit log comprises thirty technical assessments, audit reports, and milestone acceptance certificates:
+The repository audit log comprises thirty-five technical assessments, audit reports, and milestone acceptance certificates:
 
 | # | Audit Document | Description | Status |
 |---|---|---|---|
@@ -56,6 +56,9 @@ The repository audit log comprises thirty technical assessments, audit reports, 
 | 30 | [PHASE_3_4_DOCS_I18N_ACCEPTANCE.md](./PHASE_3_4_DOCS_I18N_ACCEPTANCE.md) | Phase 3.4 documentation & i18n acceptance report, test telemetry, and verification sign-off | **Verified Complete** |
 | 31 | [PHASE_3_5_CI_PERFORMANCE_BASELINE.md](./PHASE_3_5_CI_PERFORMANCE_BASELINE.md) | Phase 3.5 CI performance, cache utilization, and artifact baseline audit | **Verified Complete** |
 | 32 | [PHASE_3_5_PERFORMANCE_ACCEPTANCE.md](./PHASE_3_5_PERFORMANCE_ACCEPTANCE.md) | Phase 3.5 CI performance, cache optimization, and artifact acceptance report | **Verified Complete** |
+| 33 | [PHASE_3_6_RELEASE_BASELINE.md](./PHASE_3_6_RELEASE_BASELINE.md) | Phase 3.6 release infrastructure, versioning, tag history, and recovery baseline audit | **Verified Complete** |
+| 34 | [PHASE_3_6_RELEASE_ACCEPTANCE.md](./PHASE_3_6_RELEASE_ACCEPTANCE.md) | Phase 3.6 release qualification, artifact integrity, and recovery acceptance report | **Verified Complete** |
+| 35 | [PHASE_3_COMPLETION.md](./PHASE_3_COMPLETION.md) | Comprehensive audit and milestone certification for all Phase 3 sub-phases (3.1–3.6) | **Verified Complete** |
 
 ---
 
