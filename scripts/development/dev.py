@@ -101,8 +101,15 @@ def cmd_install_hooks(args: argparse.Namespace) -> int:
         return 1
 
 
+def cmd_validate_release(args: argparse.Namespace) -> int:
+    """Run release qualification and version consistency validation."""
+    return run_cmd(
+        [sys.executable, "scripts/release/validate_version.py", "--check-consistency"]
+    )
+
+
 def cmd_all(args: argparse.Namespace) -> int:
-    """Run full baseline validation suite (lint, compile, security, test, typecheck, docs)."""
+    """Run full baseline validation suite (lint, compile, security, test, typecheck, docs, release)."""
     checks = [
         ("Python Linting & Formatting", cmd_lint),
         ("Python Compile", cmd_compile),
@@ -110,6 +117,7 @@ def cmd_all(args: argparse.Namespace) -> int:
         ("Tests", cmd_test),
         ("TypeScript Typecheck", cmd_typecheck),
         ("Documentation Validation", cmd_validate_docs),
+        ("Release Version Consistency", cmd_validate_release),
     ]
     for name, fn in checks:
         print(f"\n>>> Running check: {name}...")
@@ -133,6 +141,9 @@ def main() -> None:
     subparsers.add_parser("typecheck", help="Run TypeScript type checking")
     subparsers.add_parser("compile", help="Compile Python packages")
     subparsers.add_parser("validate-docs", help="Validate documentation links and i18n parity")
+    subparsers.add_parser(
+        "validate-release", help="Validate version consistency and SemVer compliance"
+    )
 
     title_parser = subparsers.add_parser(
         "validate-title", help="Validate commit/PR title against Conventional Commits"
@@ -151,6 +162,7 @@ def main() -> None:
         "typecheck": cmd_typecheck,
         "compile": cmd_compile,
         "validate-docs": cmd_validate_docs,
+        "validate-release": cmd_validate_release,
         "validate-title": cmd_validate_title,
         "install-hooks": cmd_install_hooks,
         "all": cmd_all,
