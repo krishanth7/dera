@@ -3,7 +3,7 @@
 > **Workspace:** `apps/api`  
 > **Maintainer:** Krishanth  
 > **Status:** Active Documentation Hub  
-> **Last Verified:** 2026-10-26 (Commit `e550fdd`)  
+> **Phase:** 4.1 — Python/FastAPI Application Foundation  
 
 ---
 
@@ -11,18 +11,26 @@
 
 | Document | Purpose | Status |
 |---|---|---|
-| [**APPLICATION_ARCHITECTURE.md**](APPLICATION_ARCHITECTURE.md) | FastAPI framework structure, configuration, security middleware, and execution flow | **Active** |
-| [**API_CONTRACTS.md**](API_CONTRACTS.md) | Authoritative reference for implemented and planned REST endpoints, schemas, and curl examples | **Active** |
+| [**ARCHITECTURE.md**](ARCHITECTURE.md) | Authoritative FastAPI architecture, factory pattern, lifecycle, and middleware ordering | **Active** |
+| [**LOCAL_DEVELOPMENT.md**](LOCAL_DEVELOPMENT.md) | Local developer environment setup, Uvicorn execution, and test commands | **Active** |
+| [**CONFIGURATION.md**](CONFIGURATION.md) | Typed configuration reference, environment profiles, and security defaults | **Active** |
+| [**API_FOUNDATION.md**](API_FOUNDATION.md) | API routing conventions, truthful health probes, and correlation tracking | **Active** |
+| [**TESTING.md**](TESTING.md) | Automated testing strategy, test isolation, and CI integration | **Active** |
+| [**SECURITY_BASELINE.md**](SECURITY_BASELINE.md) | OWASP defense headers, CORS policies, and secret redaction | **Active** |
+| [**APPLICATION_ARCHITECTURE.md**](APPLICATION_ARCHITECTURE.md) | Historical FastAPI framework structure and execution flow | **Maintained** |
+| [**API_CONTRACTS.md**](API_CONTRACTS.md) | Authoritative reference for implemented and planned REST endpoints and schemas | **Maintained** |
 
 ---
 
 ## 2. Key Backend Invariants
 
-1. **Stateless Gateway:** The backend holds no state across requests.
-2. **Deterministic Processing:** No generative AI, machine learning inference, or vector databases.
-3. **Loopback Binding by Default:** Listens on `127.0.0.1:8000` to prevent accidental network exposure.
-4. **OWASP Security Headers:** Every response is decorated with defensive HTTP headers.
-5. **Read-Only Database Boundaries:** Database connectors are strictly guarded against query mutations.
+1. **Deterministic Processing:** Zero generative AI, machine learning inference, LLM APIs, or vector databases.
+2. **Factory-Driven Construction:** Applications are instantiated deterministically via `create_app(settings)`.
+3. **Modern Lifespan Management:** Lifecycle execution relies on `contextlib.asynccontextmanager`.
+4. **Loopback Binding by Default:** Listens on `127.0.0.1:8000` to prevent accidental network exposure.
+5. **OWASP Security Headers:** Every response is decorated with defensive HTTP headers.
+6. **Information Leak Prevention:** Production errors are sanitized with request correlation IDs and never leak stack traces.
+7. **Read-Only Database Boundaries:** Database connectors are strictly guarded against query mutations.
 
 ---
 
