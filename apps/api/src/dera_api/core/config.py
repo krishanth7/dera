@@ -239,6 +239,75 @@ class ApiSettings(BaseSettings):
         description="Allow self-service user registration via POST /api/v1/auth/register.",
     )
 
+    # -------------------------------------------------------------------------
+    # Phase 4.5: Background Workers & Job Orchestration Settings
+    # -------------------------------------------------------------------------
+    redis_url: str = Field(
+        default="redis://127.0.0.1:6379/0",
+        validation_alias=AliasChoices("DERA_REDIS_URL", "REDIS_URL"),
+        description="Redis connection URL for queue broker and transient storage.",
+    )
+    celery_broker_url: str = Field(
+        default="redis://127.0.0.1:6379/0",
+        validation_alias=AliasChoices("DERA_CELERY_BROKER_URL", "CELERY_BROKER_URL"),
+        description="Celery broker connection URL.",
+    )
+    celery_result_backend: str = Field(
+        default="redis://127.0.0.1:6379/1",
+        validation_alias=AliasChoices("DERA_CELERY_RESULT_BACKEND", "CELERY_RESULT_BACKEND"),
+        description="Celery result backend URL.",
+    )
+    job_default_timeout_seconds: int = Field(
+        default=300,
+        ge=10,
+        le=86400,
+        validation_alias=AliasChoices(
+            "DERA_JOB_DEFAULT_TIMEOUT_SECONDS", "JOB_DEFAULT_TIMEOUT_SECONDS"
+        ),
+        description="Default job execution timeout in seconds.",
+    )
+    job_max_attempts: int = Field(
+        default=3,
+        ge=1,
+        le=10,
+        validation_alias=AliasChoices("DERA_JOB_MAX_ATTEMPTS", "JOB_MAX_ATTEMPTS"),
+        description="Maximum execution attempts before terminal failure.",
+    )
+    job_default_retry_delay_seconds: int = Field(
+        default=5,
+        ge=1,
+        le=300,
+        validation_alias=AliasChoices(
+            "DERA_JOB_DEFAULT_RETRY_DELAY_SECONDS", "JOB_DEFAULT_RETRY_DELAY_SECONDS"
+        ),
+        description="Base retry delay in seconds for exponential backoff.",
+    )
+    job_max_retry_delay_seconds: int = Field(
+        default=300,
+        ge=5,
+        le=3600,
+        validation_alias=AliasChoices(
+            "DERA_JOB_MAX_RETRY_DELAY_SECONDS", "JOB_MAX_RETRY_DELAY_SECONDS"
+        ),
+        description="Maximum ceiling for exponential retry backoff in seconds.",
+    )
+    job_outbox_batch_size: int = Field(
+        default=50,
+        ge=1,
+        le=500,
+        validation_alias=AliasChoices("DERA_JOB_OUTBOX_BATCH_SIZE", "JOB_OUTBOX_BATCH_SIZE"),
+        description="Maximum outbox events to process per dispatch batch.",
+    )
+    job_outbox_poll_interval_seconds: float = Field(
+        default=1.0,
+        ge=0.1,
+        le=60.0,
+        validation_alias=AliasChoices(
+            "DERA_JOB_OUTBOX_POLL_INTERVAL_SECONDS", "JOB_OUTBOX_POLL_INTERVAL_SECONDS"
+        ),
+        description="Polling interval in seconds for transactional outbox dispatcher.",
+    )
+
     @property
     def has_database_configured(self) -> bool:
         """Returns True if a platform database URL has been explicitly specified."""

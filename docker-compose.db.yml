@@ -28,6 +28,24 @@ services:
         -c log_statement=none
         -c statement_timeout=30000
 
+  platform-redis:
+    image: redis:7-alpine
+    container_name: dera-platform-redis
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - dera_platform_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+    command: redis-server --appendonly yes
+
 volumes:
   dera_platform_pgdata:
     name: dera_platform_pgdata
+  dera_platform_redisdata:
+    name: dera_platform_redisdata

@@ -24,6 +24,7 @@ Welcome to the official technical documentation for **DERA — Database Engineer
 | **Platform Database** | PostgreSQL 16 persistence, async pooling, Alembic migrations, and repository layer | [docs/database/README.md](database/README.md) |
 | **Identity & Access (RBAC)** | Platform authentication, opaque sessions, centralized RBAC, and tenant isolation | [docs/security/AUTHENTICATION_ARCHITECTURE.md](security/AUTHENTICATION_ARCHITECTURE.md) |
 | **API Contracts** | OpenAPI 3.1 specification, Pydantic v2 schemas, RFC 9457 errors, and pagination | [docs/api/README.md](api/README.md) |
+| **Background Jobs** | Durable orchestration, transactional outbox dispatch, and Celery worker operations | [docs/jobs/README.md](jobs/README.md) |
 | **Frontend Studio** | Next.js 15 studio scaffold, component hierarchy, and typed API client | [docs/frontend/APPLICATION_ARCHITECTURE.md](frontend/APPLICATION_ARCHITECTURE.md) |
 | **Deterministic Core** | Pure Python canonical domain models, Kahn DAG algorithms, and rule diagnostics | [docs/core/README.md](core/README.md) |
 | **Database Connectors** | Read-only connection lifecycle, query mutation safety, and capability matrix | [docs/connectors/CONNECTOR_ARCHITECTURE.md](connectors/CONNECTOR_ARCHITECTURE.md) |

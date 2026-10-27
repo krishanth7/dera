@@ -33,6 +33,13 @@ class Permission(StrEnum):
     # Audit log operations
     AUDIT_READ = "audit:read"
 
+    # Background worker & job orchestration operations (Phase 4.5)
+    JOB_CREATE = "job:create"
+    JOB_READ = "job:read"
+    JOB_CANCEL = "job:cancel"
+    JOB_RETRY = "job:retry"
+    JOB_ADMIN = "job:admin"
+
     # Reserved connector operations (Phase 5+)
     CONNECTION_READ = "connection:read"
     CONNECTION_CREATE = "connection:create"

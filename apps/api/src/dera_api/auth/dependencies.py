@@ -5,6 +5,7 @@ enforcing active session status, verifying CSRF tokens on state-changing cookie 
 and validating workspace-scoped permissions.
 """
 
+import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Annotated
@@ -170,6 +171,40 @@ def require_workspace_permission(
     ) -> tuple[Workspace, WorkspaceMembership]:
         workspace_repo = WorkspaceRepository(db_session)
         workspace = await workspace_repo.get_by_slug(slug)
+        if not workspace or workspace.status != "active":
+            raise WorkspaceAccessDeniedError("Workspace does not exist or is inactive.")
+
+        membership_repo = MembershipRepository(db_session)
+        membership = await membership_repo.get_membership(workspace.id, current_user.id)
+        if not membership or membership.status != "active":
+            raise WorkspaceAccessDeniedError("You are not an active member of this workspace.")
+
+        if not has_permission(membership.role, permission):
+            raise PermissionDeniedError(
+                f"Your role '{membership.role}' lacks the '{permission}' permission."
+            )
+
+        return workspace, membership
+
+    return _dependency
+
+
+def require_workspace_permission_by_id(
+    permission: Permission,
+) -> Callable[..., tuple[Workspace, WorkspaceMembership]]:
+    """Factory creating a FastAPI dependency that verifies workspace membership and permission by workspace_id.
+
+    Resolves workspace by its UUID identifier, validates active user membership, and verifies
+    role permission using default-deny evaluation.
+    """
+
+    async def _dependency(
+        workspace_id: uuid.UUID,
+        current_user: Annotated[User, Depends(get_current_user)],
+        db_session: Annotated[AsyncSession, Depends(get_db_session)],
+    ) -> tuple[Workspace, WorkspaceMembership]:
+        workspace_repo = WorkspaceRepository(db_session)
+        workspace = await workspace_repo.get_by_id(workspace_id)
         if not workspace or workspace.status != "active":
             raise WorkspaceAccessDeniedError("Workspace does not exist or is inactive.")
 

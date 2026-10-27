@@ -122,7 +122,17 @@
           "WORKSPACE_ACCESS_DENIED",
           "MEMBERSHIP_NOT_FOUND",
           "AUTH_RATE_LIMITED",
-          "CSRF_FAILED"
+          "CSRF_FAILED",
+          "JOB_NOT_FOUND",
+          "JOB_TYPE_UNSUPPORTED",
+          "JOB_PAYLOAD_INVALID",
+          "JOB_ALREADY_COMPLETED",
+          "JOB_CANCELLATION_CONFLICT",
+          "JOB_RETRY_NOT_ALLOWED",
+          "JOB_EXECUTION_FAILED",
+          "JOB_TIMEOUT",
+          "JOB_QUEUE_UNAVAILABLE",
+          "IDEMPOTENCY_CONFLICT"
         ],
         "title": "ErrorCode",
         "type": "string"
@@ -192,6 +202,367 @@
         ],
         "title": "HealthResponse",
         "type": "object"
+      },
+      "JobCancelResponse": {
+        "description": "Result of requesting job cancellation.",
+        "properties": {
+          "id": {
+            "description": "Unique job identifier.",
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "message": {
+            "description": "Human-readable cancellation status message.",
+            "title": "Message",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/JobStatus",
+            "description": "Updated job status after cancellation request."
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "message"
+        ],
+        "title": "JobCancelResponse",
+        "type": "object"
+      },
+      "JobCreateRequest": {
+        "additionalProperties": false,
+        "description": "Payload for submitting a background job within a tenant workspace.",
+        "properties": {
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional client idempotency token scoped to the workspace.",
+            "examples": [
+              "submission-probe-20261027-001"
+            ],
+            "title": "Idempotency Key"
+          },
+          "job_type": {
+            "description": "Allowlisted background task identifier (e.g., system.health_probe.v1).",
+            "examples": [
+              "system.health_probe.v1"
+            ],
+            "maxLength": 128,
+            "minLength": 3,
+            "pattern": "^[a-z0-9][a-z0-9_.-]*[a-z0-9]$",
+            "title": "Job Type",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "description": "Deterministic input parameters for the registered task handler.",
+            "examples": [
+              {
+                "target": "system"
+              }
+            ],
+            "title": "Payload",
+            "type": "object"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/JobPriority",
+            "default": "normal",
+            "description": "Scheduling priority tier."
+          },
+          "timeout_seconds": {
+            "anyOf": [
+              {
+                "maximum": 3600.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Execution timeout in seconds. Defaults to platform setting if omitted.",
+            "examples": [
+              300
+            ],
+            "title": "Timeout Seconds"
+          }
+        },
+        "required": [
+          "job_type"
+        ],
+        "title": "JobCreateRequest",
+        "type": "object"
+      },
+      "JobListResponse": {
+        "description": "Paginated collection of workspace background jobs.",
+        "properties": {
+          "items": {
+            "description": "List of jobs matching query parameters.",
+            "items": {
+              "$ref": "#/components/schemas/JobResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "description": "Applied page limit.",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "description": "Applied pagination offset.",
+            "minimum": 0.0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Total matching job count in workspace.",
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "JobListResponse",
+        "type": "object"
+      },
+      "JobPriority": {
+        "description": "Job scheduling priority tiers.",
+        "enum": [
+          "low",
+          "normal",
+          "high",
+          "critical"
+        ],
+        "title": "JobPriority",
+        "type": "string"
+      },
+      "JobResponse": {
+        "description": "Public representation of a background job entity.",
+        "properties": {
+          "attempt_count": {
+            "description": "Total execution attempts conducted.",
+            "title": "Attempt Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "description": "UTC creation timestamp.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by_user_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "User principal who enqueued the job, or NULL for system actions.",
+            "title": "Created By User Id"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Error classification code if execution failed.",
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sanitized error description without sensitive credentials.",
+            "title": "Error Message"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "UTC terminal state timestamp.",
+            "title": "Finished At"
+          },
+          "id": {
+            "description": "Unique job identifier (UUIDv4).",
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Client-provided idempotency token if supplied.",
+            "title": "Idempotency Key"
+          },
+          "job_type": {
+            "description": "Allowlisted task type name.",
+            "title": "Job Type",
+            "type": "string"
+          },
+          "max_attempts": {
+            "description": "Maximum permitted execution attempts.",
+            "title": "Max Attempts",
+            "type": "integer"
+          },
+          "next_retry_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "UTC scheduled retry timestamp if status is retry_scheduled.",
+            "title": "Next Retry At"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "description": "Job input payload.",
+            "title": "Payload",
+            "type": "object"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/JobPriority",
+            "description": "Scheduling priority tier."
+          },
+          "queued_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "UTC queue dispatch timestamp.",
+            "title": "Queued At"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Structured execution output upon success.",
+            "title": "Result"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "UTC worker start timestamp.",
+            "title": "Started At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/JobStatus",
+            "description": "Current job lifecycle status."
+          },
+          "timeout_seconds": {
+            "description": "Configured execution deadline in seconds.",
+            "title": "Timeout Seconds",
+            "type": "integer"
+          },
+          "worker_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Identifier of worker executing the current attempt.",
+            "title": "Worker Id"
+          },
+          "workspace_id": {
+            "description": "Owning tenant workspace identifier.",
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "job_type",
+          "status",
+          "priority",
+          "attempt_count",
+          "max_attempts",
+          "timeout_seconds",
+          "created_at"
+        ],
+        "title": "JobResponse",
+        "type": "object"
+      },
+      "JobStatus": {
+        "description": "Authoritative lifecycle states for background jobs.",
+        "enum": [
+          "pending",
+          "queued",
+          "running",
+          "retry_scheduled",
+          "succeeded",
+          "failed",
+          "cancel_requested",
+          "cancelled"
+        ],
+        "title": "JobStatus",
+        "type": "string"
       },
       "LivenessResponse": {
         "description": "Schema for process liveness probe (/health/live).",
@@ -2302,6 +2673,553 @@
         "summary": "Update a workspace member's role",
         "tags": [
           "Workspaces"
+        ]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs": {
+      "get": {
+        "description": "Query workspace background jobs with pagination and optional filters.",
+        "operationId": "list_jobs_api_v1_workspaces__workspace_id__jobs_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by lifecycle state.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/JobStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by lifecycle state.",
+              "title": "Status"
+            }
+          },
+          {
+            "description": "Filter by allowlisted task type identifier.",
+            "in": "query",
+            "name": "job_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by allowlisted task type identifier.",
+              "title": "Job Type"
+            }
+          },
+          {
+            "description": "Maximum number of items per page.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "description": "Maximum number of items per page.",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Offset for pagination.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Offset for pagination.",
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobListResponse"
+                }
+              }
+            },
+            "description": "Paginated list of jobs."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication required."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Insufficient permissions (requires job:read)."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Workspace not found or inactive."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List background jobs within a workspace",
+        "tags": [
+          "Jobs"
+        ]
+      },
+      "post": {
+        "description": "Submit a background job with allowlist validation and outbox dispatch.",
+        "operationId": "submit_job_api_v1_workspaces__workspace_id__jobs_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            },
+            "description": "Job submitted successfully."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Invalid job payload or unsupported task type."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication required."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Insufficient permissions (requires job:create)."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Workspace not found or inactive."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Idempotency key payload conflict."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Submit a background job within a tenant workspace",
+        "tags": [
+          "Jobs"
+        ]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}": {
+      "get": {
+        "description": "Retrieve authoritative job status and results within workspace boundary.",
+        "operationId": "get_job_api_v1_workspaces__workspace_id__jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            },
+            "description": "Job details retrieved successfully."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication required."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Insufficient permissions (requires job:read)."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Job or workspace not found."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Retrieve details of a specific background job",
+        "tags": [
+          "Jobs"
+        ]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/cancel": {
+      "post": {
+        "description": "Cancel a pending, queued, or running background job.",
+        "operationId": "cancel_job_api_v1_workspaces__workspace_id__jobs__job_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobCancelResponse"
+                }
+              }
+            },
+            "description": "Cancellation initiated or completed."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication required."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Insufficient permissions (requires job:cancel)."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Job or workspace not found."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Job is already completed."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Request cooperative cancellation of a background job",
+        "tags": [
+          "Jobs"
         ]
       }
     },

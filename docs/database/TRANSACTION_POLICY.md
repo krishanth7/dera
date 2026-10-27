@@ -16,6 +16,7 @@ The `dera_api.db.session.transaction_scope` context manager provides safe, clean
 from dera_api.db.session import transaction_scope
 from dera_api.repositories.base import PlatformMetadataRepository
 
+
 async def update_platform_setting(session, key: str, value: str):
     async with transaction_scope(session):
         repo = PlatformMetadataRepository(session)

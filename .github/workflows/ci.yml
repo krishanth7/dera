@@ -62,7 +62,7 @@ jobs:
       - name: "Install Build & Runtime Dependencies"
         run: |
           python -m pip install --upgrade pip
-          pip install pydantic pydantic-settings networkx sqlglot fastapi uvicorn httpx ruff bandit build setuptools sqlalchemy alembic asyncpg greenlet aiosqlite argon2-cffi
+          pip install pydantic pydantic-settings networkx sqlglot fastapi uvicorn httpx ruff bandit build setuptools sqlalchemy alembic asyncpg greenlet aiosqlite argon2-cffi celery redis
           pip install -e .
 
       - name: "Ruff Linting & Format Verification"
@@ -186,7 +186,7 @@ jobs:
       - name: "Install Core & Connector Dependencies"
         run: |
           python -m pip install --upgrade pip
-          pip install pydantic pydantic-settings networkx sqlglot fastapi uvicorn httpx sqlalchemy alembic asyncpg greenlet aiosqlite argon2-cffi
+          pip install pydantic pydantic-settings networkx sqlglot fastapi uvicorn httpx sqlalchemy alembic asyncpg greenlet aiosqlite argon2-cffi celery redis
           pip install -e .
 
       - name: "Verify Schema Contract File Integrity"
@@ -225,6 +225,16 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: "Checkout DERA Repository"
         uses: actions/checkout@v7
@@ -240,13 +250,14 @@ jobs:
       - name: "Install Database & Platform Dependencies"
         run: |
           python -m pip install --upgrade pip
-          pip install pydantic pydantic-settings networkx sqlglot fastapi uvicorn httpx sqlalchemy alembic asyncpg greenlet aiosqlite argon2-cffi
+          pip install pydantic pydantic-settings networkx sqlglot fastapi uvicorn httpx sqlalchemy alembic asyncpg greenlet aiosqlite argon2-cffi celery redis
           pip install -e .
 
-      - name: "Verify PostgreSQL 16 Service Container Readiness"
+      - name: "Verify PostgreSQL 16 & Redis Service Containers Readiness"
         run: |
           nc -z 127.0.0.1 5432 || (sleep 2 && nc -z 127.0.0.1 5432)
-          echo "PostgreSQL 16 ephemeral service container is healthy and ready for connector and platform testing."
+          nc -z 127.0.0.1 6379 || (sleep 2 && nc -z 127.0.0.1 6379)
+          echo "PostgreSQL 16 and Redis service containers are healthy and ready for platform testing."
 
       - name: "Execute SQLite Connector Integration Suite"
         run: |

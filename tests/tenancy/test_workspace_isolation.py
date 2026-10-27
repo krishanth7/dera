@@ -102,7 +102,11 @@ class TestWorkspaceTenantIsolation(unittest.IsolatedAsyncioTestCase):
             headers={"Authorization": f"Bearer {self.u1_token}"},
         )
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertIn("denied", res.json()["detail"].lower())
+        self.assertTrue(
+            "denied" in res.json()["detail"].lower()
+            or "member" in res.json()["detail"].lower()
+            or res.json().get("error_code") == "WORKSPACE_ACCESS_DENIED"
+        )
 
         # List Workspace B members with User 1 token -> 403
         members_res = await self.client.get(
