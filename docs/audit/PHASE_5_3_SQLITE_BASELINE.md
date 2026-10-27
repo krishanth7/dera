@@ -50,7 +50,7 @@ SQLite operates directly against local filesystem resources rather than network 
 | **Read-Only URI Support** | Native `uri=True` with `?mode=ro` | Native support via `connect(..., uri=True)` | Manual flag configuration |
 | **Cancellation Safety** | Interruptible via `sqlite3_interrupt` | Supported via `conn.interrupt()` | Unsafe signal handling |
 | **Memory Isolation** | Standard C-runtime memory management | Standard C-runtime memory management | Potential memory leak surface |
-| **Decision** | **PRIMARY SELECTION (`sqlite3` + `asyncio.to_thread` / `aiosqlite` pattern)** | Satisfies all Phase 5.1 async contracts with zero binary dependencies |
+| **Decision** | **PRIMARY SELECTION (`sqlite3` + `asyncio.to_thread`)** | Viable alternative but introduces external dependency | Rejected due to complexity |
 
 ---
 
