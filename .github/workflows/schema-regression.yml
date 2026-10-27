@@ -15,6 +15,7 @@ on:
       - main
     paths:
       - "packages/core/src/**"
+      - "packages/connectors/src/**"
       - "fixtures/schemas/**"
       - "tests/regression/**"
   pull_request:
@@ -22,6 +23,7 @@ on:
       - main
     paths:
       - "packages/core/src/**"
+      - "packages/connectors/src/**"
       - "fixtures/schemas/**"
       - "tests/regression/**"
   workflow_dispatch:
@@ -50,8 +52,12 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: "Install Connector Dependencies"
+        run: |
+          pip install --quiet asyncpg aiomysql aiosqlite cryptography
+
       - name: "Run Schema Regression Suite"
         env:
-          PYTHONPATH: packages/core/src:apps/api/src
+          PYTHONPATH: packages/core/src:apps/api/src:packages/connectors/src
         run: |
           python -m unittest discover tests/regression/
