@@ -263,6 +263,16 @@ jobs:
         run: |
           python -m unittest tests/integration/test_sqlite_connector.py
 
+      - name: "Execute PostgreSQL Connector Live Integration Suite (PostgreSQL 16 Container)"
+        env:
+          DERA_TEST_POSTGRES_HOST: "127.0.0.1"
+          DERA_TEST_POSTGRES_PORT: "5432"
+          DERA_TEST_POSTGRES_DB: "dera_test_db"
+          DERA_TEST_POSTGRES_USER: "dera_test_user"
+          DERA_TEST_POSTGRES_PASSWORD: "dera_ephemeral_test_password"
+        run: |
+          python -m unittest tests/integration/postgresql/test_postgres_live.py
+
       - name: "Apply Platform Database Migrations (PostgreSQL 16 Head)"
         env:
           DERA_PLATFORM_DATABASE_URL: "postgresql+asyncpg://dera_test_user:dera_ephemeral_test_password@127.0.0.1:5432/dera_test_db"

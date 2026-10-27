@@ -76,6 +76,11 @@ class ConnectorRegistry:
 # Global default connector registry
 default_connector_registry = ConnectorRegistry()
 
+# Register standard adapters
+from dera_connectors.postgresql.adapter import PostgresConnector  # noqa: E402
+
+default_connector_registry.register(DatabaseEngine.POSTGRESQL, PostgresConnector)
+
 
 def create_connector(
     config: ConnectorConfig,

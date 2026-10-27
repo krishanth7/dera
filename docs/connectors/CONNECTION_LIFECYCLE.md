@@ -4,7 +4,7 @@
 
 Connection lifecycles are governed by `ConnectionLifecycle` (`packages/connectors/src/dera_connectors/lifecycle.py`):
 
-```
+```text
 [CREATED] ----> [CONNECTING] ----> [CONNECTED] ----> [CLOSING] ----> [CLOSED]
                    |                   |
                    +---> [FAILED] <----+

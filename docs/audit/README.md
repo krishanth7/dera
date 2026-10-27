@@ -70,7 +70,8 @@ The repository audit log comprises forty-three technical assessments, audit repo
 | 44 | [PHASE_4_5_JOBS_ACCEPTANCE.md](./PHASE_4_5_JOBS_ACCEPTANCE.md) | Phase 4.5 background workers & job orchestration final acceptance report | **Verified Complete** |
 | 45 | [PHASE_5_1_CONNECTOR_BASELINE.md](./PHASE_5_1_CONNECTOR_BASELINE.md) | Phase 5.1 connector interface & capability model baseline audit | **Verified Complete** |
 | 46 | [PHASE_5_1_CONNECTOR_ACCEPTANCE.md](./PHASE_5_1_CONNECTOR_ACCEPTANCE.md) | Phase 5.1 connector interface & capability model final acceptance report | **Verified Complete** |
-
+| 47 | [PHASE_5_2_POSTGRESQL_BASELINE.md](./PHASE_5_2_POSTGRESQL_BASELINE.md) | Phase 5.2 PostgreSQL and Supabase PostgreSQL connector baseline audit | **Verified Complete** |
+| 48 | [PHASE_5_2_POSTGRESQL_ACCEPTANCE.md](./PHASE_5_2_POSTGRESQL_ACCEPTANCE.md) | Phase 5.2 PostgreSQL and Supabase PostgreSQL connector final acceptance report | **Verified Complete** |
 
 ---
 

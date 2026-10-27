@@ -54,11 +54,18 @@ from dera_connectors.metadata import (
     ColumnInfo,
     ForeignKeyInfo,
     IndexInfo,
+    PartitionInfo,
     PrimaryKeyInfo,
     SchemaInfo,
+    SequenceInfo,
     TableInfo,
     UniqueConstraintInfo,
     ViewInfo,
+)
+from dera_connectors.postgresql.adapter import PostgresConnector
+from dera_connectors.postgresql.configuration import (
+    PostgresConnectorConfig,
+    SupabasePoolerMode,
 )
 from dera_connectors.protocol import DatabaseConnector
 from dera_connectors.registry import (
@@ -86,6 +93,10 @@ __all__ = [
     "ConnectionConfig",
     "SqliteConnector",
     "__version__",
+    # PostgreSQL & Supabase
+    "PostgresConnector",
+    "PostgresConnectorConfig",
+    "SupabasePoolerMode",
     # Protocol & engine
     "DatabaseConnector",
     "DatabaseEngine",
@@ -120,6 +131,8 @@ __all__ = [
     "CheckConstraintInfo",
     "IndexInfo",
     "ViewInfo",
+    "SequenceInfo",
+    "PartitionInfo",
     # Results
     "ConnectionTestResult",
     # Errors
