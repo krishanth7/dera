@@ -81,6 +81,8 @@ The repository audit log comprises forty-three technical assessments, audit repo
 | 55 | [PHASE_5_6_SECURITY_BASELINE.md](./PHASE_5_6_SECURITY_BASELINE.md) | Phase 5.6 connector read-only enforcement, timeouts & safety baseline audit | **Verified Complete** |
 | 56 | [PHASE_5_6_SECURITY_ACCEPTANCE.md](./PHASE_5_6_SECURITY_ACCEPTANCE.md) | Phase 5.6 connector read-only enforcement & safety final acceptance report | **Verified Complete** |
 | 57 | [PHASE_5_COMPLETION.md](./PHASE_5_COMPLETION.md) | Comprehensive audit and milestone certification for all Phase 5 sub-phases (5.1–5.6) | **Verified Complete** |
+| 58 | [PHASE_6_1_SCHEMA_BASELINE.md](./PHASE_6_1_SCHEMA_BASELINE.md) | Phase 6.1 canonical schema representation baseline audit | **Verified Complete** |
+| 59 | [PHASE_6_1_SCHEMA_ACCEPTANCE.md](./PHASE_6_1_SCHEMA_ACCEPTANCE.md) | Phase 6.1 canonical schema representation final acceptance report | **Verified Complete** |
 
 ---
 

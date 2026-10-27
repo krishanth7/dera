@@ -18,6 +18,7 @@ on:
       - "packages/connectors/src/**"
       - "fixtures/schemas/**"
       - "tests/regression/**"
+      - "tests/reverse_engineering/**"
   pull_request:
     branches:
       - main
@@ -26,6 +27,7 @@ on:
       - "packages/connectors/src/**"
       - "fixtures/schemas/**"
       - "tests/regression/**"
+      - "tests/reverse_engineering/**"
   workflow_dispatch:
 
 permissions:
@@ -54,10 +56,16 @@ jobs:
 
       - name: "Install Connector Dependencies"
         run: |
-          pip install --quiet asyncpg aiomysql aiosqlite cryptography
+          pip install --quiet asyncpg aiomysql aiosqlite cryptography pydantic pydantic-settings
 
       - name: "Run Schema Regression Suite"
         env:
           PYTHONPATH: packages/core/src:apps/api/src:packages/connectors/src
         run: |
           python -m unittest discover tests/regression/
+
+      - name: "Run Phase 6.1 Reverse Engineering Schema Suite"
+        env:
+          PYTHONPATH: packages/core/src:apps/api/src:packages/connectors/src
+        run: |
+          python -m unittest discover tests/reverse_engineering/
