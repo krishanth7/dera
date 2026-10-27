@@ -14,6 +14,7 @@ from typing import Any
 from dera_connectors.capabilities import ConnectorCapabilities
 from dera_connectors.context import ConnectorContext
 from dera_connectors.engine import DatabaseEngine, DatabaseIdentity
+from dera_connectors.lifecycle import ConnectionLifecycle, ConnectionState
 from dera_connectors.metadata import (
     CheckConstraintInfo,
     ColumnInfo,
@@ -53,6 +54,7 @@ class SqliteConnector(DatabaseConnector):
         self,
         config: SqliteConnectorConfig,
         context: ConnectorContext | None = None,
+        connection_manager: SqliteConnectionManager | None = None,
     ) -> None:
         """Initialize SQLite connector adapter.
 
@@ -62,6 +64,8 @@ class SqliteConnector(DatabaseConnector):
             Strongly-typed SQLite connection and filesystem configuration.
         context : ConnectorContext | None
             Execution and tenant context (generates default context if None).
+        connection_manager : SqliteConnectionManager | None
+            Optional connection manager instance (for test injection).
         """
         if not isinstance(config, SqliteConnectorConfig):
             # Convert generic ConnectorConfig if necessary
@@ -73,7 +77,8 @@ class SqliteConnector(DatabaseConnector):
 
         self._config = config
         self._context = context or ConnectorContext(workspace_id=uuid.uuid4())
-        self._conn_mgr = SqliteConnectionManager(config)
+        self._lifecycle = ConnectionLifecycle()
+        self._conn_mgr = connection_manager or SqliteConnectionManager(config)
 
     @property
     def config(self) -> SqliteConnectorConfig:
@@ -86,17 +91,43 @@ class SqliteConnector(DatabaseConnector):
         return self._context
 
     @property
+    def state(self) -> ConnectionState:
+        """Return current connection lifecycle state."""
+        return self._lifecycle.state
+
+    @property
     def is_connected(self) -> bool:
         """Return True if connection is established and healthy."""
-        return self._conn_mgr.is_connected
+        return self._lifecycle.state == ConnectionState.CONNECTED and self._conn_mgr.is_connected
 
     async def connect(self) -> None:
         """Establish read-only connection to SQLite database."""
-        await self._conn_mgr.connect()
+        if self._lifecycle.state == ConnectionState.CONNECTED:
+            return
+
+        if self._context.cancellation_token and self._context.cancellation_token.is_cancelled:
+            from dera_connectors.errors import ConnectorCancelledError
+
+            raise ConnectorCancelledError("Connection cancelled by user.")
+
+        self._lifecycle.transition_to(ConnectionState.CONNECTING)
+        try:
+            await self._conn_mgr.connect(cancellation_token=self._context.cancellation_token)
+            self._lifecycle.transition_to(ConnectionState.CONNECTED)
+        except Exception:
+            self._lifecycle.transition_to(ConnectionState.FAILED)
+            raise
 
     async def close(self) -> None:
         """Close connection and release underlying filesystem resources."""
-        await self._conn_mgr.close()
+        if self._lifecycle.state == ConnectionState.CLOSED:
+            return
+
+        self._lifecycle.transition_to(ConnectionState.CLOSING)
+        try:
+            await self._conn_mgr.close()
+        finally:
+            self._lifecycle.transition_to(ConnectionState.CLOSED)
 
     async def test_connection(self) -> ConnectionTestResult:
         """Execute a lightweight non-intrusive probe to verify readability."""

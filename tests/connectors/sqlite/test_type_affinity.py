@@ -14,7 +14,17 @@ class TestSqliteTypeAffinity(unittest.TestCase):
 
     def test_rule_1_integer_affinity(self) -> None:
         """Rule 1: If declared type contains INT -> INTEGER affinity (including POINT)."""
-        for decl in ("INT", "INTEGER", "TINYINT", "SMALLINT", "MEDIUMINT", "BIGINT", "UNSIGNED BIG INT", "INT2", "POINT"):
+        for decl in (
+            "INT",
+            "INTEGER",
+            "TINYINT",
+            "SMALLINT",
+            "MEDIUMINT",
+            "BIGINT",
+            "UNSIGNED BIG INT",
+            "INT2",
+            "POINT",
+        ):
             self.assertEqual(
                 determine_sqlite_affinity(decl),
                 SQLiteTypeAffinity.INTEGER,
@@ -23,7 +33,14 @@ class TestSqliteTypeAffinity(unittest.TestCase):
 
     def test_rule_2_text_affinity(self) -> None:
         """Rule 2: If declared type contains CHAR, CLOB, or TEXT -> TEXT affinity."""
-        for decl in ("CHARACTER(20)", "VARCHAR(255)", "VARYING CHARACTER(255)", "NCHAR(55)", "TEXT", "CLOB"):
+        for decl in (
+            "CHARACTER(20)",
+            "VARCHAR(255)",
+            "VARYING CHARACTER(255)",
+            "NCHAR(55)",
+            "TEXT",
+            "CLOB",
+        ):
             self.assertEqual(
                 determine_sqlite_affinity(decl),
                 SQLiteTypeAffinity.TEXT,

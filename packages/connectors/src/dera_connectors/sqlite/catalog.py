@@ -15,9 +15,7 @@ from dera_connectors.engine import DatabaseEngine, DatabaseIdentity, DatabasePro
 from dera_connectors.metadata import (
     CheckConstraintInfo,
     ColumnInfo,
-    ForeignKeyColumnMapping,
     ForeignKeyInfo,
-    IndexColumnInfo,
     IndexInfo,
     PrimaryKeyInfo,
     SchemaInfo,
@@ -72,7 +70,7 @@ async def introspect_identity(
         server_capability_hints={
             "c_version": sqlite3.sqlite_version,
             "runtime_version": server_version,
-            "py_sqlite_version": sqlite3.version,
+            "sqlite_version": sqlite3.sqlite_version,
         },
     )
 
@@ -260,27 +258,20 @@ async def introspect_foreign_keys(
         on_update = str(first["on_update"]) if first["on_update"] else "NO ACTION"
         on_delete = str(first["on_delete"]) if first["on_delete"] else "NO ACTION"
 
-        mappings: list[ForeignKeyColumnMapping] = []
-        for it in items:
-            mappings.append(
-                ForeignKeyColumnMapping(
-                    source_column=str(it["from"]),
-                    referenced_column=str(it["to"]) if it["to"] else str(it["from"]),
-                )
-            )
+        column_names = [str(it["from"]) for it in items]
+        referenced_columns = [str(it["to"]) if it["to"] else str(it["from"]) for it in items]
 
         foreign_keys.append(
             ForeignKeyInfo(
                 constraint_name=f"fk_{table}_{fk_id}",
-                source_schema=target_schema,
-                source_table=table,
+                schema_name=target_schema,
+                table_name=table,
+                column_names=column_names,
                 referenced_schema=target_schema,
                 referenced_table=ref_table,
-                column_mappings=mappings,
+                referenced_columns=referenced_columns,
                 on_update=on_update,
                 on_delete=on_delete,
-                is_deferrable=False,
-                is_initially_deferred=False,
             )
         )
 
@@ -388,7 +379,7 @@ def extract_check_constraints_from_sql(
                 c_idx = prefix.upper().rfind("CONSTRAINT")
                 c_name_part = prefix[c_idx + 10 :].strip()
                 if c_name_part:
-                    constraint_name = c_name_part.split()[-1].strip('"`[]\'')
+                    constraint_name = c_name_part.split()[-1].strip("\"`[]'")
 
             if not constraint_name:
                 constraint_name = f"chk_{table_name}_{check_counter}"
@@ -446,35 +437,21 @@ async def introspect_indexes(
         except Exception:
             term_rows = await conn_mgr.execute_query(build_pragma_index_info(idx_name))
 
-        columns: list[IndexColumnInfo] = []
-        for t in term_rows:
-            # key == 1 indicates index key column (not included rowid)
-            is_key = bool(t["key"]) if "key" in t.keys() else True
-            if not is_key:
-                continue
-
-            seq = int(t["seqno"])
-            c_name = t["name"]
-            is_desc = bool(t["desc"]) if "desc" in t.keys() else False
-
-            col_label = str(c_name) if c_name else f"expr_term_{seq}"
-            columns.append(
-                IndexColumnInfo(
-                    column_name=col_label,
-                    position=seq + 1,
-                    is_descending=is_desc,
-                    is_nulls_first=is_desc,
-                )
-            )
-
-        columns.sort(key=lambda c: c.position)
+        term_rows_filtered = [
+            t for t in term_rows if (bool(t["key"]) if "key" in t.keys() else True)
+        ]
+        term_rows_sorted = sorted(term_rows_filtered, key=lambda r: int(r["seqno"]))
+        column_names = [
+            str(t["name"]) if t["name"] else f"expr_term_{int(t['seqno'])}"
+            for t in term_rows_sorted
+        ]
 
         indexes.append(
             IndexInfo(
                 index_name=idx_name,
                 schema_name=target_schema,
                 table_name=table,
-                columns=columns,
+                column_names=column_names,
                 is_unique=is_unique,
                 is_primary=origin == "pk",
                 index_type="BTREE",

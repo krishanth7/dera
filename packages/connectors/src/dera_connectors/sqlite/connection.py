@@ -30,20 +30,25 @@ class SqliteConnectionManager:
     @property
     def is_connected(self) -> bool:
         """Return True if connection is active and ready."""
-        return self._lifecycle.state == ConnectionState.READY and self._conn is not None
+        return self._lifecycle.state == ConnectionState.CONNECTED and self._conn is not None
 
     @property
     def canonical_path(self) -> str:
         """Return the validated canonical filesystem path."""
         return self._canonical_path
 
-    async def connect(self) -> None:
+    async def connect(self, cancellation_token: Any | None = None) -> None:
         """Establish a read-only SQLite database connection."""
+        if cancellation_token and getattr(cancellation_token, "is_cancelled", False):
+            from dera_connectors.errors import ConnectorCancelledError
+
+            raise ConnectorCancelledError("Connection cancelled by user.")
+
         async with self._lock:
             if self.is_connected:
                 return
 
-            self._lifecycle.transition(ConnectionState.CONNECTING)
+            self._lifecycle.transition_to(ConnectionState.CONNECTING)
 
             try:
                 # 1. Validate and canonicalize filesystem path
@@ -76,9 +81,9 @@ class SqliteConnectionManager:
                     return conn
 
                 self._conn = await asyncio.to_thread(_open_connection)
-                self._lifecycle.transition(ConnectionState.READY)
+                self._lifecycle.transition_to(ConnectionState.CONNECTED)
             except Exception as exc:
-                self._lifecycle.transition(ConnectionState.FAILED)
+                self._lifecycle.transition_to(ConnectionState.FAILED)
                 await self._cleanup()
                 raise map_sqlite_error(exc, database=self._config.database) from exc
 
@@ -87,9 +92,9 @@ class SqliteConnectionManager:
         async with self._lock:
             if self._lifecycle.state in (ConnectionState.CLOSED, ConnectionState.FAILED):
                 return
-            self._lifecycle.transition(ConnectionState.CLOSING)
+            self._lifecycle.transition_to(ConnectionState.CLOSING)
             await self._cleanup()
-            self._lifecycle.transition(ConnectionState.CLOSED)
+            self._lifecycle.transition_to(ConnectionState.CLOSED)
 
     async def execute_query(
         self,
