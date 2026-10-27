@@ -38,7 +38,7 @@ flowchart TD
     P23 --> V23[PR #23 / Commit e550fdd]
     P24 --> V24[PR #24 / Commit 9b99175]
     P25 --> V25[PR #25 / Commit 80a33d8]
-    P26 --> V26[Dedicated Branch / PR Ready]
+    P26 --> V26[PR #28 / Commit e1bd4af]
 ```
 
 ---
@@ -177,7 +177,8 @@ Throughout the execution of Phase 2, three non-negotiable repository invariants 
   - Central documentation hub update: [`docs/README.md`](../README.md)
   - Template alignments: [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md), [`.github/PULL_REQUEST_TEMPLATE/documentation.md`](../../.github/PULL_REQUEST_TEMPLATE/documentation.md), [`.github/ISSUE_TEMPLATE/03-documentation.yml`](../../.github/ISSUE_TEMPLATE/03-documentation.yml)
   - Complete Phase 2 audit: [`docs/audit/PHASE_2_COMPLETION.md`](./PHASE_2_COMPLETION.md)
-- **Git Delivery:** Branch `docs/phase-2.6-contribution-maintenance`, dedicated PR ready for maintainer review.
+- **Merged PR & Commit:** Integrated via PR #28 (Merge Commit `e1bd4af32d9281c753d561c1abe8b07572574cdf`).
+- **Git Delivery:** Branch `docs/phase-2.6-contribution-maintenance`, merged to `main` via PR #28.
 - **Verification Evidence:**
   - Clear entry point in `CONTRIBUTING.md` linking directly to dedicated guides.
   - Three proportional review tiers established (Tier 1 typo fixes, Tier 2 guides, Tier 3 architecture/security).
@@ -187,7 +188,7 @@ Throughout the execution of Phase 2, three non-negotiable repository invariants 
   - `npm run docs:check` (Passed).
   - `python scripts/ci/validate_i18n.py` (Passed).
   - `python scripts/development/dev.py all` (Passed).
-- **Status:** **Complete** (Awaiting PR Squash-Merge)
+- **Status:** **Complete**
 - **Remaining Blockers:** None.
 
 ---
