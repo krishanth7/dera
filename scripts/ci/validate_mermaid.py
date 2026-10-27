@@ -290,9 +290,20 @@ def main() -> int:
 
     print(f"Found {total_diagrams} Mermaid diagrams across {len(files_to_check)} files.")
 
+    syntax_status = "PASS" if not all_errors else "FAIL"
+    balance_status = "PASS" if not all_errors else "FAIL"
+    overall_status = "PASS" if not all_errors else "FAIL"
+
+    print("\nDERA Mermaid CI")
+    print("===============")
+    print(f"Mermaid blocks discovered:  {total_diagrams}")
+    print(f"Syntax validation:          {syntax_status}")
+    print(f"Structural balance:         {balance_status}")
+    print(f"Overall: {overall_status}\n")
+
     if all_errors:
         print(
-            f"\nFAILED: Found {len(all_errors)} Mermaid diagram validation errors:", file=sys.stderr
+            f"FAILED: Found {len(all_errors)} Mermaid diagram validation errors:", file=sys.stderr
         )
         for err in all_errors:
             print(f"  {err}", file=sys.stderr)

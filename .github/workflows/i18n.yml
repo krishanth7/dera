@@ -19,18 +19,25 @@ on:
       - "docs/i18n/**"
       - "scripts/docs/**"
       - "scripts/ci/validate_i18n.py"
-      - "tests/docs/**"
+      - "tests/docs/test_language_navigation.py"
+      - "tests/docs/test_i18n_parity.py"
       - ".github/workflows/i18n.yml"
   pull_request:
     branches:
       - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
     paths:
       - "README.md"
       - "docs/README.md"
       - "docs/i18n/**"
       - "scripts/docs/**"
       - "scripts/ci/validate_i18n.py"
-      - "tests/docs/**"
+      - "tests/docs/test_language_navigation.py"
+      - "tests/docs/test_i18n_parity.py"
       - ".github/workflows/i18n.yml"
   workflow_dispatch:
 
@@ -51,7 +58,7 @@ jobs:
       - name: "Checkout DERA Repository"
         uses: actions/checkout@v7
         with:
-            persist-credentials: false
+          persist-credentials: false
 
       - name: "Set up Python"
         uses: actions/setup-python@v7
@@ -62,10 +69,11 @@ jobs:
         run: |
           python scripts/docs/generate_language_navigation.py --check
 
-      - name: "Validate i18n Suite"
+      - name: "Validate i18n Suite & Translation Parity"
         run: |
           python scripts/ci/validate_i18n.py
 
-      - name: "Run Language Navigation Unit Tests"
+      - name: "Run Multilingual & Parity Regression Tests"
         run: |
-          python -m unittest tests/docs/test_language_navigation.py
+          python -m unittest tests/docs/test_language_navigation.py tests/docs/test_i18n_parity.py
+

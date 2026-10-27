@@ -73,6 +73,7 @@ flowchart TD
 * [MAIN_CI.md](MAIN_CI.md) — Authoritative primary CI workflow architecture and job specifications.
 * [LOCAL_CI.md](LOCAL_CI.md) — Local reproduction guide and commands for offline qualification.
 * [WORKFLOWS.md](WORKFLOWS.md) — Comprehensive technical inventory of all active workflows.
+* [DOCUMENTATION_WORKFLOWS.md](DOCUMENTATION_WORKFLOWS.md) — Reference for consolidated documentation validation, multilingual navigation, and translation parity.
 * [SECURITY_WORKFLOWS.md](SECURITY_WORKFLOWS.md) — Reference for CodeQL, dependency security, review, and container workflows.
 * [SECURITY.md](SECURITY.md) — Threat modeling, permission matrices, and token boundary security policies.
 * [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Step-by-step diagnostic guide for contributors when CI checks fail.
