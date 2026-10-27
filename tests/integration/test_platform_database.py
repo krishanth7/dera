@@ -49,11 +49,22 @@ class TestPlatformDatabaseIntegration(unittest.IsolatedAsyncioTestCase):
 
     async def asyncTearDown(self) -> None:
         if hasattr(self, "engine"):
-            try:
-                async with self.engine.begin() as conn:
-                    await conn.run_sync(Base.metadata.drop_all)
-            except Exception:
-                pass
+            if "sqlite" in str(self.engine.url):
+                try:
+                    async with self.engine.begin() as conn:
+                        await conn.run_sync(Base.metadata.drop_all)
+                except Exception:
+                    pass
+            else:
+                try:
+                    async with self.engine.begin() as conn:
+                        await conn.execute(
+                            text(
+                                "DELETE FROM dera_platform_metadata WHERE key LIKE 'integration_test_%'"
+                            )
+                        )
+                except Exception:
+                    pass
             await dispose_database_engine(self.engine)
 
     async def test_database_health_check(self) -> None:
