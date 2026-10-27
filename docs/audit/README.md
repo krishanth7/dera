@@ -61,6 +61,8 @@ The repository audit log comprises thirty-seven technical assessments, audit rep
 | 35 | [PHASE_3_COMPLETION.md](./PHASE_3_COMPLETION.md) | Comprehensive audit and milestone certification for all Phase 3 sub-phases (3.1–3.6) | **Verified Complete** |
 | 36 | [PHASE_4_1_BACKEND_BASELINE.md](./PHASE_4_1_BACKEND_BASELINE.md) | Phase 4.1 FastAPI backend foundation architecture, inventory, and gap baseline audit | **Verified Complete** |
 | 37 | [PHASE_4_1_ACCEPTANCE.md](./PHASE_4_1_ACCEPTANCE.md) | Phase 4.1 backend application foundation final acceptance report and verification matrix | **Verified Complete** |
+| 38 | [PHASE_4_2_API_BASELINE.md](./PHASE_4_2_API_BASELINE.md) | Phase 4.2 API contracts, validation, error handling, and OpenAPI baseline audit | **Verified Complete** |
+| 39 | [PHASE_4_2_API_ACCEPTANCE.md](./PHASE_4_2_API_ACCEPTANCE.md) | Phase 4.2 API contracts and validation final acceptance report and verification matrix | **Verified Complete** |
 
 ---
 
