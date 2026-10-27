@@ -68,7 +68,7 @@ CANONICAL_SCOPES: tuple[str, ...] = (
 
 TITLE_REGEX = re.compile(
     r"^(?P<type>[a-z]+)"
-    r"(?P<scope_block>(?:\([a-z0-9._/,-]+\))+)*"
+    r"(?P<scope_block>(?:\([a-z0-9._/,-]+\))*)"
     r"(?P<breaking>!)?"
     r": "
     r"(?P<description>.+)$",
