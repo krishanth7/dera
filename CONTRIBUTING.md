@@ -109,9 +109,10 @@ For full specifications and examples, see [Commit Conventions](docs/development/
 ## 6. Pull Request Process
 
 1. **Keep PRs Focused:** Small, single-purpose pull requests are reviewed and integrated much faster than massive multi-feature changes.
-2. **Complete the PR Template:** Fill out all sections in [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md), confirming non-AI adherence, test execution, and security safety.
-3. **Verify Passing Checks:** Ensure all automated GitHub Actions checks pass.
-4. **Review & Integration:** Maintainers review submissions within **3 to 5 business days**. Once approved, changes are squash-merged into `main`.
+2. **Follow PR Title Standards:** Use Conventional Commit syntax (`type(scope): description`). See full rules and allowed scopes in [PR Qualification Guide](docs/ci/PR_QUALIFICATION.md).
+3. **Complete the PR Template:** Fill out all sections in [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md), confirming non-AI adherence, test execution, and security safety.
+4. **Verify Passing Checks:** Ensure all automated GitHub Actions checks pass (`Validate PR Title`, `Validate PR Readiness`, and `CI Gate Summary`).
+5. **Review & Integration:** Maintainers review submissions within **3 to 5 business days**. Once approved, changes are squash-merged into `main`.
 
 ---
 

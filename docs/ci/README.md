@@ -69,6 +69,7 @@ flowchart TD
 
 ## 3. Documentation Navigation
 
+* [PR_QUALIFICATION.md](PR_QUALIFICATION.md) — Authoritative pull request title, scope, draft lifecycle, and review readiness guide.
 * [WORKFLOWS.md](WORKFLOWS.md) — Comprehensive technical inventory of all 18 active workflows.
 * [SECURITY.md](SECURITY.md) — Threat modeling, permission matrices, and token boundary security policies.
 * [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Step-by-step diagnostic guide for contributors when CI checks fail.
