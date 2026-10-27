@@ -181,6 +181,13 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.13"
+          cache: "pip"
+
+      - name: "Install Core & Connector Dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install pydantic pydantic-settings networkx sqlglot fastapi uvicorn
+          pip install -e .
 
       - name: "Verify Schema Contract File Integrity"
         run: |
