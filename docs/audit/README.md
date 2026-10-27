@@ -46,6 +46,8 @@ The repository audit log comprises twenty-two technical assessments, audit repor
 | 20 | [PHASE_2_5_ACCEPTANCE.md](./PHASE_2_5_ACCEPTANCE.md) | Phase 2.5 acceptance certificate, verification telemetry, and Definition of Done sign-off | **Verified Complete** |
 | 21 | [PHASE_2_6_CONTRIBUTOR_AUDIT.md](./PHASE_2_6_CONTRIBUTOR_AUDIT.md) | Contributor experience audit, friction points, severity findings, and action plan | **Verified Complete** |
 | 22 | [PHASE_2_COMPLETION.md](./PHASE_2_COMPLETION.md) | Comprehensive audit and acceptance certificate for all Phase 2 sub-phases (2.1–2.6) | **Verified Complete** |
+| 23 | [PHASE_3_2_PR_GOVERNANCE_BASELINE.md](./PHASE_3_2_PR_GOVERNANCE_BASELINE.md) | Phase 3.2 pull request title, scope, template, and readiness governance baseline audit | **Verified Complete** |
+| 24 | [PHASE_3_2_PR_QUALIFICATION.md](./PHASE_3_2_PR_QUALIFICATION.md) | Phase 3.2 PR qualification acceptance report, test telemetry, and verification sign-off | **Verified Complete** |
 
 ---
 
