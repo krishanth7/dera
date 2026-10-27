@@ -19,7 +19,7 @@ Sub-phase 3.6 completes the final milestone of Phase 3, establishing DERA's ente
 All twenty-nine sub-phase requirements outlined in the Phase 3.6 charter have been verified through automated regression testing, static analysis, in-tree tooling, and documentation governance.
 
 **Final Acceptance Status:** **ACCEPTED & READY FOR INTEGRATION**  
-**Readiness Decision:** Reviewable pull request prepared targeting `main` without automated merge.
+**Readiness Decision:** Reviewable pull request [#36](https://github.com/krishanth7/dera/pull/36) prepared targeting `main` without automated merge.
 
 ---
 

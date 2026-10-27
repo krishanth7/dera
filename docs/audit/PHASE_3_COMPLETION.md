@@ -25,7 +25,7 @@ All six sub-phases have been executed systematically, independently verified, te
 | **3.3** | CodeQL & Dependency Security | **Complete** | [#32](https://github.com/krishanth7/dera/pull/32) | `7c73ffa` |
 | **3.4** | Documentation & i18n Workflows | **Complete** | [#33](https://github.com/krishanth7/dera/pull/33) | `e33dbaf` |
 | **3.5** | Artifact, Cache & Performance | **Complete** | [#35](https://github.com/krishanth7/dera/pull/35) | `b30ecf4` |
-| **3.6** | Release Qualification & Recovery | **Complete** | Review Ready | Pending Merge |
+| **3.6** | Release Qualification & Recovery | **Complete** | [#36](https://github.com/krishanth7/dera/pull/36) | Pending Merge |
 
 **Overall Phase 3 Verdict:** **COMPLETE & FULLY VERIFIED**
 
@@ -115,7 +115,7 @@ All six sub-phases have been executed systematically, independently verified, te
   - Authoritative changelog adhering to Keep a Changelog standard (`CHANGELOG.md`).
   - Complete release documentation hub (`docs/releases/README.md`, `RELEASE_LIFECYCLE.md`, `RELEASE_CANDIDATE_CHECKLIST.md`, `RELEASE_QUALIFICATION.md`, `RELEASE_RECOVERY.md`, `ROLLBACK_STRATEGY.md`, `RELEASE_INCIDENT_RESPONSE.md`).
   - 16 automated release regression tests (`tests/release/test_release_qualification.py`).
-- **Pull Request:** Branch `ci/phase-3.6-release-qualification` targeting `main`.
+- **Pull Request:** [https://github.com/krishanth7/dera/pull/36](https://github.com/krishanth7/dera/pull/36)
 - **Merge Status:** Open, reviewable pull request ready for maintainer evaluation.
 - **Audit Reports:** [PHASE_3_6_RELEASE_BASELINE.md](PHASE_3_6_RELEASE_BASELINE.md), [PHASE_3_6_RELEASE_ACCEPTANCE.md](PHASE_3_6_RELEASE_ACCEPTANCE.md), [PHASE_3_COMPLETION.md](PHASE_3_COMPLETION.md)
 - **Acceptance Status:** **Complete**
