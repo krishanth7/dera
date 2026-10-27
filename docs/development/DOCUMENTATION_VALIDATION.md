@@ -2,7 +2,7 @@
 
 > **Project:** DERA — Database Engineering & Reverse Analysis  
 > **Tagline:** Understand Every Schema. Engineer Every Change.  
-> **Maintainer:** Krishanth (`krishanth7`)  
+> **Maintainer:** Bunga Krishanth (`@krishanth7`)  
 > **Documentation Standard:** Deterministic, reliable, secure, multilingual  
 
 ---
@@ -26,7 +26,7 @@ DERA enforces a **layered, deterministic documentation quality system** integrat
               │            └── Diagram type verification, balanced subgraphs, quotes & brackets
               │
               ├─► Layer 4: Multilingual Parity & Navigation (validate_i18n.py)
-              │            └── Exactly 10 official languages, manifest ordering, active indicators
+              │            └── Exactly 10 official languages, manifest ordering, active indicators, token preservation
               │
               ├─► Layer 5: Technical Consistency & Structure Checks (validate_docs.py)
               │            └── Mandatory entry points, pyproject.toml Python requirements parity
@@ -46,8 +46,8 @@ Contributors can run individual checks or the entire validation suite locally us
 | `npm run docs:lint` | `markdownlint-cli2` | Scans all documentation for Markdown style rules, code fences, and heading syntax. | **No (Offline)** |
 | `npm run docs:links` | `scripts/ci/validate_docs.py` | Validates internal file links, GitHub heading anchors, case sensitivity, and entry points. | **No (Offline)** |
 | `npm run docs:mermaid` | `scripts/ci/validate_mermaid.py` | Scans and validates syntax for all fenced Mermaid diagrams across documentation. | **No (Offline)** |
-| `npm run docs:i18n` | `scripts/ci/validate_i18n.py` | Verifies canonical 10-language manifest, language order, and navigation synchronization. | **No (Offline)** |
-| `npm run docs:check` | Composite | Executes all deterministic checks (linting, links, mermaid, navigation) in sequence. | **No (Offline)** |
+| `npm run docs:i18n` | `scripts/ci/validate_i18n.py` | Verifies canonical 10-language manifest, language order, code block parity, and token preservation. | **No (Offline)** |
+| `npm run docs:check` | Composite | Executes all deterministic checks (linting, links, mermaid, navigation, i18n parity) in sequence. | **No (Offline)** |
 | `python scripts/development/dev.py validate-docs` | `dev.py` | Unified cross-platform CLI executing linting, links, mermaid, and navigation checks. | **No (Offline)** |
 | `npm run docs:links:external` | `scripts/ci/validate_external_links.py` | Validates external HTTP/HTTPS links with timeouts, retries, and documented exclusions. | **Yes (Online)** |
 
@@ -83,17 +83,21 @@ When linking to a section in a document (e.g. `[Overview](#1-overview)`):
 - **`MERMAID-002` (Unbalanced subgraph / block)**: Every `subgraph` in a flowchart or `loop/alt/opt` in a sequence diagram must have a matching `end`.
 - **`MERMAID-003` (Unbalanced quotes / brackets)**: Ensure double quotes inside node labels are balanced. Node labels with special characters should be enclosed in quotes: `NODE["Label (Extra Info)"]`.
 
-### 3.5 Updating Multilingual Navigation
+### 3.5 Updating Multilingual Navigation & Translations
 
 Whenever a new document is added to the 10-language managed navigation targets:
 1. Ensure the language is defined in [`docs/i18n/languages.json`](../i18n/languages.json).
-2. Run the navigation generator:
+2. Run the navigation generator in write mode:
    ```bash
    python scripts/docs/generate_language_navigation.py --write
    ```
 3. Run the internationalization validator:
    ```bash
    python scripts/ci/validate_i18n.py
+   ```
+4. Verify non-translatable technical tokens (`packages/core`, `apps/api`, etc.) and code fence sequence parity:
+   ```bash
+   python -m unittest tests/docs/test_i18n_parity.py
    ```
 
 ---
@@ -114,15 +118,19 @@ All exclusions are narrowly scoped and require an explicit technical rationale:
 
 ## 5. Interpreting CI Failures
 
-The `Documentation Validation` workflow runs on all pull requests touching Markdown files or validation tooling:
+DERA executes two consolidated, non-overlapping documentation workflows:
 
 ```text
-DERA | Documentation Validation
-  ├── 1. Markdown Linting ................................ PASS
-  ├── 2. Internal Link, Anchor & Structure Validation .... PASS
-  ├── 3. Mermaid Diagram Syntax Validation .............. PASS
-  ├── 4. 10-Language Navigation & Manifest Check ......... PASS
-  └── 5. Documentation Regression Tests .................. PASS
+1. DERA | Documentation Validation
+   ├── 1. Markdown Linting (markdownlint-cli2) .............. PASS
+   ├── 2. Internal Link, Anchor & Structure Validation ..... PASS
+   ├── 3. Mermaid Diagram Syntax Validation ................ PASS
+   └── 4. Documentation Quality Regression Tests ........... PASS
+
+2. DERA | Multilingual Validation
+   ├── 1. Navigation Synchronization (--check) ............. PASS
+   ├── 2. Translation Parity & Token Verification .......... PASS
+   └── 3. Multilingual & Parity Regression Tests ........... PASS
 ```
 
 If a step fails, the log output includes the exact file path, line number, stable error code, and remediation guidance:
