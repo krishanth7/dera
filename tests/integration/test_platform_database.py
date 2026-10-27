@@ -108,11 +108,13 @@ class TestPlatformDatabaseIntegration(unittest.IsolatedAsyncioTestCase):
 
     async def test_direct_sql_bounded_execution(self) -> None:
         """Verify executing lightweight SQL commands with bound parameters."""
+        sql_stmt = (
+            text("SELECT :num::integer AS answer")
+            if "postgresql" in str(self.engine.url)
+            else text("SELECT :num AS answer")
+        )
         async with self.engine.connect() as conn:
-            result = await conn.execute(
-                text("SELECT :num AS answer"),
-                {"num": 42},
-            )
+            result = await conn.execute(sql_stmt, {"num": 42})
             row = result.fetchone()
             self.assertIsNotNone(row)
             assert row is not None

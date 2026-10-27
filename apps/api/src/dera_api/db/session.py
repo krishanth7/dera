@@ -50,12 +50,25 @@ async def transaction_scope(session: AsyncSession) -> AsyncIterator[AsyncSession
     AsyncSession
         The session with an active transaction.
     """
-    if session.in_transaction():
-        # Session already in a transaction; create a nested savepoint or yield
-        async with session.begin_nested():
-            yield session
+    is_outer = not session.info.get("_dera_tx_active", False)
+    if is_outer:
+        session.info["_dera_tx_active"] = True
+        try:
+            if not session.in_transaction():
+                async with session.begin():
+                    yield session
+            else:
+                try:
+                    yield session
+                    await session.commit()
+                except Exception:
+                    await session.rollback()
+                    raise
+        finally:
+            session.info["_dera_tx_active"] = False
     else:
-        async with session.begin():
+        # Nested transaction scope establishes a savepoint
+        async with session.begin_nested():
             yield session
 
 
