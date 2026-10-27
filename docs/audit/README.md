@@ -68,6 +68,9 @@ The repository audit log comprises forty-three technical assessments, audit repo
 | 42 | [PHASE_4_4_IDENTITY_BASELINE.md](./PHASE_4_4_IDENTITY_BASELINE.md) | Phase 4.4 platform identity, session, RBAC, and access control baseline audit | **Verified Complete** |
 | 43 | [PHASE_4_4_IDENTITY_ACCEPTANCE.md](./PHASE_4_4_IDENTITY_ACCEPTANCE.md) | Phase 4.4 platform authentication, authorization & RBAC final acceptance report | **Verified Complete** |
 | 44 | [PHASE_4_5_JOBS_ACCEPTANCE.md](./PHASE_4_5_JOBS_ACCEPTANCE.md) | Phase 4.5 background workers & job orchestration final acceptance report | **Verified Complete** |
+| 45 | [PHASE_5_1_CONNECTOR_BASELINE.md](./PHASE_5_1_CONNECTOR_BASELINE.md) | Phase 5.1 connector interface & capability model baseline audit | **Verified Complete** |
+| 46 | [PHASE_5_1_CONNECTOR_ACCEPTANCE.md](./PHASE_5_1_CONNECTOR_ACCEPTANCE.md) | Phase 5.1 connector interface & capability model final acceptance report | **Verified Complete** |
+
 
 ---
 

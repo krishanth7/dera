@@ -68,7 +68,6 @@ class TestCrashRecovery(unittest.IsolatedAsyncioTestCase):
                 workspace_id=self.workspace_id,
             )
 
-
         # 1. Simulate broker failure during dispatch
         async with self.session_factory() as session, transaction_scope(session):
             dispatcher = JobOutboxDispatcher(session)
