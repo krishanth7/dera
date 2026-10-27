@@ -76,6 +76,8 @@ The repository audit log comprises forty-three technical assessments, audit repo
 | 50 | [PHASE_5_3_SQLITE_ACCEPTANCE.md](./PHASE_5_3_SQLITE_ACCEPTANCE.md) | Phase 5.3 SQLite connector adapter final acceptance report | **Verified Complete** |
 | 51 | [PHASE_5_4_MYSQL_MARIADB_BASELINE.md](./PHASE_5_4_MYSQL_MARIADB_BASELINE.md) | Phase 5.4 MySQL and MariaDB connectors baseline audit | **Verified Complete** |
 | 52 | [PHASE_5_4_MYSQL_MARIADB_ACCEPTANCE.md](./PHASE_5_4_MYSQL_MARIADB_ACCEPTANCE.md) | Phase 5.4 MySQL and MariaDB connectors final acceptance report | **Verified Complete** |
+| 53 | [PHASE_5_5_METADATA_BASELINE.md](./PHASE_5_5_METADATA_BASELINE.md) | Phase 5.5 metadata normalization & object identity baseline audit | **Verified Complete** |
+| 54 | [PHASE_5_5_METADATA_ACCEPTANCE.md](./PHASE_5_5_METADATA_ACCEPTANCE.md) | Phase 5.5 metadata normalization & object identity final acceptance report | **Verified Complete** |
 
 ---
 

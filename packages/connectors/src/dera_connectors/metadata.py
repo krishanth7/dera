@@ -4,6 +4,7 @@ Defines strongly-typed Pydantic v2 metadata models for schemas, tables, columns,
 constraints, indexes, and views with deterministic sorting and identifier fidelity.
 """
 
+from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -427,4 +428,71 @@ class TriggerInfo(BaseModel):
     engine_specific: dict[str, Any] = Field(
         default_factory=dict,
         description="Engine-specific trigger properties.",
+    )
+
+
+class DatabaseMetadataReport(BaseModel):
+    """Container report aggregating full metadata extracted by a database connector scan."""
+
+    model_config = ConfigDict(frozen=True)
+
+    database_name: str = Field(
+        ...,
+        description="Logical database identifier or connection database name.",
+    )
+    engine: str = Field(
+        ...,
+        description="Source database engine type (e.g. postgresql, sqlite, mysql, mariadb).",
+    )
+    server_version: str | None = Field(
+        default=None,
+        description="Version string reported by the source database server.",
+    )
+    schemas: list[SchemaInfo] = Field(
+        default_factory=list,
+        description="List of schemas or namespaces discovered.",
+    )
+    tables: list[TableInfo] = Field(
+        default_factory=list,
+        description="List of tables discovered.",
+    )
+    columns: list[ColumnInfo] = Field(
+        default_factory=list,
+        description="List of columns discovered.",
+    )
+    primary_keys: list[PrimaryKeyInfo] = Field(
+        default_factory=list,
+        description="List of primary key constraints.",
+    )
+    foreign_keys: list[ForeignKeyInfo] = Field(
+        default_factory=list,
+        description="List of foreign key referential constraints.",
+    )
+    unique_constraints: list[UniqueConstraintInfo] = Field(
+        default_factory=list,
+        description="List of unique constraints.",
+    )
+    check_constraints: list[CheckConstraintInfo] = Field(
+        default_factory=list,
+        description="List of check constraints.",
+    )
+    indexes: list[IndexInfo] = Field(
+        default_factory=list,
+        description="List of secondary indexes.",
+    )
+    views: list[ViewInfo] = Field(
+        default_factory=list,
+        description="List of views.",
+    )
+    triggers: list[TriggerInfo] = Field(
+        default_factory=list,
+        description="List of procedural triggers.",
+    )
+    partitions: list[PartitionInfo] = Field(
+        default_factory=list,
+        description="List of partition metadata.",
+    )
+    inspected_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="RFC 3339 UTC timestamp when metadata was extracted.",
     )
