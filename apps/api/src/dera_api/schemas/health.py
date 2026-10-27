@@ -1,26 +1,63 @@
-"""DERA API — Health & Metadata Response Schemas."""
+"""DERA API — Health and Metadata Response Models.
 
-from pydantic import BaseModel, Field
+Pydantic v2 schemas for liveness, readiness, and platform capability endpoints.
+"""
+
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class LivenessResponse(BaseModel):
+    """Schema for process liveness probe (/health/live)."""
+
+    model_config = ConfigDict(frozen=True)
+
+    status: str = Field(default="ok", description="Service process status.")
+    service: str = Field(default="dera-api", description="Service identifier.")
+    version: str = Field(..., description="Canonical platform version.")
+
+
+class ReadinessSubsystems(BaseModel):
+    """Subsystem status reported truthfully during readiness checks."""
+
+    model_config = ConfigDict(frozen=True)
+
+    application_state: str = Field(description="Internal lifecycle state.")
+    database_connectors: str = Field(description="Database connector readiness.")
+    background_workers: str = Field(description="Background task queue readiness.")
+
+
+class ReadinessResponse(BaseModel):
+    """Schema for application readiness probe (/health/ready)."""
+
+    model_config = ConfigDict(frozen=True)
+
+    status: str = Field(default="ok", description="Overall readiness status.")
+    service: str = Field(default="dera-api", description="Service identifier.")
+    version: str = Field(..., description="Canonical platform version.")
+    ready: bool = Field(..., description="Readiness boolean flag.")
+    subsystems: ReadinessSubsystems = Field(..., description="Detailed subsystem states.")
 
 
 class HealthResponse(BaseModel):
-    """System health check response model."""
+    """Schema for legacy backward-compatible health check (/health)."""
 
-    status: str = Field(default="healthy", description="System operational status")
-    service: str = Field(default="dera-api", description="Service identifier")
-    version: str = Field(default="0.1.0-dev", description="Service release version")
-    deterministic_engine: bool = Field(
-        default=True, description="Strict non-AI deterministic execution active"
-    )
+    model_config = ConfigDict(frozen=True)
+
+    status: str = Field(default="healthy", description="Service health state.")
+    service: str = Field(default="dera-api", description="Service identifier.")
+    version: str = Field(..., description="Canonical platform version.")
 
 
 class MetaResponse(BaseModel):
-    """Platform metadata response model."""
+    """Schema for platform metadata and capabilities (/api/v1/meta)."""
 
-    name: str = Field(default="DERA — Database Engineering & Reverse Analysis")
-    version: str = Field(default="0.1.0-dev")
-    architecture: str = Field(default="modular-monolith")
-    zero_ai_policy: bool = Field(default=True)
-    supported_dialects: list[str] = Field(
-        default_factory=lambda: ["sqlite", "postgresql", "mysql", "mariadb"]
-    )
+    model_config = ConfigDict(frozen=True)
+
+    name: str = Field(..., description="Service application name.")
+    version: str = Field(..., description="Application version.")
+    environment: str = Field(..., description="Active environment profile.")
+    zero_ai_policy: bool = Field(..., description="Enforcement of deterministic zero-AI policy.")
+    read_only_enforced: bool = Field(..., description="Enforcement of read-only DB inspection.")
+    supported_dialects: list[str] = Field(..., description="List of supported database dialects.")
