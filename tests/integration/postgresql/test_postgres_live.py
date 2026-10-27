@@ -171,8 +171,11 @@ class TestPostgresLiveIntegration(unittest.IsolatedAsyncioTestCase):
             # 1. Identity & capabilities
             identity = await conn.get_identity()
             self.assertEqual(identity.engine, DatabaseEngine.POSTGRESQL)
-            self.assertIn("PostgreSQL", identity.server_version)
-            self.assertGreater(identity.server_version_num or 0, 100000)
+            self.assertIn("PostgreSQL", identity.server_version or "")
+            self.assertGreater(
+                identity.server_capability_hints.get("server_version_num", 0),
+                100000,
+            )
 
             caps = await conn.get_capabilities()
             self.assertEqual(caps.engine, DatabaseEngine.POSTGRESQL)
