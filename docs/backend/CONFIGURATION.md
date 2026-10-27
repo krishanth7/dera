@@ -78,6 +78,7 @@ from dera_api.dependencies.common import get_app_settings
 
 router = APIRouter()
 
+
 @router.get("/custom-endpoint")
 def custom_endpoint(
     settings: Annotated[ApiSettings, Depends(get_app_settings)],

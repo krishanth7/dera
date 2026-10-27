@@ -46,11 +46,10 @@ Quarantine the specific test method using the standard library `@unittest.skip` 
 ```python
 import unittest
 
-class TestConnectorIntegration(unittest.TestCase):
 
+class TestConnectorIntegration(unittest.TestCase):
     @unittest.skip("QUARANTINE: Issue #45 - Socket timeout on slow runner initialization")
-    def test_ephemeral_reconnection(self) -> None:
-        ...
+    def test_ephemeral_reconnection(self) -> None: ...
 ```
 
 ### Step 3: Triage & Root-Cause Remediation

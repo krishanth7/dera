@@ -7,13 +7,13 @@ Provides at-least-once delivery guarantees without message loss or orphan jobs.
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
 import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 if TYPE_CHECKING:
-    from dera_api.repositories.jobs import JobOutboxRepository, JobRepository
+    pass
 
 logger = logging.getLogger(__name__)
 

@@ -31,6 +31,7 @@ from sqlalchemy import DateTime, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from dera_api.db.base import Base
 
+
 class MyPlatformModel(Base):
     __tablename__ = "dera_my_model"
 
@@ -55,6 +56,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from dera_api.db.dependencies import get_db_session
 
 router = APIRouter()
+
 
 @router.get("/example")
 async def example_endpoint(session: AsyncSession = Depends(get_db_session)):

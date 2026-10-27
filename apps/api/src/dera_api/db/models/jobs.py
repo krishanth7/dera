@@ -5,16 +5,16 @@ and Job Orchestration. Enforces UUID primary keys, workspace isolation,
 idempotency constraints, state machine tracking, and transactional outbox guarantees.
 """
 
+import uuid
 from datetime import UTC, datetime
 from typing import Any
-import uuid
 
 from sqlalchemy import (
+    JSON,
     DateTime,
     ForeignKey,
     Index,
     Integer,
-    JSON,
     String,
     Text,
     UniqueConstraint,
@@ -222,9 +222,7 @@ class JobOutboxEvent(Base):
         doc="UTC timestamp when the message was acknowledged by the broker.",
     )
 
-    __table_args__ = (
-        Index("ix_dera_job_outbox_status_created", "status", "created_at"),
-    )
+    __table_args__ = (Index("ix_dera_job_outbox_status_created", "status", "created_at"),)
 
     def __repr__(self) -> str:
         return f"<JobOutboxEvent(id={self.id}, job_id={self.job_id}, status={self.status})>"

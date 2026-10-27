@@ -6,10 +6,10 @@ cooperative cancellation, and status querying within strict tenant boundaries.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 import logging
-from typing import TYPE_CHECKING
 import uuid
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,8 +27,7 @@ from dera_api.jobs.registry import default_task_registry
 from dera_api.jobs.schemas import JobCreateRequest
 
 if TYPE_CHECKING:
-    from dera_api.repositories.audit import AuditRepository
-    from dera_api.repositories.jobs import JobOutboxRepository, JobRepository
+    pass
 
 logger = logging.getLogger(__name__)
 

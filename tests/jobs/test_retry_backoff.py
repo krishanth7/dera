@@ -4,8 +4,8 @@ Validates deterministic backoff calculations, bounded jitter guarantees,
 and error classification between retryable and non-retryable failures.
 """
 
-from datetime import UTC, datetime
 import unittest
+from datetime import UTC, datetime
 
 from dera_api.jobs.exceptions import (
     IdempotencyConflictError,
@@ -30,15 +30,25 @@ class TestJobRetryPolicy(unittest.TestCase):
         max_d = 300.0
 
         # Attempt 1 -> 2.0 * 2^0 = 2.0
-        self.assertEqual(calculate_backoff(attempt=1, base_delay=base, max_delay=max_d, jitter=False), 2.0)
+        self.assertEqual(
+            calculate_backoff(attempt=1, base_delay=base, max_delay=max_d, jitter=False), 2.0
+        )
         # Attempt 2 -> 2.0 * 2^1 = 4.0
-        self.assertEqual(calculate_backoff(attempt=2, base_delay=base, max_delay=max_d, jitter=False), 4.0)
+        self.assertEqual(
+            calculate_backoff(attempt=2, base_delay=base, max_delay=max_d, jitter=False), 4.0
+        )
         # Attempt 3 -> 2.0 * 2^2 = 8.0
-        self.assertEqual(calculate_backoff(attempt=3, base_delay=base, max_delay=max_d, jitter=False), 8.0)
+        self.assertEqual(
+            calculate_backoff(attempt=3, base_delay=base, max_delay=max_d, jitter=False), 8.0
+        )
         # Attempt 4 -> 2.0 * 2^3 = 16.0
-        self.assertEqual(calculate_backoff(attempt=4, base_delay=base, max_delay=max_d, jitter=False), 16.0)
+        self.assertEqual(
+            calculate_backoff(attempt=4, base_delay=base, max_delay=max_d, jitter=False), 16.0
+        )
         # Attempt 5 -> 2.0 * 2^4 = 32.0
-        self.assertEqual(calculate_backoff(attempt=5, base_delay=base, max_delay=max_d, jitter=False), 32.0)
+        self.assertEqual(
+            calculate_backoff(attempt=5, base_delay=base, max_delay=max_d, jitter=False), 32.0
+        )
 
     def test_backoff_max_delay_cap(self) -> None:
         """Verify that backoff is bounded by max_delay."""
@@ -52,7 +62,9 @@ class TestJobRetryPolicy(unittest.TestCase):
         max_d = 100.0
 
         for _ in range(20):
-            delay = calculate_backoff(attempt=2, base_delay=base, max_delay=max_d, jitter=True, jitter_factor=0.2)
+            delay = calculate_backoff(
+                attempt=2, base_delay=base, max_delay=max_d, jitter=True, jitter_factor=0.2
+            )
             # Expected uncapped target is 20.0; bounded within [16.0, 24.0]
             self.assertGreaterEqual(delay, 15.9)
             self.assertLessEqual(delay, 24.1)
@@ -64,6 +76,7 @@ class TestJobRetryPolicy(unittest.TestCase):
         after = datetime.now(UTC)
 
         self.assertGreater(next_at, before)
+        self.assertGreater(next_at, after)
         # Ensure it is roughly 5 seconds ahead
         diff = (next_at - before).total_seconds()
         self.assertGreaterEqual(diff, 4.9)
@@ -81,7 +94,7 @@ class TestJobRetryPolicy(unittest.TestCase):
 
         # Custom non-retryable
         custom = Exception("Permanent error")
-        setattr(custom, "non_retryable", True)
+        custom.non_retryable = True
         self.assertFalse(is_retryable_error(custom))
 
         # Retryable

@@ -41,6 +41,7 @@ __all__ = [
     "JobCreateRequest",
     "JobError",
     "JobExecutionContext",
+    "JobExecutionError",
     "JobExecutionResult",
     "JobListResponse",
     "JobNotFoundError",

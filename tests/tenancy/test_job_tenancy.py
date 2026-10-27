@@ -10,13 +10,8 @@ Mandatory Section 42 verification matrix:
 - Job results never leak across workspace barriers.
 """
 
-from collections.abc import AsyncIterator
 import unittest
-import uuid
-
-from fastapi import status
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession
+from collections.abc import AsyncIterator
 
 from dera_api.auth.rate_limiter import auth_rate_limiter
 from dera_api.core.config import ApiSettings
@@ -25,6 +20,9 @@ from dera_api.db.dependencies import get_db_session
 from dera_api.db.engine import create_database_engine, dispose_database_engine
 from dera_api.db.session import create_session_factory
 from dera_api.factory import create_app
+from fastapi import status
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class TestJobTenantIsolation(unittest.IsolatedAsyncioTestCase):
@@ -33,6 +31,7 @@ class TestJobTenantIsolation(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         auth_rate_limiter.clear()
         self.settings = ApiSettings(
+            environment="testing",
             database_url="sqlite+aiosqlite:///:memory:",
             auth_csrf_enabled=False,
         )

@@ -5,10 +5,10 @@ enforcing active session status, verifying CSRF tokens on state-changing cookie 
 and validating workspace-scoped permissions.
 """
 
+import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Annotated
-import uuid
 
 from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession

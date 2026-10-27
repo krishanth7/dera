@@ -11,7 +11,6 @@ import unittest
 from dera_api.jobs.enums import JobStatus
 from dera_api.jobs.exceptions import (
     JobAlreadyCompletedError,
-    JobCancellationConflictError,
 )
 from dera_api.jobs.lifecycle import (
     ALLOWED_TRANSITIONS,

@@ -4,9 +4,9 @@ Defines strongly-typed Pydantic v2 data models for job submission, status respon
 cancellation requests, and worker execution contexts.
 """
 
+import uuid
 from datetime import datetime
 from typing import Annotated, Any
-import uuid
 
 from pydantic import BaseModel, ConfigDict, Field
 

@@ -7,11 +7,11 @@ and audit trail recording.
 from __future__ import annotations
 
 import asyncio
-from datetime import UTC, datetime, timedelta
 import logging
 import socket
-from typing import TYPE_CHECKING, Any
 import uuid
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -19,7 +19,6 @@ from dera_api.core.config import get_settings
 from dera_api.db.engine import create_database_engine
 from dera_api.db.session import create_session_factory, transaction_scope
 from dera_api.jobs.enums import JobStatus
-from dera_api.jobs.exceptions import JobError
 from dera_api.jobs.registry import default_task_registry
 from dera_api.jobs.retry import calculate_backoff, is_retryable_error
 from dera_api.jobs.schemas import JobExecutionContext

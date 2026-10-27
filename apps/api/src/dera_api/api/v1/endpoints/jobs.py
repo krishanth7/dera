@@ -4,8 +4,8 @@ Provides tenant-isolated background job submission, status retrieval,
 paginated listing, and cooperative cancellation within workspace boundaries.
 """
 
-from typing import Annotated
 import uuid
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,9 +41,15 @@ router = APIRouter(prefix="/workspaces/{workspace_id}/jobs", tags=["Jobs"])
     summary="Submit a background job within a tenant workspace",
     responses={
         201: {"model": JobResponse, "description": "Job submitted successfully."},
-        400: {"model": ProblemDetail, "description": "Invalid job payload or unsupported task type."},
+        400: {
+            "model": ProblemDetail,
+            "description": "Invalid job payload or unsupported task type.",
+        },
         401: {"model": ProblemDetail, "description": "Authentication required."},
-        403: {"model": ProblemDetail, "description": "Insufficient permissions (requires job:create)."},
+        403: {
+            "model": ProblemDetail,
+            "description": "Insufficient permissions (requires job:create).",
+        },
         404: {"model": ProblemDetail, "description": "Workspace not found or inactive."},
         409: {"model": ProblemDetail, "description": "Idempotency key payload conflict."},
     },
@@ -83,7 +89,10 @@ async def submit_job(
     responses={
         200: {"model": JobListResponse, "description": "Paginated list of jobs."},
         401: {"model": ProblemDetail, "description": "Authentication required."},
-        403: {"model": ProblemDetail, "description": "Insufficient permissions (requires job:read)."},
+        403: {
+            "model": ProblemDetail,
+            "description": "Insufficient permissions (requires job:read).",
+        },
         404: {"model": ProblemDetail, "description": "Workspace not found or inactive."},
     },
 )
@@ -136,7 +145,10 @@ async def list_jobs(
     responses={
         200: {"model": JobResponse, "description": "Job details retrieved successfully."},
         401: {"model": ProblemDetail, "description": "Authentication required."},
-        403: {"model": ProblemDetail, "description": "Insufficient permissions (requires job:read)."},
+        403: {
+            "model": ProblemDetail,
+            "description": "Insufficient permissions (requires job:read).",
+        },
         404: {"model": ProblemDetail, "description": "Job or workspace not found."},
     },
 )
@@ -164,7 +176,10 @@ async def get_job(
     responses={
         200: {"model": JobCancelResponse, "description": "Cancellation initiated or completed."},
         401: {"model": ProblemDetail, "description": "Authentication required."},
-        403: {"model": ProblemDetail, "description": "Insufficient permissions (requires job:cancel)."},
+        403: {
+            "model": ProblemDetail,
+            "description": "Insufficient permissions (requires job:cancel).",
+        },
         404: {"model": ProblemDetail, "description": "Job or workspace not found."},
         409: {"model": ProblemDetail, "description": "Job is already completed."},
     },

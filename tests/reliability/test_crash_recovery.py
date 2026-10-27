@@ -6,12 +6,9 @@ Validates:
 - Safe handling of duplicate message delivery.
 """
 
-from collections.abc import AsyncIterator
 import unittest
-from unittest.mock import patch
 import uuid
-
-from sqlalchemy.ext.asyncio import AsyncSession
+from unittest.mock import patch
 
 from dera_api.core.config import ApiSettings
 from dera_api.db.base import Base
@@ -19,9 +16,7 @@ from dera_api.db.engine import create_database_engine, dispose_database_engine
 from dera_api.db.models.workspace import Workspace
 from dera_api.db.session import create_session_factory, transaction_scope
 from dera_api.jobs.dispatcher import JobOutboxDispatcher
-from dera_api.jobs.enums import JobStatus, OutboxEventStatus
-from dera_api.jobs.schemas import JobCreateRequest
-from dera_api.jobs.service import JobService
+from dera_api.jobs.enums import OutboxEventStatus
 from dera_api.repositories.jobs import JobOutboxRepository, JobRepository
 from dera_api.workers.tasks import execute_job_async
 
@@ -31,6 +26,7 @@ class TestCrashRecovery(unittest.IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self) -> None:
         self.settings = ApiSettings(
+            environment="testing",
             database_url="sqlite+aiosqlite:///:memory:",
             job_default_timeout_seconds=30,
         )
@@ -67,16 +63,20 @@ class TestCrashRecovery(unittest.IsolatedAsyncioTestCase):
                 job_type="system.health_probe.v1",
                 payload={},
             )
-            event = await outbox_repo.create_event(
+            await outbox_repo.create_event(
                 job_id=job.id,
                 workspace_id=self.workspace_id,
             )
+
 
         # 1. Simulate broker failure during dispatch
         async with self.session_factory() as session, transaction_scope(session):
             dispatcher = JobOutboxDispatcher(session)
 
-            with patch("dera_api.workers.tasks.execute_job_task.apply_async", side_effect=ConnectionError("Redis down")):
+            with patch(
+                "dera_api.workers.tasks.execute_job_task.apply_async",
+                side_effect=ConnectionError("Redis down"),
+            ):
                 dispatched = await dispatcher.dispatch_pending_events()
                 self.assertEqual(dispatched, 0)
 

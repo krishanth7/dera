@@ -4,8 +4,8 @@ Implements bounded exponential backoff with configurable jitter, error classific
 and retry schedule determination.
 """
 
-from datetime import UTC, datetime, timedelta
 import random
+from datetime import UTC, datetime, timedelta
 
 from dera_api.jobs.exceptions import (
     IdempotencyConflictError,

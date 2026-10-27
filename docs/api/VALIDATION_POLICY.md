@@ -12,6 +12,7 @@ All incoming API requests are validated via Pydantic v2 models inheriting from `
 from dera_api.contracts.base import DeraBaseModel
 from pydantic import Field
 
+
 class CreateCatalogRequest(DeraBaseModel):
     name: str = Field(..., min_length=2, max_length=63, pattern=r"^[a-zA-Z_][a-zA-Z0-9_]*$")
     description: str | None = Field(default=None, max_length=255)

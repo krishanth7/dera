@@ -69,7 +69,9 @@ DERA avoids broad, unrestricted database queries by applying workspace filters a
 ### Reusable Dependency Injection (`require_workspace_permission`)
 
 ```python
-def require_workspace_permission(required_permission: Permission) -> Callable[..., Coroutine[Any, Any, WorkspaceMembership]]:
+def require_workspace_permission(
+    required_permission: Permission,
+) -> Callable[..., Coroutine[Any, Any, WorkspaceMembership]]:
     async def dependency(
         slug: str,
         current_user: Annotated[User, Depends(get_current_user)],
@@ -92,6 +94,7 @@ def require_workspace_permission(required_permission: Permission) -> Callable[..
             )
 
         return membership
+
     return dependency
 ```
 

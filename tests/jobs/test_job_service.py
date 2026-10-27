@@ -4,11 +4,8 @@ Validates job submission, transactional outbox creation, idempotency conflicts,
 tenant-scoped lookups, and cooperative cancellation.
 """
 
-from collections.abc import AsyncIterator
 import unittest
 import uuid
-
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from dera_api.core.config import ApiSettings
 from dera_api.db.base import Base
@@ -24,7 +21,7 @@ from dera_api.jobs.exceptions import (
 )
 from dera_api.jobs.schemas import JobCreateRequest
 from dera_api.jobs.service import JobService
-from dera_api.repositories.jobs import JobOutboxRepository, JobRepository
+from dera_api.repositories.jobs import JobOutboxRepository
 
 
 class TestJobService(unittest.IsolatedAsyncioTestCase):
@@ -32,6 +29,7 @@ class TestJobService(unittest.IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self) -> None:
         self.settings = ApiSettings(
+            environment="testing",
             database_url="sqlite+aiosqlite:///:memory:",
             job_default_timeout_seconds=120,
         )

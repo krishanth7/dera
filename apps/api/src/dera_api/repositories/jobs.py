@@ -4,10 +4,10 @@ Provides strongly-typed, tenant-isolated async database operations for Job persi
 atomic compare-and-swap (CAS) state transitions, and transactional outbox event management.
 """
 
+import uuid
 from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Any
-import uuid
 
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -242,11 +242,13 @@ class JobRepository(BaseRepository[Job]):
             .where(
                 Job.id == job_id,
                 Job.workspace_id == workspace_id,
-                Job.status.in_([
-                    JobStatus.PENDING.value,
-                    JobStatus.QUEUED.value,
-                    JobStatus.RETRY_SCHEDULED.value,
-                ]),
+                Job.status.in_(
+                    [
+                        JobStatus.PENDING.value,
+                        JobStatus.QUEUED.value,
+                        JobStatus.RETRY_SCHEDULED.value,
+                    ]
+                ),
             )
             .values(
                 status=JobStatus.CANCELLED.value,
