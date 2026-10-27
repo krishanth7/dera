@@ -29,5 +29,8 @@ Layer C: Database Adapters (PostgreSQL/Supabase [5.2], SQLite [5.3], MySQL/Maria
 | [**Conformance Testing**](CONFORMANCE_TESTING.md) | Reusable `BaseConnectorConformanceTests` test suite for future adapters | [CONFORMANCE_TESTING.md](CONFORMANCE_TESTING.md) |
 | [**PostgreSQL & Supabase**](postgresql/README.md) | Production PostgreSQL 14–18 & Supabase async read-only connector | [postgresql/README.md](postgresql/README.md) |
 | [**SQLite Connector**](sqlite/README.md) | Production read-only SQLite 3 embedded connector adapter | [sqlite/README.md](sqlite/README.md) |
+| [**MySQL Connector**](mysql/README.md) | Production read-only MySQL 8.0+ & 8.4 LTS connector adapter | [mysql/README.md](mysql/README.md) |
+| [**MariaDB Connector**](mariadb/README.md) | Production read-only MariaDB 10.11+ & 11.4 LTS connector adapter | [mariadb/README.md](mariadb/README.md) |
+| [**MySQL-Family Architecture**](mysql-family/ARCHITECTURE.md) | Shared MySQL and MariaDB subsystem design and driver rationale | [mysql-family/ARCHITECTURE.md](mysql-family/ARCHITECTURE.md) |
 | [**Adapter Development**](ADAPTER_DEVELOPMENT.md) | Step-by-step implementation guide for new database adapters (Phases 5.2–5.4) | [ADAPTER_DEVELOPMENT.md](ADAPTER_DEVELOPMENT.md) |
 | [**Engine Compatibility**](ENGINE_COMPATIBILITY.md) | Supported database engines, drivers, and version targets | [ENGINE_COMPATIBILITY.md](ENGINE_COMPATIBILITY.md) |
