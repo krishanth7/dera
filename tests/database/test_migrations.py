@@ -43,7 +43,7 @@ class TestAlembicMigrations(unittest.TestCase):
         script_dir = ScriptDirectory.from_config(cfg)
         heads = script_dir.get_heads()
         self.assertEqual(len(heads), 1, f"Expected exactly one revision head, found: {heads}")
-        self.assertEqual(heads[0], "002_identity_and_workspaces")
+        self.assertEqual(heads[0], "003_jobs_and_orchestration")
 
     def test_initial_migration_revision_metadata(self) -> None:
         """Verify that 001_platform_metadata has down_revision = None and defines upgrade/downgrade."""
@@ -64,6 +64,17 @@ class TestAlembicMigrations(unittest.TestCase):
         self.assertIsNotNone(rev)
         assert rev is not None
         self.assertEqual(rev.down_revision, "001_platform_metadata")
+        self.assertTrue(hasattr(rev.module, "upgrade"))
+        self.assertTrue(hasattr(rev.module, "downgrade"))
+
+    def test_jobs_migration_revision_metadata(self) -> None:
+        """Verify that 003_jobs_and_orchestration points to 002_identity_and_workspaces."""
+        cfg = Config(str(self.alembic_ini_path))
+        script_dir = ScriptDirectory.from_config(cfg)
+        rev = script_dir.get_revision("003_jobs_and_orchestration")
+        self.assertIsNotNone(rev)
+        assert rev is not None
+        self.assertEqual(rev.down_revision, "002_identity_and_workspaces")
         self.assertTrue(hasattr(rev.module, "upgrade"))
         self.assertTrue(hasattr(rev.module, "downgrade"))
 
