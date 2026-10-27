@@ -73,6 +73,11 @@ flowchart TD
 * [MAIN_CI.md](MAIN_CI.md) — Authoritative primary CI workflow architecture and job specifications.
 * [LOCAL_CI.md](LOCAL_CI.md) — Local reproduction guide and commands for offline qualification.
 * [WORKFLOWS.md](WORKFLOWS.md) — Comprehensive technical inventory of all active workflows.
+* [PERFORMANCE_MANAGEMENT.md](PERFORMANCE_MANAGEMENT.md) — CI performance targets, DAG parallelism, timeouts, and concurrency controls.
+* [CACHE_STRATEGY.md](CACHE_STRATEGY.md) — Dependency cache architecture, cache keys, security boundaries, and cold-cache validation.
+* [ARTIFACT_RETENTION_POLICY.md](ARTIFACT_RETENTION_POLICY.md) — Canonical artifact naming, category registry, retention periods, and SHA-256 manifests.
+* [TEST_REPORTING.md](TEST_REPORTING.md) — Standardized JUnit XML, JSON summaries, failure diagnostics, and slow test observability.
+* [FLAKY_TEST_POLICY.md](FLAKY_TEST_POLICY.md) — Flaky test taxonomy, quarantine protocol, 14-day SLA, and permitted retry boundaries.
 * [DOCUMENTATION_WORKFLOWS.md](DOCUMENTATION_WORKFLOWS.md) — Reference for consolidated documentation validation, multilingual navigation, and translation parity.
 * [SECURITY_WORKFLOWS.md](SECURITY_WORKFLOWS.md) — Reference for CodeQL, dependency security, review, and container workflows.
 * [SECURITY.md](SECURITY.md) — Threat modeling, permission matrices, and token boundary security policies.
