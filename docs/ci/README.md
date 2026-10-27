@@ -69,8 +69,10 @@ flowchart TD
 
 ## 3. Documentation Navigation
 
-* [WORKFLOWS.md](WORKFLOWS.md) — Comprehensive technical inventory of all 18 active workflows.
+* [MAIN_CI.md](MAIN_CI.md) — Authoritative primary CI workflow architecture and job specifications.
+* [LOCAL_CI.md](LOCAL_CI.md) — Local reproduction guide and commands for offline qualification.
+* [WORKFLOWS.md](WORKFLOWS.md) — Comprehensive technical inventory of all active workflows.
 * [SECURITY.md](SECURITY.md) — Threat modeling, permission matrices, and token boundary security policies.
 * [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Step-by-step diagnostic guide for contributors when CI checks fail.
-* [ROADMAP.md](ROADMAP.md) — Planned, in-progress, and deferred workflows (including GitHub Pages).
+* [ROADMAP.md](ROADMAP.md) — Planned, in-progress, and deferred workflows.
 * [BRANCH_PROTECTION.md](BRANCH_PROTECTION.md) — Recommended repository rulesets and stable branch-protection check names.

@@ -39,7 +39,9 @@ def format_bytes(size: int) -> str:
 def main() -> int:
     caches = get_cache_list()
     if not caches:
-        print("No active GitHub Actions cache entries detected or running outside authenticated CLI environment.")
+        print(
+            "No active GitHub Actions cache entries detected or running outside authenticated CLI environment."
+        )
         return 0
 
     total_bytes = sum(c.get("sizeInBytes", 0) for c in caches)
@@ -49,7 +51,9 @@ def main() -> int:
     # Sort by oldest accessed
     sorted_caches = sorted(caches, key=lambda x: x.get("lastAccessedAt", x.get("createdAt", "")))
     for c in sorted_caches[:5]:
-        print(f"  - Key: {c.get('key')} | Size: {format_bytes(c.get('sizeInBytes', 0))} | Last Accessed: {c.get('lastAccessedAt')}")
+        print(
+            f"  - Key: {c.get('key')} | Size: {format_bytes(c.get('sizeInBytes', 0))} | Last Accessed: {c.get('lastAccessedAt')}"
+        )
 
     return 0
 

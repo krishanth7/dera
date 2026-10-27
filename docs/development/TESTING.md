@@ -109,6 +109,7 @@ In [`tests/architecture/test_module_boundaries.py`](../../tests/architecture/tes
 import unittest
 from dera.models import DatabaseColumn
 
+
 class TestColumn(unittest.TestCase):
     def test_column_immutability(self):
         col = DatabaseColumn(name="email", data_type="VARCHAR(255)")

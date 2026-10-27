@@ -22,6 +22,7 @@ REQUIRED_HEADINGS = [
     "testing",
 ]
 
+
 def check_readiness() -> tuple[bool, list[str]]:
     title = os.environ.get("PR_TITLE", "").strip()
     body = os.environ.get("PR_BODY", "").strip()
@@ -47,7 +48,9 @@ def check_readiness() -> tuple[bool, list[str]]:
 
     # Check for meaningful content length
     if len(body) < 30:
-        errors.append("PR description is too short (less than 30 characters). Please explain your changes.")
+        errors.append(
+            "PR description is too short (less than 30 characters). Please explain your changes."
+        )
 
     # Check for checklist completion or key sections
     has_checklist = "- [x]" in body or "- [X]" in body
@@ -62,7 +65,9 @@ def check_readiness() -> tuple[bool, list[str]]:
     # Check for security disclosures on security-labeled or API-touching PRs
     if "security" in title.lower() or "security" in labels_raw.lower():
         if "security" not in body_lower:
-            errors.append("PR modifying security-sensitive components must include a Security Assessment note.")
+            errors.append(
+                "PR modifying security-sensitive components must include a Security Assessment note."
+            )
 
     return len(errors) == 0, errors
 

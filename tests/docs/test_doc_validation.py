@@ -10,8 +10,8 @@ Licensed under the MIT License.
 
 from __future__ import annotations
 
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 from scripts.ci.validate_docs import (
     DocValidator,
@@ -115,7 +115,9 @@ class TestDocumentationValidation(unittest.TestCase):
         """Case sensitivity check must pass for exact casing and fail for incorrect casing."""
         # Exact casing
         self.assertTrue(check_case_sensitive_exists(self.repo_root / "README.md", self.repo_root))
-        self.assertTrue(check_case_sensitive_exists(self.repo_root / "docs" / "README.md", self.repo_root))
+        self.assertTrue(
+            check_case_sensitive_exists(self.repo_root / "docs" / "README.md", self.repo_root)
+        )
 
         # Incorrect casing on Windows/Linux
         wrong_case = self.repo_root / "readme.md"  # Lowercase 'r'
@@ -131,12 +133,7 @@ class TestDocumentationValidation(unittest.TestCase):
 
     def test_valid_mermaid_flowchart(self) -> None:
         """Valid flowchart syntax must pass with zero errors."""
-        source = (
-            "flowchart TD\n"
-            "    subgraph Core\n"
-            "        A[Start] --> B[Finish]\n"
-            "    end\n"
-        )
+        source = "flowchart TD\n    subgraph Core\n        A[Start] --> B[Finish]\n    end\n"
         errors = validate_mermaid_source(source, Path("test.md"), 1)
         self.assertEqual(len(errors), 0, f"Unexpected errors: {[str(e) for e in errors]}")
 

@@ -14,13 +14,13 @@ Licensed under the MIT License.
 from __future__ import annotations
 
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 import re
 import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 # External link regex matching [text](http...)
 EXTERNAL_LINK_PATTERN = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
@@ -73,7 +73,9 @@ def check_url(url: str, timeout: float = 6.0, retries: int = 1) -> tuple[str, bo
     # Disallow internal network IP addresses
     parsed = urllib.parse.urlparse(url)
     hostname = (parsed.hostname or "").lower()
-    if hostname.startswith(("10.", "192.168.", "172.16.", "172.17.", "172.18.", "172.19.", "172.2", "172.3")):
+    if hostname.startswith(
+        ("10.", "192.168.", "172.16.", "172.17.", "172.18.", "172.19.", "172.2", "172.3")
+    ):
         return url, False, 403, "BLOCKED: Private network IP addresses are disallowed"
 
     headers = {
@@ -82,7 +84,7 @@ def check_url(url: str, timeout: float = 6.0, retries: int = 1) -> tuple[str, bo
     }
 
     last_error = ""
-    for attempt in range(retries + 1):
+    for _attempt in range(retries + 1):
         try:
             req = urllib.request.Request(url, headers=headers, method="HEAD")
             with urllib.request.urlopen(req, timeout=timeout) as response:
@@ -140,7 +142,7 @@ def collect_external_links(repo_root: Path) -> dict[str, list[tuple[Path, int]]]
 
             for match in EXTERNAL_LINK_PATTERN.finditer(masked):
                 url = match.group(2).strip()
-                line_no = masked[:match.start()].count("\n") + 1
+                line_no = masked[: match.start()].count("\n") + 1
                 if url not in url_occurrences:
                     url_occurrences[url] = []
                 url_occurrences[url].append((file_path, line_no))
@@ -151,9 +153,7 @@ def collect_external_links(repo_root: Path) -> dict[str, list[tuple[Path, int]]]
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Validate external documentation links for DERA."
-    )
+    parser = argparse.ArgumentParser(description="Validate external documentation links for DERA.")
     parser.add_argument(
         "--concurrency",
         type=int,
@@ -193,10 +193,7 @@ def main() -> int:
     excluded_count = 0
 
     with ThreadPoolExecutor(max_workers=args.concurrency) as executor:
-        futures = {
-            executor.submit(check_url, url, args.timeout, 1): url
-            for url in url_map.keys()
-        }
+        futures = {executor.submit(check_url, url, args.timeout, 1): url for url in url_map.keys()}
 
         for future in as_completed(futures):
             url = futures[future]
@@ -211,7 +208,7 @@ def main() -> int:
             except Exception as exc:
                 failures.append((url, str(exc), url_map[url]))
 
-    print(f"\nExternal Link Validation Results:")
+    print("\nExternal Link Validation Results:")
     print(f"  Active Verified: {passed}")
     print(f"  Excluded/Policy: {excluded_count}")
     print(f"  Failed:          {len(failures)}")

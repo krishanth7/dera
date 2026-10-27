@@ -70,7 +70,6 @@ class TestValidatePrReadiness(unittest.TestCase):
             self.assertFalse(is_ready)
             self.assertTrue(any("Summary" in err for err in errors))
 
-
     def test_valid_pr_body_with_checklist(self) -> None:
         body = """
 ## Summary

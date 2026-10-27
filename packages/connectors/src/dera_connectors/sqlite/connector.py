@@ -6,11 +6,11 @@ Implements read-only SQLite metadata introspection adhering to BaseConnector.
 from __future__ import annotations
 
 import sqlite3
-from typing import Any, List, Optional
 
 from dera.models import DatabaseTable
+from dera_core.exceptions import ConnectionAuthenticationError
+
 from dera_connectors.base.connector import BaseConnector, ConnectionConfig
-from dera_core.exceptions import ConnectionAuthenticationError, ConnectorError
 
 
 class SqliteConnector(BaseConnector):
@@ -18,7 +18,7 @@ class SqliteConnector(BaseConnector):
 
     def __init__(self, config: ConnectionConfig) -> None:
         super().__init__(config)
-        self._conn: Optional[sqlite3.Connection] = None
+        self._conn: sqlite3.Connection | None = None
 
     def connect(self) -> None:
         """Connect to SQLite database with read-only pragma enforcement."""
@@ -63,7 +63,7 @@ class SqliteConnector(BaseConnector):
         except Exception:
             return False
 
-    def get_table_names(self) -> List[str]:
+    def get_table_names(self) -> list[str]:
         """Retrieve user table names sorted deterministically."""
         if not self._is_connected:
             self.connect()
@@ -79,23 +79,24 @@ class SqliteConnector(BaseConnector):
         )
         return [row["name"] for row in cursor.fetchall()]
 
-    def inspect_tables(self) -> List[DatabaseTable]:
+    def inspect_tables(self) -> list[DatabaseTable]:
         """Introspect all tables into canonical DatabaseTable models."""
         if not self._is_connected:
             self.connect()
         assert self._conn is not None
 
-        tables: List[DatabaseTable] = []
+        tables: list[DatabaseTable] = []
         table_names = self.get_table_names()
 
         for table_name in table_names:
             cursor = self._conn.cursor()
             safe_name = table_name.replace('"', '""')
             cursor.execute(f'PRAGMA table_info("{safe_name}")')
-            col_rows = cursor.fetchall()
+            _ = cursor.fetchall()
 
             # Using dera.connectors.sqlite structure to ensure compatibility
             from dera.connectors.sqlite import SqliteConnector as LegacySqlite
+
             legacy = LegacySqlite(self.config.database)
             try:
                 tables.append(legacy.inspect_table(table_name))

@@ -1,6 +1,5 @@
 """DERA API — Health & Metadata Response Schemas."""
 
-from typing import Any, Dict, List
 from pydantic import BaseModel, Field
 
 
@@ -22,6 +21,6 @@ class MetaResponse(BaseModel):
     version: str = Field(default="0.1.0-dev")
     architecture: str = Field(default="modular-monolith")
     zero_ai_policy: bool = Field(default=True)
-    supported_dialects: List[str] = Field(
+    supported_dialects: list[str] = Field(
         default_factory=lambda: ["sqlite", "postgresql", "mysql", "mariadb"]
     )

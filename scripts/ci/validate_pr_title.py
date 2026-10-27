@@ -60,7 +60,9 @@ def validate_title(title: str) -> bool:
 def main() -> int:
     title = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("PR_TITLE", "")
     if not title:
-        print("ERROR: No pull request title provided via argument or PR_TITLE env.", file=sys.stderr)
+        print(
+            "ERROR: No pull request title provided via argument or PR_TITLE env.", file=sys.stderr
+        )
         return 1
 
     clean_title = title.strip()
@@ -69,11 +71,17 @@ def main() -> int:
         return 0
 
     if not validate_title(clean_title):
-        print(f"ERROR: Pull request title '{clean_title}' violates Conventional Commits format.", file=sys.stderr)
+        print(
+            f"ERROR: Pull request title '{clean_title}' violates Conventional Commits format.",
+            file=sys.stderr,
+        )
         print("Expected format: <type>(<optional-scope>): <summary>", file=sys.stderr)
         print(f"Allowed types: {', '.join(ALLOWED_TYPES)}", file=sys.stderr)
         print("Example: feat(connectors): add PostgreSQL catalog inspection", file=sys.stderr)
-        print("Example with breaking change: feat(api)!: revise schema response contract", file=sys.stderr)
+        print(
+            "Example with breaking change: feat(api)!: revise schema response contract",
+            file=sys.stderr,
+        )
         return 1
 
     print(f"SUCCESS: Valid Conventional Commit title: '{clean_title}'")
@@ -82,4 +90,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
