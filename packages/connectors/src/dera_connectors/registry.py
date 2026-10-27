@@ -76,10 +76,11 @@ class ConnectorRegistry:
 # Global default connector registry
 default_connector_registry = ConnectorRegistry()
 
-# Register standard adapters
 from dera_connectors.postgresql.adapter import PostgresConnector  # noqa: E402
+from dera_connectors.sqlite.adapter import SqliteConnector  # noqa: E402
 
 default_connector_registry.register(DatabaseEngine.POSTGRESQL, PostgresConnector)
+default_connector_registry.register(DatabaseEngine.SQLITE, SqliteConnector)
 
 
 def create_connector(
