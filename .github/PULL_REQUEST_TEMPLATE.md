@@ -25,28 +25,31 @@ Closes #
 <!-- Outline the technical approach, key files modified, or architectural decisions. -->
 - 
 
-## Testing Performed
+## Testing
 
-<!-- Describe the verification steps taken. For documentation-only PRs, mention doc link checks. -->
-- [ ] Unit tests executed (`python scripts/development/dev.py test` or `pytest`)
-- [ ] Static type checks executed (`python scripts/development/dev.py typecheck`)
-- [ ] Full baseline suite verified (`python scripts/development/dev.py all`)
-- [ ] Integration tests against local test databases (if applicable)
+<!-- Select the applicable testing status and provide evidence or explanation: -->
+- [ ] Relevant tests passed (`python scripts/development/dev.py all` or `test`)
+- [ ] Tests not applicable — explanation below (e.g., documentation, typo fix, governance)
+- [ ] Tests not run / blocked — explanation below
+
+**Test evidence & notes:**
+<!-- Provide commands run, terminal output summary, or reasons for skipping: -->
+
+## Documentation Impact
+
+<!-- Describe documentation changes or explain why none are needed: -->
+- [ ] Documentation in `docs/` updated or verified where required
+- [ ] Documentation validation passed (`npm run docs:check`)
+- [ ] No documentation updates required for this change
 
 ## Security Impact & Deterministic Engineering
 
+<!-- Verify security and non-AI invariants: -->
 - [ ] **Strict Non-AI Policy:** Verified zero generative AI, LLM, or external inference APIs are introduced.
 - [ ] **Database Safety:** Verified all database connector operations enforce read-only introspection without data modification.
 - [ ] **Credential Protection:** Confirmed that no production credentials, passwords, or `.env` secrets are committed.
 - [ ] **Least Privilege:** Validated that permissions and access boundaries are minimized.
-
-## Documentation Impact
-
-- [ ] Documentation in `docs/` updated or verified where required (e.g., API specs, CLI options, connector guides).
-- [ ] Code examples, diagrams, and CLI commands verified for technical accuracy.
-- [ ] Documentation linting and link validation passed (`npm run docs:check` or `python scripts/ci/validate_docs.py`).
-- [ ] Translation impact considered (English source-of-truth; translations tracked if core matrix changes).
-- [ ] No documentation updates required for this change.
+- [ ] **No Security Impact:** Change does not affect database connections, security boundaries, or credentials.
 
 ## Breaking Changes
 
