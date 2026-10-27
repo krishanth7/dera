@@ -1,0 +1,112 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Dependency Security & Software Supply-Chain Audit
+#
+# Purpose:
+#   Continuous vulnerability scanning for Python and Node.js
+#   dependencies, and package lockfile integrity enforcement.
+#
+# Principles:
+#   - Least-privilege permissions (contents: read)
+#   - Deterministic vulnerability auditing (pip-audit, npm audit)
+#   - Lockfile consistency verification
+#   - Scheduled background scanning for emerging CVEs
+# ============================================================
+
+name: "DERA | Dependency Security"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "pyproject.toml"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/dependency-security.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "pyproject.toml"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/dependency-security.yml"
+
+  schedule:
+    # Every Monday at 04:15 UTC
+    - cron: "15 4 * * 1"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dep-sec-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-audit:
+    name: "Python Vulnerability Audit"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: "Set up Python 3.13"
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: "Install pip-audit and dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pip-audit
+          python -m pip install -e ".[dev]"
+
+      - name: "Run pip-audit on installed Python packages"
+        run: |
+          pip-audit --desc
+
+  npm-audit:
+    name: "Node.js Vulnerability & Lockfile Audit"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "Checkout DERA Repository"
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: "Set up Node.js 20"
+        uses: actions/setup-node@v7
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: "Verify Lockfile Integrity (npm ci --ignore-scripts)"
+        run: |
+          npm ci --ignore-scripts
+
+      - name: "Run npm audit for High and Critical CVEs"
+        run: |
+          npm audit --audit-level=high
+
+  dependency-qualification:
+    name: "Dependency Security Gate"
+    needs: [python-audit, npm-audit]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "Confirm Dependency Security Status"
+        run: |
+          echo "SUCCESS: Both Python and Node.js dependency vulnerability audits passed."
