@@ -1,0 +1,33 @@
+# DERA — Local Platform PostgreSQL Database (Development & Testing)
+# Explicitly bound to 127.0.0.1; not exposed publicly.
+# Non-production credentials strictly for local development only.
+
+services:
+  platform-db:
+    image: postgres:16-alpine
+    container_name: dera-platform-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dera_platform
+      POSTGRES_USER: dera_user
+      POSTGRES_PASSWORD: dera_password
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - dera_platform_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dera_user -d dera_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    command: >
+      postgres
+        -c max_connections=100
+        -c shared_buffers=128MB
+        -c log_statement=none
+        -c statement_timeout=30000
+
+volumes:
+  dera_platform_pgdata:
+    name: dera_platform_pgdata

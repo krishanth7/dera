@@ -22,6 +22,7 @@ from dera_api.core.exceptions import (
 )
 from dera_api.core.lifespan import get_application_readiness, lifespan
 from dera_api.core.logging import configure_logging
+from dera_api.db.health import check_database_health
 from dera_api.middleware.request_id import RequestIDMiddleware
 from dera_api.middleware.security import SecurityHeadersMiddleware
 from dera_api.schemas.health import (
@@ -119,9 +120,18 @@ def create_app(settings: ApiSettings | None = None) -> FastAPI:
         summary="Service Operational Readiness",
         description="Verifies that the API is fully prepared to serve requests without claiming uninitialized dependencies.",
     )
-    def readiness_check(request: Request) -> JSONResponse | ReadinessResponse:
+    async def readiness_check(request: Request) -> JSONResponse:
         readiness_data = get_application_readiness(request.app)
         is_ready = readiness_data["ready"]
+
+        db_engine = getattr(request.app.state, "db_engine", None)
+        if db_engine is not None:
+            db_healthy = await check_database_health(db_engine, timeout_seconds=2.0)
+            db_status = "operational" if db_healthy else "unhealthy"
+            if not db_healthy:
+                is_ready = False
+        else:
+            db_status = "not_configured"
 
         response_body = ReadinessResponse(
             status="ok" if is_ready else "not_ready",
@@ -132,6 +142,7 @@ def create_app(settings: ApiSettings | None = None) -> FastAPI:
                 application_state=readiness_data["subsystems"]["application_state"],
                 database_connectors=readiness_data["subsystems"]["database_connectors"],
                 background_workers=readiness_data["subsystems"]["background_workers"],
+                platform_database=db_status,
             ),
         )
 

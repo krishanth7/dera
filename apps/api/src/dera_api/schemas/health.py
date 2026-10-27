@@ -24,6 +24,10 @@ class ReadinessSubsystems(BaseModel):
     application_state: str = Field(description="Internal lifecycle state.")
     database_connectors: str = Field(description="Database connector readiness.")
     background_workers: str = Field(description="Background task queue readiness.")
+    platform_database: str = Field(
+        default="not_configured",
+        description="Internal platform database readiness status.",
+    )
 
 
 class ReadinessResponse(BaseModel):

@@ -346,6 +346,12 @@
             "description": "Database connector readiness.",
             "title": "Database Connectors",
             "type": "string"
+          },
+          "platform_database": {
+            "default": "not_configured",
+            "description": "Internal platform database readiness status.",
+            "title": "Platform Database",
+            "type": "string"
           }
         },
         "required": [

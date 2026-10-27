@@ -22,6 +22,7 @@ Welcome to the official technical documentation for **DERA — Database Engineer
 |---|---|---|
 | **System Architecture** | Architectural philosophy, component diagrams, monorepo structure, and data flows | [docs/architecture/SYSTEM_OVERVIEW.md](architecture/SYSTEM_OVERVIEW.md) |
 | **Backend Gateway** | FastAPI application structure, security middleware, and verified REST API contracts | [docs/backend/APPLICATION_ARCHITECTURE.md](backend/APPLICATION_ARCHITECTURE.md) |
+| **Platform Database** | PostgreSQL 16 persistence, async pooling, Alembic migrations, and repository layer | [docs/database/README.md](database/README.md) |
 | **API Contracts** | OpenAPI 3.1 specification, Pydantic v2 schemas, RFC 9457 errors, and pagination | [docs/api/README.md](api/README.md) |
 | **Frontend Studio** | Next.js 15 studio scaffold, component hierarchy, and typed API client | [docs/frontend/APPLICATION_ARCHITECTURE.md](frontend/APPLICATION_ARCHITECTURE.md) |
 | **Deterministic Core** | Pure Python canonical domain models, Kahn DAG algorithms, and rule diagnostics | [docs/core/README.md](core/README.md) |
