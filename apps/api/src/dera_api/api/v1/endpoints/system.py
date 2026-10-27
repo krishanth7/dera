@@ -3,7 +3,8 @@
 Provides platform metadata, capability discovery, and ping probes under /api/v1.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
@@ -21,7 +22,9 @@ router = APIRouter(prefix="", tags=["System"])
     summary="Platform Capabilities & Architecture Metadata",
     description="Returns platform configuration, supported database dialects, and zero-AI policy status.",
 )
-def get_metadata(settings: ApiSettings = Depends(get_app_settings)) -> MetaResponse:
+def get_metadata(
+    settings: Annotated[ApiSettings, Depends(get_app_settings)],
+) -> MetaResponse:
     """Returns extended platform capabilities and deterministic constraints."""
     return MetaResponse(
         name=settings.app_name,
@@ -43,5 +46,5 @@ def ping() -> SystemPingResponse:
     """Returns low-latency heartbeat verification."""
     return SystemPingResponse(
         ping="pong",
-        timestamp=datetime.now(timezone.utc).isoformat(),
+        timestamp=datetime.now(UTC).isoformat(),
     )

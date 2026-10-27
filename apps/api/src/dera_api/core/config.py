@@ -23,6 +23,7 @@ class ApiSettings(BaseSettings):
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
+        populate_by_name=True,
     )
 
     app_name: str = Field(
@@ -113,9 +114,7 @@ class ApiSettings(BaseSettings):
     def validate_log_level(cls, v: str) -> str:
         lvl = v.strip().upper()
         if lvl not in VALID_LOG_LEVELS:
-            raise ValueError(
-                f"Invalid log level '{v}'. Allowed levels: {sorted(VALID_LOG_LEVELS)}"
-            )
+            raise ValueError(f"Invalid log level '{v}'. Allowed levels: {sorted(VALID_LOG_LEVELS)}")
         return lvl
 
     @field_validator("cors_origins", mode="before")

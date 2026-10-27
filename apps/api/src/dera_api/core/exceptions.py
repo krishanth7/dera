@@ -4,14 +4,11 @@ Defines core exception types and centralized HTTP exception handlers
 that prevent credential leaks, stack-trace exposure, and raw internal paths.
 """
 
-from typing import Any
-
+from dera_api.core.logging import get_logger
 from fastapi import Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
-
-from dera_api.core.logging import get_logger
 
 logger = get_logger("dera_api.exceptions")
 
@@ -66,7 +63,9 @@ async def dera_exception_handler(request: Request, exc: DeraError) -> JSONRespon
     )
 
 
-async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+async def validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
     """Handles request body/param validation errors safely."""
     request_id = get_request_id_from_request(request)
     logger.info("Request validation failed (request_id=%s): %s", request_id, exc.errors())

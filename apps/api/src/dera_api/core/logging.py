@@ -7,12 +7,14 @@ and defensive secret redaction filters for containerized execution.
 import logging
 import re
 import sys
-from datetime import datetime, timezone
-from typing import Any
+from datetime import UTC, datetime
 
 # Patterns to sanitize from log messages
 SENSITIVE_PATTERNS = [
-    re.compile(r"(password|passwd|pwd|secret|token|api_key|apikey|authorization)\s*[:=]\s*['\"]?([^'\"&\s,]+)", re.IGNORECASE),
+    re.compile(
+        r"(password|passwd|pwd|secret|token|api_key|apikey|authorization)\s*[:=]\s*['\"]?([^'\"&\s,]+)",
+        re.IGNORECASE,
+    ),
     re.compile(r"(Bearer\s+)[A-Za-z0-9\-._~+/]+=*", re.IGNORECASE),
     re.compile(r"(postgres(?:ql)?://[^:]+:)([^@]+)(@)", re.IGNORECASE),
     re.compile(r"(mysql://[^:]+:)([^@]+)(@)", re.IGNORECASE),
@@ -52,7 +54,7 @@ class UtcFormatter(logging.Formatter):
     """Outputs ISO 8601 UTC timestamps with correlation context."""
 
     def formatTime(self, record: logging.LogRecord, datefmt: str | None = None) -> str:
-        utc_dt = datetime.fromtimestamp(record.created, tz=timezone.utc)
+        utc_dt = datetime.fromtimestamp(record.created, tz=UTC)
         if datefmt:
             return utc_dt.strftime(datefmt)
         return utc_dt.isoformat()

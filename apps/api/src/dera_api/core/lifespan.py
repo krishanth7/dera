@@ -6,13 +6,12 @@ using contextlib.asynccontextmanager without deprecated startup/shutdown events.
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
-
-from fastapi import FastAPI
 
 from dera_api.core.config import get_settings
 from dera_api.core.logging import get_logger
+from fastapi import FastAPI
 
 logger = get_logger("dera_api.lifespan")
 
@@ -23,7 +22,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = getattr(app.state, "settings", None) or get_settings()
 
     # Startup sequence
-    startup_time = datetime.now(timezone.utc)
+    startup_time = datetime.now(UTC)
     app.state.startup_time = startup_time
     app.state.is_ready = True
     app.state.service_name = "dera-api"

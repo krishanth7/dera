@@ -3,8 +3,6 @@
 Pydantic v2 schemas for liveness, readiness, and platform capability endpoints.
 """
 
-from typing import Any
-
 from pydantic import BaseModel, ConfigDict, Field
 
 
