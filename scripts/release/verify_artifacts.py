@@ -14,7 +14,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import re
 import sys
 from pathlib import Path
@@ -102,15 +101,13 @@ def verify_directory_artifacts(
                     f"Integrity failure on '{expected_name}': expected SHA-256 {expected_hash}, computed {computed_hashes[expected_name]}."
                 )
     elif require_checksums:
-        errors.append(
-            f"Missing required checksums manifest 'SHA256SUMS.txt' in '{dist_dir}'."
-        )
+        errors.append(f"Missing required checksums manifest 'SHA256SUMS.txt' in '{dist_dir}'.")
 
     # Verify against manifest.json
     target_manifest_file = manifest_file or (dist_dir / "manifest.json")
     if target_manifest_file.exists():
         try:
-            with open(target_manifest_file, "r", encoding="utf-8") as f:
+            with open(target_manifest_file, encoding="utf-8") as f:
                 data = json.load(f)
             manifest_arts = data.get("artifacts", [])
             for art in manifest_arts:
@@ -179,7 +176,9 @@ def main() -> int:
             print(f"  • {err}")
         return 1
 
-    print(f"\n[SUCCESS] All {len(hashes)} artifacts verified successfully against integrity policies.")
+    print(
+        f"\n[SUCCESS] All {len(hashes)} artifacts verified successfully against integrity policies."
+    )
     return 0
 
 

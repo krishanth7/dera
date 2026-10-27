@@ -15,7 +15,6 @@ import argparse
 import datetime
 import hashlib
 import json
-import os
 import re
 import sys
 from pathlib import Path
@@ -79,7 +78,9 @@ def validate_manifest_dict(
     # 5. Validate commit SHA
     commit_sha = str(data["commit"]).strip()
     if not GIT_SHA_REGEX.match(commit_sha):
-        errors.append(f"Invalid Git commit SHA in manifest: '{commit_sha}'. Must be 40-character hex.")
+        errors.append(
+            f"Invalid Git commit SHA in manifest: '{commit_sha}'. Must be 40-character hex."
+        )
 
     # 6. Validate generated_at timestamp
     try:
@@ -116,7 +117,9 @@ def validate_manifest_dict(
             if dist_dir and name:
                 disk_file = dist_dir / name
                 if not disk_file.exists():
-                    errors.append(f"Manifest artifact '{name}' does not exist on disk at: {disk_file}")
+                    errors.append(
+                        f"Manifest artifact '{name}' does not exist on disk at: {disk_file}"
+                    )
                 else:
                     computed_hash = compute_sha256(disk_file)
                     if computed_hash != str(sha256).lower():
@@ -168,7 +171,7 @@ def generate_manifest(
         "version": version,
         "channel": channel,
         "commit": commit_sha,
-        "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "generated_at": datetime.datetime.now(datetime.UTC).isoformat(),
         "qualification_status": status,
         "build_environment": {
             "os": sys.platform,
@@ -218,7 +221,9 @@ def main() -> int:
         out_path.parent.mkdir(parents=True, exist_ok=True)
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(manifest_data, f, indent=2)
-        print(f"[SUCCESS] Generated manifest at: {out_path} ({len(manifest_data['artifacts'])} artifacts)")
+        print(
+            f"[SUCCESS] Generated manifest at: {out_path} ({len(manifest_data['artifacts'])} artifacts)"
+        )
         return 0
 
     manifest_file = Path(args.manifest)
@@ -227,7 +232,7 @@ def main() -> int:
         return 1
 
     try:
-        with open(manifest_file, "r", encoding="utf-8") as f:
+        with open(manifest_file, encoding="utf-8") as f:
             data = json.load(f)
     except Exception as exc:
         print(f"[FAIL] Could not parse manifest JSON: {exc}")
@@ -243,7 +248,9 @@ def main() -> int:
         return 1
 
     print(f"[SUCCESS] Release manifest '{manifest_file}' is valid.")
-    print(f"          Project: {data['project']} | Version: {data['version']} | Channel: {data['channel']}")
+    print(
+        f"          Project: {data['project']} | Version: {data['version']} | Channel: {data['channel']}"
+    )
     print(f"          Commit: {data['commit']} | Status: {data['qualification_status']}")
     print(f"          Artifacts count: {len(data['artifacts'])}")
     return 0

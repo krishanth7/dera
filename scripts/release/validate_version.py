@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import sys
 from pathlib import Path
@@ -164,7 +163,9 @@ def extract_version_from_file(file_path: Path, source_type: str, field: str) -> 
 
     if source_type == "toml":
         # Extract version under [project]
-        match = re.search(r'\[project\][^\[]*?version\s*=\s*["\']([^"\']+)["\']', content, re.DOTALL)
+        match = re.search(
+            r'\[project\][^\[]*?version\s*=\s*["\']([^"\']+)["\']', content, re.DOTALL
+        )
         if not match:
             # Fallback to simple version regex
             match = re.search(r'version\s*=\s*["\']([^"\']+)["\']', content)
@@ -190,7 +191,9 @@ def validate_release_tag(tag_str: str, expected_version: str | None = None) -> V
     components = parse_semver(version_part)
 
     if expected_version:
-        expected_clean = expected_version[1:] if expected_version.startswith("v") else expected_version
+        expected_clean = (
+            expected_version[1:] if expected_version.startswith("v") else expected_version
+        )
         if components.raw != expected_clean:
             raise ValueError(
                 f"Tag '{tag_str}' (resolving to '{components.raw}') does not match expected version '{expected_clean}'."
@@ -275,7 +278,6 @@ def main() -> int:
     args = parser.parse_args()
     repo_root = Path(args.repo_root)
 
-    success = True
     errors: list[str] = []
 
     print("[DERA] Version Validation Engine")
@@ -287,17 +289,23 @@ def main() -> int:
             parsed = parse_semver(args.version)
             print(f"[SUCCESS] Version '{args.version}' is valid SemVer 2.0.0:")
             print(f"          Major: {parsed.major}, Minor: {parsed.minor}, Patch: {parsed.patch}")
-            print(f"          Pre-release: {parsed.prerelease}, Build Metadata: {parsed.buildmetadata}")
+            print(
+                f"          Pre-release: {parsed.prerelease}, Build Metadata: {parsed.buildmetadata}"
+            )
             if args.require_candidate:
-                if not (parsed.prerelease and "rc" in parsed.prerelease or parsed.prerelease is None):
-                    errors.append(f"Version '{args.version}' is neither an RC nor a stable release.")
+                if not (
+                    parsed.prerelease and "rc" in parsed.prerelease or parsed.prerelease is None
+                ):
+                    errors.append(
+                        f"Version '{args.version}' is neither an RC nor a stable release."
+                    )
         except ValueError as err:
             errors.append(str(err))
 
     # 2. Validate tag if specified
     if args.tag:
         try:
-            parsed_tag = validate_release_tag(args.tag, expected_version=args.version)
+            validate_release_tag(args.tag, expected_version=args.version)
             print(f"[SUCCESS] Tag '{args.tag}' strictly conforms to SemVer tag specification.")
         except ValueError as err:
             errors.append(str(err))
@@ -309,7 +317,9 @@ def main() -> int:
             repo_root=repo_root, allow_dev=not args.disallow_dev
         )
         if consistent:
-            print(f"[SUCCESS] All workspace version sources are synchronized at canonical '{canonical_v}'.")
+            print(
+                f"[SUCCESS] All workspace version sources are synchronized at canonical '{canonical_v}'."
+            )
             for src in VERSION_SOURCES:
                 print(f"          [OK] {src['path']}")
         else:

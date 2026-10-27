@@ -103,9 +103,7 @@ def cmd_install_hooks(args: argparse.Namespace) -> int:
 
 def cmd_validate_release(args: argparse.Namespace) -> int:
     """Run release qualification and version consistency validation."""
-    return run_cmd(
-        [sys.executable, "scripts/release/validate_version.py", "--check-consistency"]
-    )
+    return run_cmd([sys.executable, "scripts/release/validate_version.py", "--check-consistency"])
 
 
 def cmd_all(args: argparse.Namespace) -> int:
