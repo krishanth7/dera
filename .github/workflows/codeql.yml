@@ -14,7 +14,7 @@
 #   - No application build or execution required
 #   - Extended security analysis
 #
-# Maintainer: DERA Contributors
+# Maintainer: Bunga Krishanth (@krishanth7) / DERA Contributors
 # ============================================================
 
 name: "DERA | CodeQL Advanced Security"
