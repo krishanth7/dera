@@ -194,11 +194,9 @@ async def introspect_columns(
                 table_name=table,
                 column_name=col_name,
                 ordinal_position=cid + 1,
-                data_type=affinity.value.lower(),
-                native_type=declared_type or affinity.value,
+                data_type=declared_type or affinity.value.lower(),
                 is_nullable=not notnull,
-                default_value=dflt_value,
-                is_primary_key=pk_pos > 0,
+                default_expression=dflt_value,
                 is_identity=False,
                 is_generated=is_generated,
                 comment=None,
@@ -218,7 +216,7 @@ async def introspect_primary_key(
     target_schema = schema or "main"
     columns = await introspect_columns(conn_mgr, table, schema=target_schema)
 
-    pk_cols = [c for c in columns if c.is_primary_key]
+    pk_cols = [c for c in columns if c.engine_specific.get("pk_order", 0) > 0]
     if not pk_cols:
         return None
 
