@@ -6,10 +6,10 @@ indexes, and immutable schema snapshots.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
 import hashlib
 import json
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -90,7 +90,7 @@ class SchemaSnapshot:
     database_name: str
     engine: str
     tables: tuple[DatabaseTable, ...]
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     snapshot_id: str = field(default="")
 
     def compute_hash(self) -> str:
@@ -132,4 +132,3 @@ Column = DatabaseColumn
 Table = DatabaseTable
 ForeignKey = ForeignKeyConstraint
 Index = TableIndex
-

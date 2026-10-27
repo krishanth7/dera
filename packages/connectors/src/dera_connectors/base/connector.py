@@ -5,13 +5,13 @@ Enforces strict read-only introspection boundaries, preventing any mutation
 of customer databases during metadata reverse engineering.
 """
 
+import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-import re
+from typing import Any
 
 from dera.models import DatabaseTable, SchemaSnapshot
-from dera_core.exceptions import ConnectorError, ReadOnlyViolationError
+from dera_core.exceptions import ReadOnlyViolationError
 
 # Forbidden SQL tokens that violate read-only metadata introspection
 _MUTATION_KEYWORDS = re.compile(
@@ -26,16 +26,16 @@ class ConnectionConfig:
 
     dialect: str
     database: str
-    host: Optional[str] = None
-    port: Optional[int] = None
-    username: Optional[str] = None
+    host: str | None = None
+    port: int | None = None
+    username: str | None = None
     # Password should never be logged or exposed in representation
     ssl_mode: str = "prefer"
     read_only: bool = True
     timeout_seconds: int = 30
-    extra_options: Dict[str, Any] = field(default_factory=dict)
+    extra_options: dict[str, Any] = field(default_factory=dict)
 
-    def safe_dict(self) -> Dict[str, Any]:
+    def safe_dict(self) -> dict[str, Any]:
         """Return configuration dictionary with sanitized credentials."""
         return {
             "dialect": self.dialect,
@@ -89,11 +89,11 @@ class BaseConnector(ABC):
         pass
 
     @abstractmethod
-    def inspect_tables(self) -> List[DatabaseTable]:
+    def inspect_tables(self) -> list[DatabaseTable]:
         """Introspect tables, columns, constraints, and keys from database metadata."""
         pass
 
-    def inspect_schema(self, schema_name: Optional[str] = None) -> SchemaSnapshot:
+    def inspect_schema(self, schema_name: str | None = None) -> SchemaSnapshot:
         """Inspect and return complete canonical SchemaSnapshot."""
         tables = self.inspect_tables()
         return SchemaSnapshot(

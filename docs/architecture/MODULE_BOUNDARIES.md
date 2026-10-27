@@ -83,8 +83,7 @@ The following imports are strictly forbidden and will fail architectural linting
 1. Navigate to `packages/core/src/dera/diagnostics.py`.
 2. Define an evaluation function matching the signature:
    ```python
-   def evaluate_rule_name(tables: Iterable[DatabaseTable]) -> list[DiagnosticFinding]:
-       ...
+   def evaluate_rule_name(tables: Iterable[DatabaseTable]) -> list[DiagnosticFinding]: ...
    ```
 3. Use a unique rule ID (e.g., `RULE-INTEG-003`, `RULE-PERF-004`) and specify `RuleSeverity` (`INFO`, `WARNING`, `ERROR`).
 4. Include actionable `remediation_ddl` where applicable.

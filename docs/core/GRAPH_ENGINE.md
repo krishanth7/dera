@@ -151,9 +151,7 @@ from dera.models import DatabaseTable, ForeignKeyConstraint, DatabaseColumn
 from dera.graph import compute_topological_sort
 
 users = DatabaseTable(
-    schema="public",
-    name="users",
-    columns=(DatabaseColumn(name="id", data_type="INTEGER"),)
+    schema="public", name="users", columns=(DatabaseColumn(name="id", data_type="INTEGER"),)
 )
 
 orders = DatabaseTable(
@@ -166,9 +164,9 @@ orders = DatabaseTable(
             source_columns=("user_id",),
             target_schema="public",
             target_table="users",
-            target_columns=("id",)
+            target_columns=("id",),
         ),
-    )
+    ),
 )
 
 order = compute_topological_sort([orders, users])

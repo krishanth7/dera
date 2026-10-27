@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import sqlite3
 from typing import Any
+
 from dera.models import (
     DatabaseColumn,
     DatabaseTable,
@@ -25,7 +26,7 @@ class SqliteConnector:
 
     def __init__(self, connection_string: str) -> None:
         """Initialize connection.
-        
+
         Enforces read-only access for file-based databases via URI if not memory.
         """
         self.connection_string = connection_string
@@ -33,7 +34,11 @@ class SqliteConnector:
             self._conn = sqlite3.connect(":memory:")
         else:
             # Enforce read-only mode for file connections
-            uri = f"file:{connection_string}?mode=ro" if "mode=" not in connection_string else connection_string
+            uri = (
+                f"file:{connection_string}?mode=ro"
+                if "mode=" not in connection_string
+                else connection_string
+            )
             try:
                 self._conn = sqlite3.connect(uri, uri=True)
             except sqlite3.OperationalError:
@@ -52,7 +57,7 @@ class SqliteConnector:
         cursor = self._conn.cursor()
         cursor.execute(
             """
-            SELECT name FROM sqlite_master 
+            SELECT name FROM sqlite_master
             WHERE type='table' AND name NOT LIKE 'sqlite_%'
             ORDER BY name ASC
             """
@@ -93,10 +98,14 @@ class SqliteConnector:
 
         # Primary Key
         pk_cols.sort(key=lambda x: x[0])
-        pk = PrimaryKeyConstraint(
-            name=f"pk_{table_name}",
-            columns=tuple(col for _, col in pk_cols),
-        ) if pk_cols else None
+        pk = (
+            PrimaryKeyConstraint(
+                name=f"pk_{table_name}",
+                columns=tuple(col for _, col in pk_cols),
+            )
+            if pk_cols
+            else None
+        )
 
         # 2. Foreign Keys from PRAGMA foreign_key_list
         cursor.execute(f'PRAGMA foreign_key_list("{safe_name}")')

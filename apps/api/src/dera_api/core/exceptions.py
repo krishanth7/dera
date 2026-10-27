@@ -3,16 +3,14 @@
 Maps domain DeraError subclasses to standard JSON HTTP responses.
 """
 
-from typing import Any, Dict
+from typing import Any
+
 from dera_core.exceptions import (
-    CycleDetectedError,
     DeraError,
-    ReadOnlyViolationError,
-    SchemaParsingError,
 )
 
 
-def format_error_response(error: DeraError, status_code: int) -> Dict[str, Any]:
+def format_error_response(error: DeraError, status_code: int) -> dict[str, Any]:
     """Format a domain error into standard API error dictionary."""
     return {
         "success": False,

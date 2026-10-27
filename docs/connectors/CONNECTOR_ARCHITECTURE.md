@@ -82,6 +82,7 @@ _MUTATION_KEYWORDS = re.compile(
     re.IGNORECASE,
 )
 
+
 def validate_query_read_only(self, sql: str) -> None:
     if _MUTATION_KEYWORDS.search(sql):
         raise ReadOnlyViolationError(
