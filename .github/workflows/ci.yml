@@ -198,6 +198,10 @@ jobs:
         run: |
           python -m unittest tests/architecture/test_module_boundaries.py
 
+      - name: "Validate OpenAPI Specification & Zero-Drift Governance"
+        run: |
+          python scripts/ci/validate_openapi.py --check
+
   # ----------------------------------------------------------
   # 4. Database Connector Integration & Ephemeral PostgreSQL 16
   # ----------------------------------------------------------

@@ -64,7 +64,8 @@ class TestApiExceptions(unittest.TestCase):
         self.assertEqual(response.status_code, 500)
         data = response.json()
         self.assertIn("error", data)
-        self.assertEqual(data["error"]["code"], "INTERNAL_SERVER_ERROR")
+        self.assertEqual(data["code"], "INTERNAL_ERROR")
+        self.assertEqual(data["error"]["code"], "INTERNAL_ERROR")
         self.assertEqual(
             data["error"]["message"],
             "An unexpected error occurred while processing the request.",

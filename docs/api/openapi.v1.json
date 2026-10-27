@@ -1,0 +1,620 @@
+{
+  "components": {
+    "schemas": {
+      "ErrorCode": {
+        "description": "Authoritative machine-readable error classification codes.",
+        "enum": [
+          "VALIDATION_ERROR",
+          "MALFORMED_REQUEST",
+          "UNSUPPORTED_MEDIA_TYPE",
+          "RESOURCE_NOT_FOUND",
+          "METHOD_NOT_ALLOWED",
+          "CONFLICT",
+          "RATE_LIMITED",
+          "INTERNAL_ERROR",
+          "SERVICE_UNAVAILABLE",
+          "DEPENDENCY_UNAVAILABLE"
+        ],
+        "title": "ErrorCode",
+        "type": "string"
+      },
+      "FieldErrorDetail": {
+        "description": "Field-specific validation failure detail.",
+        "properties": {
+          "code": {
+            "description": "Machine-readable error token describing the constraint.",
+            "title": "Code",
+            "type": "string"
+          },
+          "constraint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional violated constraint value.",
+            "title": "Constraint"
+          },
+          "field": {
+            "description": "Dot-delimited JSON or query path of the invalid field.",
+            "title": "Field",
+            "type": "string"
+          },
+          "message": {
+            "description": "Human-readable safe explanation of the violation.",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "code",
+          "message"
+        ],
+        "title": "FieldErrorDetail",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "description": "Schema for legacy backward-compatible health check (/health).",
+        "properties": {
+          "service": {
+            "default": "dera-api",
+            "description": "Service identifier.",
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "default": "healthy",
+            "description": "Service health state.",
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "description": "Canonical platform version.",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "LivenessResponse": {
+        "description": "Schema for process liveness probe (/health/live).",
+        "properties": {
+          "service": {
+            "default": "dera-api",
+            "description": "Service identifier.",
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "default": "ok",
+            "description": "Service process status.",
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "description": "Canonical platform version.",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "title": "LivenessResponse",
+        "type": "object"
+      },
+      "MetaResponse": {
+        "description": "Schema for platform metadata and capabilities (/api/v1/meta).",
+        "properties": {
+          "environment": {
+            "description": "Active environment profile.",
+            "title": "Environment",
+            "type": "string"
+          },
+          "name": {
+            "description": "Service application name.",
+            "title": "Name",
+            "type": "string"
+          },
+          "read_only_enforced": {
+            "description": "Enforcement of read-only DB inspection.",
+            "title": "Read Only Enforced",
+            "type": "boolean"
+          },
+          "supported_dialects": {
+            "description": "List of supported database dialects.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Supported Dialects",
+            "type": "array"
+          },
+          "version": {
+            "description": "Application version.",
+            "title": "Version",
+            "type": "string"
+          },
+          "zero_ai_policy": {
+            "description": "Enforcement of deterministic zero-AI policy.",
+            "title": "Zero Ai Policy",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "environment",
+          "zero_ai_policy",
+          "read_only_enforced",
+          "supported_dialects"
+        ],
+        "title": "MetaResponse",
+        "type": "object"
+      },
+      "PlatformInfoResponse": {
+        "description": "Schema for platform identity information (/info).",
+        "properties": {
+          "maintainer": {
+            "default": "Krishanth",
+            "title": "Maintainer",
+            "type": "string"
+          },
+          "name": {
+            "default": "Database Engineering & Reverse Analysis",
+            "title": "Name",
+            "type": "string"
+          },
+          "philosophy": {
+            "default": "Deterministic, non-AI database reverse engineering",
+            "title": "Philosophy",
+            "type": "string"
+          },
+          "project": {
+            "default": "DERA",
+            "title": "Project",
+            "type": "string"
+          },
+          "tagline": {
+            "default": "Understand Every Schema. Engineer Every Change.",
+            "title": "Tagline",
+            "type": "string"
+          },
+          "version": {
+            "description": "Canonical platform version.",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "title": "PlatformInfoResponse",
+        "type": "object"
+      },
+      "ProblemDetail": {
+        "description": "RFC 9457-compliant Problem Details representation for HTTP APIs.",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode",
+            "description": "Machine-readable DERA error classification code."
+          },
+          "detail": {
+            "description": "Human-readable explanation specific to this occurrence of the problem.",
+            "title": "Detail",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Backward-compatible error summary envelope.",
+            "title": "Error"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/FieldErrorDetail"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional list of field-level validation errors.",
+            "title": "Errors"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "URI reference that identifies the specific occurrence of the problem.",
+            "title": "Instance"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Correlation identifier for request tracing and log alignment.",
+            "title": "Request Id"
+          },
+          "status": {
+            "description": "HTTP status code generated by the origin server.",
+            "maximum": 599.0,
+            "minimum": 400.0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "title": {
+            "description": "Short, human-readable summary of the problem type.",
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "default": "about:blank",
+            "description": "URI reference that identifies the problem type.",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "status",
+          "detail",
+          "code"
+        ],
+        "title": "ProblemDetail",
+        "type": "object"
+      },
+      "ReadinessResponse": {
+        "description": "Schema for application readiness probe (/health/ready).",
+        "properties": {
+          "ready": {
+            "description": "Readiness boolean flag.",
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "service": {
+            "default": "dera-api",
+            "description": "Service identifier.",
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "default": "ok",
+            "description": "Overall readiness status.",
+            "title": "Status",
+            "type": "string"
+          },
+          "subsystems": {
+            "$ref": "#/components/schemas/ReadinessSubsystems",
+            "description": "Detailed subsystem states."
+          },
+          "version": {
+            "description": "Canonical platform version.",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "ready",
+          "subsystems"
+        ],
+        "title": "ReadinessResponse",
+        "type": "object"
+      },
+      "ReadinessSubsystems": {
+        "description": "Subsystem status reported truthfully during readiness checks.",
+        "properties": {
+          "application_state": {
+            "description": "Internal lifecycle state.",
+            "title": "Application State",
+            "type": "string"
+          },
+          "background_workers": {
+            "description": "Background task queue readiness.",
+            "title": "Background Workers",
+            "type": "string"
+          },
+          "database_connectors": {
+            "description": "Database connector readiness.",
+            "title": "Database Connectors",
+            "type": "string"
+          }
+        },
+        "required": [
+          "application_state",
+          "database_connectors",
+          "background_workers"
+        ],
+        "title": "ReadinessSubsystems",
+        "type": "object"
+      },
+      "SystemPingResponse": {
+        "description": "Schema for low-latency ping probe (/api/v1/ping).",
+        "properties": {
+          "ping": {
+            "default": "pong",
+            "description": "Heartbeat response token.",
+            "title": "Ping",
+            "type": "string"
+          },
+          "timestamp": {
+            "description": "ISO 8601 UTC timestamp of the probe response.",
+            "title": "Timestamp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "timestamp"
+        ],
+        "title": "SystemPingResponse",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "contact": {
+      "name": "DERA Maintainers",
+      "url": "https://github.com/krishanth7/dera"
+    },
+    "description": "Deterministic Database Engineering & Reverse Analysis Platform API",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "title": "DERA API Gateway",
+    "version": "0.1.0-dev"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/meta": {
+      "get": {
+        "description": "Returns platform configuration, supported database dialects, and zero-AI policy status.",
+        "operationId": "get_metadata_api_v1_meta_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Platform Capabilities & Architecture Metadata",
+        "tags": [
+          "System"
+        ]
+      }
+    },
+    "/api/v1/ping": {
+      "get": {
+        "description": "Fast non-blocking ping verification endpoint.",
+        "operationId": "ping_api_v1_ping_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemPingResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Low-Latency Heartbeat",
+        "tags": [
+          "System"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "description": "Backward-compatible liveness probe for existing infrastructure.",
+        "operationId": "legacy_health_check_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Legacy Health Check",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/health/live": {
+      "get": {
+        "description": "Verifies that the API service process is active and executing.",
+        "operationId": "liveness_check_health_live_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivenessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Service Process Liveness",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "description": "Verifies that the API is fully prepared to serve requests without claiming uninitialized dependencies.",
+        "operationId": "readiness_check_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Service Unavailable / Subsystem Unready"
+          }
+        },
+        "summary": "Service Operational Readiness",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/info": {
+      "get": {
+        "description": "Returns official platform identity, maintainer details, and non-AI philosophy.",
+        "operationId": "platform_info_info_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformInfoResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Platform Identity & Principles",
+        "tags": [
+          "System"
+        ]
+      }
+    }
+  }
+}

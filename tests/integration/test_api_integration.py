@@ -141,7 +141,8 @@ class TestApiIntegration(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         data = response.json()
         self.assertIn("error", data)
-        self.assertEqual(data["error"]["code"], "HTTP_404")
+        self.assertEqual(data["code"], "RESOURCE_NOT_FOUND")
+        self.assertEqual(data["error"]["code"], "RESOURCE_NOT_FOUND")
 
     def test_method_not_allowed_405_handling(self) -> None:
         """Verify unsupported HTTP method returns HTTP 405 with structured error response."""
@@ -149,7 +150,8 @@ class TestApiIntegration(unittest.TestCase):
         self.assertEqual(response.status_code, 405)
         data = response.json()
         self.assertIn("error", data)
-        self.assertEqual(data["error"]["code"], "HTTP_405")
+        self.assertEqual(data["code"], "METHOD_NOT_ALLOWED")
+        self.assertEqual(data["error"]["code"], "METHOD_NOT_ALLOWED")
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from dera_api.api.v1.router import api_v1_router
+from dera_api.contracts.errors import ProblemDetail
 from dera_api.core.config import ApiSettings, get_settings
 from dera_api.core.exceptions import (
     DeraError,
@@ -111,6 +112,9 @@ def create_app(settings: ApiSettings | None = None) -> FastAPI:
     @app.get(
         "/health/ready",
         response_model=ReadinessResponse,
+        responses={
+            503: {"model": ProblemDetail, "description": "Service Unavailable / Subsystem Unready"}
+        },
         tags=["Health"],
         summary="Service Operational Readiness",
         description="Verifies that the API is fully prepared to serve requests without claiming uninitialized dependencies.",
