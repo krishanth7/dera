@@ -67,6 +67,8 @@ CANONICAL_SCOPES: tuple[str, ...] = (
     "perf",
     "cache",
     "artifacts",
+    "audit",
+    "recovery",
 )
 
 TITLE_REGEX = re.compile(

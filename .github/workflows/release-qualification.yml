@@ -1,0 +1,168 @@
+# ============================================================
+# DERA — Database Engineering & Reverse Analysis
+# Enterprise Release Qualification & Verification Gate
+#
+# Purpose:
+#   Secure, auditable, and deterministic qualification of release
+#   candidates. Validates SemVer 2.0.0 compliance, checks workspace
+#   version synchronization, builds package distributions, generates
+#   cryptographic SHA-256 digests, validates release manifests, and
+#   verifies artifact integrity without publishing permissions.
+# ============================================================
+
+name: "DERA | Release Qualification"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release candidate tag to qualify (e.g., v0.1.0-rc.1)"
+        required: true
+        type: string
+      dry_run:
+        description: "Execute qualification as a safe dry-run (no publication)"
+        required: true
+        type: boolean
+        default: true
+      require_candidate_gate:
+        description: "Require version to be an explicit pre-release or RC"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-qualification-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify-candidate:
+    name: "Qualify Candidate & Audit Integrity"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: "Checkout Target Revision"
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: "Set up Python Environment"
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: "Set up Node.js Environment"
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: "Audit Target Source Revision"
+        run: |
+          echo "=================================================="
+          echo "DERA Release Candidate Qualification"
+          echo "=================================================="
+          echo "Target Ref:          ${{ github.ref }}"
+          echo "Input Release Tag:   ${{ inputs.release_tag }}"
+          echo "Dry Run Execution:   ${{ inputs.dry_run }}"
+          echo "Commit SHA:          $(git rev-parse HEAD)"
+          echo "Commit Author:       $(git log -1 --pretty=format:'%an <%ae>')"
+          echo "Commit Timestamp:    $(git log -1 --pretty=format:'%ci')"
+          echo "=================================================="
+
+      - name: "Validate Semantic Version & Workspace Consistency"
+        run: |
+          python scripts/release/validate_version.py \
+            --tag "${{ inputs.release_tag }}" \
+            --check-consistency \
+            ${{ inputs.require_candidate_gate && '--require-candidate' || '' }}
+
+      - name: "Validate Changelog Entry"
+        run: |
+          TAG_RAW="${{ inputs.release_tag }}"
+          VER="${TAG_RAW#v}"
+          if grep -q "## \[${VER}\]" CHANGELOG.md; then
+            echo "[SUCCESS] Verified changelog entry for version [${VER}] in CHANGELOG.md."
+          elif grep -q "## \[Unreleased\]" CHANGELOG.md; then
+            echo "[NOTICE] Version [${VER}] is currently documented under [Unreleased] in CHANGELOG.md."
+          else
+            echo "[FAIL] Missing documentation in CHANGELOG.md for version ${VER}."
+            exit 1
+          fi
+
+      - name: "Install Python Build Tooling"
+        run: |
+          python -m pip install --upgrade pip
+          pip install build pydantic networkx sqlglot
+
+      - name: "Install TypeScript Dependencies & Build Contracts"
+        run: |
+          npm ci || npm install --no-audit
+          npm run build --workspaces --if-present
+
+      - name: "Execute Pre-Release Regression Test Suite"
+        run: |
+          python scripts/ci/test_reporter.py
+
+      - name: "Build Release Packages"
+        run: |
+          mkdir -p dist
+          # Build Python Core Wheel & Sdist
+          python -m build --outdir dist/
+          # Build and package TypeScript contracts
+          npm pack --workspace=packages/contracts --pack-destination=dist/
+
+      - name: "Generate SHA-256 Cryptographic Checksums"
+        working-directory: dist
+        run: |
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: "Generate & Validate Machine-Readable Release Manifest"
+        run: |
+          TAG_RAW="${{ inputs.release_tag }}"
+          VER="${TAG_RAW#v}"
+          COMMIT_SHA=$(git rev-parse HEAD)
+          python scripts/release/validate_manifest.py \
+            --generate \
+            --dist-dir dist \
+            --manifest dist/manifest.json \
+            --version "${VER}" \
+            --commit "${COMMIT_SHA}" \
+            --channel "rc" \
+            --status "QUALIFIED"
+          python scripts/release/validate_manifest.py \
+            --manifest dist/manifest.json \
+            --dist-dir dist
+
+      - name: "Verify Artifact Integrity & Naming Conventions"
+        run: |
+          python scripts/release/verify_artifacts.py --dist-dir dist
+
+      - name: "Upload Qualified Release Artifacts"
+        uses: actions/upload-artifact@v7
+        with:
+          name: dera-qualified-release-${{ inputs.release_tag }}-${{ github.run_id }}
+          path: dist/
+          retention-days: 7
+
+      - name: "Emit Qualification Report"
+        run: |
+          echo "=================================================="
+          echo "DERA Release Candidate Qualification Status"
+          echo "=================================================="
+          echo "Status:                 QUALIFIED (GREEN)"
+          echo "Release Tag:            ${{ inputs.release_tag }}"
+          echo "Dry Run:                ${{ inputs.dry_run }}"
+          echo "Verified Artifacts:"
+          ls -la dist/
+          echo "=================================================="
+          echo "[IMPORTANT] No public release, tag push, or registry publication"
+          echo "occurred. Release publishing requires explicit maintainer"
+          echo "authorization via the separate authorized release workflow."
+          echo "=================================================="
