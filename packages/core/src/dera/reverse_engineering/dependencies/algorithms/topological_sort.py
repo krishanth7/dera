@@ -51,7 +51,9 @@ def compute_topological_ordering(
 
     if is_pure_dag:
         # Standard Kahn's algorithm with priority queue
-        creation_order, levels = _kahn_topological_sort_with_levels(sorted_all_nodes, prerequisite_adj)
+        creation_order, levels = _kahn_topological_sort_with_levels(
+            sorted_all_nodes, prerequisite_adj
+        )
         drop_order = tuple(reversed(creation_order))
 
         ordering = DependencyOrdering(
@@ -180,10 +182,14 @@ def _build_condensation_dag(
             )
         )
 
-    return sort_condensation_nodes(condensation_nodes), {scc.scc_id: f"cond-{scc.scc_id}" for scc in sccs}
+    return sort_condensation_nodes(condensation_nodes), {
+        scc.scc_id: f"cond-{scc.scc_id}" for scc in sccs
+    }
 
 
-def _topological_sort_condensation(condensation_nodes: Sequence[CondensationNode]) -> tuple[str, ...]:
+def _topological_sort_condensation(
+    condensation_nodes: Sequence[CondensationNode],
+) -> tuple[str, ...]:
     """Deterministically sort condensation supernodes using Kahn's algorithm."""
     in_degree: dict[str, int] = {c.condensation_id: 0 for c in condensation_nodes}
     adj: dict[str, list[str]] = {c.condensation_id: [] for c in condensation_nodes}

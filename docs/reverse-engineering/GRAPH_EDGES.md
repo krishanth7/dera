@@ -32,10 +32,10 @@ DERA enforces a single canonical edge direction across the entire platform:
 
 $$\text{Source FK Table (Child)} \longrightarrow \text{Referenced PK/UQ Table (Parent)}$$
 
-### Rationale:
+### Rationale
 In relational databases, the child table declares the constraint and holds the foreign key pointer referencing the parent table's primary or unique key.
 
-### Example:
+### Example
 ```text
 ┌─────────────────────────┐               ┌─────────────────────────┐
 │         orders          │               │        customers        │
@@ -53,7 +53,7 @@ This directionality is invariant across all APIs, traversals, and serialization 
 
 When a table declares multiple foreign keys referencing the same parent table, each foreign key constraint is instantiated as a distinct edge.
 
-### Example:
+### Example
 ```text
 ┌─────────────────────────┐               ┌─────────────────────────┐
 │         orders          ├──created_by──►│          users          │

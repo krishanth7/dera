@@ -73,7 +73,9 @@ class ForeignKeyGraphBuilder:
         if capability_profile is not None:
             self.capability_profile = capability_profile
         else:
-            self.capability_profile = assess_graph_capabilities(self.engine, completeness=self.completeness)
+            self.capability_profile = assess_graph_capabilities(
+                self.engine, completeness=self.completeness
+            )
 
         if provenance is not None:
             self.provenance = provenance
@@ -167,8 +169,14 @@ class ForeignKeyGraphBuilder:
         mode: ValidationMode = ValidationMode.PERMISSIVE,
     ) -> ForeignKeyGraph:
         """Build a ForeignKeyGraph directly from a CanonicalDatabase representation."""
-        db_id = getattr(database, "object_id", None) or getattr(database, "id", None) or "db_transient"
-        ws_id = workspace_id or getattr(database, "workspace_id", None) or getattr(db_id, "workspace_id", None)
+        db_id = (
+            getattr(database, "object_id", None) or getattr(database, "id", None) or "db_transient"
+        )
+        ws_id = (
+            workspace_id
+            or getattr(database, "workspace_id", None)
+            or getattr(db_id, "workspace_id", None)
+        )
         completeness = getattr(database, "completeness", None) or (
             database.provenance.completeness
             if hasattr(database, "provenance") and database.provenance
@@ -256,7 +264,8 @@ class ForeignKeyGraphBuilder:
                             source_table_name=table.name,
                             source_namespace=src_node.namespace_name,
                             referenced_table_name=fk.referenced_table_name,
-                            referenced_namespace=getattr(fk, "referenced_schema_name", None) or "public",
+                            referenced_namespace=getattr(fk, "referenced_schema_name", None)
+                            or "public",
                             declared_source_columns=src_cols,
                             declared_referenced_columns=ref_cols,
                             reason=UnresolvedReason.INVALID_METADATA,
@@ -295,7 +304,9 @@ class ForeignKeyGraphBuilder:
                 if ref_node is None:
                     # Target table is missing or outside metadata scope
                     reason = UnresolvedReason.REFERENCED_TABLE_NOT_FOUND
-                    tbl_comp = getattr(table, "completeness", None) or getattr(table.provenance, "completeness", None)
+                    tbl_comp = getattr(table, "completeness", None) or getattr(
+                        table.provenance, "completeness", None
+                    )
                     if tbl_comp == MetadataCompleteness.RESTRICTED:
                         reason = UnresolvedReason.METADATA_RESTRICTED
 
@@ -414,7 +425,9 @@ class ForeignKeyGraphBuilder:
             builder.add_node(node)
 
         table_id_lookup = {n.object_id: n for n in builder._nodes}
-        table_lookup = {(n.namespace_name.lower(), n.native_name.lower()): n for n in builder._nodes}
+        table_lookup = {
+            (n.namespace_name.lower(), n.native_name.lower()): n for n in builder._nodes
+        }
 
         for tbl in result.tables:
             src_node = table_id_lookup.get(tbl.object_id)

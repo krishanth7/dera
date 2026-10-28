@@ -58,14 +58,19 @@ def test_mismatched_composite_key_lengths_reported_as_unresolved():
 
     p_id = compute_stable_object_id("postgresql", ObjectKind.TABLE, "parent", parent_id=ns_id)
     p_table = CanonicalTable(
-        id=p_id, namespace_id=ns_id, name="parent", schema_name="public",
+        id=p_id,
+        namespace_id=ns_id,
+        name="parent",
+        schema_name="public",
         columns=(make_test_column(p_id, "p1", 1),),
         provenance=prov,
     )
 
     c_id = compute_stable_object_id("postgresql", ObjectKind.TABLE, "child", parent_id=ns_id)
     fk = CanonicalForeignKey(
-        id=compute_stable_object_id("postgresql", ObjectKind.FOREIGN_KEY, "fk_mismatch", parent_id=c_id),
+        id=compute_stable_object_id(
+            "postgresql", ObjectKind.FOREIGN_KEY, "fk_mismatch", parent_id=c_id
+        ),
         table_id=c_id,
         name="fk_mismatch",
         column_names=("c1", "c2"),
@@ -76,15 +81,22 @@ def test_mismatched_composite_key_lengths_reported_as_unresolved():
         provenance=prov,
     )
     c_table = CanonicalTable(
-        id=c_id, namespace_id=ns_id, name="child", schema_name="public",
+        id=c_id,
+        namespace_id=ns_id,
+        name="child",
+        schema_name="public",
         columns=(make_test_column(c_id, "c1", 1), make_test_column(c_id, "c2", 2)),
         foreign_keys=(fk,),
         provenance=prov,
     )
 
     db = CanonicalDatabase(
-        id=db_id, name="mismatch_db", engine="postgresql",
-        namespaces=(CanonicalNamespace(id=ns_id, name="public", tables=(p_table, c_table), provenance=prov),),
+        id=db_id,
+        name="mismatch_db",
+        engine="postgresql",
+        namespaces=(
+            CanonicalNamespace(id=ns_id, name="public", tables=(p_table, c_table), provenance=prov),
+        ),
         provenance=prov,
     )
 

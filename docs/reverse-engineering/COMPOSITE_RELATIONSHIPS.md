@@ -36,7 +36,7 @@ ALTER TABLE order_items
   REFERENCES orders (tenant_id, id);
 ```
 
-### Graph Representation:
+### Graph Representation
 
 ```text
 Edge:

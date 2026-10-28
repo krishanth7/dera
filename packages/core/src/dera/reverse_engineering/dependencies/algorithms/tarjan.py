@@ -80,7 +80,9 @@ def compute_strongly_connected_components(
     result_sccs: list[StronglyConnectedComponent] = []
     for members in raw_sccs:
         sorted_members = tuple(sorted(members, key=lambda n: str(n)))
-        is_cyclic = len(sorted_members) > 1 or (len(sorted_members) == 1 and sorted_members[0] in loops)
+        is_cyclic = len(sorted_members) > 1 or (
+            len(sorted_members) == 1 and sorted_members[0] in loops
+        )
         # Deterministic SCC ID derived from member hashes
         member_hash_str = "_".join(str(n)[:12] for n in sorted_members)
         scc_id = f"scc-{member_hash_str}"

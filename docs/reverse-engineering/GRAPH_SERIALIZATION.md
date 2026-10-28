@@ -21,7 +21,7 @@ fingerprint: str = graph.compute_hash()
 # Example: "8f4a132c...b129"
 ```
 
-### Invariant:
+### Invariant
 $$\text{Graph}_A = \text{Graph}_B \iff \text{hash}(\text{Graph}_A) = \text{hash}(\text{Graph}_B)$$
 
 Even if nodes or constraints were presented in different order during database introspection, the canonical ordering and JSON dumping ensures bit-for-bit hash equality.

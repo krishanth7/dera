@@ -53,7 +53,11 @@ def test_ecommerce_schema_parallel_levels():
     assert len(levels) == 3
 
     # Level 0 roots: users, categories, audit_log
-    assert set(levels[0].node_ids) == {tbl_map["users"], tbl_map["categories"], tbl_map["audit_log"]}
+    assert set(levels[0].node_ids) == {
+        tbl_map["users"],
+        tbl_map["categories"],
+        tbl_map["audit_log"],
+    }
 
     # Level 1: products (depends on categories), orders (depends on users)
     assert set(levels[1].node_ids) == {tbl_map["products"], tbl_map["orders"]}

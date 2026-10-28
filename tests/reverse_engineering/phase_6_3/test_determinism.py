@@ -28,7 +28,10 @@ def test_input_ordering_independence():
         random.shuffle(shuffled)
 
         builder = ForeignKeyGraphBuilder(
-            database_id="dera:database:det_db", database_name="det_db", engine="postgresql", provenance=prov
+            database_id="dera:database:det_db",
+            database_name="det_db",
+            engine="postgresql",
+            provenance=prov,
         )
         for oid, name in shuffled:
             builder.add_node(TableNode(object_id=oid, native_name=name, provenance=prov))

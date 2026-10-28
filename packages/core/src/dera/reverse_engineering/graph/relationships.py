@@ -50,7 +50,11 @@ def outgoing_neighbors(
     table_id: ObjectId,
 ) -> tuple[ObjectId, ...]:
     """Return distinct referenced table ObjectIds for foreign keys declared by table_id, stably sorted."""
-    targets = {e.referenced_table_id for e in edges if e.source_table_id == table_id and e.referenced_table_id is not None}
+    targets = {
+        e.referenced_table_id
+        for e in edges
+        if e.source_table_id == table_id and e.referenced_table_id is not None
+    }
     return tuple(sorted(targets, key=lambda oid: str(oid)))
 
 

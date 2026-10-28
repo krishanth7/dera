@@ -89,7 +89,14 @@ def test_cycle_enumeration_circuit_breaker():
     nodes = ["n1", "n2", "n3", "n4"]
     adj = {u: [v for v in nodes if v != u] for u in nodes}
     edges_by_pair = {
-        (u, v): [DependencyEdge(edge_id=f"e_{u}_{v}", dependent_id=u, referenced_id=v, kind=DependencyKind.TABLE_FOREIGN_KEY)]
+        (u, v): [
+            DependencyEdge(
+                edge_id=f"e_{u}_{v}",
+                dependent_id=u,
+                referenced_id=v,
+                kind=DependencyKind.TABLE_FOREIGN_KEY,
+            )
+        ]
         for u in nodes
         for v in nodes
         if u != v

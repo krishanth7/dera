@@ -3,6 +3,7 @@
 import unittest
 
 from dera.reverse_engineering.reconstruction.builder import StructuralReconstructionBuilder
+
 from tests.reverse_engineering.phase_6_2.fixtures import (
     build_postgres_enterprise_fixture,
     build_schema_representation_fixture,

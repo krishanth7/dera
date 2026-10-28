@@ -119,7 +119,15 @@ def make_simple_fk_schema(
         name="pk_customers",
         constraint_type=ConstraintType.PRIMARY_KEY,
         column_names=("id",),
-        column_ids=(compute_stable_object_id(engine=engine, object_kind=ObjectKind.COLUMN, native_name="id", parent_id=cust_id, workspace_id=workspace_id),),
+        column_ids=(
+            compute_stable_object_id(
+                engine=engine,
+                object_kind=ObjectKind.COLUMN,
+                native_name="id",
+                parent_id=cust_id,
+                workspace_id=workspace_id,
+            ),
+        ),
         provenance=make_graph_provenance(engine=engine, identifier="pk_customers"),
     )
     cust_table = CanonicalTable(
@@ -156,7 +164,15 @@ def make_simple_fk_schema(
         table_id=ord_id,
         name="fk_orders_customer",
         column_names=("customer_id",),
-        column_ids=(compute_stable_object_id(engine=engine, object_kind=ObjectKind.COLUMN, native_name="customer_id", parent_id=ord_id, workspace_id=workspace_id),),
+        column_ids=(
+            compute_stable_object_id(
+                engine=engine,
+                object_kind=ObjectKind.COLUMN,
+                native_name="customer_id",
+                parent_id=ord_id,
+                workspace_id=workspace_id,
+            ),
+        ),
         referenced_table_id=cust_id,
         referenced_schema_name="public",
         referenced_table_name="customers",
@@ -201,11 +217,28 @@ def make_composite_fk_schema(
     workspace_id: str | None = "test-ws",
 ) -> CanonicalDatabase:
     """Creates parent branches (tenant_id, branch_id) and child employees (emp_id, tenant_id, branch_id)."""
-    db_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.DATABASE, native_name="comp_db", workspace_id=workspace_id)
-    ns_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.NAMESPACE, native_name="public", parent_id=db_id, workspace_id=workspace_id)
+    db_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.DATABASE,
+        native_name="comp_db",
+        workspace_id=workspace_id,
+    )
+    ns_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.NAMESPACE,
+        native_name="public",
+        parent_id=db_id,
+        workspace_id=workspace_id,
+    )
 
     # Branches table
-    br_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.TABLE, native_name="branches", parent_id=ns_id, workspace_id=workspace_id)
+    br_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.TABLE,
+        native_name="branches",
+        parent_id=ns_id,
+        workspace_id=workspace_id,
+    )
     br_table = CanonicalTable(
         id=br_id,
         namespace_id=ns_id,
@@ -216,14 +249,32 @@ def make_composite_fk_schema(
             make_test_column(br_id, "branch_id", 2, engine=engine, workspace_id=workspace_id),
         ),
         primary_key=CanonicalConstraint(
-            id=compute_stable_object_id(engine=engine, object_kind=ObjectKind.PRIMARY_KEY, native_name="pk_branches", parent_id=br_id, workspace_id=workspace_id),
+            id=compute_stable_object_id(
+                engine=engine,
+                object_kind=ObjectKind.PRIMARY_KEY,
+                native_name="pk_branches",
+                parent_id=br_id,
+                workspace_id=workspace_id,
+            ),
             table_id=br_id,
             name="pk_branches",
             constraint_type=ConstraintType.PRIMARY_KEY,
             column_names=("tenant_id", "branch_id"),
             column_ids=(
-                compute_stable_object_id(engine=engine, object_kind=ObjectKind.COLUMN, native_name="tenant_id", parent_id=br_id, workspace_id=workspace_id),
-                compute_stable_object_id(engine=engine, object_kind=ObjectKind.COLUMN, native_name="branch_id", parent_id=br_id, workspace_id=workspace_id),
+                compute_stable_object_id(
+                    engine=engine,
+                    object_kind=ObjectKind.COLUMN,
+                    native_name="tenant_id",
+                    parent_id=br_id,
+                    workspace_id=workspace_id,
+                ),
+                compute_stable_object_id(
+                    engine=engine,
+                    object_kind=ObjectKind.COLUMN,
+                    native_name="branch_id",
+                    parent_id=br_id,
+                    workspace_id=workspace_id,
+                ),
             ),
             provenance=make_graph_provenance(engine=engine),
         ),
@@ -231,15 +282,39 @@ def make_composite_fk_schema(
     )
 
     # Employees table with composite foreign key
-    emp_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.TABLE, native_name="employees", parent_id=ns_id, workspace_id=workspace_id)
+    emp_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.TABLE,
+        native_name="employees",
+        parent_id=ns_id,
+        workspace_id=workspace_id,
+    )
     comp_fk = CanonicalForeignKey(
-        id=compute_stable_object_id(engine=engine, object_kind=ObjectKind.FOREIGN_KEY, native_name="fk_emp_branches", parent_id=emp_id, workspace_id=workspace_id),
+        id=compute_stable_object_id(
+            engine=engine,
+            object_kind=ObjectKind.FOREIGN_KEY,
+            native_name="fk_emp_branches",
+            parent_id=emp_id,
+            workspace_id=workspace_id,
+        ),
         table_id=emp_id,
         name="fk_emp_branches",
         column_names=("tenant_id", "branch_id"),
         column_ids=(
-            compute_stable_object_id(engine=engine, object_kind=ObjectKind.COLUMN, native_name="tenant_id", parent_id=emp_id, workspace_id=workspace_id),
-            compute_stable_object_id(engine=engine, object_kind=ObjectKind.COLUMN, native_name="branch_id", parent_id=emp_id, workspace_id=workspace_id),
+            compute_stable_object_id(
+                engine=engine,
+                object_kind=ObjectKind.COLUMN,
+                native_name="tenant_id",
+                parent_id=emp_id,
+                workspace_id=workspace_id,
+            ),
+            compute_stable_object_id(
+                engine=engine,
+                object_kind=ObjectKind.COLUMN,
+                native_name="branch_id",
+                parent_id=emp_id,
+                workspace_id=workspace_id,
+            ),
         ),
         referenced_table_id=br_id,
         referenced_schema_name="public",
@@ -269,7 +344,14 @@ def make_composite_fk_schema(
         id=db_id,
         name="comp_db",
         engine=engine,
-        namespaces=(CanonicalNamespace(id=ns_id, name="public", tables=(br_table, emp_table), provenance=make_graph_provenance(engine=engine)),),
+        namespaces=(
+            CanonicalNamespace(
+                id=ns_id,
+                name="public",
+                tables=(br_table, emp_table),
+                provenance=make_graph_provenance(engine=engine),
+            ),
+        ),
         provenance=make_graph_provenance(engine=engine),
     )
 
@@ -279,21 +361,60 @@ def make_self_referencing_schema(
     workspace_id: str | None = "test-ws",
 ) -> CanonicalDatabase:
     """Creates categories table with parent_category_id -> categories.id."""
-    db_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.DATABASE, native_name="self_db", workspace_id=workspace_id)
-    ns_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.NAMESPACE, native_name="public", parent_id=db_id, workspace_id=workspace_id)
+    db_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.DATABASE,
+        native_name="self_db",
+        workspace_id=workspace_id,
+    )
+    ns_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.NAMESPACE,
+        native_name="public",
+        parent_id=db_id,
+        workspace_id=workspace_id,
+    )
 
-    cat_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.TABLE, native_name="categories", parent_id=ns_id, workspace_id=workspace_id)
+    cat_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.TABLE,
+        native_name="categories",
+        parent_id=ns_id,
+        workspace_id=workspace_id,
+    )
     cat_fk = CanonicalForeignKey(
-        id=compute_stable_object_id(engine=engine, object_kind=ObjectKind.FOREIGN_KEY, native_name="fk_cat_parent", parent_id=cat_id, workspace_id=workspace_id),
+        id=compute_stable_object_id(
+            engine=engine,
+            object_kind=ObjectKind.FOREIGN_KEY,
+            native_name="fk_cat_parent",
+            parent_id=cat_id,
+            workspace_id=workspace_id,
+        ),
         table_id=cat_id,
         name="fk_cat_parent",
         column_names=("parent_id",),
-        column_ids=(compute_stable_object_id(engine=engine, object_kind=ObjectKind.COLUMN, native_name="parent_id", parent_id=cat_id, workspace_id=workspace_id),),
+        column_ids=(
+            compute_stable_object_id(
+                engine=engine,
+                object_kind=ObjectKind.COLUMN,
+                native_name="parent_id",
+                parent_id=cat_id,
+                workspace_id=workspace_id,
+            ),
+        ),
         referenced_table_id=cat_id,
         referenced_schema_name="public",
         referenced_table_name="categories",
         referenced_column_names=("id",),
-        referenced_column_ids=(compute_stable_object_id(engine=engine, object_kind=ObjectKind.COLUMN, native_name="id", parent_id=cat_id, workspace_id=workspace_id),),
+        referenced_column_ids=(
+            compute_stable_object_id(
+                engine=engine,
+                object_kind=ObjectKind.COLUMN,
+                native_name="id",
+                parent_id=cat_id,
+                workspace_id=workspace_id,
+            ),
+        ),
         on_delete=ForeignKeyAction.SET_NULL,
         provenance=make_graph_provenance(engine=engine),
     )
@@ -314,7 +435,14 @@ def make_self_referencing_schema(
         id=db_id,
         name="self_db",
         engine=engine,
-        namespaces=(CanonicalNamespace(id=ns_id, name="public", tables=(cat_table,), provenance=make_graph_provenance(engine=engine)),),
+        namespaces=(
+            CanonicalNamespace(
+                id=ns_id,
+                name="public",
+                tables=(cat_table,),
+                provenance=make_graph_provenance(engine=engine),
+            ),
+        ),
         provenance=make_graph_provenance(engine=engine),
     )
 
@@ -324,10 +452,27 @@ def make_parallel_edges_schema(
     workspace_id: str | None = "test-ws",
 ) -> CanonicalDatabase:
     """Creates users and tasks where tasks has created_by_id and assigned_to_id both referencing users.id."""
-    db_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.DATABASE, native_name="parallel_db", workspace_id=workspace_id)
-    ns_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.NAMESPACE, native_name="public", parent_id=db_id, workspace_id=workspace_id)
+    db_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.DATABASE,
+        native_name="parallel_db",
+        workspace_id=workspace_id,
+    )
+    ns_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.NAMESPACE,
+        native_name="public",
+        parent_id=db_id,
+        workspace_id=workspace_id,
+    )
 
-    u_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.TABLE, native_name="users", parent_id=ns_id, workspace_id=workspace_id)
+    u_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.TABLE,
+        native_name="users",
+        parent_id=ns_id,
+        workspace_id=workspace_id,
+    )
     u_table = CanonicalTable(
         id=u_id,
         namespace_id=ns_id,
@@ -337,9 +482,21 @@ def make_parallel_edges_schema(
         provenance=make_graph_provenance(engine=engine),
     )
 
-    t_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.TABLE, native_name="tasks", parent_id=ns_id, workspace_id=workspace_id)
+    t_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.TABLE,
+        native_name="tasks",
+        parent_id=ns_id,
+        workspace_id=workspace_id,
+    )
     fk1 = CanonicalForeignKey(
-        id=compute_stable_object_id(engine=engine, object_kind=ObjectKind.FOREIGN_KEY, native_name="fk_tasks_creator", parent_id=t_id, workspace_id=workspace_id),
+        id=compute_stable_object_id(
+            engine=engine,
+            object_kind=ObjectKind.FOREIGN_KEY,
+            native_name="fk_tasks_creator",
+            parent_id=t_id,
+            workspace_id=workspace_id,
+        ),
         table_id=t_id,
         name="fk_tasks_creator",
         column_names=("created_by",),
@@ -350,7 +507,13 @@ def make_parallel_edges_schema(
         provenance=make_graph_provenance(engine=engine),
     )
     fk2 = CanonicalForeignKey(
-        id=compute_stable_object_id(engine=engine, object_kind=ObjectKind.FOREIGN_KEY, native_name="fk_tasks_assignee", parent_id=t_id, workspace_id=workspace_id),
+        id=compute_stable_object_id(
+            engine=engine,
+            object_kind=ObjectKind.FOREIGN_KEY,
+            native_name="fk_tasks_assignee",
+            parent_id=t_id,
+            workspace_id=workspace_id,
+        ),
         table_id=t_id,
         name="fk_tasks_assignee",
         column_names=("assigned_to",),
@@ -378,7 +541,14 @@ def make_parallel_edges_schema(
         id=db_id,
         name="parallel_db",
         engine=engine,
-        namespaces=(CanonicalNamespace(id=ns_id, name="public", tables=(u_table, t_table), provenance=make_graph_provenance(engine=engine)),),
+        namespaces=(
+            CanonicalNamespace(
+                id=ns_id,
+                name="public",
+                tables=(u_table, t_table),
+                provenance=make_graph_provenance(engine=engine),
+            ),
+        ),
         provenance=make_graph_provenance(engine=engine),
     )
 
@@ -388,11 +558,34 @@ def make_cross_namespace_schema(
     workspace_id: str | None = "test-ws",
 ) -> CanonicalDatabase:
     """Creates auth.users and app.profiles with cross-namespace foreign key."""
-    db_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.DATABASE, native_name="cross_db", workspace_id=workspace_id)
-    ns_auth = compute_stable_object_id(engine=engine, object_kind=ObjectKind.NAMESPACE, native_name="auth", parent_id=db_id, workspace_id=workspace_id)
-    ns_app = compute_stable_object_id(engine=engine, object_kind=ObjectKind.NAMESPACE, native_name="app", parent_id=db_id, workspace_id=workspace_id)
+    db_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.DATABASE,
+        native_name="cross_db",
+        workspace_id=workspace_id,
+    )
+    ns_auth = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.NAMESPACE,
+        native_name="auth",
+        parent_id=db_id,
+        workspace_id=workspace_id,
+    )
+    ns_app = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.NAMESPACE,
+        native_name="app",
+        parent_id=db_id,
+        workspace_id=workspace_id,
+    )
 
-    u_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.TABLE, native_name="users", parent_id=ns_auth, workspace_id=workspace_id)
+    u_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.TABLE,
+        native_name="users",
+        parent_id=ns_auth,
+        workspace_id=workspace_id,
+    )
     u_table = CanonicalTable(
         id=u_id,
         namespace_id=ns_auth,
@@ -402,9 +595,21 @@ def make_cross_namespace_schema(
         provenance=make_graph_provenance(engine=engine),
     )
 
-    p_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.TABLE, native_name="profiles", parent_id=ns_app, workspace_id=workspace_id)
+    p_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.TABLE,
+        native_name="profiles",
+        parent_id=ns_app,
+        workspace_id=workspace_id,
+    )
     fk = CanonicalForeignKey(
-        id=compute_stable_object_id(engine=engine, object_kind=ObjectKind.FOREIGN_KEY, native_name="fk_profiles_user", parent_id=p_id, workspace_id=workspace_id),
+        id=compute_stable_object_id(
+            engine=engine,
+            object_kind=ObjectKind.FOREIGN_KEY,
+            native_name="fk_profiles_user",
+            parent_id=p_id,
+            workspace_id=workspace_id,
+        ),
         table_id=p_id,
         name="fk_profiles_user",
         column_names=("user_id",),
@@ -432,8 +637,18 @@ def make_cross_namespace_schema(
         name="cross_db",
         engine=engine,
         namespaces=(
-            CanonicalNamespace(id=ns_auth, name="auth", tables=(u_table,), provenance=make_graph_provenance(engine=engine)),
-            CanonicalNamespace(id=ns_app, name="app", tables=(p_table,), provenance=make_graph_provenance(engine=engine)),
+            CanonicalNamespace(
+                id=ns_auth,
+                name="auth",
+                tables=(u_table,),
+                provenance=make_graph_provenance(engine=engine),
+            ),
+            CanonicalNamespace(
+                id=ns_app,
+                name="app",
+                tables=(p_table,),
+                provenance=make_graph_provenance(engine=engine),
+            ),
         ),
         provenance=make_graph_provenance(engine=engine),
     )
@@ -444,12 +659,35 @@ def make_unresolved_fk_schema(
     workspace_id: str | None = "test-ws",
 ) -> CanonicalDatabase:
     """Creates a table referencing an uninspected/non-existent external table."""
-    db_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.DATABASE, native_name="unres_db", workspace_id=workspace_id)
-    ns_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.NAMESPACE, native_name="public", parent_id=db_id, workspace_id=workspace_id)
+    db_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.DATABASE,
+        native_name="unres_db",
+        workspace_id=workspace_id,
+    )
+    ns_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.NAMESPACE,
+        native_name="public",
+        parent_id=db_id,
+        workspace_id=workspace_id,
+    )
 
-    o_id = compute_stable_object_id(engine=engine, object_kind=ObjectKind.TABLE, native_name="orders", parent_id=ns_id, workspace_id=workspace_id)
+    o_id = compute_stable_object_id(
+        engine=engine,
+        object_kind=ObjectKind.TABLE,
+        native_name="orders",
+        parent_id=ns_id,
+        workspace_id=workspace_id,
+    )
     fk = CanonicalForeignKey(
-        id=compute_stable_object_id(engine=engine, object_kind=ObjectKind.FOREIGN_KEY, native_name="fk_orders_ext", parent_id=o_id, workspace_id=workspace_id),
+        id=compute_stable_object_id(
+            engine=engine,
+            object_kind=ObjectKind.FOREIGN_KEY,
+            native_name="fk_orders_ext",
+            parent_id=o_id,
+            workspace_id=workspace_id,
+        ),
         table_id=o_id,
         name="fk_orders_ext",
         column_names=("customer_id",),
@@ -476,6 +714,13 @@ def make_unresolved_fk_schema(
         id=db_id,
         name="unres_db",
         engine=engine,
-        namespaces=(CanonicalNamespace(id=ns_id, name="public", tables=(o_table,), provenance=make_graph_provenance(engine=engine)),),
+        namespaces=(
+            CanonicalNamespace(
+                id=ns_id,
+                name="public",
+                tables=(o_table,),
+                provenance=make_graph_provenance(engine=engine),
+            ),
+        ),
         provenance=make_graph_provenance(engine=engine),
     )

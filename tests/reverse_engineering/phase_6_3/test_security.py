@@ -30,7 +30,9 @@ def test_sql_injection_attempt_in_identifiers_treated_as_literal():
     builder.add_node(node1)
     builder.add_node(node2)
 
-    pair = ColumnPairMapping(source_column_name="uid", referenced_column_name="id", ordinal_position=1)
+    pair = ColumnPairMapping(
+        source_column_name="uid", referenced_column_name="id", ordinal_position=1
+    )
     edge = ForeignKeyEdge(
         object_id="dera:foreign_key:1",
         native_name=malicious_fk,
@@ -82,8 +84,26 @@ def test_resource_limits_max_edges():
     builder.add_node(n2)
 
     p = ColumnPairMapping(source_column_name="c1", referenced_column_name="c2", ordinal_position=1)
-    e1 = ForeignKeyEdge(object_id="dera:fk:1", native_name="fk1", source_table_id=n1.object_id, referenced_table_id=n2.object_id, source_table_name="t1", referenced_table_name="t2", column_pairs=(p,), provenance=prov)
-    e2 = ForeignKeyEdge(object_id="dera:fk:2", native_name="fk2", source_table_id=n1.object_id, referenced_table_id=n2.object_id, source_table_name="t1", referenced_table_name="t2", column_pairs=(p,), provenance=prov)
+    e1 = ForeignKeyEdge(
+        object_id="dera:fk:1",
+        native_name="fk1",
+        source_table_id=n1.object_id,
+        referenced_table_id=n2.object_id,
+        source_table_name="t1",
+        referenced_table_name="t2",
+        column_pairs=(p,),
+        provenance=prov,
+    )
+    e2 = ForeignKeyEdge(
+        object_id="dera:fk:2",
+        native_name="fk2",
+        source_table_id=n1.object_id,
+        referenced_table_id=n2.object_id,
+        source_table_name="t1",
+        referenced_table_name="t2",
+        column_pairs=(p,),
+        provenance=prov,
+    )
 
     builder.add_edge(e1)
     with pytest.raises(GraphResourceLimitError, match="max_edges"):

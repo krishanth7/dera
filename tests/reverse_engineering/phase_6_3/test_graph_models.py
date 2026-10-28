@@ -37,7 +37,9 @@ def test_table_node_immutability():
 def test_foreign_key_edge_immutability():
     """Verify ForeignKeyEdge is frozen and directional attributes are correct."""
     prov = make_graph_provenance()
-    pair = ColumnPairMapping(source_column_name="user_id", referenced_column_name="id", ordinal_position=1)
+    pair = ColumnPairMapping(
+        source_column_name="user_id", referenced_column_name="id", ordinal_position=1
+    )
     edge = ForeignKeyEdge(
         object_id="dera:foreign_key:54321",
         native_name="fk_orders_user",

@@ -57,7 +57,9 @@ def reconstruct_foreign_key(
     if ref_cols is None:
         ref_cols = ()
 
-    ref_table_name = getattr(fk, "referenced_table_name", None) or getattr(fk, "referenced_table", "")
+    ref_table_name = getattr(fk, "referenced_table_name", None) or getattr(
+        fk, "referenced_table", ""
+    )
 
     # Validate source columns belong to source table
     if src_cols:
@@ -113,9 +115,7 @@ def reconstruct_foreign_key(
                     ):
                         ns_obj = registry.get_namespace(tbl.namespace_id)
                         tbl_schema = ns_obj.name
-                    if tbl.name == ref_table_name and (
-                        ref_ns is None or tbl_schema == ref_ns
-                    ):
+                    if tbl.name == ref_table_name and (ref_ns is None or tbl_schema == ref_ns):
                         target_table = tbl
                         resolved_target_id = tbl.id
                         break

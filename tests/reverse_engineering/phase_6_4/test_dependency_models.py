@@ -104,7 +104,10 @@ def test_dependency_analysis_result_hash_deterministic():
         is_pure_dag=True,
         creation_order=("t1", "t2"),
         drop_order=("t2", "t1"),
-        levels=(TopologicalLevel(level=0, node_ids=("t1",)), TopologicalLevel(level=1, node_ids=("t2",))),
+        levels=(
+            TopologicalLevel(level=0, node_ids=("t1",)),
+            TopologicalLevel(level=1, node_ids=("t2",)),
+        ),
     )
     cycle_report = CycleReport(
         has_cycles=False,

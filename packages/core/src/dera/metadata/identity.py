@@ -8,11 +8,10 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Sequence
-from typing import TypeAlias
 
 from dera.metadata.enums import ObjectKind
 
-ObjectId: TypeAlias = str
+type ObjectId = str
 
 
 def compute_stable_object_id(

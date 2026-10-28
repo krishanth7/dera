@@ -49,12 +49,24 @@ class DependencyEdge(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    edge_id: str = Field(description="Unique identifier of this dependency edge (typically FK ObjectId).")
-    dependent_id: ObjectId = Field(description="The dependent node (child table holding FK constraint).")
-    referenced_id: ObjectId = Field(description="The referenced prerequisite node (parent table holding PK/UQ).")
-    kind: DependencyKind = Field(default=DependencyKind.TABLE_FOREIGN_KEY, description="Kind of dependency.")
-    is_nullable: bool = Field(default=False, description="True if at least one FK column is nullable.")
-    is_deferrable: bool = Field(default=False, description="True if constraint enforcement can be deferred.")
+    edge_id: str = Field(
+        description="Unique identifier of this dependency edge (typically FK ObjectId)."
+    )
+    dependent_id: ObjectId = Field(
+        description="The dependent node (child table holding FK constraint)."
+    )
+    referenced_id: ObjectId = Field(
+        description="The referenced prerequisite node (parent table holding PK/UQ)."
+    )
+    kind: DependencyKind = Field(
+        default=DependencyKind.TABLE_FOREIGN_KEY, description="Kind of dependency."
+    )
+    is_nullable: bool = Field(
+        default=False, description="True if at least one FK column is nullable."
+    )
+    is_deferrable: bool = Field(
+        default=False, description="True if constraint enforcement can be deferred."
+    )
     column_pairs: tuple[tuple[str, str], ...] = Field(
         default=(),
         description="Ordered sequence of (source_column, referenced_column) pairings.",
@@ -111,12 +123,18 @@ class DependencyNodeMetrics(BaseModel):
     node_id: ObjectId = Field(description="Canonical identifier of the target node.")
     in_degree: int = Field(ge=0, description="Number of direct prerequisite dependencies.")
     out_degree: int = Field(ge=0, description="Number of direct downstream dependents.")
-    transitive_dependency_count: int = Field(ge=0, description="Total upstream ancestor dependencies.")
-    transitive_dependent_count: int = Field(ge=0, description="Total downstream descendant dependents.")
+    transitive_dependency_count: int = Field(
+        ge=0, description="Total upstream ancestor dependencies."
+    )
+    transitive_dependent_count: int = Field(
+        ge=0, description="Total downstream descendant dependents."
+    )
     depth_level: int = Field(ge=0, description="Longest dependency path length from any root node.")
     is_root: bool = Field(description="True if node has no upstream dependencies (in_degree == 0).")
     is_leaf: bool = Field(description="True if no nodes depend on this node (out_degree == 0).")
-    is_in_cycle: bool = Field(description="True if node is part of a cyclic strongly connected component.")
+    is_in_cycle: bool = Field(
+        description="True if node is part of a cyclic strongly connected component."
+    )
 
 
 class TopologicalLevel(BaseModel):
@@ -182,12 +200,20 @@ class CycleReport(BaseModel):
     has_cycles: bool = Field(description="True if one or more cycles exist in the graph.")
     cycle_count: int = Field(ge=0, description="Total number of enumerated elementary cycles.")
     scc_count: int = Field(ge=0, description="Total number of strongly connected components.")
-    cyclic_scc_count: int = Field(ge=0, description="Number of cyclic strongly connected components.")
-    self_referencing_count: int = Field(ge=0, description="Number of self-referencing table cycles.")
+    cyclic_scc_count: int = Field(
+        ge=0, description="Number of cyclic strongly connected components."
+    )
+    self_referencing_count: int = Field(
+        ge=0, description="Number of self-referencing table cycles."
+    )
     mutual_count: int = Field(ge=0, description="Number of mutual 2-table cycles.")
-    indirect_count: int = Field(ge=0, description="Number of multi-table simple cycles (>=3 tables).")
+    indirect_count: int = Field(
+        ge=0, description="Number of multi-table simple cycles (>=3 tables)."
+    )
     complex_count: int = Field(ge=0, description="Number of complex intertwined multi-cycle SCCs.")
-    breakable_cycle_count: int = Field(ge=0, description="Number of cycles breakable via nullable/deferrable FKs.")
+    breakable_cycle_count: int = Field(
+        ge=0, description="Number of cycles breakable via nullable/deferrable FKs."
+    )
     unbreakable_cycle_count: int = Field(ge=0, description="Number of unbreakable cycles.")
     cycles: tuple[CycleInstance, ...] = Field(
         default=(),
@@ -207,7 +233,9 @@ class DependencyValidationFinding(BaseModel):
     rule_id: str = Field(description="Unique code identifying the validation rule.")
     severity: str = Field(description="Finding severity: ERROR, WARNING, or INFO.")
     message: str = Field(description="Human-readable description of the finding.")
-    context: dict[str, str] = Field(default_factory=dict, description="Diagnostic contextual metadata.")
+    context: dict[str, str] = Field(
+        default_factory=dict, description="Diagnostic contextual metadata."
+    )
 
 
 class DependencyAnalysisResult(BaseModel):
@@ -219,12 +247,16 @@ class DependencyAnalysisResult(BaseModel):
         default=DEPENDENCY_ANALYSIS_CONTRACT_VERSION,
         description="Contract specification version identifier.",
     )
-    workspace_id: str | None = Field(default=None, description="Workspace or tenant isolation scope.")
+    workspace_id: str | None = Field(
+        default=None, description="Workspace or tenant isolation scope."
+    )
     database_id: ObjectId = Field(description="Parent database canonical ObjectId.")
     source_graph_hash: str = Field(description="SHA-256 fingerprint of the source ForeignKeyGraph.")
     node_count: int = Field(ge=0, description="Total count of analyzed nodes.")
     edge_count: int = Field(ge=0, description="Total count of dependency edges.")
-    is_dag: bool = Field(description="True if the analyzed graph is strictly a directed acyclic graph.")
+    is_dag: bool = Field(
+        description="True if the analyzed graph is strictly a directed acyclic graph."
+    )
     ordering: DependencyOrdering = Field(description="Topological sequences and batching layers.")
     cycle_report: CycleReport = Field(description="Diagnostic report on circular dependencies.")
     node_metrics: dict[str, DependencyNodeMetrics] = Field(

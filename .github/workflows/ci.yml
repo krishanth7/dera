@@ -62,7 +62,7 @@ jobs:
       - name: "Install Build & Runtime Dependencies"
         run: |
           python -m pip install --upgrade pip
-          pip install pydantic pydantic-settings networkx sqlglot fastapi uvicorn httpx ruff bandit build setuptools sqlalchemy alembic asyncpg greenlet aiosqlite argon2-cffi celery redis
+          pip install pydantic pydantic-settings networkx sqlglot fastapi uvicorn httpx ruff bandit build setuptools sqlalchemy alembic asyncpg greenlet aiosqlite argon2-cffi celery redis pytest
           pip install -e .
 
       - name: "Ruff Linting & Format Verification"

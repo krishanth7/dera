@@ -65,7 +65,9 @@ def find_elementary_cycles(
     # 2. Deterministic DFS cycle discovery within the induced SCC subgraph
     sorted_scc_nodes = sorted(scc_nodes, key=lambda n: str(n))
     sub_adj: dict[ObjectId, list[ObjectId]] = {
-        u: sorted([v for v in adjacency.get(u, ()) if v in node_set and v != u], key=lambda v: str(v))
+        u: sorted(
+            [v for v in adjacency.get(u, ()) if v in node_set and v != u], key=lambda v: str(v)
+        )
         for u in sorted_scc_nodes
     }
 

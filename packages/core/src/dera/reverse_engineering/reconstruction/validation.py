@@ -245,7 +245,15 @@ def validate_structural_reconstruction(
         "INVALID_FOREIGN_KEY_TARGET": 8,
         "MISSING_FOREIGN_KEY_TARGET": 9,
     }
-    findings.sort(key=lambda f: (f.severity.value, code_priority.get(f.code, 99), f.code, str(f.object_id or ""), f.message))
+    findings.sort(
+        key=lambda f: (
+            f.severity.value,
+            code_priority.get(f.code, 99),
+            f.code,
+            str(f.object_id or ""),
+            f.message,
+        )
+    )
 
     # Strict mode enforcement
     if mode == ReconstructionMode.STRICT:

@@ -11,6 +11,7 @@ from dera.reverse_engineering.reconstruction.errors import (
     PrimaryKeyReconstructionError,
 )
 from dera.reverse_engineering.reconstruction.primary_keys import reconstruct_primary_key
+
 from tests.reverse_engineering.phase_6_2.fixtures import (
     make_test_column,
     make_test_provenance,
@@ -29,7 +30,9 @@ class TestPrimaryKeyReconstruction(unittest.TestCase):
         self.columns = reconstruct_columns((c1, c2, c3), self.table_id, "postgresql")
 
     def test_single_column_primary_key(self) -> None:
-        pk_id = compute_stable_object_id("primary_key", "postgresql", (str(self.table_id), "pk_orders"))
+        pk_id = compute_stable_object_id(
+            "primary_key", "postgresql", (str(self.table_id), "pk_orders")
+        )
         canonical_pk = CanonicalConstraint(
             id=pk_id,
             table_id=self.table_id,
@@ -46,7 +49,9 @@ class TestPrimaryKeyReconstruction(unittest.TestCase):
         self.assertEqual(len(pk.column_ids), 1)
 
     def test_composite_primary_key_order_preserved(self) -> None:
-        pk_id = compute_stable_object_id("primary_key", "postgresql", (str(self.table_id), "pk_orders_composite"))
+        pk_id = compute_stable_object_id(
+            "primary_key", "postgresql", (str(self.table_id), "pk_orders_composite")
+        )
         # Specifically declared in order (tenant_id, order_id)
         canonical_pk = CanonicalConstraint(
             id=pk_id,
@@ -63,7 +68,9 @@ class TestPrimaryKeyReconstruction(unittest.TestCase):
         self.assertEqual(pk.column_names, ("tenant_id", "order_id"))
 
     def test_column_not_in_table_raises_ownership_error(self) -> None:
-        pk_id = compute_stable_object_id("primary_key", "postgresql", (str(self.table_id), "pk_bad"))
+        pk_id = compute_stable_object_id(
+            "primary_key", "postgresql", (str(self.table_id), "pk_bad")
+        )
         canonical_pk = CanonicalConstraint(
             id=pk_id,
             table_id=self.table_id,
@@ -89,7 +96,9 @@ class TestPrimaryKeyReconstruction(unittest.TestCase):
             reconstruct_primary_key(bad_constraint, self.table_id, self.columns)
 
     def test_empty_columns_raises(self) -> None:
-        pk_id = compute_stable_object_id("primary_key", "postgresql", (str(self.table_id), "pk_empty"))
+        pk_id = compute_stable_object_id(
+            "primary_key", "postgresql", (str(self.table_id), "pk_empty")
+        )
         empty_pk = CanonicalConstraint(
             id=pk_id,
             table_id=self.table_id,

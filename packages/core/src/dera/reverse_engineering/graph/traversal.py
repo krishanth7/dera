@@ -153,7 +153,9 @@ def traverse(
         if direction in (TraversalDirection.OUTGOING, TraversalDirection.BOTH):
             for edge in adjacency.get_outgoing(curr_id):
                 if edge.referenced_table_id is not None:
-                    transitions.append((edge.referenced_table_id, edge, TraversalDirection.OUTGOING))
+                    transitions.append(
+                        (edge.referenced_table_id, edge, TraversalDirection.OUTGOING)
+                    )
 
         if direction in (TraversalDirection.INCOMING, TraversalDirection.BOTH):
             for edge in adjacency.get_incoming(curr_id):
@@ -174,7 +176,9 @@ def traverse(
                     is_truncated = True
                     truncation_reason = f"max_returned_edges limit ({max_edges}) exceeded"
                     if raise_on_limit:
-                        raise TraversalLimitExceededError("max_returned_edges", max_edges, len(traversed_edges) + 1)
+                        raise TraversalLimitExceededError(
+                            "max_returned_edges", max_edges, len(traversed_edges) + 1
+                        )
                     break
                 traversed_edges.append(edge)
                 seen_edge_ids.add(edge.object_id)
@@ -184,7 +188,9 @@ def traverse(
                     is_truncated = True
                     truncation_reason = f"max_visited_nodes limit ({max_nodes}) exceeded"
                     if raise_on_limit:
-                        raise TraversalLimitExceededError("max_visited_nodes", max_nodes, len(visited_order) + 1)
+                        raise TraversalLimitExceededError(
+                            "max_visited_nodes", max_nodes, len(visited_order) + 1
+                        )
                     break
 
                 visited_set.add(next_id)

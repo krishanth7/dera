@@ -41,7 +41,9 @@ def test_validation_unbreakable_cycle_warning_permissive():
     db = make_mutual_cycle_schema(author_nullable=False, book_nullable=False)
     res = analyze_database(db)
 
-    unbreakable_findings = [f for f in res.validation_findings if f.rule_id == "DEP_UNBREAKABLE_CYCLE"]
+    unbreakable_findings = [
+        f for f in res.validation_findings if f.rule_id == "DEP_UNBREAKABLE_CYCLE"
+    ]
     assert len(unbreakable_findings) == 1
     assert unbreakable_findings[0].severity == "WARNING"
 

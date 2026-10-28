@@ -80,7 +80,9 @@ def assess_graph_capabilities(
         )
 
     if "sqlite" in eng_str:
-        notes.append("SQLite foreign key declarations do not imply enforcement unless PRAGMA foreign_keys = ON.")
+        notes.append(
+            "SQLite foreign key declarations do not imply enforcement unless PRAGMA foreign_keys = ON."
+        )
         notes.append("SQLite foreign keys cannot span attached databases.")
         return GraphCapabilityProfile(
             engine="sqlite",
@@ -95,7 +97,9 @@ def assess_graph_capabilities(
         )
 
     if "mariadb" in eng_str:
-        notes.append("MariaDB referential enforcement is storage-engine dependent (InnoDB/Aria/RocksDB).")
+        notes.append(
+            "MariaDB referential enforcement is storage-engine dependent (InnoDB/Aria/RocksDB)."
+        )
         return GraphCapabilityProfile(
             engine="mariadb",
             overall_completeness=completeness,
@@ -109,7 +113,9 @@ def assess_graph_capabilities(
         )
 
     if "mysql" in eng_str:
-        notes.append("MySQL foreign key enforcement depends on InnoDB; MyISAM tables silently ignore foreign keys.")
+        notes.append(
+            "MySQL foreign key enforcement depends on InnoDB; MyISAM tables silently ignore foreign keys."
+        )
         return GraphCapabilityProfile(
             engine="mysql",
             overall_completeness=completeness,

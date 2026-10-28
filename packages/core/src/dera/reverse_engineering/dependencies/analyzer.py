@@ -114,11 +114,15 @@ class DependencyAnalyzer:
             if schema and not is_nullable:
                 # If any source column in the FK is nullable, the child row can be inserted with NULL
                 for pair in edge.column_pairs:
-                    if column_nullability.get((edge.source_table_name, pair.source_column_name), False):
+                    if column_nullability.get(
+                        (edge.source_table_name, pair.source_column_name), False
+                    ):
                         is_nullable = True
                         break
 
-            column_pairs = tuple((p.source_column_name, p.referenced_column_name) for p in edge.column_pairs)
+            column_pairs = tuple(
+                (p.source_column_name, p.referenced_column_name) for p in edge.column_pairs
+            )
 
             dep_edge = DependencyEdge(
                 edge_id=str(edge.object_id),

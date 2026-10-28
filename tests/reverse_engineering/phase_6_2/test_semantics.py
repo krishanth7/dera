@@ -8,6 +8,7 @@ from dera.reverse_engineering.reconstruction.semantics import (
     extract_identity_metadata,
     normalize_engine_name,
 )
+
 from tests.reverse_engineering.phase_6_2.fixtures import make_test_column
 
 
@@ -48,7 +49,9 @@ class TestEngineSemantics(unittest.TestCase):
         self.assertEqual(d_expr.kind, DefaultKind.EXPRESSION)
 
     def test_extract_identity_metadata_postgres_sequence(self) -> None:
-        col = make_test_column("t", "id", 1, default_val="nextval('accounts_id_seq'::regclass)", engine="postgresql")
+        col = make_test_column(
+            "t", "id", 1, default_val="nextval('accounts_id_seq'::regclass)", engine="postgresql"
+        )
         ident = extract_identity_metadata(col, "postgresql")
         self.assertFalse(ident.is_identity)
         self.assertTrue(ident.is_auto_increment)
