@@ -79,6 +79,18 @@ class SchemaResourceLimits(BaseModel):
         default=50_000,
         description="Maximum number of foreign key or object references allowed.",
     )
+    max_tables: int = Field(
+        default=10_000,
+        description="Maximum number of tables allowed in a single schema.",
+    )
+    max_columns_per_table: int = Field(
+        default=2_000,
+        description="Maximum number of columns allowed per table.",
+    )
+    max_total_columns: int = Field(
+        default=100_000,
+        description="Maximum total number of columns allowed across all tables.",
+    )
 
 
 class SchemaBuilder:

@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from dera.metadata.enums import MetadataCompleteness
 
@@ -33,6 +33,7 @@ class MetadataProvenance(BaseModel):
     )
     collection_timestamp: datetime = Field(
         default_factory=lambda: datetime.now(UTC),
+        validation_alias=AliasChoices("collection_timestamp", "extracted_at"),
         description="RFC 3339 UTC timestamp when metadata was extracted.",
     )
     completeness: MetadataCompleteness = Field(
@@ -41,10 +42,12 @@ class MetadataProvenance(BaseModel):
     )
     source_location: str | None = Field(
         default=None,
+        validation_alias=AliasChoices("source_location", "location"),
         description="Safe, sanitized location descriptor (e.g. schema name or sanitized database path).",
     )
     native_identifier: str = Field(
-        ...,
+        default="unknown",
+        validation_alias=AliasChoices("native_identifier", "identifier"),
         description="Original, unmutated identifier as extracted from catalog tables.",
     )
     capability_status: str | None = Field(
@@ -55,3 +58,6 @@ class MetadataProvenance(BaseModel):
         default_factory=dict,
         description="Engine-specific un-normalized metadata attributes preserved for lossless fidelity.",
     )
+
+
+ProvenanceRecord = MetadataProvenance

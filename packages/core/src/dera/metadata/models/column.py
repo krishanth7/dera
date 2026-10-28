@@ -6,7 +6,9 @@ metadata with canonical type classification and engine fidelity.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Any
+
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from dera.metadata.enums import CanonicalTypeCategory, GenerationMode
 from dera.metadata.provenance import MetadataProvenance
@@ -23,6 +25,7 @@ class CanonicalColumn(BaseModel):
     )
     parent_table_id: str = Field(
         ...,
+        validation_alias=AliasChoices("parent_table_id", "table_id"),
         description="ObjectId of the owning parent table.",
     )
     name: str = Field(
@@ -35,18 +38,20 @@ class CanonicalColumn(BaseModel):
     )
     native_data_type: str = Field(
         ...,
+        validation_alias=AliasChoices("native_data_type", "native_type"),
         description="Full original native type declaration (e.g. 'VARCHAR(255)', 'JSONB').",
     )
     canonical_type: CanonicalTypeCategory = Field(
         ...,
         description="Categorical semantic classification in the DERA type taxonomy.",
     )
-    is_nullable: bool = Field(
+    is_nullable: bool | None = Field(
         default=True,
         description="True if column accepts NULL; False if NOT NULL constraint is enforced.",
     )
     default_expression: str | None = Field(
         default=None,
+        validation_alias=AliasChoices("default_expression", "default_value"),
         description="Raw default value or expression string as declared in source catalog.",
     )
     is_identity: bool = Field(
@@ -72,6 +77,10 @@ class CanonicalColumn(BaseModel):
     comment: str | None = Field(
         default=None,
         description="Documentation or comment describing column semantics.",
+    )
+    extra_metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Engine-specific or driver-specific column metadata.",
     )
     provenance: MetadataProvenance = Field(
         ...,

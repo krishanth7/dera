@@ -5,7 +5,9 @@ Defines strongly-typed models for PRIMARY KEY, UNIQUE, and CHECK constraints.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Any
+
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from dera.metadata.enums import ConstraintType
 from dera.metadata.provenance import MetadataProvenance
@@ -22,6 +24,7 @@ class CanonicalConstraint(BaseModel):
     )
     parent_table_id: str = Field(
         ...,
+        validation_alias=AliasChoices("parent_table_id", "table_id"),
         description="ObjectId of the owning parent table.",
     )
     name: str = Field(
@@ -38,6 +41,7 @@ class CanonicalConstraint(BaseModel):
     )
     check_clause: str | None = Field(
         default=None,
+        validation_alias=AliasChoices("check_clause", "expression"),
         description="SQL boolean expression text for CHECK constraints.",
     )
     is_enforced: bool = Field(
@@ -47,6 +51,10 @@ class CanonicalConstraint(BaseModel):
     is_synthetic_name: bool = Field(
         default=False,
         description="True if the constraint name is a generated surrogate (e.g. for SQLite unnamed CHECK).",
+    )
+    extra_metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Engine-specific or custom constraint metadata.",
     )
     provenance: MetadataProvenance = Field(
         ...,

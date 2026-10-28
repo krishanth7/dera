@@ -8,54 +8,64 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Sequence
+from typing import TypeAlias
 
 from dera.metadata.enums import ObjectKind
 
+ObjectId: TypeAlias = str
+
 
 def compute_stable_object_id(
-    engine: str,
-    object_kind: ObjectKind,
-    native_name: str,
+    engine: str = "postgresql",
+    object_kind: ObjectKind | str = ObjectKind.TABLE,
+    native_name: str | tuple[str, ...] = "",
     namespace: str | None = None,
     parent_id: str | None = None,
     workspace_id: str | None = None,
     connection_id: str | None = None,
     terms: Sequence[str] | None = None,
+    *,
+    kind: ObjectKind | str | None = None,
+    components: Sequence[str] | None = None,
 ) -> str:
-    """Generate a deterministic, collision-resistant canonical ObjectId.
+    """Generate a deterministic, collision-resistant canonical ObjectId."""
+    if kind is not None:
+        object_kind = kind
+    if components is not None:
+        if len(components) == 1:
+            native_name = components[0]
+        elif len(components) == 2:
+            parent_id, native_name = str(components[0]), str(components[1])
+        elif len(components) >= 3:
+            parent_id, native_name = str(components[-2]), str(components[-1])
+    if isinstance(native_name, (tuple, list)):
+        if len(native_name) == 1:
+            native_name = native_name[0]
+        elif len(native_name) == 2:
+            parent_id, native_name = str(native_name[0]), str(native_name[1])
+        elif len(native_name) >= 3:
+            parent_id, native_name = str(native_name[-2]), str(native_name[-1])
+    known_engines = ("postgresql", "postgres", "sqlite", "mysql", "mariadb", "supabase")
+    if isinstance(engine, ObjectKind) or (
+        isinstance(engine, str)
+        and engine.lower() not in known_engines
+        and str(object_kind).lower() in known_engines
+    ):
+        engine, object_kind = object_kind, engine
 
-    Formulation:
-    Uses length-prefixed canonical serialization of all hierarchy tokens to prevent
-    delimiter collision attacks (e.g. 'a' + 'bc' colliding with 'ab' + 'c'):
+    if isinstance(object_kind, str):
+        try:
+            object_kind = ObjectKind(object_kind)
+        except ValueError:
+            pass
+    kind_val = object_kind.value if hasattr(object_kind, "value") else str(object_kind)
 
-      FRAME = "v1"
-              + "|" + len(engine) + ":" + engine
-              + "|" + len(workspace_id or "") + ":" + (workspace_id or "")
-              + "|" + len(connection_id or "") + ":" + (connection_id or "")
-              + "|" + len(namespace or "") + ":" + (namespace or "")
-              + "|" + len(object_kind.value) + ":" + object_kind.value
-              + "|" + len(parent_id or "") + ":" + (parent_id or "")
-              + "|" + len(native_name) + ":" + native_name
-
-    For constraints, indexes, or composite elements with term sequences:
-      + "|" + count(terms) + "[" + sum(len(t) + ":" + t) + "]"
-
-    The SHA-256 digest of this canonical frame is computed, and the first 24
-    hexadecimal characters are formatted as:
-      `dera:<object_kind>:<24_hex_chars>`
-
-    Properties:
-    1. Deterministic across inspection executions on identical schemas.
-    2. Zero random numbers or non-reproducible state.
-    3. Isolated across workspaces and database engines.
-    4. Free of plain credentials, connection strings, or system paths.
-    """
-    clean_engine = engine.strip().lower()
+    clean_engine = str(engine).strip().lower()
     clean_ws = (workspace_id or "").strip()
     clean_conn = (connection_id or "").strip()
     clean_ns = (namespace or "").strip()
     clean_parent = (parent_id or "").strip()
-    clean_name = native_name.strip()
+    clean_name = str(native_name).strip()
 
     components: list[str] = [
         "v1",
@@ -63,7 +73,7 @@ def compute_stable_object_id(
         f"{len(clean_ws)}:{clean_ws}",
         f"{len(clean_conn)}:{clean_conn}",
         f"{len(clean_ns)}:{clean_ns}",
-        f"{len(object_kind.value)}:{object_kind.value}",
+        f"{len(kind_val)}:{kind_val}",
         f"{len(clean_parent)}:{clean_parent}",
         f"{len(clean_name)}:{clean_name}",
     ]
@@ -75,7 +85,7 @@ def compute_stable_object_id(
     frame = "|".join(components).encode("utf-8")
     digest = hashlib.sha256(frame).hexdigest()[:24]
 
-    return f"dera:{object_kind.value}:{digest}"
+    return f"dera:{kind_val}:{digest}"
 
 
 def generate_unnamed_constraint_name(

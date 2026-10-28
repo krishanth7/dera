@@ -90,21 +90,28 @@ class ObjectRegistry:
     # Registration
     # ------------------------------------------------------------------
 
-    def register(self, object_id: str, obj: Any, kind: str) -> None:
+    def register(self, object_id: str | Any, obj: Any = None, kind: str | None = None) -> None:
         """Register a schema object under its canonical ObjectId.
 
         Args:
-            object_id: Canonical ObjectId in `dera:<kind>:<hex>` format.
-            obj: The schema object instance.
+            object_id: Canonical ObjectId in `dera:<kind>:<hex>` format or schema object.
+            obj: The schema object instance (optional if passed as first parameter).
             kind: ObjectKind string for validation and kind index.
 
         Raises:
             DuplicateRegistrationError: If object_id is already registered.
         """
+        if obj is None and kind is None and hasattr(object_id, "id"):
+            obj = object_id
+            object_id = obj.id
+            kind = _parse_object_kind(object_id) or type(obj).__name__
+        elif kind is None:
+            kind = _parse_object_kind(object_id) or type(obj).__name__
+
         if object_id in self._objects:
-            raise DuplicateRegistrationError(object_id, kind)
+            raise DuplicateRegistrationError(object_id, str(kind))
         self._objects[object_id] = obj
-        kind_key = kind.lower()
+        kind_key = str(kind).lower()
         if kind_key not in self._kind_index:
             self._kind_index[kind_key] = []
         self._kind_index[kind_key].append(object_id)
@@ -251,6 +258,8 @@ class ObjectRegistry:
         """Return all registered objects of a specific ObjectKind."""
         ids = self._kind_index.get(kind.lower(), [])
         return tuple(self._objects[oid] for oid in ids if oid in self._objects)
+
+    get_by_kind = all_of_kind
 
     def all_tables(self) -> tuple[CanonicalTable, ...]:
         """Return all registered CanonicalTable objects."""

@@ -6,7 +6,9 @@ relationship graphs.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Any
+
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 
 from dera.metadata.enums import ForeignKeyAction
 from dera.metadata.provenance import MetadataProvenance
@@ -32,6 +34,37 @@ class CanonicalForeignKey(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_mappings_and_names(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if "source_table_name" not in data and "source_table" in data:
+                data["source_table_name"] = data["source_table"]
+            elif "source_table_name" not in data:
+                data["source_table_name"] = ""
+
+            src_cols = tuple(data.get("source_columns") or data.get("columns") or ())
+            ref_cols = tuple(data.get("referenced_columns") or ())
+            if "declared_source_columns" not in data and src_cols:
+                data["declared_source_columns"] = src_cols
+            if "declared_referenced_columns" not in data and ref_cols:
+                data["declared_referenced_columns"] = ref_cols
+
+            if "column_mappings" not in data:
+                if src_cols and ref_cols and len(src_cols) == len(ref_cols):
+                    data["column_mappings"] = tuple(
+                        ForeignKeyMapping(source_column=s, referenced_column=r)
+                        for s, r in zip(src_cols, ref_cols, strict=True)
+                    )
+                elif src_cols and not ref_cols:
+                    data["column_mappings"] = tuple(
+                        ForeignKeyMapping(source_column=s, referenced_column=s)
+                        for s in src_cols
+                    )
+                elif src_cols and ref_cols:
+                    data["column_mappings"] = ()
+        return data
+
     id: str = Field(
         ...,
         description="Deterministic canonical ObjectId for this foreign key.",
@@ -42,10 +75,12 @@ class CanonicalForeignKey(BaseModel):
     )
     source_table_id: str = Field(
         ...,
+        validation_alias=AliasChoices("source_table_id", "table_id"),
         description="ObjectId of the child table declaring this foreign key.",
     )
     source_table_name: str = Field(
-        ...,
+        default="",
+        validation_alias=AliasChoices("source_table_name", "source_table"),
         description="Native name of the child table.",
     )
     referenced_table_id: str | None = Field(
@@ -54,6 +89,7 @@ class CanonicalForeignKey(BaseModel):
     )
     referenced_table_name: str = Field(
         ...,
+        validation_alias=AliasChoices("referenced_table_name", "referenced_table"),
         description="Native name of referenced parent table.",
     )
     referenced_schema: str | None = Field(
@@ -61,8 +97,16 @@ class CanonicalForeignKey(BaseModel):
         description="Schema owning the referenced table.",
     )
     column_mappings: tuple[ForeignKeyMapping, ...] = Field(
-        ...,
+        default_factory=tuple,
         description="Ordered tuple of child-to-parent column pairings.",
+    )
+    declared_source_columns: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description="Explicit declared child column names.",
+    )
+    declared_referenced_columns: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description="Explicit declared referenced parent column names.",
     )
     on_update: ForeignKeyAction = Field(
         default=ForeignKeyAction.NO_ACTION,
@@ -80,6 +124,10 @@ class CanonicalForeignKey(BaseModel):
         default=False,
         description="True if constraint name is a generated surrogate.",
     )
+    extra_metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Engine-specific foreign key metadata.",
+    )
     provenance: MetadataProvenance = Field(
         ...,
         description="Source extraction provenance and audit information.",
@@ -88,9 +136,13 @@ class CanonicalForeignKey(BaseModel):
     @property
     def source_columns(self) -> tuple[str, ...]:
         """Convenience tuple of source column names."""
+        if self.declared_source_columns:
+            return self.declared_source_columns
         return tuple(m.source_column for m in self.column_mappings)
 
     @property
     def referenced_columns(self) -> tuple[str, ...]:
         """Convenience tuple of referenced column names."""
+        if self.declared_referenced_columns:
+            return self.declared_referenced_columns
         return tuple(m.referenced_column for m in self.column_mappings)
