@@ -46,7 +46,12 @@ def sort_foreign_key_edges(edges: Iterable[ForeignKeyEdge]) -> tuple[ForeignKeyE
 
 def sort_column_pairs(pairs: Iterable[ColumnPairMapping]) -> tuple[ColumnPairMapping, ...]:
     """Sort column pair mappings strictly by declared ordinal position."""
-    return tuple(sorted(pairs, key=lambda p: (p.ordinal_position, p.source_column_name, p.referenced_column_name)))
+    return tuple(
+        sorted(
+            pairs,
+            key=lambda p: (p.ordinal_position, p.source_column_name, p.referenced_column_name),
+        )
+    )
 
 
 def sort_unresolved_references(refs: Iterable[Any]) -> tuple[Any, ...]:

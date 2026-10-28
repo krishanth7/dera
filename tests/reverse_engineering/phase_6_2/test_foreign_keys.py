@@ -13,6 +13,7 @@ from dera.reverse_engineering.reconstruction.errors import (
 from dera.reverse_engineering.reconstruction.foreign_keys import reconstruct_foreign_key
 from dera.reverse_engineering.references import ResolutionStatus
 from dera.reverse_engineering.registry import ObjectRegistry
+
 from tests.reverse_engineering.phase_6_2.fixtures import (
     make_test_column,
     make_test_provenance,
@@ -30,7 +31,9 @@ class TestForeignKeyReconstruction(unittest.TestCase):
         self.columns = reconstruct_columns((c1, c2), self.src_id, "postgresql")
 
     def test_reconstruct_foreign_key_basic(self) -> None:
-        fk_id = compute_stable_object_id("foreign_key", "postgresql", (str(self.src_id), "fk_orders_cust"))
+        fk_id = compute_stable_object_id(
+            "foreign_key", "postgresql", (str(self.src_id), "fk_orders_cust")
+        )
         canonical_fk = CanonicalForeignKey(
             id=fk_id,
             table_id=self.src_id,
@@ -53,7 +56,9 @@ class TestForeignKeyReconstruction(unittest.TestCase):
         self.assertEqual(fk.on_delete, ForeignKeyAction.RESTRICT)
 
     def test_composite_foreign_key(self) -> None:
-        fk_id = compute_stable_object_id("foreign_key", "postgresql", (str(self.src_id), "fk_orders_tenant_cust"))
+        fk_id = compute_stable_object_id(
+            "foreign_key", "postgresql", (str(self.src_id), "fk_orders_tenant_cust")
+        )
         canonical_fk = CanonicalForeignKey(
             id=fk_id,
             table_id=self.src_id,
@@ -89,7 +94,9 @@ class TestForeignKeyReconstruction(unittest.TestCase):
             reconstruct_foreign_key(canonical_fk, self.src_id, "public", self.columns)
 
     def test_source_column_not_in_table_raises(self) -> None:
-        fk_id = compute_stable_object_id("foreign_key", "postgresql", (str(self.src_id), "fk_bad_col"))
+        fk_id = compute_stable_object_id(
+            "foreign_key", "postgresql", (str(self.src_id), "fk_bad_col")
+        )
         canonical_fk = CanonicalForeignKey(
             id=fk_id,
             table_id=self.src_id,
@@ -106,7 +113,9 @@ class TestForeignKeyReconstruction(unittest.TestCase):
             reconstruct_foreign_key(canonical_fk, self.src_id, "public", self.columns)
 
     def test_cross_namespace_foreign_key(self) -> None:
-        fk_id = compute_stable_object_id("foreign_key", "postgresql", (str(self.src_id), "fk_cross_ns"))
+        fk_id = compute_stable_object_id(
+            "foreign_key", "postgresql", (str(self.src_id), "fk_cross_ns")
+        )
         canonical_fk = CanonicalForeignKey(
             id=fk_id,
             table_id=self.src_id,
@@ -125,11 +134,15 @@ class TestForeignKeyReconstruction(unittest.TestCase):
 
     def test_registry_resolution(self) -> None:
         registry = ObjectRegistry(workspace_id="ws-test")
-        target_id = compute_stable_object_id("table", "postgresql", ("public", "customers"), "ws-test")
+        target_id = compute_stable_object_id(
+            "table", "postgresql", ("public", "customers"), "ws-test"
+        )
         col_id = make_test_column(str(target_id), "id", 1, workspace_id="ws-test")
         target_table = CanonicalTable(
             id=target_id,
-            namespace_id=compute_stable_object_id("namespace", "postgresql", ("public",), "ws-test"),
+            namespace_id=compute_stable_object_id(
+                "namespace", "postgresql", ("public",), "ws-test"
+            ),
             schema_name="public",
             name="customers",
             columns=(col_id,),
@@ -137,7 +150,9 @@ class TestForeignKeyReconstruction(unittest.TestCase):
         )
         registry.register(target_table)
 
-        fk_id = compute_stable_object_id("foreign_key", "postgresql", (str(self.src_id), "fk_resolved"))
+        fk_id = compute_stable_object_id(
+            "foreign_key", "postgresql", (str(self.src_id), "fk_resolved")
+        )
         canonical_fk = CanonicalForeignKey(
             id=fk_id,
             table_id=self.src_id,
@@ -151,7 +166,9 @@ class TestForeignKeyReconstruction(unittest.TestCase):
             provenance=self.prov,
         )
 
-        fk = reconstruct_foreign_key(canonical_fk, self.src_id, "public", self.columns, registry=registry)
+        fk = reconstruct_foreign_key(
+            canonical_fk, self.src_id, "public", self.columns, registry=registry
+        )
         self.assertEqual(fk.resolution_status, ResolutionStatus.RESOLVED)
         self.assertEqual(fk.referenced_table_id, target_id)
 

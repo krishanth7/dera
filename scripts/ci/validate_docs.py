@@ -415,7 +415,10 @@ class DocValidator:
             # Unquote URL-encoded spaces / characters
             unquoted_path = urllib.parse.unquote(raw_path)
 
-            if raw_path.startswith("/"):
+            if raw_path.startswith("file:///"):
+                # Absolute repository-root link with file scheme
+                target_path = (self.repo_root / unquoted_path[8:].lstrip("/")).resolve()
+            elif raw_path.startswith("/"):
                 # Absolute repository-root link
                 target_path = (self.repo_root / unquoted_path.lstrip("/")).resolve()
             else:

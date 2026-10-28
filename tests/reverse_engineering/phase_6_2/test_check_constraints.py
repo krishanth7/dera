@@ -14,6 +14,7 @@ from dera.reverse_engineering.reconstruction.models import (
     ConstraintEnforcementStatus,
     ConstraintValidationStatus,
 )
+
 from tests.reverse_engineering.phase_6_2.fixtures import make_test_provenance
 
 
@@ -25,7 +26,9 @@ class TestCheckConstraintReconstruction(unittest.TestCase):
         self.table_id = compute_stable_object_id("table", "postgresql", ("public", "products"))
 
     def test_reconstruct_check_constraint_basic(self) -> None:
-        ck_id = compute_stable_object_id("check_constraint", "postgresql", (str(self.table_id), "ck_price_positive"))
+        ck_id = compute_stable_object_id(
+            "check_constraint", "postgresql", (str(self.table_id), "ck_price_positive")
+        )
         c = CanonicalConstraint(
             id=ck_id,
             table_id=self.table_id,
@@ -42,7 +45,9 @@ class TestCheckConstraintReconstruction(unittest.TestCase):
         self.assertEqual(ck.validation_status, ConstraintValidationStatus.VALIDATED)
 
     def test_missing_expression_raises(self) -> None:
-        ck_id = compute_stable_object_id("check_constraint", "postgresql", (str(self.table_id), "ck_empty"))
+        ck_id = compute_stable_object_id(
+            "check_constraint", "postgresql", (str(self.table_id), "ck_empty")
+        )
         c = CanonicalConstraint(
             id=ck_id,
             table_id=self.table_id,
@@ -56,7 +61,9 @@ class TestCheckConstraintReconstruction(unittest.TestCase):
 
     def test_reconstruct_multiple_checks_sorted(self) -> None:
         c1 = CanonicalConstraint(
-            id=compute_stable_object_id("check_constraint", "postgresql", (str(self.table_id), "ck_z")),
+            id=compute_stable_object_id(
+                "check_constraint", "postgresql", (str(self.table_id), "ck_z")
+            ),
             table_id=self.table_id,
             name="ck_z",
             constraint_type=ConstraintType.CHECK,
@@ -64,7 +71,9 @@ class TestCheckConstraintReconstruction(unittest.TestCase):
             provenance=self.prov,
         )
         c2 = CanonicalConstraint(
-            id=compute_stable_object_id("check_constraint", "postgresql", (str(self.table_id), "ck_a")),
+            id=compute_stable_object_id(
+                "check_constraint", "postgresql", (str(self.table_id), "ck_a")
+            ),
             table_id=self.table_id,
             name="ck_a",
             constraint_type=ConstraintType.CHECK,

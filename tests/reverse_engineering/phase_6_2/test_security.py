@@ -2,14 +2,13 @@
 
 import unittest
 
-from dera.metadata.enums import CanonicalTypeCategory, ObjectKind
 from dera.metadata.identity import compute_stable_object_id
 from dera.reverse_engineering.builder import SchemaResourceLimits
 from dera.reverse_engineering.errors import SchemaResourceLimitError
 from dera.reverse_engineering.reconstruction.builder import StructuralReconstructionBuilder
+
 from tests.reverse_engineering.phase_6_2.fixtures import (
     build_postgres_enterprise_fixture,
-    make_test_column,
 )
 
 
@@ -26,7 +25,9 @@ class TestStructuralSecurity(unittest.TestCase):
 
     def test_max_columns_per_table_limit_enforced(self) -> None:
         db = build_postgres_enterprise_fixture()
-        limits = SchemaResourceLimits(max_columns_per_table=3)  # fixture tables have 4 and 6 columns
+        limits = SchemaResourceLimits(
+            max_columns_per_table=3
+        )  # fixture tables have 4 and 6 columns
         builder = StructuralReconstructionBuilder(limits=limits)
 
         with self.assertRaises(SchemaResourceLimitError):
@@ -38,11 +39,16 @@ class TestStructuralSecurity(unittest.TestCase):
         parent_id = compute_stable_object_id("table", "postgresql", ("public", "items"))
         from dera.metadata.enums import ConstraintType
         from dera.metadata.models import CanonicalConstraint
-        from dera.reverse_engineering.reconstruction.check_constraints import reconstruct_check_constraint
+        from dera.reverse_engineering.reconstruction.check_constraints import (
+            reconstruct_check_constraint,
+        )
+
         from tests.reverse_engineering.phase_6_2.fixtures import make_test_provenance
 
         ck = CanonicalConstraint(
-            id=compute_stable_object_id("check_constraint", "postgresql", (str(parent_id), "ck_malicious")),
+            id=compute_stable_object_id(
+                "check_constraint", "postgresql", (str(parent_id), "ck_malicious")
+            ),
             table_id=parent_id,
             name="ck_malicious",
             constraint_type=ConstraintType.CHECK,

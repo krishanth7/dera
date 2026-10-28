@@ -62,5 +62,7 @@ def test_deserialization_rejects_unsupported_contract_version():
     raw_dict["contract_version"] = "99.0.0"
     tampered_json = json.dumps(raw_dict)
 
-    with pytest.raises(GraphSerializationError, match="Unsupported foreign key graph contract version"):
+    with pytest.raises(
+        GraphSerializationError, match="Unsupported foreign key graph contract version"
+    ):
         deserialize_graph_from_json(tampered_json)

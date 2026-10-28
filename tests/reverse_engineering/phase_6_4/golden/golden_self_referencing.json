@@ -1,0 +1,121 @@
+{
+  "condensation_nodes": [
+    {
+      "condensation_id": "cond-scc-dera:table:f",
+      "dependencies": [],
+      "is_cyclic": true,
+      "member_node_ids": [
+        "dera:table:f230544e1643cd6d0622d69c"
+      ]
+    }
+  ],
+  "contract_version": "phase-6.4-dependency-analysis-v1",
+  "cycle_report": {
+    "breakable_cycle_count": 1,
+    "complex_count": 0,
+    "cycle_count": 1,
+    "cycles": [
+      {
+        "break_edges": [
+          "dera:foreign_key:5a3f179e4b4af9ad1857b22a"
+        ],
+        "cycle_id": "cycle-self_referencing-99a8add33e05ffbc",
+        "edge_ids": [
+          "dera:foreign_key:5a3f179e4b4af9ad1857b22a"
+        ],
+        "is_breakable": true,
+        "kind": "self_referencing",
+        "node_ids": [
+          "dera:table:f230544e1643cd6d0622d69c"
+        ],
+        "recommended_break_strategy": "nullable_foreign_key"
+      }
+    ],
+    "cyclic_scc_count": 1,
+    "has_cycles": true,
+    "indirect_count": 0,
+    "mutual_count": 0,
+    "scc_count": 1,
+    "sccs": [
+      {
+        "cycles": [
+          {
+            "break_edges": [
+              "dera:foreign_key:5a3f179e4b4af9ad1857b22a"
+            ],
+            "cycle_id": "cycle-self_referencing-99a8add33e05ffbc",
+            "edge_ids": [
+              "dera:foreign_key:5a3f179e4b4af9ad1857b22a"
+            ],
+            "is_breakable": true,
+            "kind": "self_referencing",
+            "node_ids": [
+              "dera:table:f230544e1643cd6d0622d69c"
+            ],
+            "recommended_break_strategy": "nullable_foreign_key"
+          }
+        ],
+        "is_cyclic": true,
+        "node_ids": [
+          "dera:table:f230544e1643cd6d0622d69c"
+        ],
+        "scc_id": "scc-dera:table:f"
+      }
+    ],
+    "self_referencing_count": 1,
+    "unbreakable_cycle_count": 0
+  },
+  "database_id": "dera:database:aefce20cbd1d73743517ea2c",
+  "edge_count": 1,
+  "is_dag": false,
+  "isolated_node_ids": [],
+  "leaf_node_ids": [],
+  "node_count": 1,
+  "node_metrics": {
+    "dera:table:f230544e1643cd6d0622d69c": {
+      "depth_level": 0,
+      "in_degree": 1,
+      "is_in_cycle": true,
+      "is_leaf": false,
+      "is_root": false,
+      "node_id": "dera:table:f230544e1643cd6d0622d69c",
+      "out_degree": 1,
+      "transitive_dependency_count": 0,
+      "transitive_dependent_count": 0
+    }
+  },
+  "ordering": {
+    "condensed_order": [
+      "cond-scc-dera:table:f"
+    ],
+    "creation_order": [
+      "dera:table:f230544e1643cd6d0622d69c"
+    ],
+    "drop_order": [
+      "dera:table:f230544e1643cd6d0622d69c"
+    ],
+    "is_pure_dag": false,
+    "levels": [
+      {
+        "level": 0,
+        "node_ids": [
+          "dera:table:f230544e1643cd6d0622d69c"
+        ]
+      }
+    ],
+    "unresolved_cycles_exist": true
+  },
+  "root_node_ids": [],
+  "source_graph_hash": "dd1a4adb58578ed888e3ceb858500d0d04e6d45d957d59891833849f369075cc",
+  "validation_findings": [
+    {
+      "context": {
+        "cycle_count": "1"
+      },
+      "message": "Schema contains 1 cycle(s) across 1 cyclic component(s).",
+      "rule_id": "DEP_CYCLE_DETECTED",
+      "severity": "INFO"
+    }
+  ],
+  "workspace_id": null
+}

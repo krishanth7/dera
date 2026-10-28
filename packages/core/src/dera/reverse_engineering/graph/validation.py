@@ -72,7 +72,9 @@ class GraphValidationFinding(BaseModel):
     )
 
     def __repr__(self) -> str:
-        return f"GraphValidationFinding([{self.severity.value.upper()}] {self.code}: {self.message})"
+        return (
+            f"GraphValidationFinding([{self.severity.value.upper()}] {self.code}: {self.message})"
+        )
 
 
 def validate_foreign_key_graph(

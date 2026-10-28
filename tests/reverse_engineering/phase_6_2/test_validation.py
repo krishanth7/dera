@@ -9,6 +9,7 @@ from dera.reverse_engineering.reconstruction.models import (
 )
 from dera.reverse_engineering.reconstruction.tables import reconstruct_table
 from dera.reverse_engineering.reconstruction.validation import validate_structural_reconstruction
+
 from tests.reverse_engineering.phase_6_2.fixtures import (
     build_postgres_enterprise_fixture,
 )

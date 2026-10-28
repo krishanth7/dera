@@ -4,6 +4,7 @@ import unittest
 
 from dera.metadata.enums import CanonicalTypeCategory
 from dera.reverse_engineering.reconstruction.builder import StructuralReconstructionBuilder
+
 from tests.reverse_engineering.phase_6_2.fixtures import (
     build_mysql_fixture,
     build_postgres_enterprise_fixture,

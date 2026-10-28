@@ -38,7 +38,7 @@ result = graph.traverse(
 )
 ```
 
-### TraversalResult Structure:
+### TraversalResult Structure
 ```python
 class TraversalResult(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
@@ -61,7 +61,7 @@ When limits are reached:
 
 The method `find_weakly_connected_components(graph)` identifies disjoint subgraphs.
 
-### Semantics:
+### Semantics
 - Treats directed foreign key edges as undirected for connectivity partitioning.
 - Isolated tables with zero foreign keys appear as single-node components.
 - Deterministically sorts components:

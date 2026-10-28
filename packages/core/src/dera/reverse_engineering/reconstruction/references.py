@@ -51,10 +51,7 @@ def resolve_foreign_key_reference(
                             and registry.contains(candidate.namespace_id)
                         ):
                             tbl_schema = registry.get_namespace(candidate.namespace_id).name
-                        if (
-                            fk.referenced_namespace is None
-                            or tbl_schema == fk.referenced_namespace
-                        ):
+                        if fk.referenced_namespace is None or tbl_schema == fk.referenced_namespace:
                             target_table = candidate
                             target_id = candidate.id
                             break

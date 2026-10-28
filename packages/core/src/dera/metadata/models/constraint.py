@@ -45,6 +45,7 @@ class CanonicalConstraint(BaseModel):
     def column_names(self) -> tuple[str, ...]:
         """Convenience property matching ReconstructedPrimaryKey."""
         return self.columns
+
     check_clause: str | None = Field(
         default=None,
         validation_alias=AliasChoices("check_clause", "expression"),

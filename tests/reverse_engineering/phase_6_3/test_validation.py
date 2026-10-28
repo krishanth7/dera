@@ -19,7 +19,9 @@ from tests.reverse_engineering.phase_6_3.fixtures import make_graph_provenance
 def test_validation_detects_missing_source_node():
     prov = make_graph_provenance()
     node = TableNode(object_id="dera:table:valid", native_name="valid", provenance=prov)
-    pair = ColumnPairMapping(source_column_name="c1", referenced_column_name="p1", ordinal_position=1)
+    pair = ColumnPairMapping(
+        source_column_name="c1", referenced_column_name="p1", ordinal_position=1
+    )
     edge = ForeignKeyEdge(
         object_id="dera:foreign_key:e1",
         native_name="e1",
@@ -31,7 +33,9 @@ def test_validation_detects_missing_source_node():
         provenance=prov,
     )
 
-    findings = validate_foreign_key_graph(nodes=(node,), edges=(edge,), mode=ValidationMode.PERMISSIVE)
+    findings = validate_foreign_key_graph(
+        nodes=(node,), edges=(edge,), mode=ValidationMode.PERMISSIVE
+    )
     error_codes = [f.code for f in findings if f.severity == ValidationSeverity.ERROR]
     assert "FKG_MISSING_SOURCE_NODE" in error_codes
 
@@ -39,7 +43,9 @@ def test_validation_detects_missing_source_node():
 def test_validation_strict_mode_raises():
     prov = make_graph_provenance()
     node = TableNode(object_id="dera:table:valid", native_name="valid", provenance=prov)
-    pair = ColumnPairMapping(source_column_name="c1", referenced_column_name="p1", ordinal_position=1)
+    pair = ColumnPairMapping(
+        source_column_name="c1", referenced_column_name="p1", ordinal_position=1
+    )
     edge = ForeignKeyEdge(
         object_id="dera:foreign_key:e1",
         native_name="e1",

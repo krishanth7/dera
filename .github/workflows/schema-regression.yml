@@ -56,7 +56,7 @@ jobs:
 
       - name: "Install Connector Dependencies"
         run: |
-          pip install --quiet asyncpg aiomysql aiosqlite cryptography pydantic pydantic-settings
+          pip install --quiet asyncpg aiomysql aiosqlite cryptography pydantic pydantic-settings pytest networkx
 
       - name: "Run Schema Regression Suite"
         env:

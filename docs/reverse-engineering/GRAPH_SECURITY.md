@@ -26,7 +26,7 @@ class GraphResourceLimits(BaseModel):
     max_serialized_bytes: int = 10_000_000  # 10 MB
 ```
 
-### Protection Mechanisms:
+### Protection Mechanisms
 1. **Node & Edge Thresholds**: Exceeding node or edge count aborts construction with [`GraphResourceLimitError`](file:///packages/core/src/dera/reverse_engineering/graph/errors.py).
 2. **Traversal Depth Limit**: Deeply nested or cyclical graphs are bounded at `max_traversal_depth=50` by default.
 3. **Payload Truncation / Bounding**: Serialization and deserialization reject payloads larger than 10 MB.

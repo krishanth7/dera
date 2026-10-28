@@ -22,25 +22,35 @@ def make_chain_graph():
     """Constructs t1 -> t2 -> t3 -> t4 with an isolated t5."""
     prov = make_graph_provenance()
     db_id = compute_stable_object_id("postgresql", ObjectKind.DATABASE, "chain_db")
-    builder = ForeignKeyGraphBuilder(database_id=db_id, database_name="chain_db", engine="postgresql")
+    builder = ForeignKeyGraphBuilder(
+        database_id=db_id, database_name="chain_db", engine="postgresql"
+    )
 
     nodes = [
-        TableNode(object_id=compute_stable_object_id("postgresql", ObjectKind.TABLE, f"t{i}"), native_name=f"t{i}", provenance=prov)
+        TableNode(
+            object_id=compute_stable_object_id("postgresql", ObjectKind.TABLE, f"t{i}"),
+            native_name=f"t{i}",
+            provenance=prov,
+        )
         for i in range(1, 6)
     ]
     for n in nodes:
         builder.add_node(n)
 
-    p = ColumnPairMapping(source_column_name="ref_id", referenced_column_name="id", ordinal_position=1)
+    p = ColumnPairMapping(
+        source_column_name="ref_id", referenced_column_name="id", ordinal_position=1
+    )
     for i in range(1, 4):
         builder.add_edge(
             ForeignKeyEdge(
-                object_id=compute_stable_object_id("postgresql", ObjectKind.FOREIGN_KEY, f"fk_t{i}_t{i+1}"),
-                native_name=f"fk_t{i}_t{i+1}",
-                source_table_id=nodes[i-1].object_id,
+                object_id=compute_stable_object_id(
+                    "postgresql", ObjectKind.FOREIGN_KEY, f"fk_t{i}_t{i + 1}"
+                ),
+                native_name=f"fk_t{i}_t{i + 1}",
+                source_table_id=nodes[i - 1].object_id,
                 referenced_table_id=nodes[i].object_id,
                 source_table_name=f"t{i}",
-                referenced_table_name=f"t{i+1}",
+                referenced_table_name=f"t{i + 1}",
                 column_pairs=(p,),
                 provenance=prov,
             )
@@ -51,7 +61,11 @@ def make_chain_graph():
 
 def test_bfs_traversal_outgoing():
     graph, nodes = make_chain_graph()
-    res = graph.traverse(start_table_id=nodes[0].object_id, direction=TraversalDirection.OUTGOING, strategy=TraversalStrategy.BFS)
+    res = graph.traverse(
+        start_table_id=nodes[0].object_id,
+        direction=TraversalDirection.OUTGOING,
+        strategy=TraversalStrategy.BFS,
+    )
 
     expected_ids = (nodes[0].object_id, nodes[1].object_id, nodes[2].object_id, nodes[3].object_id)
     assert res.visited_nodes == expected_ids
@@ -62,7 +76,11 @@ def test_bfs_traversal_outgoing():
 
 def test_dfs_traversal_outgoing():
     graph, nodes = make_chain_graph()
-    res = graph.traverse(start_table_id=nodes[0].object_id, direction=TraversalDirection.OUTGOING, strategy=TraversalStrategy.DFS)
+    res = graph.traverse(
+        start_table_id=nodes[0].object_id,
+        direction=TraversalDirection.OUTGOING,
+        strategy=TraversalStrategy.DFS,
+    )
 
     expected_ids = (nodes[0].object_id, nodes[1].object_id, nodes[2].object_id, nodes[3].object_id)
     assert res.visited_nodes == expected_ids
@@ -72,7 +90,11 @@ def test_dfs_traversal_outgoing():
 def test_traversal_incoming_direction():
     graph, nodes = make_chain_graph()
     # Starting at t4 incoming should reach t3, t2, t1
-    res = graph.traverse(start_table_id=nodes[3].object_id, direction=TraversalDirection.INCOMING, strategy=TraversalStrategy.BFS)
+    res = graph.traverse(
+        start_table_id=nodes[3].object_id,
+        direction=TraversalDirection.INCOMING,
+        strategy=TraversalStrategy.BFS,
+    )
     expected_ids = (nodes[3].object_id, nodes[2].object_id, nodes[1].object_id, nodes[0].object_id)
     assert res.visited_nodes == expected_ids
 

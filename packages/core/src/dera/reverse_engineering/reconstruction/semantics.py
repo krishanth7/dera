@@ -89,9 +89,7 @@ def extract_identity_metadata(column: CanonicalColumn, engine: str) -> IdentityM
     dialect = normalize_engine_name(engine)
     extra = getattr(column, "extra_metadata", None) or {}
     raw_default = (
-        getattr(column, "default_expression", None)
-        or getattr(column, "default_value", None)
-        or ""
+        getattr(column, "default_expression", None) or getattr(column, "default_value", None) or ""
     ).strip()
     upper_default = raw_default.upper()
 

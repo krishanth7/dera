@@ -13,6 +13,7 @@ from dera.reverse_engineering.reconstruction.models import (
     DefaultKind,
     NullabilityState,
 )
+
 from tests.reverse_engineering.phase_6_2.fixtures import (
     make_test_column,
 )

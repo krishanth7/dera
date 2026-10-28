@@ -4,7 +4,7 @@ Provides multi-engine, composite key, generated column, inert default, and
 constraint fixtures across PostgreSQL, SQLite, MySQL, and MariaDB.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from dera.metadata.enums import (
@@ -35,7 +35,7 @@ def make_test_provenance(engine: str = "postgresql") -> ProvenanceRecord:
         source_engine=engine,
         source_version="16.0",
         connector_version="1.0.0",
-        extracted_at=datetime(2026, 10, 27, 12, 0, 0, tzinfo=timezone.utc),
+        extracted_at=datetime(2026, 10, 27, 12, 0, 0, tzinfo=UTC),
         completeness=MetadataCompleteness.COMPLETE,
         location="localhost:5432/test_db",
     )
@@ -89,13 +89,49 @@ def build_postgres_enterprise_fixture(workspace_id: str = "ws-ent") -> Canonical
     ns_id = compute_stable_object_id(ObjectKind.NAMESPACE, engine, ("public",), workspace_id)
 
     # 1. Customers Table
-    cust_id = compute_stable_object_id(ObjectKind.TABLE, engine, ("public", "customers"), workspace_id)
-    cust_col_tenant = make_test_column(str(cust_id), "tenant_id", 1, "uuid", CanonicalTypeCategory.UUID, False, workspace_id=workspace_id)
-    cust_col_id = make_test_column(str(cust_id), "id", 2, "bigint", CanonicalTypeCategory.INTEGER, False, workspace_id=workspace_id)
-    cust_col_name = make_test_column(str(cust_id), "name", 3, "varchar(255)", CanonicalTypeCategory.TEXT, False, workspace_id=workspace_id)
-    cust_col_email = make_test_column(str(cust_id), "email", 4, "varchar(255)", CanonicalTypeCategory.TEXT, False, workspace_id=workspace_id)
+    cust_id = compute_stable_object_id(
+        ObjectKind.TABLE, engine, ("public", "customers"), workspace_id
+    )
+    cust_col_tenant = make_test_column(
+        str(cust_id),
+        "tenant_id",
+        1,
+        "uuid",
+        CanonicalTypeCategory.UUID,
+        False,
+        workspace_id=workspace_id,
+    )
+    cust_col_id = make_test_column(
+        str(cust_id),
+        "id",
+        2,
+        "bigint",
+        CanonicalTypeCategory.INTEGER,
+        False,
+        workspace_id=workspace_id,
+    )
+    cust_col_name = make_test_column(
+        str(cust_id),
+        "name",
+        3,
+        "varchar(255)",
+        CanonicalTypeCategory.TEXT,
+        False,
+        workspace_id=workspace_id,
+    )
+    cust_col_email = make_test_column(
+        str(cust_id),
+        "email",
+        4,
+        "varchar(255)",
+        CanonicalTypeCategory.TEXT,
+        False,
+        workspace_id=workspace_id,
+    )
 
-    cust_pk_id = compute_stable_object_id(ObjectKind.PRIMARY_KEY, engine, (str(cust_id), "pk_customers"), workspace_id)
+    cust_pk_id = compute_stable_object_id(
+        ObjectKind.PRIMARY_KEY, engine, (str(cust_id), "pk_customers"), workspace_id
+    )
     cust_pk = CanonicalConstraint(
         id=cust_pk_id,
         table_id=cust_id,
@@ -106,7 +142,12 @@ def build_postgres_enterprise_fixture(workspace_id: str = "ws-ent") -> Canonical
         provenance=prov,
     )
 
-    cust_uq_id = compute_stable_object_id(ObjectKind.UNIQUE_CONSTRAINT, engine, (str(cust_id), "uq_customers_tenant_email"), workspace_id)
+    cust_uq_id = compute_stable_object_id(
+        ObjectKind.UNIQUE_CONSTRAINT,
+        engine,
+        (str(cust_id), "uq_customers_tenant_email"),
+        workspace_id,
+    )
     cust_uq = CanonicalConstraint(
         id=cust_uq_id,
         table_id=cust_id,
@@ -131,12 +172,56 @@ def build_postgres_enterprise_fixture(workspace_id: str = "ws-ent") -> Canonical
     )
 
     # 2. Orders Table (Composite PK: tenant_id, order_id; Composite FK -> customers)
-    orders_id = compute_stable_object_id(ObjectKind.TABLE, engine, ("public", "orders"), workspace_id)
-    ord_col_tenant = make_test_column(str(orders_id), "tenant_id", 1, "uuid", CanonicalTypeCategory.UUID, False, workspace_id=workspace_id)
-    ord_col_order_id = make_test_column(str(orders_id), "order_id", 2, "bigint", CanonicalTypeCategory.INTEGER, False, workspace_id=workspace_id)
-    ord_col_cust_id = make_test_column(str(orders_id), "customer_id", 3, "bigint", CanonicalTypeCategory.INTEGER, False, workspace_id=workspace_id)
-    ord_col_subtotal = make_test_column(str(orders_id), "subtotal", 4, "numeric(10,2)", CanonicalTypeCategory.DECIMAL, False, "0.00", workspace_id=workspace_id)
-    ord_col_tax = make_test_column(str(orders_id), "tax", 5, "numeric(10,2)", CanonicalTypeCategory.DECIMAL, False, "0.00", workspace_id=workspace_id)
+    orders_id = compute_stable_object_id(
+        ObjectKind.TABLE, engine, ("public", "orders"), workspace_id
+    )
+    ord_col_tenant = make_test_column(
+        str(orders_id),
+        "tenant_id",
+        1,
+        "uuid",
+        CanonicalTypeCategory.UUID,
+        False,
+        workspace_id=workspace_id,
+    )
+    ord_col_order_id = make_test_column(
+        str(orders_id),
+        "order_id",
+        2,
+        "bigint",
+        CanonicalTypeCategory.INTEGER,
+        False,
+        workspace_id=workspace_id,
+    )
+    ord_col_cust_id = make_test_column(
+        str(orders_id),
+        "customer_id",
+        3,
+        "bigint",
+        CanonicalTypeCategory.INTEGER,
+        False,
+        workspace_id=workspace_id,
+    )
+    ord_col_subtotal = make_test_column(
+        str(orders_id),
+        "subtotal",
+        4,
+        "numeric(10,2)",
+        CanonicalTypeCategory.DECIMAL,
+        False,
+        "0.00",
+        workspace_id=workspace_id,
+    )
+    ord_col_tax = make_test_column(
+        str(orders_id),
+        "tax",
+        5,
+        "numeric(10,2)",
+        CanonicalTypeCategory.DECIMAL,
+        False,
+        "0.00",
+        workspace_id=workspace_id,
+    )
     ord_col_total = make_test_column(
         str(orders_id),
         "total",
@@ -149,7 +234,9 @@ def build_postgres_enterprise_fixture(workspace_id: str = "ws-ent") -> Canonical
         workspace_id=workspace_id,
     )
 
-    ord_pk_id = compute_stable_object_id(ObjectKind.PRIMARY_KEY, engine, (str(orders_id), "pk_orders"), workspace_id)
+    ord_pk_id = compute_stable_object_id(
+        ObjectKind.PRIMARY_KEY, engine, (str(orders_id), "pk_orders"), workspace_id
+    )
     ord_pk = CanonicalConstraint(
         id=ord_pk_id,
         table_id=orders_id,
@@ -160,7 +247,9 @@ def build_postgres_enterprise_fixture(workspace_id: str = "ws-ent") -> Canonical
         provenance=prov,
     )
 
-    ord_fk_id = compute_stable_object_id(ObjectKind.FOREIGN_KEY, engine, (str(orders_id), "fk_orders_customer"), workspace_id)
+    ord_fk_id = compute_stable_object_id(
+        ObjectKind.FOREIGN_KEY, engine, (str(orders_id), "fk_orders_customer"), workspace_id
+    )
     ord_fk = CanonicalForeignKey(
         id=ord_fk_id,
         table_id=orders_id,
@@ -177,7 +266,12 @@ def build_postgres_enterprise_fixture(workspace_id: str = "ws-ent") -> Canonical
         provenance=prov,
     )
 
-    ord_ck_id = compute_stable_object_id(ObjectKind.CHECK_CONSTRAINT, engine, (str(orders_id), "ck_orders_subtotal_positive"), workspace_id)
+    ord_ck_id = compute_stable_object_id(
+        ObjectKind.CHECK_CONSTRAINT,
+        engine,
+        (str(orders_id), "ck_orders_subtotal_positive"),
+        workspace_id,
+    )
     ord_ck = CanonicalConstraint(
         id=ord_ck_id,
         table_id=orders_id,
@@ -193,7 +287,14 @@ def build_postgres_enterprise_fixture(workspace_id: str = "ws-ent") -> Canonical
         schema_name="public",
         name="orders",
         table_type=TableType.TABLE,
-        columns=(ord_col_tenant, ord_col_order_id, ord_col_cust_id, ord_col_subtotal, ord_col_tax, ord_col_total),
+        columns=(
+            ord_col_tenant,
+            ord_col_order_id,
+            ord_col_cust_id,
+            ord_col_subtotal,
+            ord_col_tax,
+            ord_col_total,
+        ),
         primary_key=ord_pk,
         constraints=(ord_ck,),
         foreign_keys=(ord_fk,),
@@ -227,11 +328,41 @@ def build_sqlite_fixture(workspace_id: str = "ws-sqlite") -> CanonicalDatabase:
     ns_id = compute_stable_object_id(ObjectKind.NAMESPACE, engine, ("main",), workspace_id)
 
     tbl_id = compute_stable_object_id(ObjectKind.TABLE, engine, ("main", "inventory"), workspace_id)
-    col_warehouse = make_test_column(str(tbl_id), "warehouse_id", 1, "INTEGER", CanonicalTypeCategory.INTEGER, False, engine=engine, workspace_id=workspace_id)
-    col_sku = make_test_column(str(tbl_id), "sku", 2, "TEXT", CanonicalTypeCategory.TEXT, False, engine=engine, workspace_id=workspace_id)
-    col_qty = make_test_column(str(tbl_id), "quantity", 3, "INTEGER", CanonicalTypeCategory.INTEGER, False, "0", engine=engine, workspace_id=workspace_id)
+    col_warehouse = make_test_column(
+        str(tbl_id),
+        "warehouse_id",
+        1,
+        "INTEGER",
+        CanonicalTypeCategory.INTEGER,
+        False,
+        engine=engine,
+        workspace_id=workspace_id,
+    )
+    col_sku = make_test_column(
+        str(tbl_id),
+        "sku",
+        2,
+        "TEXT",
+        CanonicalTypeCategory.TEXT,
+        False,
+        engine=engine,
+        workspace_id=workspace_id,
+    )
+    col_qty = make_test_column(
+        str(tbl_id),
+        "quantity",
+        3,
+        "INTEGER",
+        CanonicalTypeCategory.INTEGER,
+        False,
+        "0",
+        engine=engine,
+        workspace_id=workspace_id,
+    )
 
-    pk_id = compute_stable_object_id(ObjectKind.PRIMARY_KEY, engine, (str(tbl_id), "pk_inventory"), workspace_id)
+    pk_id = compute_stable_object_id(
+        ObjectKind.PRIMARY_KEY, engine, (str(tbl_id), "pk_inventory"), workspace_id
+    )
     pk = CanonicalConstraint(
         id=pk_id,
         table_id=tbl_id,
@@ -242,7 +373,9 @@ def build_sqlite_fixture(workspace_id: str = "ws-sqlite") -> CanonicalDatabase:
         provenance=prov,
     )
 
-    ck_id = compute_stable_object_id(ObjectKind.CHECK_CONSTRAINT, engine, (str(tbl_id), "ck_quantity_non_negative"), workspace_id)
+    ck_id = compute_stable_object_id(
+        ObjectKind.CHECK_CONSTRAINT, engine, (str(tbl_id), "ck_quantity_non_negative"), workspace_id
+    )
     ck = CanonicalConstraint(
         id=ck_id,
         table_id=tbl_id,
@@ -265,8 +398,18 @@ def build_sqlite_fixture(workspace_id: str = "ws-sqlite") -> CanonicalDatabase:
         provenance=prov,
     )
 
-    ns = CanonicalNamespace(id=ns_id, database_id=db_id, name="main", tables=(tbl,), provenance=prov)
-    return CanonicalDatabase(id=db_id, name="main", engine=engine, version="3.45.0", workspace_id=workspace_id, namespaces=(ns,), provenance=prov)
+    ns = CanonicalNamespace(
+        id=ns_id, database_id=db_id, name="main", tables=(tbl,), provenance=prov
+    )
+    return CanonicalDatabase(
+        id=db_id,
+        name="main",
+        engine=engine,
+        version="3.45.0",
+        workspace_id=workspace_id,
+        namespaces=(ns,),
+        provenance=prov,
+    )
 
 
 def build_mysql_fixture(workspace_id: str = "ws-mysql") -> CanonicalDatabase:
@@ -276,7 +419,9 @@ def build_mysql_fixture(workspace_id: str = "ws-mysql") -> CanonicalDatabase:
     db_id = compute_stable_object_id(ObjectKind.DATABASE, engine, ("shop_db",), workspace_id)
     ns_id = compute_stable_object_id(ObjectKind.NAMESPACE, engine, ("shop_db",), workspace_id)
 
-    tbl_id = compute_stable_object_id(ObjectKind.TABLE, engine, ("shop_db", "products"), workspace_id)
+    tbl_id = compute_stable_object_id(
+        ObjectKind.TABLE, engine, ("shop_db", "products"), workspace_id
+    )
     col_id = make_test_column(
         str(tbl_id),
         "id",
@@ -288,7 +433,16 @@ def build_mysql_fixture(workspace_id: str = "ws-mysql") -> CanonicalDatabase:
         engine=engine,
         workspace_id=workspace_id,
     )
-    col_name = make_test_column(str(tbl_id), "name", 2, "varchar(100)", CanonicalTypeCategory.TEXT, False, engine=engine, workspace_id=workspace_id)
+    col_name = make_test_column(
+        str(tbl_id),
+        "name",
+        2,
+        "varchar(100)",
+        CanonicalTypeCategory.TEXT,
+        False,
+        engine=engine,
+        workspace_id=workspace_id,
+    )
     col_status = make_test_column(
         str(tbl_id),
         "status",
@@ -302,7 +456,9 @@ def build_mysql_fixture(workspace_id: str = "ws-mysql") -> CanonicalDatabase:
         workspace_id=workspace_id,
     )
 
-    pk_id = compute_stable_object_id(ObjectKind.PRIMARY_KEY, engine, (str(tbl_id), "PRIMARY"), workspace_id)
+    pk_id = compute_stable_object_id(
+        ObjectKind.PRIMARY_KEY, engine, (str(tbl_id), "PRIMARY"), workspace_id
+    )
     pk = CanonicalConstraint(
         id=pk_id,
         table_id=tbl_id,
@@ -321,12 +477,26 @@ def build_mysql_fixture(workspace_id: str = "ws-mysql") -> CanonicalDatabase:
         table_type=TableType.TABLE,
         columns=(col_id, col_name, col_status),
         primary_key=pk,
-        extra_metadata={"engine": "InnoDB", "row_format": "Dynamic", "collation": "utf8mb4_0900_ai_ci"},
+        extra_metadata={
+            "engine": "InnoDB",
+            "row_format": "Dynamic",
+            "collation": "utf8mb4_0900_ai_ci",
+        },
         provenance=prov,
     )
 
-    ns = CanonicalNamespace(id=ns_id, database_id=db_id, name="shop_db", tables=(tbl,), provenance=prov)
-    return CanonicalDatabase(id=db_id, name="shop_db", engine=engine, version="8.0.36", workspace_id=workspace_id, namespaces=(ns,), provenance=prov)
+    ns = CanonicalNamespace(
+        id=ns_id, database_id=db_id, name="shop_db", tables=(tbl,), provenance=prov
+    )
+    return CanonicalDatabase(
+        id=db_id,
+        name="shop_db",
+        engine=engine,
+        version="8.0.36",
+        workspace_id=workspace_id,
+        namespaces=(ns,),
+        provenance=prov,
+    )
 
 
 def build_schema_representation_fixture(canonical_db: CanonicalDatabase) -> SchemaRepresentation:

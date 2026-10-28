@@ -38,7 +38,7 @@ where = ["packages/core/src", "packages/connectors/src", "apps/api/src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["packages/core/src", "packages/connectors/src", "apps/api/src"]
+pythonpath = [".", "packages/core/src", "packages/connectors/src", "apps/api/src"]
 
 [tool.ruff]
 target-version = "py312"

@@ -51,9 +51,7 @@ class CanonicalForeignKey(BaseModel):
                 or ()
             )
             ref_cols = tuple(
-                data.get("referenced_columns")
-                or data.get("referenced_column_names")
-                or ()
+                data.get("referenced_columns") or data.get("referenced_column_names") or ()
             )
             if "declared_source_columns" not in data and src_cols:
                 data["declared_source_columns"] = src_cols
@@ -68,8 +66,7 @@ class CanonicalForeignKey(BaseModel):
                     )
                 elif src_cols and not ref_cols:
                     data["column_mappings"] = tuple(
-                        ForeignKeyMapping(source_column=s, referenced_column=s)
-                        for s in src_cols
+                        ForeignKeyMapping(source_column=s, referenced_column=s) for s in src_cols
                     )
                 elif src_cols and ref_cols:
                     data["column_mappings"] = ()
