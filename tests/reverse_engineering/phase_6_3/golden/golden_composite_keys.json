@@ -1,0 +1,132 @@
+{
+  "capability_profile": {
+    "engine": "postgresql",
+    "foreign_keys_state": "supported",
+    "is_enforcement_guaranteed": true,
+    "notes": [
+      "Full standard SQL referential actions and deferrability support."
+    ],
+    "overall_completeness": "COMPLETE",
+    "supports_composite_keys": true,
+    "supports_cross_schema_fk": true,
+    "supports_deferrable": true,
+    "supports_match_types": true
+  },
+  "completeness": "COMPLETE",
+  "contract_version": "1.0.0",
+  "database_id": "dera:database:18090891fb902a6f8887f931",
+  "database_name": "comp_db",
+  "edges": [
+    {
+      "column_pairs": [
+        {
+          "ordinal_position": 1,
+          "referenced_column_id": null,
+          "referenced_column_name": "tenant_id",
+          "source_column_id": null,
+          "source_column_name": "tenant_id"
+        },
+        {
+          "ordinal_position": 2,
+          "referenced_column_id": null,
+          "referenced_column_name": "branch_id",
+          "source_column_id": null,
+          "source_column_name": "branch_id"
+        }
+      ],
+      "extra_metadata": {},
+      "is_composite": true,
+      "is_cross_namespace": false,
+      "is_deferrable": false,
+      "is_enforced": true,
+      "is_self_referencing": false,
+      "match_type": null,
+      "native_name": "fk_emp_branches",
+      "object_id": "dera:foreign_key:0cb80def047b14bb5f010148",
+      "on_delete": "RESTRICT",
+      "on_update": "CASCADE",
+      "provenance": {
+        "capability_status": null,
+        "collection_timestamp": "2026-10-28T12:00:00Z",
+        "completeness": "COMPLETE",
+        "connector_version": "1.0.0",
+        "engine_specific": {},
+        "native_identifier": "test",
+        "source_engine": "postgresql",
+        "source_location": null,
+        "source_version": "16.0"
+      },
+      "referenced_namespace": "public",
+      "referenced_table_id": "dera:table:a5956f17840ca724962b8d4b",
+      "referenced_table_name": "branches",
+      "resolution_status": "resolved",
+      "source_namespace": "public",
+      "source_table_id": "dera:table:b30f9ca9bbcf0079f1e606a3",
+      "source_table_name": "employees"
+    }
+  ],
+  "engine": "postgresql",
+  "nodes": [
+    {
+      "column_count": 2,
+      "completeness": "COMPLETE",
+      "namespace_id": "dera:namespace:a2f1835ebb4ff76f9f52ca61",
+      "namespace_name": "public",
+      "native_attributes": {},
+      "native_name": "branches",
+      "object_id": "dera:table:a5956f17840ca724962b8d4b",
+      "primary_key_columns": [
+        "tenant_id",
+        "branch_id"
+      ],
+      "provenance": {
+        "capability_status": null,
+        "collection_timestamp": "2026-10-28T12:00:00Z",
+        "completeness": "COMPLETE",
+        "connector_version": "1.0.0",
+        "engine_specific": {},
+        "native_identifier": "test",
+        "source_engine": "postgresql",
+        "source_location": null,
+        "source_version": "16.0"
+      },
+      "table_type": "TABLE"
+    },
+    {
+      "column_count": 3,
+      "completeness": "COMPLETE",
+      "namespace_id": "dera:namespace:a2f1835ebb4ff76f9f52ca61",
+      "namespace_name": "public",
+      "native_attributes": {},
+      "native_name": "employees",
+      "object_id": "dera:table:b30f9ca9bbcf0079f1e606a3",
+      "primary_key_columns": [],
+      "provenance": {
+        "capability_status": null,
+        "collection_timestamp": "2026-10-28T12:00:00Z",
+        "completeness": "COMPLETE",
+        "connector_version": "1.0.0",
+        "engine_specific": {},
+        "native_identifier": "test",
+        "source_engine": "postgresql",
+        "source_location": null,
+        "source_version": "16.0"
+      },
+      "table_type": "TABLE"
+    }
+  ],
+  "provenance": {
+    "capability_status": null,
+    "collection_timestamp": "2026-10-28T12:00:00Z",
+    "completeness": "COMPLETE",
+    "connector_version": "1.0.0",
+    "engine_specific": {},
+    "native_identifier": "test",
+    "source_engine": "postgresql",
+    "source_location": null,
+    "source_version": "16.0"
+  },
+  "unresolved_references": [],
+  "validation_findings": [],
+  "workspace_id": null
+}

@@ -1,0 +1,124 @@
+{
+  "capability_profile": {
+    "engine": "mysql",
+    "foreign_keys_state": "supported",
+    "is_enforcement_guaranteed": true,
+    "notes": [
+      "MySQL foreign key enforcement depends on InnoDB; MyISAM tables silently ignore foreign keys."
+    ],
+    "overall_completeness": "COMPLETE",
+    "supports_composite_keys": true,
+    "supports_cross_schema_fk": true,
+    "supports_deferrable": false,
+    "supports_match_types": false
+  },
+  "completeness": "COMPLETE",
+  "contract_version": "1.0.0",
+  "database_id": "dera:database:725d905e22bbfb40b024db59",
+  "database_name": "test_db",
+  "edges": [
+    {
+      "column_pairs": [
+        {
+          "ordinal_position": 1,
+          "referenced_column_id": null,
+          "referenced_column_name": "id",
+          "source_column_id": null,
+          "source_column_name": "customer_id"
+        }
+      ],
+      "extra_metadata": {},
+      "is_composite": false,
+      "is_cross_namespace": false,
+      "is_deferrable": false,
+      "is_enforced": true,
+      "is_self_referencing": false,
+      "match_type": null,
+      "native_name": "fk_orders_customer",
+      "object_id": "dera:foreign_key:00ab805b9e76ba9248604730",
+      "on_delete": "CASCADE",
+      "on_update": "NO ACTION",
+      "provenance": {
+        "capability_status": null,
+        "collection_timestamp": "2026-10-28T12:00:00Z",
+        "completeness": "COMPLETE",
+        "connector_version": "1.0.0",
+        "engine_specific": {},
+        "native_identifier": "fk_orders_customer",
+        "source_engine": "mysql",
+        "source_location": null,
+        "source_version": "3.42.0"
+      },
+      "referenced_namespace": "public",
+      "referenced_table_id": "dera:table:e39b6f578c84468d528fcd61",
+      "referenced_table_name": "customers",
+      "resolution_status": "resolved",
+      "source_namespace": "public",
+      "source_table_id": "dera:table:28687934d74d9c3d849e34b9",
+      "source_table_name": "orders"
+    }
+  ],
+  "engine": "mysql",
+  "nodes": [
+    {
+      "column_count": 2,
+      "completeness": "COMPLETE",
+      "namespace_id": "dera:namespace:2b11acb57826a6df3fb8157c",
+      "namespace_name": "public",
+      "native_attributes": {},
+      "native_name": "customers",
+      "object_id": "dera:table:e39b6f578c84468d528fcd61",
+      "primary_key_columns": [
+        "id"
+      ],
+      "provenance": {
+        "capability_status": null,
+        "collection_timestamp": "2026-10-28T12:00:00Z",
+        "completeness": "COMPLETE",
+        "connector_version": "1.0.0",
+        "engine_specific": {},
+        "native_identifier": "customers",
+        "source_engine": "mysql",
+        "source_location": null,
+        "source_version": "3.42.0"
+      },
+      "table_type": "TABLE"
+    },
+    {
+      "column_count": 2,
+      "completeness": "COMPLETE",
+      "namespace_id": "dera:namespace:2b11acb57826a6df3fb8157c",
+      "namespace_name": "public",
+      "native_attributes": {},
+      "native_name": "orders",
+      "object_id": "dera:table:28687934d74d9c3d849e34b9",
+      "primary_key_columns": [],
+      "provenance": {
+        "capability_status": null,
+        "collection_timestamp": "2026-10-28T12:00:00Z",
+        "completeness": "COMPLETE",
+        "connector_version": "1.0.0",
+        "engine_specific": {},
+        "native_identifier": "orders",
+        "source_engine": "mysql",
+        "source_location": null,
+        "source_version": "3.42.0"
+      },
+      "table_type": "TABLE"
+    }
+  ],
+  "provenance": {
+    "capability_status": null,
+    "collection_timestamp": "2026-10-28T12:00:00Z",
+    "completeness": "COMPLETE",
+    "connector_version": "1.0.0",
+    "engine_specific": {},
+    "native_identifier": "test_db",
+    "source_engine": "mysql",
+    "source_location": null,
+    "source_version": "3.42.0"
+  },
+  "unresolved_references": [],
+  "validation_findings": [],
+  "workspace_id": null
+}

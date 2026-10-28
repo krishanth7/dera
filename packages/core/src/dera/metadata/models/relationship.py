@@ -43,8 +43,18 @@ class CanonicalForeignKey(BaseModel):
             elif "source_table_name" not in data:
                 data["source_table_name"] = ""
 
-            src_cols = tuple(data.get("source_columns") or data.get("columns") or ())
-            ref_cols = tuple(data.get("referenced_columns") or ())
+            src_cols = tuple(
+                data.get("source_columns")
+                or data.get("source_column_names")
+                or data.get("column_names")
+                or data.get("columns")
+                or ()
+            )
+            ref_cols = tuple(
+                data.get("referenced_columns")
+                or data.get("referenced_column_names")
+                or ()
+            )
             if "declared_source_columns" not in data and src_cols:
                 data["declared_source_columns"] = src_cols
             if "declared_referenced_columns" not in data and ref_cols:
@@ -141,8 +151,23 @@ class CanonicalForeignKey(BaseModel):
         return tuple(m.source_column for m in self.column_mappings)
 
     @property
+    def column_names(self) -> tuple[str, ...]:
+        """Alias for source_columns."""
+        return self.source_columns
+
+    @property
     def referenced_columns(self) -> tuple[str, ...]:
         """Convenience tuple of referenced column names."""
         if self.declared_referenced_columns:
             return self.declared_referenced_columns
         return tuple(m.referenced_column for m in self.column_mappings)
+
+    @property
+    def referenced_column_names(self) -> tuple[str, ...]:
+        """Alias for referenced_columns."""
+        return self.referenced_columns
+
+    @property
+    def referenced_schema_name(self) -> str | None:
+        """Alias for referenced_schema."""
+        return self.referenced_schema

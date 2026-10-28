@@ -37,8 +37,14 @@ class CanonicalConstraint(BaseModel):
     )
     columns: tuple[str, ...] = Field(
         default_factory=tuple,
+        validation_alias=AliasChoices("columns", "column_names"),
         description="Ordered tuple of column names participating in this constraint.",
     )
+
+    @property
+    def column_names(self) -> tuple[str, ...]:
+        """Convenience property matching ReconstructedPrimaryKey."""
+        return self.columns
     check_clause: str | None = Field(
         default=None,
         validation_alias=AliasChoices("check_clause", "expression"),
