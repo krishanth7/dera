@@ -20,6 +20,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from dera.metadata.enums import ObjectKind
+from dera.metadata.models.table import CanonicalTable
 from dera.reverse_engineering.errors import MissingParentError, SchemaValidationError
 
 if TYPE_CHECKING:
@@ -48,10 +49,14 @@ def validate_schema_representation(
     errors: list[str] = []
     reg = schema.registry
     db = schema.database
+    fk_references = {ref.foreign_key_id: ref for ref in schema.foreign_key_references}
 
     # 1. Database-level validation
     if not db.id or not db.id.startswith(f"dera:{ObjectKind.DATABASE.value}:"):
-        errors.append(f"Invalid database ObjectId format: {db.id!r}")
+        msg = f"Invalid database ObjectId format: {db.id!r}"
+        errors.append(msg)
+        if strict:
+            raise SchemaValidationError(msg)
 
     # 2. Namespace validation
     for ns in db.namespaces:
@@ -88,7 +93,10 @@ def validate_schema_representation(
             seen_ordinals: set[int] = set()
             for col in table.columns:
                 if not reg.contains(col.id):
-                    errors.append(f"Column {col.name!r} ({col.id}) is not in registry.")
+                    msg = f"Column {col.name!r} ({col.id}) is not in registry."
+                    errors.append(msg)
+                    if strict:
+                        raise SchemaValidationError(msg)
 
                 if col.parent_table_id != table.id:
                     msg = (
@@ -117,9 +125,10 @@ def validate_schema_representation(
 
             for constraint in all_table_constraints:
                 if not reg.contains(constraint.id):
-                    errors.append(
-                        f"Constraint {constraint.name!r} ({constraint.id}) is not in registry."
-                    )
+                    msg = f"Constraint {constraint.name!r} ({constraint.id}) is not in registry."
+                    errors.append(msg)
+                    if strict:
+                        raise SchemaValidationError(msg)
 
                 if constraint.parent_table_id != table.id:
                     msg = (
@@ -149,7 +158,10 @@ def validate_schema_representation(
             # 6. Indexes validation
             for index in table.indexes:
                 if not reg.contains(index.id):
-                    errors.append(f"Index {index.name!r} ({index.id}) is not in registry.")
+                    msg = f"Index {index.name!r} ({index.id}) is not in registry."
+                    errors.append(msg)
+                    if strict:
+                        raise SchemaValidationError(msg)
 
                 if index.parent_table_id != table.id:
                     msg = (
@@ -177,7 +189,10 @@ def validate_schema_representation(
             # 7. Triggers validation
             for trigger in table.triggers:
                 if not reg.contains(trigger.id):
-                    errors.append(f"Trigger {trigger.name!r} ({trigger.id}) is not in registry.")
+                    msg = f"Trigger {trigger.name!r} ({trigger.id}) is not in registry."
+                    errors.append(msg)
+                    if strict:
+                        raise SchemaValidationError(msg)
 
                 if trigger.parent_table_id != table.id:
                     msg = (
@@ -196,7 +211,10 @@ def validate_schema_representation(
             # 8. Foreign keys validation
             for fk in table.foreign_keys:
                 if not reg.contains(fk.id):
-                    errors.append(f"Foreign key {fk.name!r} ({fk.id}) is not in registry.")
+                    msg = f"Foreign key {fk.name!r} ({fk.id}) is not in registry."
+                    errors.append(msg)
+                    if strict:
+                        raise SchemaValidationError(msg)
 
                 if fk.source_table_id != table.id:
                     msg = (
@@ -220,38 +238,47 @@ def validate_schema_representation(
                         if strict:
                             raise SchemaValidationError(msg)
 
-                # Verify referenced table if resolved
-                if fk.referenced_table_id:
-                    if not reg.contains(fk.referenced_table_id):
-                        msg = (
-                            f"Foreign key {fk.name!r} targets referenced_table_id "
-                            f"{fk.referenced_table_id!r} which is not present in registry."
-                        )
-                        errors.append(msg)
-                        if strict and strict_foreign_keys:
-                            raise SchemaValidationError(msg)
-                    else:
-                        target_tbl = reg.get_table(fk.referenced_table_id)
-                        target_cols = {c.name.strip().lower() for c in target_tbl.columns}
-                        for ref_col in fk.referenced_columns:
-                            if ref_col.strip().lower() not in target_cols:
-                                msg = (
-                                    f"Foreign key {fk.name!r} references parent column {ref_col!r} "
-                                    f"which is not declared on parent table {target_tbl.name!r}."
-                                )
-                                errors.append(msg)
-                                if strict:
-                                    raise SchemaValidationError(msg)
-                elif strict_foreign_keys:
-                    msg = f"Foreign key {fk.name!r} has unresolved target table {fk.referenced_table_name!r}."
+                # Validate the builder's resolved reference, including name-based resolution.
+                ref = fk_references.get(fk.id)
+                target_id = ref.referenced_table_id if ref is not None else fk.referenced_table_id
+                is_resolved = ref.is_resolved if ref is not None else bool(target_id)
+                target_tbl = reg.get_object(target_id) if target_id else None
+                if target_tbl is not None and not isinstance(target_tbl, CanonicalTable):
+                    msg = (
+                        f"Foreign key {fk.name!r} targets referenced_table_id "
+                        f"{target_id!r} which is not a table."
+                    )
                     errors.append(msg)
                     if strict:
                         raise SchemaValidationError(msg)
+                elif not is_resolved or target_tbl is None:
+                    if strict_foreign_keys:
+                        msg = (
+                            f"Foreign key {fk.name!r} has unresolved target table "
+                            f"{fk.referenced_table_name!r} ({target_id!r})."
+                        )
+                        errors.append(msg)
+                        if strict:
+                            raise SchemaValidationError(msg)
+                else:
+                    target_cols = {c.name.strip().lower() for c in target_tbl.columns}
+                    for ref_col in fk.referenced_columns:
+                        if ref_col.strip().lower() not in target_cols:
+                            msg = (
+                                f"Foreign key {fk.name!r} references parent column {ref_col!r} "
+                                f"which is not declared on parent table {target_tbl.name!r}."
+                            )
+                            errors.append(msg)
+                            if strict:
+                                raise SchemaValidationError(msg)
 
         # 9. Views validation
         for view in ns.views:
             if not reg.contains(view.id):
-                errors.append(f"View {view.name!r} ({view.id}) is not in registry.")
+                msg = f"View {view.name!r} ({view.id}) is not in registry."
+                errors.append(msg)
+                if strict:
+                    raise SchemaValidationError(msg)
             if view.namespace_id != ns.id:
                 msg = (
                     f"View {view.name!r} declares namespace_id {view.namespace_id!r} "

@@ -16,9 +16,13 @@ from __future__ import annotations
 import hashlib
 import json
 
+from pydantic import ValidationError
+
+from dera.metadata.enums import MetadataCompleteness
 from dera.metadata.models.database import CanonicalDatabase
 from dera.metadata.serialization import _canonical_default_serializer
 from dera.reverse_engineering.builder import SchemaBuilder, SchemaResourceLimits
+from dera.reverse_engineering.capabilities import SchemaCapabilityProfile
 from dera.reverse_engineering.errors import (
     SchemaResourceLimitError,
     SchemaSerializationError,
@@ -128,12 +132,33 @@ def deserialize_schema_representation(
     canonical_db = CanonicalDatabase.model_validate(db_data)
 
     # Reconstruct via SchemaBuilder to guarantee complete registry, ordering, and validation
-    return SchemaBuilder.from_canonical_database(
+    schema = SchemaBuilder.from_canonical_database(
         database=canonical_db,
         workspace_id=workspace_id,
         limits=limits,
         strict_validation=strict_validation,
     )
+
+    # Connector visibility cannot be inferred from the canonical database alone.
+    # Validate the saved assessment before restoring it onto the rebuilt schema.
+    try:
+        completeness = MetadataCompleteness(data.get("completeness", schema.completeness))
+        profile_data = data.get("capability_profile", schema.capability_profile)
+        profile = (
+            SchemaCapabilityProfile.model_validate(profile_data)
+            if profile_data is not None
+            else None
+        )
+    except (ValidationError, ValueError) as exc:
+        raise SchemaSerializationError(f"Invalid serialized capability assessment: {exc}") from exc
+    if profile is not None:
+        if profile.engine != canonical_db.engine.strip().lower():
+            raise SchemaSerializationError("Capability profile engine does not match the database.")
+        if profile.overall_completeness != completeness:
+            raise SchemaSerializationError(
+                "Capability profile and schema completeness do not match."
+            )
+    return schema.model_copy(update={"capability_profile": profile, "completeness": completeness})
 
 
 __all__ = [

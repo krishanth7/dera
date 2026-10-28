@@ -37,13 +37,11 @@ class TestCrossEngineCompatibility(unittest.TestCase):
         self.assertEqual(len(schema.namespaces), 1)
         self.assertEqual(schema.namespaces[0].name, "main")
 
-        # In SQLite, stored procedures and check constraint naming are unsupported
+        # SQLite exposes partial check metadata, represented as a supported feature.
         profile = schema.capability_profile
         self.assertIsNotNone(profile)
-        self.assertEqual(
-            profile.features.get("check_constraints_named", CapabilityState.UNSUPPORTED),
-            CapabilityState.UNSUPPORTED,
-        )
+        self.assertIn("check_constraints", profile.features)
+        self.assertEqual(profile.features["check_constraints"], CapabilityState.SUPPORTED)
 
     def test_postgresql_engine_representation(self) -> None:
         """Verify PostgreSQL multi-namespace, composite foreign key schema."""

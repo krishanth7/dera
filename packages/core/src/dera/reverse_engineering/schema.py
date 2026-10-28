@@ -21,6 +21,7 @@ import json
 from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
+from pydantic_core import to_jsonable_python
 
 from dera.metadata.enums import MetadataCompleteness
 from dera.metadata.models.column import CanonicalColumn
@@ -43,6 +44,22 @@ if TYPE_CHECKING:
     pass
 
 SCHEMA_REPRESENTATION_CONTRACT_VERSION: str = "1.0.0"
+
+
+def _normalize_sets(value: Any) -> Any:
+    """Order unordered collections before JSON conversion erases their set type."""
+    if isinstance(value, dict):
+        return {key: _normalize_sets(item) for key, item in value.items()}
+    if isinstance(value, (set, frozenset)):
+        return sorted(
+            (_normalize_sets(item) for item in value),
+            key=lambda item: json.dumps(
+                to_jsonable_python(item), sort_keys=True, ensure_ascii=False, separators=(",", ":")
+            ),
+        )
+    if isinstance(value, (tuple, list)):
+        return [_normalize_sets(item) for item in value]
+    return value
 
 
 class SchemaRepresentation(BaseModel):
@@ -252,7 +269,7 @@ class SchemaRepresentation(BaseModel):
 
     def to_dict(self) -> dict[str, Any]:
         """Dump schema representation to a plain dictionary."""
-        return self.model_dump(mode="json")
+        return to_jsonable_python(_normalize_sets(self.model_dump(mode="python")))
 
     def to_json(self, indent: int | None = 2) -> str:
         """Serialize to deterministic, sorted-key UTF-8 JSON string."""

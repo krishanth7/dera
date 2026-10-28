@@ -22,6 +22,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from dera.metadata.enums import MetadataCompleteness
 from dera.metadata.models.database import CanonicalDatabase
 from dera.metadata.models.namespace import CanonicalNamespace
 from dera.metadata.models.table import CanonicalTable
@@ -252,7 +253,7 @@ class SchemaBuilder:
         normalized_db = database.model_copy(update={"namespaces": tuple(normalized_namespaces)})
 
         # 5. Resolve foreign key references
-        for tbl in normalized_db.all_tables():
+        for source_ns, tbl in ((ns, tbl) for ns in normalized_db.namespaces for tbl in ns.tables):
             for fk in tbl.foreign_keys:
                 resolved_id = fk.referenced_table_id
                 status = (
@@ -263,9 +264,11 @@ class SchemaBuilder:
 
                 # If referenced_table_id wasn't in metadata report, attempt schema-level lookup
                 if not resolved_id:
-                    target_schema = fk.referenced_schema
+                    target_schema = (
+                        source_ns.name if fk.referenced_schema is None else fk.referenced_schema
+                    )
                     for target_ns in normalized_db.namespaces:
-                        if target_schema is None or target_ns.name.lower() == target_schema.lower():
+                        if target_ns.name.lower() == target_schema.lower():
                             cand = target_ns.get_table(fk.referenced_table_name)
                             if cand is not None:
                                 resolved_id = cand.id
@@ -300,6 +303,22 @@ class SchemaBuilder:
 
         # 6. Assess capabilities & completeness
         cap_profile = assess_schema_capabilities(normalized_db.engine, normalized_db, capabilities)
+        completeness_severity = {
+            MetadataCompleteness.COMPLETE: 0,
+            MetadataCompleteness.PARTIAL: 1,
+            MetadataCompleteness.RESTRICTED: 2,
+            MetadataCompleteness.UNSUPPORTED: 3,
+            MetadataCompleteness.UNKNOWN: 4,
+        }
+        completeness_states = [
+            cap_profile.overall_completeness,
+            normalized_db.provenance.completeness,
+        ]
+        for ns in normalized_db.namespaces:
+            completeness_states.append(ns.provenance.completeness)
+            completeness_states.extend(tbl.provenance.completeness for tbl in ns.tables)
+        completeness = max(completeness_states, key=completeness_severity.__getitem__)
+        cap_profile = cap_profile.model_copy(update={"overall_completeness": completeness})
 
         # 7. Build preliminary representation for validation
         duration_ms = (time.perf_counter() - start_time) * 1000.0
@@ -383,18 +402,18 @@ class SchemaBuilder:
                     workspace_id=workspace_id,
                 )
                 canonical_db = normalizer.normalize(metadata_report)
-                return cls.from_canonical_database(
-                    database=canonical_db,
-                    workspace_id=workspace_id,
-                    limits=limits,
-                    strict_validation=strict_validation,
-                    strict_foreign_keys=strict_foreign_keys,
-                    capabilities=capabilities,
-                )
             except Exception as exc:
                 raise InvalidSchemaInputError(
                     f"Failed to normalize connector report: {exc}"
                 ) from exc
+            return cls.from_canonical_database(
+                database=canonical_db,
+                workspace_id=workspace_id,
+                limits=limits,
+                strict_validation=strict_validation,
+                strict_foreign_keys=strict_foreign_keys,
+                capabilities=capabilities,
+            )
 
         if not isinstance(metadata_report, dict):
             raise InvalidSchemaInputError(

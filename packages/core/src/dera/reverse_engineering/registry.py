@@ -226,7 +226,7 @@ class ObjectRegistry:
         - RESOLVED if the target is found with the expected kind.
         - INVALID if the ObjectId format is unrecognised.
         - MISSING if the target is not in the registry.
-        - MISSING with note if found but wrong kind (kind mismatch reported).
+        - INVALID if found but wrong kind (kind mismatch reported).
         """
         if not ref.target_id or not ref.target_id.startswith("dera:"):
             return ref.mark_invalid()
@@ -237,7 +237,10 @@ class ObjectRegistry:
 
         # Verify kind via ObjectId prefix parsing
         actual_kind = _parse_object_kind(ref.target_id)
-        if actual_kind and actual_kind != ref.expected_kind:
+        if ref.expected_kind == ObjectKind.CONSTRAINT:
+            if not isinstance(obj, CanonicalConstraint):
+                return ref.mark_invalid()
+        elif actual_kind and actual_kind != ref.expected_kind:
             # Kind mismatch — return INVALID to signal caller
             return ref.mark_invalid()
 

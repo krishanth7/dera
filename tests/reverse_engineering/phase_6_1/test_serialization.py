@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
 import unittest
 
+from dera.metadata.enums import MetadataCompleteness
 from dera.reverse_engineering.builder import SchemaBuilder, SchemaResourceLimits
 from dera.reverse_engineering.errors import (
     SchemaResourceLimitError,
@@ -70,6 +74,57 @@ class TestSerialization(unittest.TestCase):
 
         # Verify hash match
         self.assertEqual(reconstructed.compute_hash(), self.schema.compute_hash())
+
+    def test_round_trip_preserves_restricted_capabilities_and_completeness(self) -> None:
+        schema = SchemaBuilder.from_canonical_database(
+            self.enterprise_db, capabilities={"views": "restricted"}
+        )
+        rebuilt = deserialize_schema_representation(schema.to_json())
+        self.assertEqual(rebuilt.capability_profile, schema.capability_profile)
+        self.assertEqual(rebuilt.completeness, MetadataCompleteness.RESTRICTED)
+        self.assertEqual(rebuilt.compute_hash(), schema.compute_hash())
+
+    def test_deserialization_validates_capability_profile_and_completeness(self) -> None:
+        for updates in (
+            {"completeness": "invalid"},
+            {"capability_profile": {"engine": "postgresql", "features": {"views": "invalid"}}},
+            {"capability_profile": {"engine": "sqlite"}},
+            {"completeness": "RESTRICTED"},
+        ):
+            with self.subTest(updates=updates):
+                data = self.schema.to_dict()
+                data.update(updates)
+                with self.assertRaises(SchemaSerializationError):
+                    deserialize_schema_representation(json.dumps(data))
+
+    def test_sets_are_deterministic_across_hash_seeds(self) -> None:
+        script = """
+import json
+from tests.reverse_engineering.phase_6_1.fixtures import build_enterprise_fixture
+from dera.reverse_engineering.builder import SchemaBuilder
+from dera.reverse_engineering.serialization import compute_schema_hash, serialize_schema_representation
+db = build_enterprise_fixture()
+prov = db.provenance.model_copy(update={"engine_specific": {
+    "tags": {"gamma", "alpha", "beta"},
+    "nested": [{"values": frozenset({"zeta", "delta"})}],
+    "mixed": {1, "one", ("tuple", 2)},
+}})
+schema = SchemaBuilder.from_canonical_database(db.model_copy(update={"provenance": prov}))
+assert json.loads(schema.to_json()) == json.loads(serialize_schema_representation(schema))
+assert schema.compute_hash() == compute_schema_hash(schema)
+print(schema.to_json())
+print(schema.compute_hash())
+"""
+        outputs = [
+            subprocess.check_output(
+                [sys.executable, "-c", script],
+                env={**os.environ, "PYTHONHASHSEED": seed},
+                text=True,
+            )
+            for seed in ("1", "2", "3")
+        ]
+        self.assertEqual(outputs[0], outputs[1])
+        self.assertEqual(outputs[0], outputs[2])
 
     def test_deserialization_malformed_json_raises_error(self) -> None:
         """Verify SchemaSerializationError on invalid JSON syntax."""

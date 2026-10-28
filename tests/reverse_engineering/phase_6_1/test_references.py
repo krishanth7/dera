@@ -98,6 +98,66 @@ class TestReferences(unittest.TestCase):
         self.assertTrue(fk.is_resolved)
         self.assertIsNotNone(fk.referenced_table_id)
 
+    def test_generic_constraint_references_accept_constraint_subtypes(self) -> None:
+        for table in self.schema.all_tables():
+            constraints = (table.primary_key,) if table.primary_key else ()
+            constraints += table.unique_constraints + table.check_constraints
+            for constraint in constraints:
+                with self.subTest(constraint=constraint.name):
+                    ref = TypedRef(target_id=constraint.id, expected_kind=ObjectKind.CONSTRAINT)
+                    self.assertTrue(self.registry.resolve_ref(ref).is_resolved)
+                    wrong = TypedRef(target_id=constraint.id, expected_kind=ObjectKind.TABLE)
+                    self.assertEqual(
+                        self.registry.resolve_ref(wrong).status, ResolutionStatus.INVALID
+                    )
+
+        table = self.schema.all_tables()[0]
+        wrong = TypedRef(target_id=table.id, expected_kind=ObjectKind.CONSTRAINT)
+        self.assertEqual(self.registry.resolve_ref(wrong).status, ResolutionStatus.INVALID)
+
+    def test_name_resolution_is_scoped_to_source_namespace(self) -> None:
+        db = self.enterprise_db
+        public = db.get_namespace("public")
+        analytics = db.get_namespace("analytics")
+        parent = public.get_table("organizations")
+        child = public.get_table("users")
+        other_parent = parent.model_copy(
+            update={
+                "id": "dera:table:000000000000000000000001",
+                "namespace_id": analytics.id,
+                "columns": (),
+                "primary_key": None,
+                "unique_constraints": (),
+                "check_constraints": (),
+                "indexes": (),
+                "triggers": (),
+            }
+        )
+        analytics = analytics.model_copy(update={"tables": (other_parent,)})
+        for explicit_schema, has_local_parent, expected in (
+            (None, True, parent.id),
+            (None, False, None),
+            ("ANALYTICS", True, other_parent.id),
+            ("missing", True, None),
+        ):
+            with self.subTest(schema=explicit_schema, local=has_local_parent):
+                fk = child.foreign_keys[0].model_copy(
+                    update={
+                        "referenced_table_id": None,
+                        "referenced_schema": explicit_schema,
+                    }
+                )
+                tables = (child.model_copy(update={"foreign_keys": (fk,)}),)
+                if has_local_parent:
+                    tables += (parent,)
+                ns = public.model_copy(update={"tables": tables})
+                schema = SchemaBuilder.from_canonical_database(
+                    db.model_copy(update={"namespaces": (analytics, ns)})
+                )
+                ref = schema.foreign_key_references[0]
+                self.assertEqual(ref.referenced_table_id, expected)
+                self.assertEqual(ref.is_resolved, expected is not None)
+
 
 if __name__ == "__main__":
     unittest.main()
