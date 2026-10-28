@@ -1,0 +1,129 @@
+{
+  "capability_profile": {
+    "engine": "postgresql",
+    "foreign_keys_state": "supported",
+    "is_enforcement_guaranteed": true,
+    "notes": [
+      "Full standard SQL referential actions and deferrability support."
+    ],
+    "overall_completeness": "COMPLETE",
+    "supports_composite_keys": true,
+    "supports_cross_schema_fk": true,
+    "supports_deferrable": true,
+    "supports_match_types": true
+  },
+  "completeness": "COMPLETE",
+  "contract_version": "1.0.0",
+  "database_id": "dera:database:d2e765f5b98eb70eaf52f824",
+  "database_name": "unres_db",
+  "edges": [
+    {
+      "column_pairs": [
+        {
+          "ordinal_position": 1,
+          "referenced_column_id": null,
+          "referenced_column_name": "id",
+          "source_column_id": null,
+          "source_column_name": "customer_id"
+        }
+      ],
+      "extra_metadata": {},
+      "is_composite": false,
+      "is_cross_namespace": false,
+      "is_deferrable": false,
+      "is_enforced": true,
+      "is_self_referencing": false,
+      "match_type": null,
+      "native_name": "fk_orders_ext",
+      "object_id": "dera:foreign_key:956499eccbbb42dc3e665c3f",
+      "on_delete": "NO ACTION",
+      "on_update": "NO ACTION",
+      "provenance": {
+        "capability_status": null,
+        "collection_timestamp": "2026-10-28T12:00:00Z",
+        "completeness": "COMPLETE",
+        "connector_version": "1.0.0",
+        "engine_specific": {},
+        "native_identifier": "test",
+        "source_engine": "postgresql",
+        "source_location": null,
+        "source_version": "16.0"
+      },
+      "referenced_namespace": "public",
+      "referenced_table_id": null,
+      "referenced_table_name": "external_customers",
+      "resolution_status": "missing",
+      "source_namespace": "public",
+      "source_table_id": "dera:table:6ed2d3bb3179478e5f84df42",
+      "source_table_name": "orders"
+    }
+  ],
+  "engine": "postgresql",
+  "nodes": [
+    {
+      "column_count": 2,
+      "completeness": "COMPLETE",
+      "namespace_id": "dera:namespace:d3d76bf2edd4005bfb279a5d",
+      "namespace_name": "public",
+      "native_attributes": {},
+      "native_name": "orders",
+      "object_id": "dera:table:6ed2d3bb3179478e5f84df42",
+      "primary_key_columns": [],
+      "provenance": {
+        "capability_status": null,
+        "collection_timestamp": "2026-10-28T12:00:00Z",
+        "completeness": "COMPLETE",
+        "connector_version": "1.0.0",
+        "engine_specific": {},
+        "native_identifier": "test",
+        "source_engine": "postgresql",
+        "source_location": null,
+        "source_version": "16.0"
+      },
+      "table_type": "TABLE"
+    }
+  ],
+  "provenance": {
+    "capability_status": null,
+    "collection_timestamp": "2026-10-28T12:00:00Z",
+    "completeness": "COMPLETE",
+    "connector_version": "1.0.0",
+    "engine_specific": {},
+    "native_identifier": "test",
+    "source_engine": "postgresql",
+    "source_location": null,
+    "source_version": "16.0"
+  },
+  "unresolved_references": [
+    {
+      "declared_referenced_columns": [
+        "id"
+      ],
+      "declared_source_columns": [
+        "customer_id"
+      ],
+      "details": "Referenced table 'public.external_customers' could not be resolved among registered table nodes.",
+      "foreign_key_id": "dera:foreign_key:956499eccbbb42dc3e665c3f",
+      "native_name": "fk_orders_ext",
+      "provenance": {
+        "capability_status": null,
+        "collection_timestamp": "2026-10-28T12:00:00Z",
+        "completeness": "COMPLETE",
+        "connector_version": "1.0.0",
+        "engine_specific": {},
+        "native_identifier": "test",
+        "source_engine": "postgresql",
+        "source_location": null,
+        "source_version": "16.0"
+      },
+      "reason": "referenced_table_not_found",
+      "referenced_namespace": "public",
+      "referenced_table_name": "external_customers",
+      "source_namespace": "public",
+      "source_table_id": "dera:table:6ed2d3bb3179478e5f84df42",
+      "source_table_name": "orders"
+    }
+  ],
+  "validation_findings": [],
+  "workspace_id": null
+}

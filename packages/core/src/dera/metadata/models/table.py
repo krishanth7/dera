@@ -6,9 +6,11 @@ with complete structural columns, constraints, foreign keys, indexes, and trigge
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Any
 
-from dera.metadata.enums import TableType
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
+
+from dera.metadata.enums import ConstraintType, TableType
 from dera.metadata.models.column import CanonicalColumn
 from dera.metadata.models.constraint import CanonicalConstraint
 from dera.metadata.models.index import CanonicalIndex
@@ -22,6 +24,30 @@ class CanonicalTable(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_table_data(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if "table_type" in data and isinstance(data["table_type"], str):
+                tt = data["table_type"].upper().replace(" ", "_")
+                if tt in ("BASE_TABLE", "TABLE"):
+                    data["table_type"] = TableType.TABLE
+            if "constraints" in data:
+                constraints = data.get("constraints") or ()
+                uqs = list(data.get("unique_constraints") or ())
+                cks = list(data.get("check_constraints") or ())
+                for c in constraints:
+                    ctype = getattr(c, "constraint_type", None) or (
+                        c.get("constraint_type") if isinstance(c, dict) else None
+                    )
+                    if ctype == ConstraintType.UNIQUE:
+                        uqs.append(c)
+                    elif ctype == ConstraintType.CHECK:
+                        cks.append(c)
+                data["unique_constraints"] = tuple(uqs)
+                data["check_constraints"] = tuple(cks)
+        return data
+
     id: str = Field(
         ...,
         description="Deterministic canonical ObjectId for this table.",
@@ -33,6 +59,11 @@ class CanonicalTable(BaseModel):
     name: str = Field(
         ...,
         description="Native table identifier.",
+    )
+    schema_name: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("schema_name", "namespace", "schema"),
+        description="Native schema or namespace identifier.",
     )
     table_type: TableType = Field(
         default=TableType.TABLE,
@@ -69,6 +100,10 @@ class CanonicalTable(BaseModel):
     comment: str | None = Field(
         default=None,
         description="Documentation or comment describing table purpose.",
+    )
+    extra_metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Engine-specific or custom table metadata.",
     )
     provenance: MetadataProvenance = Field(
         ...,

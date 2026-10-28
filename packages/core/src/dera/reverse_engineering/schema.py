@@ -229,6 +229,11 @@ class SchemaRepresentation(BaseModel):
             return None
         return tbl.get_column(column_name)
 
+    @property
+    def tables(self) -> tuple[CanonicalTable, ...]:
+        """Convenience property returning all tables in deterministic order."""
+        return self.all_tables()
+
     def all_tables(self) -> tuple[CanonicalTable, ...]:
         """Return all tables across all namespaces in deterministic order."""
         return self._hierarchy.all_tables_in_database(self.database_id)
