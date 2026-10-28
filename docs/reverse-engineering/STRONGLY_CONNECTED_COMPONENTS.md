@@ -19,7 +19,7 @@ DERA guarantees determinism by:
 1. **Sorted Initial Traversal**: Nodes are visited in canonical sorted order of their string `ObjectId`.
 2. **Sorted Edge Traversal**: Adjacency lists are sorted lexicographically before processing outgoing edges.
 3. **Canonical Component ID**: Each SCC is assigned a deterministic ID based on its member nodes:
-   `scc-` + 8-character hex hash of the sorted member IDs.
+   `scc-` followed by the first 12 characters of each member `ObjectId` joined by underscores.
 4. **Stable SCC Sorting**: The tuple of computed SCCs is sorted by:
    - Size (descending)
    - Minimum member `ObjectId` (ascending)

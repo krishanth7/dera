@@ -153,6 +153,7 @@ class DependencyAnalyzer:
             nodes=node_ids,
             adjacency=dependency_adj,
             self_loops=self_loops,
+            limits=self.limits,
         )
 
         # 6. Enumerate elementary cycles within cyclic SCCs (Johnson)

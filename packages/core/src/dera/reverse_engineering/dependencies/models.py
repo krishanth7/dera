@@ -7,7 +7,6 @@ topological ordering, cycle classification, and SCC partitioning.
 from __future__ import annotations
 
 import hashlib
-import json
 from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -286,8 +285,11 @@ class DependencyAnalysisResult(BaseModel):
 
     def compute_hash(self) -> str:
         """Compute deterministic SHA-256 fingerprint over canonical representation."""
-        data = self.model_dump(mode="json")
-        canonical_json = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+        from dera.reverse_engineering.dependencies.serialization import (
+            serialize_dependency_analysis_to_json,
+        )
+
+        canonical_json = serialize_dependency_analysis_to_json(self)
         return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
 
     def get_node_metrics(self, node_id: ObjectId) -> DependencyNodeMetrics | None:

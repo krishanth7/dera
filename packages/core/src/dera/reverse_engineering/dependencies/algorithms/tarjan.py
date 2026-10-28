@@ -9,6 +9,8 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 
 from dera.metadata.identity import ObjectId
+from dera.reverse_engineering.dependencies.errors import DependencyResourceLimitError
+from dera.reverse_engineering.dependencies.limits import DependencyResourceLimits
 from dera.reverse_engineering.dependencies.models import StronglyConnectedComponent
 from dera.reverse_engineering.dependencies.ordering import sort_sccs
 
@@ -17,6 +19,7 @@ def compute_strongly_connected_components(
     nodes: Sequence[ObjectId],
     adjacency: Mapping[ObjectId, Sequence[ObjectId]],
     self_loops: set[ObjectId] | None = None,
+    limits: DependencyResourceLimits | None = None,
 ) -> tuple[StronglyConnectedComponent, ...]:
     """Compute strongly connected components deterministically using Tarjan's algorithm.
 
@@ -24,11 +27,14 @@ def compute_strongly_connected_components(
         nodes: Sequence of all graph node ObjectIds.
         adjacency: Mapping from node ObjectId to its outgoing neighbor ObjectIds.
         self_loops: Optional set of nodes that have a self-referencing edge to themselves.
+        limits: Optional resource limits bounding recursion depth and node counts.
 
     Returns:
         Deterministic tuple of StronglyConnectedComponent models, with cyclic components first.
     """
     loops = self_loops or set()
+    max_depth = limits.max_recursion_depth if limits else None
+
     # Sort initial nodes deterministically
     sorted_nodes = sorted(nodes, key=lambda n: str(n))
 
@@ -41,40 +47,62 @@ def compute_strongly_connected_components(
     indices: dict[ObjectId, int] = {}
     lowlinks: dict[ObjectId, int] = {}
     on_stack: set[ObjectId] = set()
-    stack: list[ObjectId] = []
+    tarjan_stack: list[ObjectId] = []
     raw_sccs: list[list[ObjectId]] = []
 
-    def strongconnect(v: ObjectId) -> None:
-        nonlocal index
-        indices[v] = index
-        lowlinks[v] = index
+    # Iterative Tarjan using an explicit call stack to eliminate Python recursion limits
+    for root_node in sorted_nodes:
+        if root_node in indices:
+            continue
+
+        indices[root_node] = index
+        lowlinks[root_node] = index
         index += 1
-        stack.append(v)
-        on_stack.add(v)
+        tarjan_stack.append(root_node)
+        on_stack.add(root_node)
 
-        for w in sorted_adj.get(v, []):
-            if w not in indices:
-                # Successor w has not yet been visited; recurse on it
-                strongconnect(w)
-                lowlinks[v] = min(lowlinks[v], lowlinks[w])
-            elif w in on_stack:
-                # Successor w is in stack and hence in the current SCC
-                lowlinks[v] = min(lowlinks[v], indices[w])
+        # Call stack items: [node, neighbor_index]
+        call_stack: list[list[int | ObjectId]] = [[root_node, 0]]
 
-        # If v is a root node, pop the stack and generate an SCC
-        if lowlinks[v] == indices[v]:
-            scc_members: list[ObjectId] = []
-            while True:
-                w = stack.pop()
-                on_stack.remove(w)
-                scc_members.append(w)
-                if w == v:
-                    break
-            raw_sccs.append(scc_members)
+        while call_stack:
+            if max_depth is not None and len(call_stack) > max_depth:
+                raise DependencyResourceLimitError(
+                    f"Maximum recursion depth of {max_depth} exceeded during SCC traversal"
+                )
 
-    for node in sorted_nodes:
-        if node not in indices:
-            strongconnect(node)
+            frame = call_stack[-1]
+            u: ObjectId = frame[0]  # type: ignore[assignment]
+            edge_idx: int = frame[1]  # type: ignore[assignment]
+            neighbors = sorted_adj.get(u, [])
+
+            if edge_idx < len(neighbors):
+                frame[1] = edge_idx + 1
+                w = neighbors[edge_idx]
+
+                if w not in indices:
+                    indices[w] = index
+                    lowlinks[w] = index
+                    index += 1
+                    tarjan_stack.append(w)
+                    on_stack.add(w)
+                    call_stack.append([w, 0])
+                elif w in on_stack:
+                    lowlinks[u] = min(lowlinks[u], indices[w])
+            else:
+                call_stack.pop()
+                if call_stack:
+                    parent_u: ObjectId = call_stack[-1][0]  # type: ignore[assignment]
+                    lowlinks[parent_u] = min(lowlinks[parent_u], lowlinks[u])
+
+                if lowlinks[u] == indices[u]:
+                    scc_members: list[ObjectId] = []
+                    while True:
+                        popped = tarjan_stack.pop()
+                        on_stack.remove(popped)
+                        scc_members.append(popped)
+                        if popped == u:
+                            break
+                    raw_sccs.append(scc_members)
 
     # Construct strongly typed component models
     result_sccs: list[StronglyConnectedComponent] = []

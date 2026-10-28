@@ -20,4 +20,4 @@ The dependency validation engine (`validate_dependency_analysis`) performs compr
 
 ## 3. Strict Validation Mode
 
-When calling `validate_dependency_analysis(result, strict=True)`, any finding with severity `ERROR` raises a `DependencyValidationError`, preventing corrupted or partial ordering plans from propagating to downstream migration engines.
+When calling `validate_dependency_analysis(result, mode=ValidationMode.STRICT)`, any finding with severity `ERROR` raises a `DependencyValidationError`, preventing corrupted or partial ordering plans from propagating to downstream migration engines. Under `mode=ValidationMode.PERMISSIVE` (default), all findings are returned as a tuple without raising exceptions.

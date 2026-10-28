@@ -6,6 +6,7 @@ dependency depth, and identifies root, leaf, and isolated schema nodes.
 
 from __future__ import annotations
 
+from collections import deque
 from collections.abc import Mapping, Sequence
 
 from dera.metadata.identity import ObjectId
@@ -54,32 +55,32 @@ def compute_node_metrics(
     out_degrees: dict[ObjectId, int] = {n: len(set(dependent_adj.get(n, ()))) for n in sorted_nodes}
 
     # 2. Transitive ancestors (all tables node depends on)
-    transitive_deps: dict[ObjectId, set[ObjectId]] = {}
+    transitive_deps: dict[ObjectId, int] = {}
     for n in sorted_nodes:
         visited: set[ObjectId] = set()
-        queue = list(set(dependency_adj.get(n, ())))
+        queue = deque(set(dependency_adj.get(n, ())))
         while queue:
-            curr = queue.pop(0)
+            curr = queue.popleft()
             if curr not in visited and curr != n:
                 visited.add(curr)
                 for upstream in dependency_adj.get(curr, ()):
                     if upstream not in visited and upstream != n:
                         queue.append(upstream)
-        transitive_deps[n] = visited
+        transitive_deps[n] = len(visited)
 
     # 3. Transitive descendants (all tables that depend on node)
-    transitive_dependents: dict[ObjectId, set[ObjectId]] = {}
+    transitive_dependents: dict[ObjectId, int] = {}
     for n in sorted_nodes:
         visited: set[ObjectId] = set()
-        queue = list(set(dependent_adj.get(n, ())))
+        queue = deque(set(dependent_adj.get(n, ())))
         while queue:
-            curr = queue.pop(0)
+            curr = queue.popleft()
             if curr not in visited and curr != n:
                 visited.add(curr)
                 for downstream in dependent_adj.get(curr, ()):
                     if downstream not in visited and downstream != n:
                         queue.append(downstream)
-        transitive_dependents[n] = visited
+        transitive_dependents[n] = len(visited)
 
     # 4. Longest path depth from any root (bounded BFS/DFS avoiding cycles)
     depth_levels: dict[ObjectId, int] = {}
@@ -112,8 +113,8 @@ def compute_node_metrics(
             node_id=n,
             in_degree=in_deg,
             out_degree=out_deg,
-            transitive_dependency_count=len(transitive_deps[n]),
-            transitive_dependent_count=len(transitive_dependents[n]),
+            transitive_dependency_count=transitive_deps[n],
+            transitive_dependent_count=transitive_dependents[n],
             depth_level=depth_levels[n],
             is_root=is_root,
             is_leaf=is_leaf,
