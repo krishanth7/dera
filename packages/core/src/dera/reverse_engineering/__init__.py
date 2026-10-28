@@ -69,6 +69,10 @@ from dera.reverse_engineering.serialization import (
     deserialize_schema_representation,
     serialize_schema_representation,
 )
+from dera.reverse_engineering.snapshots import (
+    SchemaSnapshot,
+    SchemaSnapshotBuilder,
+)
 from dera.reverse_engineering.validation import validate_schema_representation
 
 __all__ = [
@@ -109,4 +113,6 @@ __all__ = [
     "sort_triggers",
     "sort_views",
     "validate_schema_representation",
+    "SchemaSnapshot",
+    "SchemaSnapshotBuilder",
 ]
