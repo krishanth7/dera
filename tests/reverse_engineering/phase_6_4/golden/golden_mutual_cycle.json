@@ -1,0 +1,141 @@
+{
+  "condensation_nodes": [
+    {
+      "condensation_id": "cond-scc-dera:table:0_dera:table:6",
+      "dependencies": [],
+      "is_cyclic": true,
+      "member_node_ids": [
+        "dera:table:04a04fede89984c41911c0a9",
+        "dera:table:64783ce6784ac5a70581e0bc"
+      ]
+    }
+  ],
+  "contract_version": "phase-6.4-dependency-analysis-v1",
+  "cycle_report": {
+    "breakable_cycle_count": 1,
+    "complex_count": 0,
+    "cycle_count": 1,
+    "cycles": [
+      {
+        "break_edges": [
+          "dera:foreign_key:1cdb07e2a5dbb33bfd2d0dcf"
+        ],
+        "cycle_id": "cycle-mutual-c517950056f39190",
+        "edge_ids": [
+          "dera:foreign_key:1cdb07e2a5dbb33bfd2d0dcf",
+          "dera:foreign_key:58f93367db75a79e8b1bef4e"
+        ],
+        "is_breakable": true,
+        "kind": "mutual",
+        "node_ids": [
+          "dera:table:04a04fede89984c41911c0a9",
+          "dera:table:64783ce6784ac5a70581e0bc"
+        ],
+        "recommended_break_strategy": "nullable_foreign_key"
+      }
+    ],
+    "cyclic_scc_count": 1,
+    "has_cycles": true,
+    "indirect_count": 0,
+    "mutual_count": 1,
+    "scc_count": 1,
+    "sccs": [
+      {
+        "cycles": [
+          {
+            "break_edges": [
+              "dera:foreign_key:1cdb07e2a5dbb33bfd2d0dcf"
+            ],
+            "cycle_id": "cycle-mutual-c517950056f39190",
+            "edge_ids": [
+              "dera:foreign_key:1cdb07e2a5dbb33bfd2d0dcf",
+              "dera:foreign_key:58f93367db75a79e8b1bef4e"
+            ],
+            "is_breakable": true,
+            "kind": "mutual",
+            "node_ids": [
+              "dera:table:04a04fede89984c41911c0a9",
+              "dera:table:64783ce6784ac5a70581e0bc"
+            ],
+            "recommended_break_strategy": "nullable_foreign_key"
+          }
+        ],
+        "is_cyclic": true,
+        "node_ids": [
+          "dera:table:04a04fede89984c41911c0a9",
+          "dera:table:64783ce6784ac5a70581e0bc"
+        ],
+        "scc_id": "scc-dera:table:0_dera:table:6"
+      }
+    ],
+    "self_referencing_count": 0,
+    "unbreakable_cycle_count": 0
+  },
+  "database_id": "dera:database:85f9704ffeba4899749b79b5",
+  "edge_count": 2,
+  "is_dag": false,
+  "isolated_node_ids": [],
+  "leaf_node_ids": [],
+  "node_count": 2,
+  "node_metrics": {
+    "dera:table:04a04fede89984c41911c0a9": {
+      "depth_level": 1,
+      "in_degree": 1,
+      "is_in_cycle": true,
+      "is_leaf": false,
+      "is_root": false,
+      "node_id": "dera:table:04a04fede89984c41911c0a9",
+      "out_degree": 1,
+      "transitive_dependency_count": 1,
+      "transitive_dependent_count": 1
+    },
+    "dera:table:64783ce6784ac5a70581e0bc": {
+      "depth_level": 1,
+      "in_degree": 1,
+      "is_in_cycle": true,
+      "is_leaf": false,
+      "is_root": false,
+      "node_id": "dera:table:64783ce6784ac5a70581e0bc",
+      "out_degree": 1,
+      "transitive_dependency_count": 1,
+      "transitive_dependent_count": 1
+    }
+  },
+  "ordering": {
+    "condensed_order": [
+      "cond-scc-dera:table:0_dera:table:6"
+    ],
+    "creation_order": [
+      "dera:table:04a04fede89984c41911c0a9",
+      "dera:table:64783ce6784ac5a70581e0bc"
+    ],
+    "drop_order": [
+      "dera:table:64783ce6784ac5a70581e0bc",
+      "dera:table:04a04fede89984c41911c0a9"
+    ],
+    "is_pure_dag": false,
+    "levels": [
+      {
+        "level": 0,
+        "node_ids": [
+          "dera:table:04a04fede89984c41911c0a9",
+          "dera:table:64783ce6784ac5a70581e0bc"
+        ]
+      }
+    ],
+    "unresolved_cycles_exist": true
+  },
+  "root_node_ids": [],
+  "source_graph_hash": "5e3720bb15d0594818dcb982826c89372232bf4c9c6bc1471b90a74cc08f6ed9",
+  "validation_findings": [
+    {
+      "context": {
+        "cycle_count": "1"
+      },
+      "message": "Schema contains 1 cycle(s) across 1 cyclic component(s).",
+      "rule_id": "DEP_CYCLE_DETECTED",
+      "severity": "INFO"
+    }
+  ],
+  "workspace_id": null
+}

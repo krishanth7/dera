@@ -1,0 +1,295 @@
+{
+  "condensation_nodes": [
+    {
+      "condensation_id": "cond-scc-dera:table:1",
+      "dependencies": [
+        "cond-scc-dera:table:e",
+        "cond-scc-dera:table:f"
+      ],
+      "is_cyclic": false,
+      "member_node_ids": [
+        "dera:table:1c4ea8982a47cc7ffb47c2e7"
+      ]
+    },
+    {
+      "condensation_id": "cond-scc-dera:table:6",
+      "dependencies": [
+        "cond-scc-dera:table:d",
+        "cond-scc-dera:table:e"
+      ],
+      "is_cyclic": false,
+      "member_node_ids": [
+        "dera:table:6b72ff99ce31c84ee4a2faf6"
+      ]
+    },
+    {
+      "condensation_id": "cond-scc-dera:table:8",
+      "dependencies": [],
+      "is_cyclic": false,
+      "member_node_ids": [
+        "dera:table:8ac9181a524917a004126477"
+      ]
+    },
+    {
+      "condensation_id": "cond-scc-dera:table:d",
+      "dependencies": [],
+      "is_cyclic": false,
+      "member_node_ids": [
+        "dera:table:dbb31d376c5f864a9a951ea9"
+      ]
+    },
+    {
+      "condensation_id": "cond-scc-dera:table:d",
+      "dependencies": [],
+      "is_cyclic": false,
+      "member_node_ids": [
+        "dera:table:de6d9fdfbbd74126efc7ca56"
+      ]
+    },
+    {
+      "condensation_id": "cond-scc-dera:table:e",
+      "dependencies": [
+        "cond-scc-dera:table:d"
+      ],
+      "is_cyclic": false,
+      "member_node_ids": [
+        "dera:table:e7b38ca44b8a4d6b815da089"
+      ]
+    },
+    {
+      "condensation_id": "cond-scc-dera:table:f",
+      "dependencies": [
+        "cond-scc-dera:table:d"
+      ],
+      "is_cyclic": false,
+      "member_node_ids": [
+        "dera:table:f255f5a4e4561849199411bd"
+      ]
+    }
+  ],
+  "contract_version": "phase-6.4-dependency-analysis-v1",
+  "cycle_report": {
+    "breakable_cycle_count": 0,
+    "complex_count": 0,
+    "cycle_count": 0,
+    "cycles": [],
+    "cyclic_scc_count": 0,
+    "has_cycles": false,
+    "indirect_count": 0,
+    "mutual_count": 0,
+    "scc_count": 7,
+    "sccs": [
+      {
+        "cycles": [],
+        "is_cyclic": false,
+        "node_ids": [
+          "dera:table:1c4ea8982a47cc7ffb47c2e7"
+        ],
+        "scc_id": "scc-dera:table:1"
+      },
+      {
+        "cycles": [],
+        "is_cyclic": false,
+        "node_ids": [
+          "dera:table:6b72ff99ce31c84ee4a2faf6"
+        ],
+        "scc_id": "scc-dera:table:6"
+      },
+      {
+        "cycles": [],
+        "is_cyclic": false,
+        "node_ids": [
+          "dera:table:8ac9181a524917a004126477"
+        ],
+        "scc_id": "scc-dera:table:8"
+      },
+      {
+        "cycles": [],
+        "is_cyclic": false,
+        "node_ids": [
+          "dera:table:dbb31d376c5f864a9a951ea9"
+        ],
+        "scc_id": "scc-dera:table:d"
+      },
+      {
+        "cycles": [],
+        "is_cyclic": false,
+        "node_ids": [
+          "dera:table:de6d9fdfbbd74126efc7ca56"
+        ],
+        "scc_id": "scc-dera:table:d"
+      },
+      {
+        "cycles": [],
+        "is_cyclic": false,
+        "node_ids": [
+          "dera:table:e7b38ca44b8a4d6b815da089"
+        ],
+        "scc_id": "scc-dera:table:e"
+      },
+      {
+        "cycles": [],
+        "is_cyclic": false,
+        "node_ids": [
+          "dera:table:f255f5a4e4561849199411bd"
+        ],
+        "scc_id": "scc-dera:table:f"
+      }
+    ],
+    "self_referencing_count": 0,
+    "unbreakable_cycle_count": 0
+  },
+  "database_id": "dera:database:e6c653e9126ef31d6e50d194",
+  "edge_count": 6,
+  "is_dag": true,
+  "isolated_node_ids": [
+    "dera:table:8ac9181a524917a004126477"
+  ],
+  "leaf_node_ids": [
+    "dera:table:1c4ea8982a47cc7ffb47c2e7",
+    "dera:table:6b72ff99ce31c84ee4a2faf6",
+    "dera:table:8ac9181a524917a004126477"
+  ],
+  "node_count": 7,
+  "node_metrics": {
+    "dera:table:1c4ea8982a47cc7ffb47c2e7": {
+      "depth_level": 2,
+      "in_degree": 2,
+      "is_in_cycle": false,
+      "is_leaf": true,
+      "is_root": false,
+      "node_id": "dera:table:1c4ea8982a47cc7ffb47c2e7",
+      "out_degree": 0,
+      "transitive_dependency_count": 4,
+      "transitive_dependent_count": 0
+    },
+    "dera:table:6b72ff99ce31c84ee4a2faf6": {
+      "depth_level": 2,
+      "in_degree": 2,
+      "is_in_cycle": false,
+      "is_leaf": true,
+      "is_root": false,
+      "node_id": "dera:table:6b72ff99ce31c84ee4a2faf6",
+      "out_degree": 0,
+      "transitive_dependency_count": 3,
+      "transitive_dependent_count": 0
+    },
+    "dera:table:8ac9181a524917a004126477": {
+      "depth_level": 0,
+      "in_degree": 0,
+      "is_in_cycle": false,
+      "is_leaf": true,
+      "is_root": true,
+      "node_id": "dera:table:8ac9181a524917a004126477",
+      "out_degree": 0,
+      "transitive_dependency_count": 0,
+      "transitive_dependent_count": 0
+    },
+    "dera:table:dbb31d376c5f864a9a951ea9": {
+      "depth_level": 0,
+      "in_degree": 0,
+      "is_in_cycle": false,
+      "is_leaf": false,
+      "is_root": true,
+      "node_id": "dera:table:dbb31d376c5f864a9a951ea9",
+      "out_degree": 1,
+      "transitive_dependency_count": 0,
+      "transitive_dependent_count": 3
+    },
+    "dera:table:de6d9fdfbbd74126efc7ca56": {
+      "depth_level": 0,
+      "in_degree": 0,
+      "is_in_cycle": false,
+      "is_leaf": false,
+      "is_root": true,
+      "node_id": "dera:table:de6d9fdfbbd74126efc7ca56",
+      "out_degree": 2,
+      "transitive_dependency_count": 0,
+      "transitive_dependent_count": 3
+    },
+    "dera:table:e7b38ca44b8a4d6b815da089": {
+      "depth_level": 1,
+      "in_degree": 1,
+      "is_in_cycle": false,
+      "is_leaf": false,
+      "is_root": false,
+      "node_id": "dera:table:e7b38ca44b8a4d6b815da089",
+      "out_degree": 2,
+      "transitive_dependency_count": 1,
+      "transitive_dependent_count": 2
+    },
+    "dera:table:f255f5a4e4561849199411bd": {
+      "depth_level": 1,
+      "in_degree": 1,
+      "is_in_cycle": false,
+      "is_leaf": false,
+      "is_root": false,
+      "node_id": "dera:table:f255f5a4e4561849199411bd",
+      "out_degree": 1,
+      "transitive_dependency_count": 1,
+      "transitive_dependent_count": 1
+    }
+  },
+  "ordering": {
+    "condensed_order": [
+      "cond-scc-dera:table:8",
+      "cond-scc-dera:table:d",
+      "cond-scc-dera:table:e",
+      "cond-scc-dera:table:6",
+      "cond-scc-dera:table:f",
+      "cond-scc-dera:table:1"
+    ],
+    "creation_order": [
+      "dera:table:8ac9181a524917a004126477",
+      "dera:table:dbb31d376c5f864a9a951ea9",
+      "dera:table:de6d9fdfbbd74126efc7ca56",
+      "dera:table:e7b38ca44b8a4d6b815da089",
+      "dera:table:6b72ff99ce31c84ee4a2faf6",
+      "dera:table:f255f5a4e4561849199411bd",
+      "dera:table:1c4ea8982a47cc7ffb47c2e7"
+    ],
+    "drop_order": [
+      "dera:table:1c4ea8982a47cc7ffb47c2e7",
+      "dera:table:f255f5a4e4561849199411bd",
+      "dera:table:6b72ff99ce31c84ee4a2faf6",
+      "dera:table:e7b38ca44b8a4d6b815da089",
+      "dera:table:de6d9fdfbbd74126efc7ca56",
+      "dera:table:dbb31d376c5f864a9a951ea9",
+      "dera:table:8ac9181a524917a004126477"
+    ],
+    "is_pure_dag": true,
+    "levels": [
+      {
+        "level": 0,
+        "node_ids": [
+          "dera:table:8ac9181a524917a004126477",
+          "dera:table:dbb31d376c5f864a9a951ea9",
+          "dera:table:de6d9fdfbbd74126efc7ca56"
+        ]
+      },
+      {
+        "level": 1,
+        "node_ids": [
+          "dera:table:e7b38ca44b8a4d6b815da089",
+          "dera:table:f255f5a4e4561849199411bd"
+        ]
+      },
+      {
+        "level": 2,
+        "node_ids": [
+          "dera:table:1c4ea8982a47cc7ffb47c2e7",
+          "dera:table:6b72ff99ce31c84ee4a2faf6"
+        ]
+      }
+    ],
+    "unresolved_cycles_exist": false
+  },
+  "root_node_ids": [
+    "dera:table:8ac9181a524917a004126477",
+    "dera:table:dbb31d376c5f864a9a951ea9",
+    "dera:table:de6d9fdfbbd74126efc7ca56"
+  ],
+  "source_graph_hash": "fe0d7f2a5102769257b661f89e6b4f283982d9952fc421a6caa9a3e8f579a409",
+  "validation_findings": [],
+  "workspace_id": null
+}
