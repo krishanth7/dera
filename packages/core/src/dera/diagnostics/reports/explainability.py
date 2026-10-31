@@ -9,6 +9,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+from dera.diagnostics.models import EvaluationStatus
+
 if TYPE_CHECKING:
     from dera.diagnostics.models import DiagnosticCoverage, DiagnosticSummaryCounts, RuleEvaluation
     from dera.diagnostics.reports.unified_models import UnifiedDiagnosticFinding
@@ -75,9 +77,9 @@ def build_report_explainability(
     unsupported_reasons: dict[str, str] = {}
 
     for ev in evaluations:
-        if ev.status.value == "not_applicable" and ev.message:
+        if ev.status == EvaluationStatus.NOT_APPLICABLE and ev.message:
             skipped_reasons[ev.rule_id] = ev.message
-        elif ev.status.value == "unsupported" and ev.message:
+        elif ev.status == EvaluationStatus.UNSUPPORTED and ev.message:
             unsupported_reasons[ev.rule_id] = ev.message
 
     by_classification: dict[str, int] = {}

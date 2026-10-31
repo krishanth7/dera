@@ -312,3 +312,153 @@ def test_performance_benchmark_scale() -> None:
     assert len(sorted_findings) == 1000
     # 1,000 findings must process in under 1.5 seconds on commodity hardware
     assert duration < 1.5
+
+
+def test_deserialization_explicit_unknowns_and_unrecognized_evidence_type() -> None:
+    """Verifies that unknown completeness/confidence map to UNKNOWN/INCOMPLETE, and unrecognized evidence_type is rejected."""
+    import pytest
+    from dera.diagnostics.evidence.models import (
+        EvidenceCompleteness,
+        EvidenceType,
+        FindingConfidence,
+    )
+    from dera.diagnostics.serialization import deserialize_diagnostic_report
+
+    base_report_dict = {
+        "evaluation_id": "eval_test_unknowns",
+        "evaluated_at": "2026-10-31T00:00:00Z",
+        "evaluator_version": "1.0.0",
+        "rule_set_version": "1.0.0",
+        "database_engine": "postgres",
+        "report_hash": "dummy_hash",
+        "summary": {
+            "total_rules_evaluated": 1,
+            "rules_passed": 0,
+            "rules_with_findings": 1,
+            "rules_skipped": 0,
+            "rules_unsupported": 0,
+            "rules_insufficient_metadata": 0,
+            "rules_errored": 0,
+            "total_findings": 1,
+            "findings_by_severity": {"LOW": 1},
+        },
+        "coverage": {
+            "evaluated_rules": ["DERA-TEST-001"],
+            "skipped_rules": [],
+            "unsupported_rules": [],
+            "insufficient_metadata_rules": [],
+            "errored_rules": [],
+        },
+        "evaluations": [],
+        "findings": [
+            {
+                "rule_id": "DERA-TEST-001",
+                "rule_version": "1.0.0",
+                "object_id": "public.test",
+                "severity": "LOW",
+                "title": "Test Finding",
+                "description": "Test Desc",
+                "confidence": "completely_unknown_confidence",
+                "metadata_completeness": "completely_unknown_completeness",
+                "evidence": [
+                    {
+                        "object_id": "public.test",
+                        "field_name": "test_col",
+                        "observed_value": 1,
+                        "evidence_type": "metric_observation",
+                        "completeness": "completely_unknown_completeness",
+                    }
+                ],
+            }
+        ],
+    }
+
+    import json
+
+    # Deserialization maps explicit unknown confidence and completeness
+    report = deserialize_diagnostic_report(json.dumps(base_report_dict))
+    f = report.findings[0]
+    assert f.confidence == FindingConfidence.INCOMPLETE
+    assert f.metadata_completeness == EvidenceCompleteness.UNKNOWN
+    assert f.evidence[0].completeness == EvidenceCompleteness.UNKNOWN
+    assert f.evidence[0].evidence_type == EvidenceType.METRIC_OBSERVATION
+
+    # Unrecognized evidence type is rejected
+    invalid_ev_dict = dict(base_report_dict)
+    invalid_ev_dict["findings"] = [
+        {
+            **base_report_dict["findings"][0],
+            "evidence": [
+                {
+                    "object_id": "public.test",
+                    "field_name": "test_col",
+                    "observed_value": 1,
+                    "evidence_type": "completely_unrecognized_evidence_type",
+                }
+            ],
+        }
+    ]
+    with pytest.raises(ValueError):
+        deserialize_diagnostic_report(json.dumps(invalid_ev_dict))
+
+
+def test_evaluator_isolates_recommendation_safety_violation() -> None:
+    """Verifies evaluator catches RecommendationSafetyViolationError, marking rule as EVALUATION_ERROR and dropping finding."""
+    from unittest.mock import patch
+
+    from dera.diagnostics.context import DiagnosticContext
+    from dera.diagnostics.evaluator import DiagnosticEvaluator
+    from dera.diagnostics.models import (
+        DiagnosticFinding,
+        DiagnosticSeverity,
+        EvaluationStatus,
+        RuleCategory,
+        RuleEvaluation,
+        RuleMetadata,
+    )
+    from dera.diagnostics.recommendations.safety import RecommendationSafetyViolationError
+
+    class UnsafeRule:
+        metadata = RuleMetadata(
+            rule_id="DERA-UNSAFE-001",
+            version="1.0.0",
+            title="Unsafe Rule",
+            description="Emits unsafe recommendation",
+            category=RuleCategory.STRUCTURAL_INTEGRITY,
+            default_severity=DiagnosticSeverity.HIGH,
+            supported_object_kinds=("table",),
+        )
+
+        def evaluate(self, context: DiagnosticContext) -> RuleEvaluation:
+            finding = DiagnosticFinding(
+                rule_id=self.metadata.rule_id,
+                rule_version=self.metadata.version,
+                object_id="public.users",
+                severity=DiagnosticSeverity.HIGH,
+                title="Unsafe Rule Finding",
+                description="Needs drop",
+                evidence=(),
+                severity_rationale="High risk",
+            )
+            return RuleEvaluation(
+                rule_id=self.metadata.rule_id,
+                rule_version=self.metadata.version,
+                status=EvaluationStatus.FINDINGS_DETECTED,
+                findings=(finding,),
+            )
+
+    evaluator = DiagnosticEvaluator()
+    context = DiagnosticContext()
+
+    with patch(
+        "dera.diagnostics.evaluator.generate_structured_recommendation",
+        side_effect=RecommendationSafetyViolationError("Destructive action prohibited"),
+    ):
+        report = evaluator.evaluate(context, rules=[UnsafeRule()])
+
+    # Affected rule must be isolated to EVALUATION_ERROR
+    assert report.summary.rules_errored == 1
+    assert report.summary.rules_with_findings == 0
+    assert report.summary.total_findings == 0
+    assert "DERA-UNSAFE-001" in report.coverage.errored_rules
+    assert report.rule_evaluations[0].status == EvaluationStatus.EVALUATION_ERROR

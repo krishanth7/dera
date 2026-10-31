@@ -39,6 +39,7 @@ from dera.diagnostics.prioritization.ranking import (
 )
 from dera.diagnostics.recommendations.catalog import RECOMMENDATION_CATALOG_VERSION
 from dera.diagnostics.recommendations.generator import generate_structured_recommendation
+from dera.diagnostics.recommendations.safety import RecommendationSafetyViolationError
 from dera.diagnostics.reports.explainability import build_report_explainability
 from dera.diagnostics.serialization import compute_report_content_hash
 from dera.diagnostics.severity.overrides import SeverityOverride
@@ -252,8 +253,32 @@ class DiagnosticEvaluator:
             )
 
             # 6.4 Deterministic recommendation assembly
-            structured_rec = generate_structured_recommendation(raw_f)
-            rec_text = structured_rec.suggested_action if structured_rec else raw_f.recommendation
+            try:
+                structured_rec = generate_structured_recommendation(raw_f)
+                rec_text = (
+                    structured_rec.suggested_action if structured_rec else raw_f.recommendation
+                )
+            except RecommendationSafetyViolationError as rec_err:
+                if raw_f.rule_id not in errored_rule_ids:
+                    errored_rule_ids.append(raw_f.rule_id)
+                for idx, ev in enumerate(evaluations):
+                    if ev.rule_id == raw_f.rule_id:
+                        evaluations[idx] = RuleEvaluation(
+                            rule_id=ev.rule_id,
+                            rule_version=ev.rule_version,
+                            status=EvaluationStatus.EVALUATION_ERROR,
+                            findings=(),
+                            execution_duration_ms=ev.execution_duration_ms,
+                            message=f"Recommendation safety rejected: {rec_err}",
+                            error_details=str(rec_err),
+                        )
+                unified_findings = [f for f in unified_findings if f.rule_id != raw_f.rule_id]
+                findings_by_severity = {s.value: 0 for s in DiagnosticSeverity}
+                for f in unified_findings:
+                    findings_by_severity[f.severity.value] = (
+                        findings_by_severity.get(f.severity.value, 0) + 1
+                    )
+                continue
 
             # 6.5 Suppression matching
             is_suppressed = False
