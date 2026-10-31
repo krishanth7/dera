@@ -21,6 +21,7 @@ import {
   Layers,
   Link as LinkIcon,
   List,
+  Network,
   RefreshCw,
   Search,
   ShieldCheck,
@@ -243,6 +244,17 @@ export default function SchemaExplorerStudioPage() {
               Schema Overview
             </Button>
           )}
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="text-xs gap-1.5"
+          >
+            <Link href={`/relationships?schemaId=${schemaId}`}>
+              <Network className="w-3.5 h-3.5 text-blue-500" />
+              <span>View ER Diagram</span>
+            </Link>
+          </Button>
           <Button
             variant="outline"
             size="sm"
