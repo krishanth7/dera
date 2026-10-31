@@ -17,7 +17,10 @@ from dera.reverse_engineering.exports.errors import (
 )
 from dera.reverse_engineering.exports.graphml_export import GraphMLExporter
 from dera.reverse_engineering.exports.json_export import JSONExporter
-from dera.reverse_engineering.exports.limits import ExportResourceLimits
+from dera.reverse_engineering.exports.limits import (
+    DEFAULT_EXPORT_LIMITS,
+    ExportResourceLimits,
+)
 from dera.reverse_engineering.exports.models import (
     ExportArtifact,
     ExportFormat,
@@ -34,6 +37,7 @@ from dera.reverse_engineering.exports.validation import validate_export_options
 
 __all__ = [
     "CSVExporter",
+    "DEFAULT_EXPORT_LIMITS",
     "DOTExporter",
     "ExportArtifact",
     "ExportError",

@@ -38,3 +38,6 @@ class ExportResourceLimits(BaseModel):
         default=60.0,
         description="Maximum allowable duration in seconds for in-memory export generation.",
     )
+
+
+DEFAULT_EXPORT_LIMITS = ExportResourceLimits()
