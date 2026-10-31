@@ -45,3 +45,11 @@ class Permission(StrEnum):
     CONNECTION_CREATE = "connection:create"
     CONNECTION_UPDATE = "connection:update"
     CONNECTION_DELETE = "connection:delete"
+
+    # Reverse engineering operations (Phase 6.6)
+    SCHEMA_READ = "schema:read"
+    SNAPSHOT_CREATE = "snapshot:create"
+    SNAPSHOT_READ = "snapshot:read"
+    SNAPSHOT_VERIFY = "snapshot:verify"
+    EXPORT_CREATE = "export:create"
+    EXPORT_READ = "export:read"

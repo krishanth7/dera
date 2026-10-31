@@ -40,6 +40,12 @@ from dera.reverse_engineering.errors import (
     SchemaValidationError,
     UnsupportedSchemaContractError,
 )
+from dera.reverse_engineering.exports import (
+    ExportArtifact,
+    ExportFormat,
+    ExportOptions,
+    ExportService,
+)
 from dera.reverse_engineering.hierarchy import SchemaHierarchy
 from dera.reverse_engineering.ordering import (
     sort_columns,
@@ -115,4 +121,8 @@ __all__ = [
     "validate_schema_representation",
     "SchemaSnapshot",
     "SchemaSnapshotBuilder",
+    "ExportArtifact",
+    "ExportFormat",
+    "ExportOptions",
+    "ExportService",
 ]

@@ -7,7 +7,9 @@ standard RFC 9457 error response models in the OpenAPI specification.
 from fastapi import APIRouter
 
 from dera_api.api.v1.endpoints.auth import router as auth_router
+from dera_api.api.v1.endpoints.connections import router as connections_router
 from dera_api.api.v1.endpoints.jobs import router as jobs_router
+from dera_api.api.v1.endpoints.reverse_engineering import router as reverse_engineering_router
 from dera_api.api.v1.endpoints.system import router as system_router
 from dera_api.api.v1.endpoints.workspaces import router as workspaces_router
 from dera_api.contracts.errors import ProblemDetail
@@ -28,3 +30,5 @@ api_v1_router.include_router(system_router)
 api_v1_router.include_router(auth_router)
 api_v1_router.include_router(workspaces_router)
 api_v1_router.include_router(jobs_router)
+api_v1_router.include_router(reverse_engineering_router)
+api_v1_router.include_router(connections_router)

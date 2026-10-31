@@ -12,6 +12,7 @@ class ValidationSeverity(str, Enum):
     WARNING = "WARNING"
     INFO = "INFO"
 
+
 class GraphValidationFinding(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 

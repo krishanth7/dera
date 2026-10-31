@@ -50,6 +50,50 @@ class TestPostgresConfiguration(unittest.TestCase):
         # Transaction mode pooler disables prepared statement cache
         self.assertEqual(config_pooler.statement_cache_size, 0)
 
+    def test_supabase_host_sanitization_security(self) -> None:
+        """Verify URL substring injection attacks do not trigger Supabase provider detection (CWE-20)."""
+        malicious_hosts = [
+            "evil-supabase.co.attacker.com",
+            "attacker.com/pooler.supabase.com",
+            "evilpooler.supabase.com",
+            "my-supabase.co.evil.org",
+            "attacker.com?param=supabase.co",
+            "not-supabase.co",
+            "supabase.co.fake.net",
+        ]
+        for host in malicious_hosts:
+            with self.subTest(host=host):
+                config = PostgresConnectorConfig(
+                    database="postgres",
+                    host=host,
+                    username="user",
+                )
+                self.assertEqual(
+                    config.provider,
+                    DatabaseProvider.GENERIC,
+                    f"Host '{host}' should not be classified as Supabase",
+                )
+
+        valid_hosts = [
+            "db.abcdefghijkl.supabase.co",
+            "aws-0-us-east-1.pooler.supabase.com",
+            "supabase.co",
+            "pooler.supabase.com",
+            "db.project.supabase.co:5432",
+        ]
+        for host in valid_hosts:
+            with self.subTest(host=host):
+                config = PostgresConnectorConfig(
+                    database="postgres",
+                    host=host,
+                    username="user",
+                )
+                self.assertEqual(
+                    config.provider,
+                    DatabaseProvider.SUPABASE,
+                    f"Host '{host}' should be classified as Supabase",
+                )
+
     def test_supabase_session_pooler_port_default(self) -> None:
         """Verify port defaults to 6543 for session pooler mode if unspecified."""
         config = PostgresConnectorConfig(
