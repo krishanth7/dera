@@ -44,6 +44,6 @@ Database metadata inspection presents unique application security challenges. Da
 
 ## 4. Query Protection & Rate Limiting
 
-- **Search Debouncing**: Schema search inputs are debounced to 300ms on the client. Stale in-flight requests are automatically aborted via `AbortController`.
-- **Bounded Result Sets**: Pagination is enforced across all search results (default 25, max 100 per page) to prevent client memory exhaustion and backend denial-of-service.
-- **Graph Traversal Limits**: Transitive dependency algorithms enforce hard depth caps (maximum 20 hops) to prevent resource depletion on dense cyclic graphs.
+- **Search Debouncing**: Schema search inputs are debounced to 300ms on the client. Stale query state updates are suppressed via component cancellation flags when inputs change.
+- **Bounded Result Sets**: Pagination is enforced across all search results (displaying 10 results by default, selectable up to 50 rows per page) to prevent client DOM bloat and memory exhaustion.
+- **Graph Traversal Limits**: Transitive dependency algorithms enforce depth caps (maximum 999 hops in full transitive mode) to prevent resource depletion on dense cyclic graphs.

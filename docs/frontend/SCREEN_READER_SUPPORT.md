@@ -20,8 +20,8 @@ Engineers using screen readers (NVDA, JAWS, VoiceOver, Orca) must be able to exp
                                      v
 +--------------------------------------------------------------------------+
 |               Accessible Semantic HTML Data Table Mode                   |
-|  - Table Name & Namespace in <caption> and <th scope="row">             |
-|  - Inbound & Outbound Relationships in <th scope="col">                  |
+|  - Table Name & Namespace structured with badges and labels             |
+|  - Inbound & Outbound Relationships in structured data columns           |
 |  - Topological Level & Cycle Membership announced explicitly             |
 +--------------------------------------------------------------------------+
 ```

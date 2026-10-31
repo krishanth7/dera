@@ -33,5 +33,5 @@ DERA supports engineers across a wide variety of hardware form factors—from on
 3. **Reflow & Scroll Isolation**:
    - Page-level horizontal scroll is strictly prohibited.
    - Genuinely wide data structures (e.g., column lists with 15 attributes) are isolated in scrollable `<div role="region" tabIndex={0}>` wrappers with visual boundary cues.
-4. **Touch Target Dimensions**: Buttons, icons, and menu items maintain a minimum touch target size of $36\text{px} \times 36\text{px}$ on mobile screens (exceeding WCAG 2.2 SC 2.5.8 minimum $24\text{px} \times 24\text{px}$).
+4. **Touch Target Dimensions**: Interactive elements maintain a minimum target size of $24\text{px} \times 24\text{px}$ adhering to WCAG 2.2 SC 2.5.8 Target Size (Minimum), with primary controls sized at $32\text{px}$ to $44\text{px}$ for comfortable touch interactions.
 5. **Dialog Viewport Constraints**: All modals enforce `max-h-[85vh]` and `overflow-y-auto` with responsive width `w-[calc(100vw-2rem)] sm:max-w-lg`, preventing modals from bleeding beyond viewport edges on mobile devices.

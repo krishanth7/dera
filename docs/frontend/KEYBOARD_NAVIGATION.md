@@ -23,13 +23,12 @@ Every user journey in DERA is designed for complete keyboard operability without
 | `Tab` | Global | Move focus to next interactive element |
 | `Shift + Tab` | Global | Move focus to previous interactive element |
 | `Enter` / `Space` | Global | Activate button, expand accordion, toggle checkbox |
-| `Escape` | Global | Close active dialog, dismiss mobile drawer, close column drawer |
+| `Escape` | Global | Close active dialog, dismiss mobile drawer |
 | `/` | Global / Studio | Focus cross-schema search input |
 | `F` | ER Canvas | Fit entire diagram to view |
 | `R` | ER Canvas | Reset pan and zoom coordinates |
 | `+` / `-` | ER Canvas | Zoom in / zoom out |
 | `ArrowUp` / `ArrowDown` | Result Lists / Tables | Navigate list items or table rows |
-| `ArrowLeft` / `ArrowRight` | Tabs (`tablist`) | Switch between active tabs |
 
 ---
 
@@ -37,4 +36,4 @@ Every user journey in DERA is designed for complete keyboard operability without
 
 - **Modals & Dialogs**: Managed via Radix UI primitives with focus trapped inside `<DialogContent role="dialog">`. Focus automatically returns to the triggering button upon dismissal.
 - **Mobile Drawer**: Focus is trapped inside the mobile navigation drawer when open. Pressing `Escape` or activating any route closes the drawer and restores focus.
-- **Table Inspector Column Drawer**: Keyboard users can press `Enter` to expand column details, review attributes, and press `Escape` or `Enter` on the close toggle to return to table focus.
+- **Table Inspector Column Details**: Keyboard users can press `Enter` or `Space` on individual column rows to toggle inline attribute details.

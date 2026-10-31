@@ -34,8 +34,6 @@ Phase 7.6 employs a multi-tiered test pyramid ensuring high test reliability wit
 
 | Suite | File Path | Focus Area | Test Count |
 | :--- | :--- | :--- | :--- |
-| **Unit** | `apps/web/tests/unit/api_client.test.ts` | Typed REST API client serialization & errors | 4 |
-| **Unit** | `apps/web/tests/unit/theme_toggle.test.tsx` | Next-themes toggling & storage | 2 |
 | **Unit** | `apps/web/tests/unit/utils.test.ts` | Tailwind class merging & string utilities | 4 |
 | **Unit** | `apps/web/tests/unit/connections_explorer.test.ts` | Connector config validation & adapters | 5 |
 | **Unit** | `apps/web/tests/unit/er_canvas.test.ts` | Deterministic auto-layout & graph permutation | 9 |

@@ -1,9 +1,18 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export function Table({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) {
+export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+  scrollLabel?: string;
+}
+
+export function Table({ className, scrollLabel = "Scrollable data table", ...props }: TableProps) {
   return (
-    <div className="relative w-full overflow-x-auto focus-visible:ring-1 focus-visible:ring-blue-500 rounded" role="region" aria-label="Scrollable data table" tabIndex={0}>
+    <div
+      className="relative w-full overflow-x-auto focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
+      role="region"
+      aria-label={props["aria-label"] || scrollLabel}
+      tabIndex={0}
+    >
       <table className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   );

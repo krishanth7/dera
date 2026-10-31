@@ -178,7 +178,7 @@ export function SearchResultsList({
             <option value={25}>25</option>
             <option value={50}>50</option>
           </select>
-          <span className="ml-2">
+          <span className="ml-2" aria-live="polite">
             Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} of {totalCount} results
           </span>
         </div>

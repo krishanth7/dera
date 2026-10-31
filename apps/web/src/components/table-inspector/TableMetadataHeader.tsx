@@ -138,28 +138,28 @@ export function TableMetadataHeader({ viewModel }: TableMetadataHeaderProps) {
 
         {/* Studio Navigation Actions */}
         <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href={`/relationships?schemaId=${encodeURIComponent(schemaId)}&selectedTableId=${encodeURIComponent(table.table_id)}`}
-          >
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+          <Button variant="outline" size="sm" className="gap-1.5 text-xs" asChild>
+            <Link
+              href={`/relationships?schemaId=${encodeURIComponent(schemaId)}&selectedTableId=${encodeURIComponent(table.table_id)}`}
+            >
               <Network className="w-3.5 h-3.5 text-indigo-500" />
               View in ER Canvas
-            </Button>
-          </Link>
-          <Link
-            href={`/dependencies?schemaId=${encodeURIComponent(schemaId)}&tableId=${encodeURIComponent(table.table_id)}`}
-          >
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+            </Link>
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1.5 text-xs" asChild>
+            <Link
+              href={`/dependencies?schemaId=${encodeURIComponent(schemaId)}&tableId=${encodeURIComponent(table.table_id)}`}
+            >
               <GitFork className="w-3.5 h-3.5 text-blue-500" />
               Explore Dependencies
-            </Button>
-          </Link>
-          <Link href={`/schemas/${encodeURIComponent(schemaId)}`}>
-            <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" className="gap-1.5 text-xs" asChild>
+            <Link href={`/schemas/${encodeURIComponent(schemaId)}`}>
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to Schema
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

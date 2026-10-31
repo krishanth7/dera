@@ -25,6 +25,6 @@ All canonical routes were audited against representative viewport widths in Chro
 ## 2. Component Adaptation Verification
 
 - **Navigation Shell**: Sidebar automatically collapses into a slide-over mobile drawer below 768px (`md:` breakpoint).
-- **Table Inspector**: Stat cards wrap gracefully from 6 across on desktop to 2 columns on tablet and 1 column on mobile.
+- **Table Inspector**: Summary cards adapt across breakpoints: two columns below 640px, three from 640px to 1023px, and six from 1024px onward.
 - **Search Studio**: Filter pill panel wraps into multiple rows; search input maintains full width on mobile viewports.
-- **Dependency Explorer**: Metrics cards stack into 2x2 grid on mobile; cycle loop paths wrap table nodes cleanly without overflow.
+- **Dependency Explorer**: Summary metrics cards adapt from two columns across three rows on mobile (grid-cols-2) to three columns on tablet and five across on desktop; cycle loop paths wrap table nodes cleanly without overflow.

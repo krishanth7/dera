@@ -124,8 +124,15 @@ describe("Phase 7.6 Accessibility & Responsive Component Suite", () => {
     const mobileDrawer = screen.getByRole("dialog", { name: /mobile navigation drawer/i });
     expect(mobileDrawer).toBeInTheDocument();
     expect(mobileDrawer).toHaveAttribute("aria-modal", "true");
+    expect(mobileDrawer).toHaveClass("-translate-x-full");
 
-    // Pressing Escape should trigger event listener without unhandled errors
+    // Open mobile menu
+    const menuButton = screen.getByRole("button", { name: /open mobile navigation menu/i });
+    fireEvent.click(menuButton);
+    expect(mobileDrawer).toHaveClass("translate-x-0");
+
+    // Pressing Escape closes mobile drawer
     fireEvent.keyDown(window, { key: "Escape" });
+    expect(mobileDrawer).toHaveClass("-translate-x-full");
   });
 });

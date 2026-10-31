@@ -43,7 +43,7 @@ const sortedColumns = useMemo(() => {
 `SchemaSearchStudio.tsx` prevents excessive network overhead and race conditions:
 
 1. **300ms Input Debounce**: Buffers keystrokes before dispatching queries.
-2. **Cancellation Token**: When a new query is submitted, previous in-flight HTTP requests are cancelled via `AbortController`.
+2. **Cancellation Token**: When a new query is submitted, previous in-flight state updates are suppressed via cancellation flags to prevent race conditions.
 3. **Client-side Paging**: Search results are bounded in 10, 25, or 50 items per view to avoid DOM node bloat.
 
 ### Bounded Dependency Graph Traversal

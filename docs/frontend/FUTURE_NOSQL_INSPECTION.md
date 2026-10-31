@@ -25,7 +25,6 @@ The core presentation contract is defined in `apps/web/src/components/table-insp
 export type InspectorObjectKind =
   | "table"
   | "view"
-  | "materialized_view"
   | "collection"        // MongoDB / Firestore
   | "document_type"     // Document models
   | "database_resource"; // DynamoDB / Cloud resources
@@ -35,11 +34,14 @@ export interface InspectorObject {
   kind: InspectorObjectKind;
   displayName: string;
   namespace?: string;
-  completeness: "COMPLETE" | "PARTIAL" | "RESTRICTED" | "UNSUPPORTED" | "UNKNOWN";
+  completeness: "complete" | "partial" | "restricted" | "unsupported" | "unknown" | string;
   sourceEngine?: string;
-  engineDetails?: Record<string, unknown>;
-  fieldCount?: number;
-  itemCountEstimated?: number;
+  provenance?: {
+    connectorVersion?: string;
+    collectionTimestamp?: string;
+    sourceMetadataApi?: string;
+  };
+  metadata?: Record<string, unknown>;
 }
 ```
 

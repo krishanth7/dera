@@ -42,7 +42,7 @@ All data strictly originates from authenticated backend endpoints. Zero AI model
 | **REQ-7.5.18** | Paginated search results with bounded page sizes (10, 25, 50) | `SearchResultsList.tsx`, pagination tests | **PASS** |
 | **REQ-7.5.19** | Direct navigation from search results to Table Inspector | Result item click handler test | **PASS** |
 | **REQ-7.5.20** | Dedicated Dependency Explorer route (`/dependencies`) | Route build, graph rendering test | **PASS** |
-| **REQ-7.5.21** | Correct dependency direction (child FK points to parent PK) | Unit tests in `inspector_and_search.test.ts` | **PASS** |
+| **REQ-7.5.21** | Correct dependency direction (child FK points to parent PK) | Unit tests in `inspector_and_dependencies.test.ts` | **PASS** |
 | **REQ-7.5.22** | Immediate incoming and outgoing dependency breakdown | `TransitiveReachabilityPanel.tsx` test | **PASS** |
 | **REQ-7.5.23** | Bounded transitive dependency reachability (1, 2, 3 hops) | BFS reachability unit tests | **PASS** |
 | **REQ-7.5.24** | Cycle detection alert and elementary loop visualization | `CycleAnalysisPanel.tsx`, cycle loop test | **PASS** |
@@ -64,7 +64,7 @@ All data strictly originates from authenticated backend endpoints. Zero AI model
 ```text
  ✓ apps/web/tests/unit/theme_toggle.test.tsx (2 tests)
  ✓ apps/web/tests/unit/api_client.test.ts (4 tests)
- ✓ apps/web/tests/unit/inspector_and_search.test.ts (11 tests)
+ ✓ apps/web/tests/unit/inspector_and_dependencies.test.ts (11 tests)
  ✓ apps/web/tests/unit/er_canvas.test.ts (11 tests)
  ✓ apps/web/tests/component/inspector_and_dependencies.test.tsx (10 tests)
  ✓ apps/web/tests/component/schema_explorer.test.tsx (5 tests)

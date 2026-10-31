@@ -16,7 +16,7 @@ Phase 7.5 components are engineered to adhere to WCAG 2.2 Level AA requirements,
 Visual node-link dependency graphs can present barriers to screen reader users. DERA provides a full semantic HTML equivalent:
 
 - **`AccessibleDependencyTable`**: Renders every node, its incoming dependents, outgoing prerequisites, topological level, and cycle membership in a standard HTML `<table>`.
-- **Semantic Markup**: Uses proper `<caption>`, `<thead scope="col">`, and `<tbody scope="row">` tags.
+- **Semantic Markup**: Uses structured table markup with column headers, badge metadata, and high-contrast styling.
 - **Screen Reader Announcements**: Uses `aria-label`, `aria-describedby`, and ARIA live regions for dynamically loaded search results and graph filtering.
 
 ---
@@ -25,9 +25,9 @@ Visual node-link dependency graphs can present barriers to screen reader users. 
 
 | Component | Keybinding / Focus Behavior |
 | :--- | :--- |
-| **Search Studio** | Global `/` shortcut activates search input; `Esc` clears query or closes filters; arrow keys navigate result list. |
-| **Table Tabs** | Standard ARIA tabs (`role="tablist"`, `role="tab"`, `role="tabpanel"`); `ArrowLeft`/`ArrowRight` switches tabs. |
-| **Column Drawer** | Expands with `Enter` or `Space`; focus is trapped within drawer if modal, or smoothly moves to inspection details. |
+| **Search Studio** | Search input accepts direct focus and keyboard query typing; tab order navigates to filters, clear button, and result links. |
+| **Table Tabs** | Buttons navigate between inspector views with keyboard focus rings. |
+| **Column Details** | Enter or Space expands column detail inline; toggle buttons collapse details. |
 | **Reachability Filters** | Radio buttons group together with arrow-key toggling and keyboard focus indicators. |
 
 ---

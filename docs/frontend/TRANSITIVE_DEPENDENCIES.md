@@ -77,7 +77,7 @@ function computeReachability(
 - **`1` (Direct)**: Immediate foreign key neighbors only.
 - **`2` (Two-Hop)**: Immediate neighbors plus their immediate neighbors.
 - **`3` (Three-Hop)**: Up to three edge traversals.
-- **`transitive` (Full)**: Exhaustive traversal bounded by graph diameter or hard-capped at 20 hops to prevent CPU starvation.
+- **`transitive` (Full)**: Exhaustive traversal bounded by graph diameter or capped at 999 hops in TransitiveReachabilityPanel to prevent infinite cycles.
 
 ---
 
