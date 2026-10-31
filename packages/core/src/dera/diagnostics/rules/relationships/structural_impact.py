@@ -87,9 +87,9 @@ class StructuralImpactRadiusRule(DiagnosticRule):
 
                 obj_name = f"{node.namespace_name}.{node.native_name}"
                 sev = (
-                    DiagnosticSeverity.LOW
+                    DiagnosticSeverity.MEDIUM
                     if metrics.transitive_dependent_count >= threshold * 2
-                    else DiagnosticSeverity.INFORMATIONAL
+                    else DiagnosticSeverity.LOW
                 )
 
                 ev = (

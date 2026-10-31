@@ -93,9 +93,9 @@ class DependencyConcentrationRule(DiagnosticRule):
             fan_in_count = metrics.out_degree
             if fan_in_count >= max_fan_in:
                 sev = (
-                    DiagnosticSeverity.LOW
+                    DiagnosticSeverity.MEDIUM
                     if fan_in_count >= max_fan_in * 2
-                    else DiagnosticSeverity.INFORMATIONAL
+                    else DiagnosticSeverity.LOW
                 )
                 ev = (
                     DiagnosticEvidence(
@@ -144,9 +144,9 @@ class DependencyConcentrationRule(DiagnosticRule):
             fan_out_count = metrics.in_degree
             if fan_out_count >= max_fan_out:
                 sev = (
-                    DiagnosticSeverity.LOW
+                    DiagnosticSeverity.MEDIUM
                     if fan_out_count >= max_fan_out * 2
-                    else DiagnosticSeverity.INFORMATIONAL
+                    else DiagnosticSeverity.LOW
                 )
                 ev = (
                     DiagnosticEvidence(
