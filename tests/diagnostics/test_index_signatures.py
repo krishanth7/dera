@@ -231,3 +231,39 @@ def test_partial_index_predicate_case_preservation() -> None:
     assert sig_upper.signature_hash() != sig_lower.signature_hash()
     is_dup, _ = are_indexes_exactly_duplicate(idx_upper, idx_lower)
     assert is_dup is False
+
+
+def test_partial_index_predicate_literal_whitespace_preservation() -> None:
+    """Whitespace inside string literals is preserved while outside whitespace is normalized."""
+    idx1 = MockIndex(
+        name="idx_status_spaces",
+        id="i1",
+        terms=(MockTerm(column_name="user_id", ordinal_position=1),),
+        predicate="status = 'ACTIVE   STATUS'",
+    )
+    idx2 = MockIndex(
+        name="idx_status_single_space",
+        id="i2",
+        terms=(MockTerm(column_name="user_id", ordinal_position=1),),
+        predicate="status = 'ACTIVE STATUS'",
+    )
+    idx3 = MockIndex(
+        name="idx_status_outside_spaces",
+        id="i3",
+        terms=(MockTerm(column_name="user_id", ordinal_position=1),),
+        predicate="status    =    'ACTIVE   STATUS'",
+    )
+
+    sig1 = compute_index_signature(idx1)
+    sig2 = compute_index_signature(idx2)
+    sig3 = compute_index_signature(idx3)
+
+    # Different whitespace inside literal must not be considered duplicate
+    assert sig1.signature_hash() != sig2.signature_hash()
+    is_dup_1_2, _ = are_indexes_exactly_duplicate(idx1, idx2)
+    assert is_dup_1_2 is False
+
+    # Different whitespace outside literal must normalize and match
+    assert sig1.signature_hash() == sig3.signature_hash()
+    is_dup_1_3, _ = are_indexes_exactly_duplicate(idx1, idx3)
+    assert is_dup_1_3 is True
