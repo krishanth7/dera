@@ -10,6 +10,7 @@ from dera_api.api.v1.endpoints.reverse_engineering.columns import router as colu
 from dera_api.api.v1.endpoints.reverse_engineering.constraints import router as constraints_router
 from dera_api.api.v1.endpoints.reverse_engineering.cycles import router as cycles_router
 from dera_api.api.v1.endpoints.reverse_engineering.dependencies import router as dependencies_router
+from dera_api.api.v1.endpoints.reverse_engineering.diagnostics import router as diagnostics_router
 from dera_api.api.v1.endpoints.reverse_engineering.exports import router as exports_router
 from dera_api.api.v1.endpoints.reverse_engineering.namespaces import router as namespaces_router
 from dera_api.api.v1.endpoints.reverse_engineering.relationships import (
@@ -31,5 +32,6 @@ router.include_router(dependencies_router)
 router.include_router(cycles_router)
 router.include_router(snapshots_router)
 router.include_router(exports_router)
+router.include_router(diagnostics_router)
 
 __all__ = ["router"]
