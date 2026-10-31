@@ -46,16 +46,20 @@ export function SuppressionControls({
         {finding.is_suppressed ? (
           <button
             type="button"
+            disabled={!onRevokeSuppression}
             onClick={() => onRevokeSuppression?.(finding.fingerprint)}
-            className="rounded-sm bg-red-50 px-2 py-1 text-[11px] font-medium text-red-700 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/50"
+            className="rounded-sm bg-red-50 px-2 py-1 text-[11px] font-medium text-red-700 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/50"
+            title={onRevokeSuppression ? "Revoke this exemption" : "Suppression mutation not available in current mode"}
           >
             Revoke Exemption
           </button>
         ) : (
           <button
             type="button"
+            disabled={!onApplySuppression}
             onClick={() => setIsModalOpen(true)}
-            className="rounded-sm bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            className="rounded-sm bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            title={onApplySuppression ? "Exempt finding from diagnostics" : "Suppression mutation not available in current mode"}
           >
             Exempt Finding
           </button>

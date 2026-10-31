@@ -32,6 +32,8 @@ interface DiagnosticsOverviewProps {
   connectionName?: string;
   engineName?: string;
   onReevaluate?: () => void;
+  onApplySuppression?: (fingerprint: string, reason: string, durationDays: number) => void;
+  onRevokeSuppression?: (fingerprint: string) => void;
   isLoading?: boolean;
   className?: string;
 }
@@ -53,6 +55,8 @@ export function DiagnosticsOverview({
   connectionName = "Production DB",
   engineName = "PostgreSQL",
   onReevaluate,
+  onApplySuppression,
+  onRevokeSuppression,
   isLoading = false,
   className = "",
 }: DiagnosticsOverviewProps) {
@@ -237,6 +241,8 @@ export function DiagnosticsOverview({
               <FindingDetails
                 finding={selectedFinding}
                 onClose={() => setSelectedFinding(null)}
+                onApplySuppression={onApplySuppression}
+                onRevokeSuppression={onRevokeSuppression}
               />
             </div>
           )}
