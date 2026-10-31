@@ -213,13 +213,10 @@ class ForeignKeyIntegrityRule:
 
                 # 3. Referenced target table and column validation
                 target_table = None
-                if (
-                    ref_schema
-                    and f"{str(ref_schema).lower()}.{str(ref_table_name).lower()}" in table_map
-                ):
-                    target_table = table_map[
-                        f"{str(ref_schema).lower()}.{str(ref_table_name).lower()}"
-                    ]
+                if ref_schema:
+                    target_key = f"{str(ref_schema).lower()}.{str(ref_table_name).lower()}"
+                    if target_key in table_map:
+                        target_table = table_map[target_key]
                 elif str(ref_table_name).lower() in table_map:
                     target_table = table_map[str(ref_table_name).lower()]
 
