@@ -59,6 +59,19 @@ class DiagnosticFinding:
     severity_rationale: str
     recommendation: str | None = None
     fingerprint: str = ""
+    category: RuleCategory = RuleCategory.STRUCTURAL_INTEGRITY
+    classification: Any = None
+    original_severity: DiagnosticSeverity | None = None
+    confidence: Any = None
+    metadata_completeness: Any = None
+    structured_recommendation: Any | None = None
+    lifecycle_state: Any = None
+    is_suppressed: bool = False
+    suppression_id: str | None = None
+    override_id: str | None = None
+    priority_score: int = 0
+    priority_rank: Any = None
+    finding_id: str = ""
 
     def __post_init__(self) -> None:
         if not self.fingerprint:
@@ -70,20 +83,105 @@ class DiagnosticFinding:
             )
             object.__setattr__(self, "fingerprint", computed)
 
+        if not self.finding_id:
+            object.__setattr__(self, "finding_id", f"fnd_{self.fingerprint[:16]}")
+
+        if self.original_severity is None:
+            object.__setattr__(self, "original_severity", self.severity)
+
+        if self.classification is None:
+            from dera.diagnostics.prioritization.classification import FindingClassification
+
+            object.__setattr__(
+                self, "classification", FindingClassification.POTENTIAL_ENGINEERING_CONCERN
+            )
+
+        if self.confidence is None:
+            from dera.diagnostics.evidence.models import FindingConfidence
+
+            object.__setattr__(self, "confidence", FindingConfidence.VERIFIED)
+
+        if self.metadata_completeness is None:
+            from dera.diagnostics.evidence.models import EvidenceCompleteness
+
+            object.__setattr__(self, "metadata_completeness", EvidenceCompleteness.COMPLETE)
+
+        if self.lifecycle_state is None:
+            from dera.diagnostics.governance.lifecycle import FindingLifecycleState
+
+            object.__setattr__(self, "lifecycle_state", FindingLifecycleState.OPEN)
+
+        if self.priority_rank is None:
+            from dera.diagnostics.prioritization.ranking import derive_priority_rank
+
+            object.__setattr__(self, "priority_rank", derive_priority_rank(self.severity))
+
+        if self.priority_score == 0:
+            from dera.diagnostics.prioritization.ranking import compute_priority_score
+
+            score = compute_priority_score(
+                severity=self.severity,
+                confidence=self.confidence,
+                classification=self.classification,
+            )
+            object.__setattr__(self, "priority_score", score)
+
     def to_canonical_dict(self) -> dict[str, Any]:
         """Produces a deterministic dictionary representation."""
-        return {
+        result: dict[str, Any] = {
+            "finding_id": self.finding_id,
             "fingerprint": self.fingerprint,
             "rule_id": self.rule_id,
             "rule_version": self.rule_version,
             "object_id": self.object_id,
+            "category": self.category.value
+            if hasattr(self.category, "value")
+            else str(self.category),
+            "classification": (
+                self.classification.value
+                if hasattr(self.classification, "value")
+                else str(self.classification)
+            ),
             "severity": self.severity.value,
+            "original_severity": (
+                self.original_severity.value
+                if hasattr(self.original_severity, "value")
+                else str(self.original_severity)
+            ),
             "title": self.title,
             "description": self.description,
+            "confidence": (
+                self.confidence.value if hasattr(self.confidence, "value") else str(self.confidence)
+            ),
+            "metadata_completeness": (
+                self.metadata_completeness.value
+                if hasattr(self.metadata_completeness, "value")
+                else str(self.metadata_completeness)
+            ),
             "evidence": [e.to_canonical_dict() for e in self.evidence],
             "severity_rationale": self.severity_rationale,
             "recommendation": self.recommendation,
+            "structured_recommendation": (
+                self.structured_recommendation.to_canonical_dict()
+                if hasattr(self.structured_recommendation, "to_canonical_dict")
+                else None
+            ),
+            "lifecycle_state": (
+                self.lifecycle_state.value
+                if hasattr(self.lifecycle_state, "value")
+                else str(self.lifecycle_state)
+            ),
+            "is_suppressed": self.is_suppressed,
+            "suppression_id": self.suppression_id,
+            "override_id": self.override_id,
+            "priority_score": self.priority_score,
+            "priority_rank": (
+                self.priority_rank.value
+                if hasattr(self.priority_rank, "value")
+                else str(self.priority_rank)
+            ),
         }
+        return result
 
 
 @dataclass(frozen=True)
@@ -174,19 +272,34 @@ class DiagnosticReport:
     coverage: DiagnosticCoverage
     source_engine: str
     report_hash: str = ""
+    explainability: Any | None = None
+    severity_policy_version: str = "1.0.0"
+    recommendation_catalog_version: str = "1.0.0"
+    suppressions_applied: tuple[dict[str, Any], ...] = ()
+    severity_overrides_applied: tuple[dict[str, Any], ...] = ()
 
     def to_canonical_dict(self) -> dict[str, Any]:
         """Produces a deterministic dictionary representation of the report."""
-        return {
+        result: dict[str, Any] = {
             "evaluation_id": self.evaluation_id,
             "evaluated_at": self.evaluated_at,
             "snapshot_id": self.snapshot_id,
             "rule_set_version": self.rule_set_version,
+            "severity_policy_version": self.severity_policy_version,
+            "recommendation_catalog_version": self.recommendation_catalog_version,
             "config_fingerprint": self.config_fingerprint,
             "report_hash": self.report_hash,
             "source_engine": self.source_engine,
             "summary": self.summary.to_canonical_dict(),
             "coverage": self.coverage.to_canonical_dict(),
+            "explainability": (
+                self.explainability.to_canonical_dict()
+                if hasattr(self.explainability, "to_canonical_dict")
+                else None
+            ),
+            "suppressions_applied": list(self.suppressions_applied),
+            "severity_overrides_applied": list(self.severity_overrides_applied),
             "findings": [f.to_canonical_dict() for f in self.findings],
             "rule_evaluations": [e.to_canonical_dict() for e in self.rule_evaluations],
         }
+        return result

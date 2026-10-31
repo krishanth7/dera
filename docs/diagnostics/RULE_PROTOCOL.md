@@ -15,6 +15,7 @@ from typing import Protocol, runtime_checkable
 from dera.diagnostics.context import DiagnosticContext
 from dera.diagnostics.models import RuleEvaluation, RuleMetadata
 
+
 @runtime_checkable
 class DiagnosticRule(Protocol):
     """Protocol satisfied by all deterministic diagnostic rule implementations."""
