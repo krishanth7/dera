@@ -14,7 +14,7 @@ from dera.diagnostics.enums import RuleCategory
 if TYPE_CHECKING:
     from dera.reverse_engineering.capabilities import SchemaCapabilityProfile
     from dera.reverse_engineering.dependencies.models import DependencyAnalysisResult
-    from dera.reverse_engineering.graph.models import RelationshipGraph
+    from dera.reverse_engineering.graph.models import ForeignKeyGraph
     from dera.reverse_engineering.schema import SchemaRepresentation
     from dera.reverse_engineering.snapshots.models import SchemaSnapshot
 
@@ -78,7 +78,7 @@ class DiagnosticContext:
     schema: SchemaRepresentation | None = None
     snapshot: SchemaSnapshot | None = None
     snapshot_id: str | None = None
-    graph: RelationshipGraph | None = None
+    graph: ForeignKeyGraph | None = None
     dependencies: DependencyAnalysisResult | None = None
     capabilities: SchemaCapabilityProfile | None = None
     config: DiagnosticEngineConfig = field(default_factory=DiagnosticEngineConfig)
