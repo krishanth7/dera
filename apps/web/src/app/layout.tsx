@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { WorkspaceProvider } from "@/providers/workspace-provider";
+import { AuthProvider } from "@/providers/auth-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,11 +23,13 @@ export default function RootLayout({
       <head />
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-blue-600 selection:text-white">
         <ThemeProvider>
-          <WorkspaceProvider>
-            <ToastProvider>
-              {children}
-            </ToastProvider>
-          </WorkspaceProvider>
+          <AuthProvider>
+            <WorkspaceProvider>
+              <ToastProvider>
+                {children}
+              </ToastProvider>
+            </WorkspaceProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

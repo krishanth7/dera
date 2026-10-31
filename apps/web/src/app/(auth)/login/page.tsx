@@ -5,35 +5,42 @@ import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/providers/toast-provider";
-import { ShieldCheck, Lock } from "lucide-react";
+import { useAuth } from "@/providers/auth-provider";
+import { ShieldCheck, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const { addToast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
-      // In Phase 7.1, demonstrates contract-aligned session authentication flow
-      // Actual full auth state management and credential submission lands in Phase 7.2
+      await login(email, password);
       addToast({
-        type: "info",
-        title: "Phase 7.1 Preview",
-        description: "Redirecting to workspace overview. Full multi-tenant authentication UI will be implemented in Phase 7.2.",
+        type: "success",
+        title: "Authenticated",
+        description: "Welcome to DERA Engineering Studio.",
       });
-
-      setTimeout(() => {
-        router.push("/app/overview");
-      }, 800);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Invalid credentials";
+      setError(msg);
+      addToast({
+        type: "error",
+        title: "Sign-In Failed",
+        description: msg,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +54,7 @@ export default function LoginPage() {
             D
           </div>
           <CardTitle className="text-xl font-bold tracking-tight">
-            DERA Studio
+            Sign In to DERA Studio
           </CardTitle>
           <CardDescription>
             Database Engineering & Reverse Analysis
@@ -55,6 +62,14 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div
+                className="p-3 text-xs rounded bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Work Email
@@ -62,34 +77,64 @@ export default function LoginPage() {
               <Input
                 type="email"
                 required
+                autoComplete="email"
                 placeholder="engineer@enterprise.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Password
-              </label>
-              <Input
-                type="password"
-                required
-                placeholder="••••••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Password
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  autoComplete="current-password"
+                  placeholder="••••••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
             <Button type="submit" className="w-full" isLoading={isLoading}>
-              <Lock className="w-4 h-4 mr-1.5" /> Sign In to Studio
+              <Lock className="w-4 h-4 mr-1.5" /> Sign In
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col gap-2 text-center text-xs text-slate-500">
+        <CardFooter className="flex flex-col gap-3 text-center text-xs text-slate-500">
+          <div className="flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span>Don&apos;t have an account?</span>
+            <Link
+              href="/register"
+              className="text-blue-600 font-semibold hover:underline dark:text-blue-400"
+            >
+              Register
+            </Link>
+          </div>
           <div className="flex items-center justify-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
             <ShieldCheck className="w-4 h-4" /> Secure Cookie Session Authentication
           </div>
           <p className="text-[10px]">
-            Zero credentials stored in browser localStorage.
+            Credentials are validated strictly by the DERA backend auth service.
           </p>
         </CardFooter>
       </Card>
