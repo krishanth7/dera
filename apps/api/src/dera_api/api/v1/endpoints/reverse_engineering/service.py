@@ -10,6 +10,15 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
+from dera.diagnostics import (
+    ALL_FOUNDATIONAL_RULES,
+    DiagnosticContext,
+    DiagnosticEngineConfig,
+    DiagnosticEvaluator,
+    DiagnosticReport,
+    DiagnosticRuleRegistry,
+    RuleMetadata,
+)
 from dera.reverse_engineering.dependencies.analyzer import DependencyAnalyzer
 from dera.reverse_engineering.dependencies.models import DependencyAnalysisResult
 from dera.reverse_engineering.exports.models import (
@@ -41,6 +50,9 @@ class ReverseEngineeringService:
         self._export_service = ExportService()
         self._export_artifacts: dict[tuple[str, str], ExportArtifact] = {}
         self._export_jobs: dict[tuple[str, str], dict[str, Any]] = {}
+        self._diagnostic_registry = DiagnosticRuleRegistry()
+        self._diagnostic_registry.register_many(ALL_FOUNDATIONAL_RULES)
+        self._diagnostic_evaluator = DiagnosticEvaluator()
 
     # --- Schema Management ---
 
@@ -201,6 +213,42 @@ class ReverseEngineeringService:
     def get_export_artifact(self, workspace_id: str, export_id: str) -> ExportArtifact | None:
         """Retrieve raw export artifact for download."""
         return self._export_artifacts.get((workspace_id, export_id))
+
+    # --- Diagnostics ---
+
+    def list_diagnostic_rules(self) -> list[RuleMetadata]:
+        """List all registered diagnostic rules in deterministic order."""
+        return [r.metadata for r in self._diagnostic_registry.list_rules()]
+
+    def get_diagnostic_rule(self, rule_id: str) -> RuleMetadata | None:
+        """Retrieve metadata for a specific diagnostic rule."""
+        if self._diagnostic_registry.has(rule_id):
+            return self._diagnostic_registry.get(rule_id).metadata
+        return None
+
+    def evaluate_diagnostics(
+        self,
+        workspace_id: str,
+        schema_id: str,
+        config: DiagnosticEngineConfig | None = None,
+    ) -> DiagnosticReport | None:
+        """Evaluate deterministic diagnostic rules against an authorized schema representation."""
+        schema = self.get_schema(workspace_id, schema_id)
+        if schema is None:
+            return None
+
+        graph = self.get_relationship_graph(workspace_id, schema_id)
+        dependencies = self.get_dependency_analysis(workspace_id, schema_id)
+
+        context = DiagnosticContext(
+            schema=schema,
+            graph=graph,
+            dependencies=dependencies,
+            config=config or DiagnosticEngineConfig(),
+        )
+
+        rules = self._diagnostic_registry.list_rules()
+        return self._diagnostic_evaluator.evaluate(context=context, rules=rules)
 
 
 # Global default service singleton

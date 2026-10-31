@@ -51,7 +51,7 @@ To maintain truth-in-documentation, the implementation status of each stage is c
 | **3** | Catalog Metadata Inspection | **Implemented (SQLite)** | `SqliteConnector.inspect_tables()` querying `sqlite_master` and PRAGMAs |
 | **4** | Canonical Normalization | **Implemented** | `DatabaseTable`, `DatabaseColumn`, `PrimaryKeyConstraint`, `ForeignKeyConstraint`, `TableIndex` in [`dera.models`](../../packages/core/src/dera/models.py) |
 | **5** | Dependency Graph Analysis | **Implemented** | `build_dependency_graph()` & `compute_topological_sort()` in [`dera.graph`](../../packages/core/src/dera/graph.py) |
-| **6** | Diagnostic Rule Linting | **Implemented** | `run_all_diagnostics()` evaluating rules `RULE-INT-001` and `RULE-PERF-002` in [`dera.diagnostics`](../../packages/core/src/dera/diagnostics.py) |
+| **6** | Diagnostic Rule Linting | **Implemented** | `run_all_diagnostics()` evaluating rules `RULE-INT-001` and `RULE-PERF-002` in [`dera.diagnostics`](../../packages/core/src/dera/diagnostics/__init__.py) |
 | **7** | Snapshot Hashing & Serialization | **Implemented** | `SchemaSnapshot.compute_hash()` generating deterministic SHA-256 fingerprint in `dera.models` |
 | **8** | API Response / Web Canvas | **Partially Implemented** | Health and meta endpoints active in `apps/api`; full inspection endpoint (`POST /api/v1/inspect`) and canvas visualizer scheduled for Phase 5 & 7 |
 

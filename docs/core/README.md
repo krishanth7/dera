@@ -25,7 +25,7 @@ In strict accordance with DERA's foundational charter:
 
 | Namespace | Active Modules | Responsibilities & Contents |
 |---|---|---|
-| `dera` | [`models.py`](../../packages/core/src/dera/models.py)<br/>[`graph.py`](../../packages/core/src/dera/graph.py)<br/>[`diagnostics.py`](../../packages/core/src/dera/diagnostics.py) | Canonical domain models (`DatabaseTable`, `Column`, `SchemaSnapshot`), graph adjacency and Kahn's topological sort, and rule-based diagnostic linting. |
+| `dera` | [`models.py`](../../packages/core/src/dera/models.py)<br/>[`graph.py`](../../packages/core/src/dera/graph.py)<br/>[`diagnostics/__init__.py`](../../packages/core/src/dera/diagnostics/__init__.py) | Canonical domain models (`DatabaseTable`, `Column`, `SchemaSnapshot`), graph adjacency and Kahn's topological sort, and rule-based diagnostic linting. |
 | `dera_core` | [`exceptions.py`](../../packages/core/src/dera_core/exceptions.py) | Structured domain exception hierarchy (`DeraError`, `CycleDetectedError`, `ReadOnlyViolationError`, `SchemaParsingError`, `DiagnosticRuleError`). |
 
 > **Note on Technical Debt:** In Phase 3, these namespaces will be consolidated into a single unified `dera` namespace while maintaining backward-compatible re-exports in `dera_core`.

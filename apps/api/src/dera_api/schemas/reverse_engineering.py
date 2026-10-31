@@ -7,6 +7,7 @@ relationship graphs, dependency analysis, snapshots, and deterministic exports.
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from dera.reverse_engineering.exports.models import ExportFormat, ExportScope
 from pydantic import BaseModel, ConfigDict, Field
@@ -371,3 +372,107 @@ class ExportJobResponse(BaseModel):
     completed_at: datetime | None = None
     error_message: str | None = None
     download_url: str | None = None
+
+
+# --- Phase 8.1 Diagnostics Schemas ---
+
+
+class DiagnosticRuleMetadataResponse(BaseModel):
+    """Metadata descriptor for a diagnostic rule."""
+
+    model_config = ConfigDict(frozen=True)
+
+    rule_id: str = Field(..., description="Stable rule identifier (e.g. DERA-SCHEMA-001).")
+    title: str = Field(..., description="Human-readable title.")
+    description: str = Field(..., description="Description of rule purpose and checks.")
+    version: str = Field(..., description="Semantic rule version.")
+    category: str = Field(..., description="Functional taxonomy category.")
+    default_severity: str = Field(..., description="Default finding severity.")
+    supported_object_kinds: list[str] = Field(..., description="Applicable schema object kinds.")
+    required_capabilities: list[str] = Field(
+        default_factory=list, description="Required capabilities."
+    )
+    supported_engines: list[str] = Field(
+        default_factory=list, description="Supported database engines."
+    )
+    documentation_url: str = Field(default="", description="Reference documentation URL.")
+
+
+class DiagnosticEvidenceResponse(BaseModel):
+    """Verifiable piece of evidence supporting a diagnostic finding."""
+
+    model_config = ConfigDict(frozen=True)
+
+    object_id: str = Field(..., description="Canonical ID of the object providing evidence.")
+    field_name: str = Field(..., description="Schema field or attribute observed.")
+    observed_value: Any = Field(..., description="Observed value from metadata.")
+    expected_value: Any | None = Field(default=None, description="Expected value if applicable.")
+    message: str = Field(default="", description="Explanatory message.")
+    context_data: dict[str, Any] = Field(default_factory=dict, description="Contextual details.")
+
+
+class DiagnosticFindingResponse(BaseModel):
+    """Structured diagnostic finding with verifiable evidence and recommendation."""
+
+    model_config = ConfigDict(frozen=True)
+
+    fingerprint: str = Field(..., description="Stable SHA-256 finding fingerprint.")
+    rule_id: str = Field(..., description="ID of rule that produced the finding.")
+    rule_version: str = Field(..., description="Version of rule that produced the finding.")
+    object_id: str = Field(..., description="Canonical ID of the affected schema entity.")
+    severity: str = Field(..., description="Finding severity level.")
+    title: str = Field(..., description="Finding title.")
+    description: str = Field(..., description="Detailed description.")
+    evidence: list[DiagnosticEvidenceResponse] = Field(
+        ..., description="Supporting evidence items."
+    )
+    severity_rationale: str = Field(..., description="Explanation of assigned severity.")
+    recommendation: str | None = Field(default=None, description="Recommended remediation action.")
+
+
+class DiagnosticEvaluationResponse(BaseModel):
+    """Execution status and metrics for an individual diagnostic rule."""
+
+    model_config = ConfigDict(frozen=True)
+
+    rule_id: str = Field(..., description="Rule identifier.")
+    rule_version: str = Field(..., description="Rule version.")
+    status: str = Field(..., description="Evaluation status.")
+    execution_duration_ms: float = Field(..., description="Rule execution time in milliseconds.")
+    message: str = Field(default="", description="Status explanation.")
+    error_details: str | None = Field(
+        default=None, description="Error details if execution failed."
+    )
+
+
+class DiagnosticReportResponse(BaseModel):
+    """Complete diagnostic report for an analyzed canonical schema or snapshot."""
+
+    model_config = ConfigDict(frozen=True)
+
+    evaluation_id: str = Field(..., description="Unique evaluation run identifier.")
+    evaluated_at: str = Field(..., description="ISO 8601 evaluation timestamp.")
+    snapshot_id: str | None = Field(
+        default=None, description="Source snapshot ID if evaluated from snapshot."
+    )
+    rule_set_version: str = Field(..., description="Rule set version.")
+    config_fingerprint: str = Field(..., description="Configuration fingerprint.")
+    report_hash: str = Field(..., description="Cryptographic content hash of the report.")
+    source_engine: str = Field(..., description="Database engine.")
+    summary: dict[str, Any] = Field(..., description="Aggregated summary counts.")
+    coverage: dict[str, Any] = Field(..., description="Rule execution coverage.")
+    findings: list[DiagnosticFindingResponse] = Field(..., description="Detected findings.")
+    rule_evaluations: list[DiagnosticEvaluationResponse] = Field(
+        ..., description="Per-rule outcomes."
+    )
+
+
+class DiagnosticEvaluateRequest(BaseModel):
+    """Optional configuration payload to customize diagnostic evaluation."""
+
+    model_config = ConfigDict(frozen=True)
+
+    enabled_rule_ids: list[str] | None = Field(
+        default=None, description="Explicit list of rule IDs to evaluate."
+    )
+    disabled_rule_ids: list[str] = Field(default_factory=list, description="Rule IDs to suppress.")

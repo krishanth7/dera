@@ -812,6 +812,378 @@
         "title": "DependencyAnalysisResponse",
         "type": "object"
       },
+      "DiagnosticEvaluateRequest": {
+        "description": "Optional configuration payload to customize diagnostic evaluation.",
+        "properties": {
+          "disabled_rule_ids": {
+            "description": "Rule IDs to suppress.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Disabled Rule Ids",
+            "type": "array"
+          },
+          "enabled_rule_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Explicit list of rule IDs to evaluate.",
+            "title": "Enabled Rule Ids"
+          }
+        },
+        "title": "DiagnosticEvaluateRequest",
+        "type": "object"
+      },
+      "DiagnosticEvaluationResponse": {
+        "description": "Execution status and metrics for an individual diagnostic rule.",
+        "properties": {
+          "error_details": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Error details if execution failed.",
+            "title": "Error Details"
+          },
+          "execution_duration_ms": {
+            "description": "Rule execution time in milliseconds.",
+            "title": "Execution Duration Ms",
+            "type": "number"
+          },
+          "message": {
+            "default": "",
+            "description": "Status explanation.",
+            "title": "Message",
+            "type": "string"
+          },
+          "rule_id": {
+            "description": "Rule identifier.",
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "rule_version": {
+            "description": "Rule version.",
+            "title": "Rule Version",
+            "type": "string"
+          },
+          "status": {
+            "description": "Evaluation status.",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_id",
+          "rule_version",
+          "status",
+          "execution_duration_ms"
+        ],
+        "title": "DiagnosticEvaluationResponse",
+        "type": "object"
+      },
+      "DiagnosticEvidenceResponse": {
+        "description": "Verifiable piece of evidence supporting a diagnostic finding.",
+        "properties": {
+          "context_data": {
+            "additionalProperties": true,
+            "description": "Contextual details.",
+            "title": "Context Data",
+            "type": "object"
+          },
+          "expected_value": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Expected value if applicable.",
+            "title": "Expected Value"
+          },
+          "field_name": {
+            "description": "Schema field or attribute observed.",
+            "title": "Field Name",
+            "type": "string"
+          },
+          "message": {
+            "default": "",
+            "description": "Explanatory message.",
+            "title": "Message",
+            "type": "string"
+          },
+          "object_id": {
+            "description": "Canonical ID of the object providing evidence.",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "observed_value": {
+            "description": "Observed value from metadata.",
+            "title": "Observed Value"
+          }
+        },
+        "required": [
+          "object_id",
+          "field_name",
+          "observed_value"
+        ],
+        "title": "DiagnosticEvidenceResponse",
+        "type": "object"
+      },
+      "DiagnosticFindingResponse": {
+        "description": "Structured diagnostic finding with verifiable evidence and recommendation.",
+        "properties": {
+          "description": {
+            "description": "Detailed description.",
+            "title": "Description",
+            "type": "string"
+          },
+          "evidence": {
+            "description": "Supporting evidence items.",
+            "items": {
+              "$ref": "#/components/schemas/DiagnosticEvidenceResponse"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "fingerprint": {
+            "description": "Stable SHA-256 finding fingerprint.",
+            "title": "Fingerprint",
+            "type": "string"
+          },
+          "object_id": {
+            "description": "Canonical ID of the affected schema entity.",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "recommendation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Recommended remediation action.",
+            "title": "Recommendation"
+          },
+          "rule_id": {
+            "description": "ID of rule that produced the finding.",
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "rule_version": {
+            "description": "Version of rule that produced the finding.",
+            "title": "Rule Version",
+            "type": "string"
+          },
+          "severity": {
+            "description": "Finding severity level.",
+            "title": "Severity",
+            "type": "string"
+          },
+          "severity_rationale": {
+            "description": "Explanation of assigned severity.",
+            "title": "Severity Rationale",
+            "type": "string"
+          },
+          "title": {
+            "description": "Finding title.",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fingerprint",
+          "rule_id",
+          "rule_version",
+          "object_id",
+          "severity",
+          "title",
+          "description",
+          "evidence",
+          "severity_rationale"
+        ],
+        "title": "DiagnosticFindingResponse",
+        "type": "object"
+      },
+      "DiagnosticReportResponse": {
+        "description": "Complete diagnostic report for an analyzed canonical schema or snapshot.",
+        "properties": {
+          "config_fingerprint": {
+            "description": "Configuration fingerprint.",
+            "title": "Config Fingerprint",
+            "type": "string"
+          },
+          "coverage": {
+            "additionalProperties": true,
+            "description": "Rule execution coverage.",
+            "title": "Coverage",
+            "type": "object"
+          },
+          "evaluated_at": {
+            "description": "ISO 8601 evaluation timestamp.",
+            "title": "Evaluated At",
+            "type": "string"
+          },
+          "evaluation_id": {
+            "description": "Unique evaluation run identifier.",
+            "title": "Evaluation Id",
+            "type": "string"
+          },
+          "findings": {
+            "description": "Detected findings.",
+            "items": {
+              "$ref": "#/components/schemas/DiagnosticFindingResponse"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "report_hash": {
+            "description": "Cryptographic content hash of the report.",
+            "title": "Report Hash",
+            "type": "string"
+          },
+          "rule_evaluations": {
+            "description": "Per-rule outcomes.",
+            "items": {
+              "$ref": "#/components/schemas/DiagnosticEvaluationResponse"
+            },
+            "title": "Rule Evaluations",
+            "type": "array"
+          },
+          "rule_set_version": {
+            "description": "Rule set version.",
+            "title": "Rule Set Version",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Source snapshot ID if evaluated from snapshot.",
+            "title": "Snapshot Id"
+          },
+          "source_engine": {
+            "description": "Database engine.",
+            "title": "Source Engine",
+            "type": "string"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "description": "Aggregated summary counts.",
+            "title": "Summary",
+            "type": "object"
+          }
+        },
+        "required": [
+          "evaluation_id",
+          "evaluated_at",
+          "rule_set_version",
+          "config_fingerprint",
+          "report_hash",
+          "source_engine",
+          "summary",
+          "coverage",
+          "findings",
+          "rule_evaluations"
+        ],
+        "title": "DiagnosticReportResponse",
+        "type": "object"
+      },
+      "DiagnosticRuleMetadataResponse": {
+        "description": "Metadata descriptor for a diagnostic rule.",
+        "properties": {
+          "category": {
+            "description": "Functional taxonomy category.",
+            "title": "Category",
+            "type": "string"
+          },
+          "default_severity": {
+            "description": "Default finding severity.",
+            "title": "Default Severity",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of rule purpose and checks.",
+            "title": "Description",
+            "type": "string"
+          },
+          "documentation_url": {
+            "default": "",
+            "description": "Reference documentation URL.",
+            "title": "Documentation Url",
+            "type": "string"
+          },
+          "required_capabilities": {
+            "description": "Required capabilities.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Required Capabilities",
+            "type": "array"
+          },
+          "rule_id": {
+            "description": "Stable rule identifier (e.g. DERA-SCHEMA-001).",
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "supported_engines": {
+            "description": "Supported database engines.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Supported Engines",
+            "type": "array"
+          },
+          "supported_object_kinds": {
+            "description": "Applicable schema object kinds.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Supported Object Kinds",
+            "type": "array"
+          },
+          "title": {
+            "description": "Human-readable title.",
+            "title": "Title",
+            "type": "string"
+          },
+          "version": {
+            "description": "Semantic rule version.",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_id",
+          "title",
+          "description",
+          "version",
+          "category",
+          "default_severity",
+          "supported_object_kinds"
+        ],
+        "title": "DiagnosticRuleMetadataResponse",
+        "type": "object"
+      },
       "ErrorCode": {
         "description": "Authoritative machine-readable error classification codes.",
         "enum": [
@@ -3932,6 +4304,225 @@
         ]
       }
     },
+    "/api/v1/reverse-engineering/diagnostics/rules": {
+      "get": {
+        "description": "Retrieves all registered diagnostic rules sorted deterministically by rule ID.",
+        "operationId": "list_diagnostic_rules_api_v1_reverse_engineering_diagnostics_rules_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiagnosticRuleMetadataResponse"
+                  },
+                  "title": "Response 200 List Diagnostic Rules Api V1 Reverse Engineering Diagnostics Rules Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Deterministic catalog of available diagnostic rules."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication required."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List available diagnostic rules",
+        "tags": [
+          "Reverse Engineering"
+        ]
+      }
+    },
+    "/api/v1/reverse-engineering/diagnostics/rules/{rule_id}": {
+      "get": {
+        "description": "Retrieves declared metadata for a specific diagnostic rule ID.",
+        "operationId": "get_diagnostic_rule_api_v1_reverse_engineering_diagnostics_rules__rule_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "title": "Rule Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticRuleMetadataResponse"
+                }
+              }
+            },
+            "description": "Rule metadata details."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication required."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rule not found in registry."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get diagnostic rule metadata",
+        "tags": [
+          "Reverse Engineering"
+        ]
+      }
+    },
     "/api/v1/reverse-engineering/exports": {
       "post": {
         "description": "Initiate and generate a deterministic structural export artifact.",
@@ -5304,6 +5895,168 @@
           }
         },
         "summary": "Retrieve complete schema dependency analysis",
+        "tags": [
+          "Reverse Engineering"
+        ]
+      }
+    },
+    "/api/v1/reverse-engineering/schemas/{schema_id}/diagnostics": {
+      "post": {
+        "description": "Executes deterministic diagnostic rules against an authorized canonical schema.",
+        "operationId": "evaluate_schema_diagnostics_api_v1_reverse_engineering_schemas__schema_id__diagnostics_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "schema_id",
+            "required": true,
+            "schema": {
+              "title": "Schema Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/DiagnosticEvaluateRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticReportResponse"
+                }
+              }
+            },
+            "description": "Deterministic diagnostic report."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication required."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Workspace access denied."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Target schema not found."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Evaluate diagnostic rules against schema",
         "tags": [
           "Reverse Engineering"
         ]
