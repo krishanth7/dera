@@ -233,6 +233,17 @@ def test_dep_003_high_fan_in_hub():
     hub_findings = [f for f in res.findings if "Fan-In Hub" in f.title]
     assert len(hub_findings) == 1
     assert hub_findings[0].object_id == t_root.object_id
+    assert hub_findings[0].severity == DiagnosticSeverity.LOW
+
+    # Twice threshold: 16 child tables
+    extra_children = [_make_table_node(f"extra_service_{i}") for i in range(7)]
+    all_children = children + extra_children
+    edges_2x = [_make_fk_edge(c, t_root, f"fk_all_service_{i}") for i, c in enumerate(all_children)]
+    graph_2x = _build_graph((t_root, *all_children), tuple(edges_2x))
+    res_2x = rule.evaluate(DiagnosticContext(graph=graph_2x))
+    hub_findings_2x = [f for f in res_2x.findings if "Fan-In Hub" in f.title]
+    assert len(hub_findings_2x) == 1
+    assert hub_findings_2x[0].severity == DiagnosticSeverity.MEDIUM
 
 
 def test_dep_003_high_fan_out_consumer():
@@ -250,6 +261,19 @@ def test_dep_003_high_fan_out_consumer():
     consumer_findings = [f for f in res.findings if "Fan-Out Consumer" in f.title]
     assert len(consumer_findings) == 1
     assert consumer_findings[0].object_id == t_consumer.object_id
+    assert consumer_findings[0].severity == DiagnosticSeverity.LOW
+
+    # Twice threshold: 16 parent tables
+    extra_parents = [_make_table_node(f"extra_dim_{i}") for i in range(7)]
+    all_parents = parents + extra_parents
+    edges_2x = [
+        _make_fk_edge(t_consumer, p, f"fk_all_report_{i}") for i, p in enumerate(all_parents)
+    ]
+    graph_2x = _build_graph((t_consumer, *all_parents), tuple(edges_2x))
+    res_2x = rule.evaluate(DiagnosticContext(graph=graph_2x))
+    consumer_findings_2x = [f for f in res_2x.findings if "Fan-Out Consumer" in f.title]
+    assert len(consumer_findings_2x) == 1
+    assert consumer_findings_2x[0].severity == DiagnosticSeverity.MEDIUM
 
 
 # ---------------------------------------------------------------------------
@@ -272,3 +296,14 @@ def test_dep_004_structural_impact_radius():
     impact_findings = [f for f in res.findings if "High Structural Impact Radius" in f.title]
     assert len(impact_findings) == 1
     assert impact_findings[0].object_id == t_root.object_id
+    assert impact_findings[0].severity == DiagnosticSeverity.LOW
+
+    # Twice threshold: 20 dependents
+    extra_children = [_make_table_node(f"extra_child_{i}") for i in range(9)]
+    all_children = children + extra_children
+    edges_2x = [_make_fk_edge(c, t_root, f"fk_all_org_{i}") for i, c in enumerate(all_children)]
+    graph_2x = _build_graph((t_root, *all_children), tuple(edges_2x))
+    res_2x = rule.evaluate(DiagnosticContext(graph=graph_2x))
+    impact_findings_2x = [f for f in res_2x.findings if "High Structural Impact Radius" in f.title]
+    assert len(impact_findings_2x) == 1
+    assert impact_findings_2x[0].severity == DiagnosticSeverity.MEDIUM
