@@ -17,7 +17,10 @@ fingerprint_payload = {
     "rule_id": rule_id,
     "rule_version": rule_version,
     "object_id": object_id,
-    "evidence": sorted([e.to_canonical_dict() for e in evidence], key=lambda d: (d["field_name"], str(d["observed_value"]))),
+    "evidence": sorted(
+        [e.to_canonical_dict() for e in evidence],
+        key=lambda d: (d["field_name"], str(d["observed_value"])),
+    ),
 }
 ```
 
