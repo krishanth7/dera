@@ -270,7 +270,8 @@ describe("Phase 7.4 ER Diagram Canvas Components", () => {
       expect(screen.getByText("Table Entity Details")).toBeInTheDocument();
       expect(screen.getByText("3 columns")).toBeInTheDocument();
       expect(screen.getByText("Primary Key Defined")).toBeInTheDocument();
-      expect(screen.getByText("View Full Table in Explorer")).toBeInTheDocument();
+      expect(screen.getByText("Inspect Table")).toBeInTheDocument();
+      expect(screen.getByText("Dependencies")).toBeInTheDocument();
     });
   });
 

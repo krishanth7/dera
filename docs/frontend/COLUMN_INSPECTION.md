@@ -1,29 +1,32 @@
 # Column Inspection Specification
 
-**Document Reference**: `docs/frontend/COLUMN_INSPECTION.md`  
-**Milestone**: Phase 7.3 — Database Connection & Schema Explorer UI  
+**Module**: `apps/web/src/components/table-inspector/ColumnsTab.tsx`  
+**Phase**: 7.5 — Table Inspector, Advanced Search & Dependency Visualization  
 
 ---
 
-## 1. Technical Column Table
+## 1. Overview
 
-The Columns tab renders an exhaustive, sortable technical table of all attributes belonging to the inspected relation.
-
-### Table Columns
-
-| Header | Description | Example |
-|---|---|---|
-| `#` | Ordinal position in relation | `1`, `2`, `3` |
-| `Name` | Column identifier with PK indicator | `id` `[PK]`, `email` |
-| `Native Type` | Engine-specific raw database type | `varchar(255)`, `timestamptz` |
-| `Canonical Type` | Normalized DERA canonical type | `string`, `timestamp`, `uuid` |
-| `Nullable` | Nullability constraint status | `NOT NULL` (red badge), `NULL` (gray badge) |
-| `Default` | Default value expression | `'active'::text`, `CURRENT_TIMESTAMP` |
-| `Attributes` | Auto-increment, identity, or generated flags | `IDENTITY(1,1)`, `GENERATED ALWAYS` |
+The Column Inspection tab provides granular attribute evaluation for every column defined on a table, preserving native column ordinal positions as defined in the source database catalog.
 
 ---
 
-## 2. Ordinal Ordering Preservation
+## 2. Display Attributes
 
-Columns are rendered in physical database ordinal sequence to preserve database engineering context, with optional user-driven sorting by name or type.
-All default expressions and generated formulas are escaped to prevent XSS.
+Each column row renders:
+1. **Ordinal Position**: 1-based native column index.
+2. **Column Name**: Exact native identifier formatted in monospaced typography.
+3. **Native Type & Canonical Type**: Engine-specific native type (e.g. `varchar(255)`, `uuid`, `timestamptz`) accompanied by the DERA canonical classification (`string`, `integer`, `timestamp`, `boolean`).
+4. **Nullability**: Explicit visual distinction between `NOT NULL` (amber warning badge) and `NULL` (neutral check indicator).
+5. **Key Indicators**:
+   - **Primary Key (PK)**: Gold badge indicating primary key membership.
+   - **Foreign Key (FK)**: Blue badge displaying the target table and referenced column name.
+6. **Default Expression**: Inert SQL default value or snippet.
+
+---
+
+## 3. Sorting & Filtering
+
+- **Deterministic Sort Fields**: Ordinal position (default), column name, data type, and nullability.
+- **Client-Side Filter**: Real-time substring filter matching column names or data type strings.
+- **Expandable Detail Drawer**: Clickable chevron reveals stable column object ID, canonical mappings, and specific foreign key constraint names.

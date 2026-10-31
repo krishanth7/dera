@@ -17,6 +17,7 @@ import {
   Filter,
   Folder,
   FolderOpen,
+  GitFork,
   Key,
   Layers,
   Link as LinkIcon,
@@ -252,7 +253,29 @@ export default function SchemaExplorerStudioPage() {
           >
             <Link href={`/relationships?schemaId=${schemaId}`}>
               <Network className="w-3.5 h-3.5 text-blue-500" />
-              <span>View ER Diagram</span>
+              <span>ER Diagram</span>
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="text-xs gap-1.5"
+          >
+            <Link href={`/dependencies?schemaId=${schemaId}`}>
+              <GitFork className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Dependencies</span>
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="text-xs gap-1.5"
+          >
+            <Link href={`/search?schemaId=${schemaId}`}>
+              <Search className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Search</span>
             </Link>
           </Button>
           <Button
@@ -583,6 +606,17 @@ export default function SchemaExplorerStudioPage() {
                           <LinkIcon className="w-3 h-3" />
                           {selectedTableDetail.foreign_keys.length} Foreign Keys
                         </Badge>
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="text-xs gap-1 h-7"
+                        >
+                          <Link href={`/tables/${encodeURIComponent(selectedTableDetail.table_id)}?schemaId=${encodeURIComponent(schemaId)}`}>
+                            <span>Open Full Inspector</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        </Button>
                       </div>
                     </div>
                   </CardHeader>

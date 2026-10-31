@@ -1,27 +1,21 @@
 # Index Inspection Specification
 
-**Document Reference**: `docs/frontend/INDEX_INSPECTION.md`  
-**Milestone**: Phase 7.3 — Database Connection & Schema Explorer UI  
+**Module**: `apps/web/src/components/table-inspector/IndexesTab.tsx`  
+**Phase**: 7.5 — Table Inspector, Advanced Search & Dependency Visualization  
 
 ---
 
-## 1. Index Metadata Display
+## 1. Overview
 
-The Indexes tab provides visibility into performance access paths and uniqueness constraints implemented via indexes.
+The Index Inspection tab visualizes secondary, primary, and unique indexes declared on a database entity, preserving engine-specific index semantics across PostgreSQL, SQLite, MySQL, and MariaDB.
 
-### Displayed Index Fields
+---
 
-- **Index Name**: Database identifier of the index (e.g. `idx_users_email_lower`).
-- **Uniqueness**: Badge denoting `UNIQUE` or `NON-UNIQUE`.
-- **Index Method / Type**: Access method such as `BTREE`, `GIN`, `GIST`, `HASH`, or engine default.
-- **Indexed Columns**: Ordered list of covered attributes including sort direction (`ASC`, `DESC`, `NULLS LAST`).
-- **Partial / Filter Predicate**: Inert text display of index `WHERE` clauses where present.
+## 2. Display Attributes
 
-```text
-+-------------------------------------------------------------------------+
-| [INDEX] idx_users_active_email                                          |
-| Method: BTREE • Type: UNIQUE                                            |
-| Columns: (email ASC, tenant_id ASC)                                     |
-| Filter Expression: WHERE deleted_at IS NULL                             |
-+-------------------------------------------------------------------------+
-```
+For every discovered index, the card presents:
+1. **Index Name**: Native index identifier from system catalogs.
+2. **Indexed Columns**: Ordered list of index key columns with ordinal markers (`#1`, `#2`, etc.).
+3. **Uniqueness Flag**: Explicit `UNIQUE` badge indicating enforcing unique constraints or unique lookup indices.
+4. **Primary Key Association**: `PRIMARY` badge indicating backing b-tree index for a table's primary key.
+5. **Stable Object ID**: Canonical ID assigned during Phase 6.2 structural reconstruction.
