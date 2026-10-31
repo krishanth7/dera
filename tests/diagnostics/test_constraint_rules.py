@@ -60,6 +60,7 @@ class MockTable:
     name: str
     id: str = "tbl_id"
     schema_name: str | None = None
+    namespace: str | None = None
     columns: tuple[MockColumn, ...] = field(default_factory=tuple)
     primary_key: MockPK | None = None
     foreign_keys: tuple[MockFK, ...] = field(default_factory=tuple)
@@ -263,6 +264,35 @@ class TestForeignKeyIntegrityRule:
         assert unres_findings[0].severity == DiagnosticSeverity.LOW
         assert "Unresolved referenced parent table" in unres_findings[0].title
         assert "customers" in unres_findings[0].description
+
+    def test_resolves_referenced_table_using_namespace(self) -> None:
+        """When parent table defines namespace instead of schema_name, schema-qualified FK lookup must succeed."""
+        child = MockTable(
+            name="orders",
+            namespace="analytics",
+            columns=(MockColumn(name="customer_id"),),
+            foreign_keys=(
+                MockFK(
+                    name="fk_orders_cust",
+                    source_columns=("customer_id",),
+                    referenced_schema="analytics",
+                    referenced_table_name="customers",
+                    referenced_columns=("id",),
+                ),
+            ),
+        )
+        parent = MockTable(
+            name="customers",
+            namespace="analytics",
+            columns=(MockColumn(name="id"),),
+        )
+        context = DiagnosticContext(schema=MockSchema(tables=(child, parent)))
+        rule = ForeignKeyIntegrityRule()
+        res = rule.evaluate(context)
+
+        # Parent table in namespace 'analytics' must resolve and pass
+        assert res.status == EvaluationStatus.PASS
+        assert len(res.findings) == 0
 
     def test_supports_self_referencing_foreign_keys(self) -> None:
         org_chart = MockTable(
