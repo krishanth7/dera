@@ -70,6 +70,12 @@ const navItems: NavItem[] = [
     badge: "Phase 7.5",
   },
   {
+    title: "Diagnostics",
+    href: "/app/diagnostics",
+    icon: <ShieldCheck className="w-4 h-4" />,
+    badge: "Phase 8",
+  },
+  {
     title: "Snapshots",
     href: "/app/snapshots",
     icon: <Camera className="w-4 h-4" />,
