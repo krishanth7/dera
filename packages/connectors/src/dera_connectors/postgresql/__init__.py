@@ -9,6 +9,7 @@ from dera_connectors.postgresql.capabilities import get_postgres_capabilities
 from dera_connectors.postgresql.configuration import (
     PostgresConnectorConfig,
     SupabasePoolerMode,
+    is_supabase_host,
 )
 from dera_connectors.postgresql.connection import (
     PostgresConnectionManager,
@@ -20,6 +21,7 @@ __all__ = [
     "PostgresConnector",
     "PostgresConnectorConfig",
     "SupabasePoolerMode",
+    "is_supabase_host",
     "PostgresConnectionManager",
     "create_postgres_ssl_context",
     "map_postgres_error",

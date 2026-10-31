@@ -7,11 +7,41 @@ statement timeout bounds, and TLS certificate bindings.
 
 from enum import StrEnum
 from typing import Any
+from urllib.parse import urlparse
 
 from pydantic import ConfigDict, Field, model_validator
 
 from dera_connectors.configuration import ConnectorConfig
 from dera_connectors.engine import DatabaseEngine, DatabaseProvider
+
+
+def is_supabase_host(host: str | None) -> bool:
+    """Safely check if host matches Supabase domains (*.supabase.co, *.pooler.supabase.com).
+
+    Parses the host URL/authority to prevent incomplete URL substring sanitization (CWE-20).
+    """
+    if not host:
+        return False
+    raw_host = host.strip()
+    if not raw_host:
+        return False
+
+    parse_target = raw_host if "://" in raw_host else f"//{raw_host}"
+    try:
+        parsed = urlparse(parse_target)
+        hostname = (parsed.hostname or "").lower().rstrip(".")
+    except Exception:
+        return False
+
+    if not hostname:
+        return False
+
+    return (
+        hostname == "supabase.co"
+        or hostname.endswith(".supabase.co")
+        or hostname == "pooler.supabase.com"
+        or hostname.endswith(".pooler.supabase.com")
+    )
 
 
 class SupabasePoolerMode(StrEnum):
@@ -72,10 +102,7 @@ class PostgresConnectorConfig(ConnectorConfig):
             object.__setattr__(self, "port", 5432)
 
         # Auto-detect Supabase provider from host domain if generic
-        host_str = (self.host or "").lower()
-        if self.provider == DatabaseProvider.GENERIC and (
-            "supabase.co" in host_str or "pooler.supabase.com" in host_str
-        ):
+        if self.provider == DatabaseProvider.GENERIC and is_supabase_host(self.host):
             object.__setattr__(self, "provider", DatabaseProvider.SUPABASE)
 
         # Transaction poolers (e.g. Supabase PgBouncer) reject server-side prepared statements
