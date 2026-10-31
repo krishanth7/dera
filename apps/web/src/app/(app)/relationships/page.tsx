@@ -389,7 +389,7 @@ function RelationshipsStudioContent() {
                 value={selectedSchemaId || ""}
                 onChange={(e) => {
                   setSelectedSchemaId(e.target.value);
-                  router.push(`/relationships?schemaId=${e.target.value}`);
+                  router.push(`/relationships?schemaId=${encodeURIComponent(e.target.value)}`);
                 }}
                 className="h-8 px-2 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
                 aria-label="Select database schema"
@@ -407,7 +407,7 @@ function RelationshipsStudioContent() {
         <div className="flex items-center gap-2">
           {selectedSchemaId && (
             <Button asChild variant="outline" size="sm" className="h-8 text-xs gap-1.5 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
-              <Link href={`/schemas/${selectedSchemaId}`}>
+              <Link href={`/schemas/${encodeURIComponent(selectedSchemaId)}`}>
                 <TableIcon className="w-3.5 h-3.5 text-blue-400" />
                 <span>Open Schema Explorer</span>
               </Link>

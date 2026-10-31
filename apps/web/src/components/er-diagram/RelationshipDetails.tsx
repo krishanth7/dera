@@ -195,7 +195,7 @@ export const RelationshipDetails: React.FC<RelationshipDetailsProps> = ({
 
             {/* Link to Schema Explorer Table Inspector */}
             <Button asChild variant="outline" size="sm" className="w-full text-xs gap-1.5 bg-slate-950 border-slate-800 hover:bg-slate-800">
-              <Link href={`/schemas/${schemaId}?table=${selectedNode.id}`}>
+              <Link href={`/schemas/${encodeURIComponent(schemaId)}?table=${encodeURIComponent(selectedNode.id)}`}>
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>View Full Table in Explorer</span>
               </Link>
