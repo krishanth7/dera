@@ -19,7 +19,7 @@ from dera.reverse_engineering.exports.models import (
 from dera.reverse_engineering.exports.service import ExportService
 from dera.reverse_engineering.graph.builder import ForeignKeyGraphBuilder
 from dera.reverse_engineering.graph.models import ForeignKeyGraph
-from dera.reverse_engineering.models import SchemaRepresentation
+from dera.reverse_engineering.schema import SchemaRepresentation
 from dera.reverse_engineering.snapshots.builder import SchemaSnapshotBuilder
 from dera.reverse_engineering.snapshots.integrity import (
     SnapshotIntegrityReport,

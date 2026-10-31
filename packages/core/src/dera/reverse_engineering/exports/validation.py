@@ -13,7 +13,7 @@ from dera.reverse_engineering.exports.errors import (
 )
 from dera.reverse_engineering.exports.limits import ExportResourceLimits
 from dera.reverse_engineering.exports.models import ExportFormat, ExportOptions, ExportScope
-from dera.reverse_engineering.models import SchemaRepresentation
+from dera.reverse_engineering.schema import SchemaRepresentation
 
 
 def validate_export_options(

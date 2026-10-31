@@ -23,11 +23,13 @@ from dera.reverse_engineering.models.namespace import NamespaceRepresentation
 from dera.reverse_engineering.models.table import TableRepresentation
 from dera.reverse_engineering.models.trigger import TriggerRepresentation
 from dera.reverse_engineering.models.view import ViewRepresentation
+from dera.reverse_engineering.schema import SchemaRepresentation
 
 # Foreign key representation alias
 ForeignKeyRepresentation = CanonicalForeignKey
 
 __all__ = [
+    "SchemaRepresentation",
     "CanonicalColumn",
     "CanonicalConstraint",
     "CanonicalDatabase",

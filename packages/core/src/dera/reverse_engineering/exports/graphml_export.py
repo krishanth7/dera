@@ -19,7 +19,7 @@ from dera.reverse_engineering.exports.models import (
 from dera.reverse_engineering.exports.ordering import sort_export_edges, sort_export_nodes
 from dera.reverse_engineering.graph.builder import ForeignKeyGraphBuilder
 from dera.reverse_engineering.graph.models import ForeignKeyGraph
-from dera.reverse_engineering.models import SchemaRepresentation
+from dera.reverse_engineering.schema import SchemaRepresentation
 from dera.reverse_engineering.snapshots.models import SchemaSnapshot
 
 

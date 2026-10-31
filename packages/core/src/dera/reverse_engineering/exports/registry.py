@@ -17,7 +17,7 @@ from dera.reverse_engineering.exports.models import (
     ExportOptions,
 )
 from dera.reverse_engineering.graph.models import ForeignKeyGraph
-from dera.reverse_engineering.models import SchemaRepresentation
+from dera.reverse_engineering.schema import SchemaRepresentation
 from dera.reverse_engineering.snapshots.models import SchemaSnapshot
 
 
