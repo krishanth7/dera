@@ -16,5 +16,5 @@
       "@dera/contracts": ["./packages/contracts/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "dist", "build"]
+  "exclude": ["node_modules", "dist", "build", "apps/web"]
 }

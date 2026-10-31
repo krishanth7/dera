@@ -174,7 +174,7 @@ fully accessible, and keyboard navigable — aligned with WCAG 2.2 AA requiremen
 
 ## 8. Planned Route Structure
 
-```
+```text
 /                          → Redirect to /app/overview or /login
 /login                     → Public authentication page
 /workspaces                → Workspace selection (post-login)
