@@ -230,6 +230,40 @@ class TestForeignKeyIntegrityRule:
         assert len(unres_findings) == 1
         assert unres_findings[0].severity == DiagnosticSeverity.LOW
 
+    def test_explicit_referenced_schema_does_not_fall_back_to_unrelated_schema(self) -> None:
+        """When a foreign key specifies an explicit schema, it must not match an unrelated schema."""
+        child = MockTable(
+            name="orders",
+            columns=(MockColumn(name="customer_id"),),
+            foreign_keys=(
+                MockFK(
+                    name="fk_orders_ext",
+                    source_columns=("customer_id",),
+                    referenced_schema="uninspected",
+                    referenced_table_name="customers",
+                    referenced_columns=("id",),
+                ),
+            ),
+        )
+        # An unrelated customers table in the 'public' schema exists
+        unrelated_parent = MockTable(
+            name="customers",
+            schema_name="public",
+            columns=(MockColumn(name="other_id"),),
+        )
+        context = DiagnosticContext(schema=MockSchema(tables=(child, unrelated_parent)))
+        rule = ForeignKeyIntegrityRule()
+        res = rule.evaluate(context)
+
+        # Must be treated as unresolved referenced parent table (LOW severity), NOT missing columns on public.customers
+        unres_findings = [
+            f for f in res.findings if "Unresolved referenced parent table" in f.title
+        ]
+        assert len(unres_findings) == 1
+        assert unres_findings[0].severity == DiagnosticSeverity.LOW
+        assert "Unresolved referenced parent table" in unres_findings[0].title
+        assert "customers" in unres_findings[0].description
+
     def test_supports_self_referencing_foreign_keys(self) -> None:
         org_chart = MockTable(
             name="employees",
