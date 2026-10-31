@@ -136,3 +136,57 @@ def group_parallel_edges(
             pair = (str(edge.source_table_id), str(edge.referenced_table_id))
             grouped.setdefault(pair, []).append(edge)
     return grouped
+
+
+def resolve_tables(context: DiagnosticContext) -> tuple[Any, ...]:
+    """Deterministically extracts all canonical tables from DiagnosticContext."""
+    if context.schema is not None:
+        if hasattr(context.schema, "tables") and context.schema.tables:
+            return tuple(context.schema.tables)
+        db = getattr(context.schema, "database", None)
+        if db is not None:
+            if hasattr(db, "all_tables"):
+                return tuple(db.all_tables())
+            if hasattr(db, "tables"):
+                return tuple(db.tables)
+        if hasattr(context.schema, "all_tables"):
+            return tuple(context.schema.all_tables())
+
+    if context.snapshot is not None:
+        snap_schema = getattr(context.snapshot, "schema_representation", None) or getattr(
+            context.snapshot, "schema", None
+        )
+        if snap_schema is not None:
+            if hasattr(snap_schema, "tables") and snap_schema.tables:
+                return tuple(snap_schema.tables)
+            db = getattr(snap_schema, "database", None)
+            if db is not None:
+                if hasattr(db, "all_tables"):
+                    return tuple(db.all_tables())
+                if hasattr(db, "tables"):
+                    return tuple(db.tables)
+
+    return ()
+
+
+def resolve_namespaces(context: DiagnosticContext) -> tuple[Any, ...]:
+    """Deterministically extracts all canonical namespaces from DiagnosticContext."""
+    if context.schema is not None:
+        if hasattr(context.schema, "namespaces") and context.schema.namespaces:
+            return tuple(context.schema.namespaces)
+        db = getattr(context.schema, "database", None)
+        if db is not None and hasattr(db, "namespaces") and db.namespaces:
+            return tuple(db.namespaces)
+
+    if context.snapshot is not None:
+        snap_schema = getattr(context.snapshot, "schema_representation", None) or getattr(
+            context.snapshot, "schema", None
+        )
+        if snap_schema is not None:
+            if hasattr(snap_schema, "namespaces") and snap_schema.namespaces:
+                return tuple(snap_schema.namespaces)
+            db = getattr(snap_schema, "database", None)
+            if db is not None and hasattr(db, "namespaces") and db.namespaces:
+                return tuple(db.namespaces)
+
+    return ()
