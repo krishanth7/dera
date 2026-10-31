@@ -80,6 +80,18 @@ const nextConfig: NextConfig = {
   },
 
   /**
+   * Route alias rewrites: support /app/* aliases seamlessly.
+   */
+  async rewrites() {
+    return [
+      {
+        source: "/app/:path*",
+        destination: "/:path*",
+      },
+    ];
+  },
+
+  /**
    * Experimental features — none enabled in Phase 7.1.
    * typedRoutes would be beneficial but requires all routes to exist.
    */

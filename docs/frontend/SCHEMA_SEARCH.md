@@ -1,34 +1,30 @@
-# Schema Search & Filtering Specification
+# Advanced Schema Search Architecture
 
-**Document Reference**: `docs/frontend/SCHEMA_SEARCH.md`  
-**Milestone**: Phase 7.3 — Database Connection & Schema Explorer UI  
-
----
-
-## 1. Search Capabilities
-
-The Schema Explorer includes client-side real-time filtering to support schemas with hundreds of tables and columns:
-
-- **Entity Search**: Matches substrings in table names, view names, and namespace identifiers.
-- **Debounced Input**: Instant filtering with keyboard input optimization.
-- **Empty Filter State**: Clear visual callout with a one-click "Clear Search" action when no objects match the search criteria.
+**Module**: `apps/web/src/components/schema-search/`  
+**Route**: `/search` (and `/app/search`)  
+**Phase**: 7.5 — Table Inspector, Advanced Search & Dependency Visualization  
 
 ---
 
-## 2. Namespace Filtering
+## 1. Overview
 
-In addition to text queries, users can constrain the navigation tree using the Namespace select menu:
+Advanced Schema Search enables cross-schema discovery of database objects within authorized workspaces. Engineers can locate tables, views, columns, foreign keys, primary keys, check constraints, unique constraints, and indexes through a unified, debounced search studio.
 
-```typescript
-// Filter pipeline in Schema Explorer navigation tree
-const filteredNamespaces = namespaces
-  .filter(ns => activeNamespaceFilter === "all" || ns.name === activeNamespaceFilter)
-  .map(ns => ({
-    ...ns,
-    tables: ns.tables.filter(table =>
-      table.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ns.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }))
-  .filter(ns => ns.tables.length > 0);
-```
+---
+
+## 2. Searchable Object Types
+
+- **Tables & Views**: Matches table names, view names, and table comments.
+- **Columns**: Matches column names, native data types, and canonical types.
+- **Constraints**: Matches constraint names, referenced parent tables, and check expressions.
+- **Indexes**: Matches index names and participating column lists.
+- **Namespaces**: Matches native schema names (e.g. `public`, `auth`, `billing`).
+
+---
+
+## 3. Query Execution & Performance
+
+1. **Debouncing**: Input changes are debounced by 300ms to eliminate redundant network load.
+2. **Cancellation**: In-flight requests are aborted when the search query changes using clean-up handlers.
+3. **Pagination**: Results are paginated with selectable page sizes (10, 25, 50 rows per page) to maintain low memory consumption and instant UI responsiveness.
+4. **Keyboard Shortcut**: Pressing `/` automatically focuses the search input from anywhere on the page.

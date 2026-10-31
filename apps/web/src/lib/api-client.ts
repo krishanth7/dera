@@ -278,6 +278,68 @@ export interface TableRelationshipsResponse {
   outgoing: RelationshipEdgeItem[];
 }
 
+export interface TopologicalLevelItem {
+  level_index: number;
+  table_ids: string[];
+}
+
+export interface DependencyAnalysisResponse {
+  database_name: string;
+  total_tables: number;
+  total_edges: number;
+  has_cycles: boolean;
+  cycle_count: number;
+  scc_count: number;
+  cyclic_scc_count: number;
+  creation_order: string[];
+  drop_order: string[];
+  levels: TopologicalLevelItem[];
+}
+
+export interface TableDependencyResponse {
+  table_id: string;
+  direct_dependencies: string[];
+  direct_dependents: string[];
+  in_cycle: boolean;
+  scc_id?: string | null;
+}
+
+export interface CycleInstanceItem {
+  cycle_id: string;
+  cycle_kind: string;
+  table_ids: string[];
+  length: number;
+  breakability_strategy?: string | null;
+}
+
+export interface SCCItem {
+  scc_id: string;
+  is_cyclic: boolean;
+  table_ids: string[];
+  size: number;
+}
+
+export interface CycleReportResponse {
+  has_cycles: boolean;
+  cycle_count: number;
+  scc_count: number;
+  cyclic_scc_count: number;
+  cycles: CycleInstanceItem[];
+  components: SCCItem[];
+}
+
+export interface SnapshotSummaryItem {
+  snapshot_id: string;
+  fingerprint: string;
+  database_id: string;
+  database_name: string;
+  engine: string;
+  capture_timestamp: string;
+  completeness: string;
+  table_count: number;
+  tags: string[];
+}
+
 function getCsrfTokenFromCookie(): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(/(?:^|;\s*)dera_csrf=([^;]+)/);
@@ -606,7 +668,96 @@ export class DeraApiClient {
     workspaceId: string
   ): Promise<TableRelationshipsResponse> {
     return this.request<TableRelationshipsResponse>(
-      `/api/v1/reverse-engineering/schemas/${schemaId}/tables/${tableId}/relationships`,
+      `/api/v1/reverse-engineering/schemas/${encodeURIComponent(schemaId)}/tables/${encodeURIComponent(tableId)}/relationships`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  // Phase 7.5 Dependency, Cycle & Constraint APIs (Phase 6.6)
+  async getSchemaDependencies(
+    schemaId: string,
+    workspaceId: string
+  ): Promise<DependencyAnalysisResponse> {
+    return this.request<DependencyAnalysisResponse>(
+      `/api/v1/reverse-engineering/schemas/${encodeURIComponent(schemaId)}/dependencies`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async getTableDependencies(
+    schemaId: string,
+    tableId: string,
+    workspaceId: string
+  ): Promise<TableDependencyResponse> {
+    return this.request<TableDependencyResponse>(
+      `/api/v1/reverse-engineering/schemas/${encodeURIComponent(schemaId)}/tables/${encodeURIComponent(tableId)}/dependencies`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async getSchemaCycles(
+    schemaId: string,
+    workspaceId: string
+  ): Promise<CycleReportResponse> {
+    return this.request<CycleReportResponse>(
+      `/api/v1/reverse-engineering/schemas/${encodeURIComponent(schemaId)}/cycles`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async listSchemaConstraints(
+    schemaId: string,
+    workspaceId: string,
+    params?: { table_id?: string; constraint_type?: string; limit?: number; offset?: number }
+  ): Promise<{ constraints: ConstraintSummaryItem[]; total_count: number }> {
+    const searchParams = new URLSearchParams();
+    if (params?.table_id) searchParams.set("table_id", params.table_id);
+    if (params?.constraint_type) searchParams.set("constraint_type", params.constraint_type);
+    if (params?.limit) searchParams.set("limit", String(params.limit));
+    if (params?.offset) searchParams.set("offset", String(params.offset));
+
+    const qs = searchParams.toString();
+    return this.request<{ constraints: ConstraintSummaryItem[]; total_count: number }>(
+      `/api/v1/reverse-engineering/schemas/${encodeURIComponent(schemaId)}/constraints${qs ? `?${qs}` : ""}`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async listSnapshots(
+    workspaceId: string,
+    params?: { database_id?: string; fingerprint?: string; limit?: number; offset?: number }
+  ): Promise<{ snapshots: SnapshotSummaryItem[]; total_count: number }> {
+    const searchParams = new URLSearchParams();
+    if (params?.database_id) searchParams.set("database_id", params.database_id);
+    if (params?.fingerprint) searchParams.set("fingerprint", params.fingerprint);
+    if (params?.limit) searchParams.set("limit", String(params.limit));
+    if (params?.offset) searchParams.set("offset", String(params.offset));
+
+    const qs = searchParams.toString();
+    return this.request<{ snapshots: SnapshotSummaryItem[]; total_count: number }>(
+      `/api/v1/reverse-engineering/snapshots${qs ? `?${qs}` : ""}`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async getSnapshot(
+    snapshotId: string,
+    workspaceId: string
+  ): Promise<SnapshotSummaryItem> {
+    return this.request<SnapshotSummaryItem>(
+      `/api/v1/reverse-engineering/snapshots/${encodeURIComponent(snapshotId)}`,
       {
         headers: { "X-Workspace-Id": workspaceId },
       }

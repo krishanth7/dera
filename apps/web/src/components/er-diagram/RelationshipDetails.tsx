@@ -13,6 +13,7 @@ import {
   Layers,
   ArrowUpRight,
   ArrowDownLeft,
+  GitFork,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -193,13 +194,21 @@ export const RelationshipDetails: React.FC<RelationshipDetailsProps> = ({
               </div>
             </div>
 
-            {/* Link to Schema Explorer Table Inspector */}
-            <Button asChild variant="outline" size="sm" className="w-full text-xs gap-1.5 bg-slate-950 border-slate-800 hover:bg-slate-800">
-              <Link href={`/schemas/${encodeURIComponent(schemaId)}?table=${encodeURIComponent(selectedNode.id)}`}>
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span>View Full Table in Explorer</span>
-              </Link>
-            </Button>
+            {/* Links to Table Inspector & Dependency Explorer */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button asChild variant="outline" size="sm" className="text-xs gap-1.5 bg-slate-950 border-slate-800 hover:bg-slate-800">
+                <Link href={`/tables/${encodeURIComponent(selectedNode.id)}?schemaId=${encodeURIComponent(schemaId)}`}>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Inspect Table</span>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="text-xs gap-1.5 bg-slate-950 border-slate-800 hover:bg-slate-800">
+                <Link href={`/dependencies?schemaId=${encodeURIComponent(schemaId)}&tableId=${encodeURIComponent(selectedNode.id)}`}>
+                  <GitFork className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Dependencies</span>
+                </Link>
+              </Button>
+            </div>
 
             {/* Columns Preview */}
             <div>
