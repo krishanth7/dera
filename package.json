@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "build": "npm run --workspaces --if-present build",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && npm run --workspaces --if-present typecheck",
     "lint": "npm run --workspaces --if-present lint",
     "docs:lint": "markdownlint-cli2 \"README.md\" \"docs/**/*.md\"",
     "docs:links": "python scripts/ci/validate_docs.py",
@@ -27,10 +27,11 @@
     "release:check": "python scripts/release/validate_version.py --check-consistency"
   },
   "devDependencies": {
-    "markdownlint-cli2": "^0.24.0",
+    "markdownlint-cli2": "0.23.3",
     "typescript": "^7.0.2"
   },
   "overrides": {
-    "katex": "^0.18.2"
+    "katex": "^0.18.2",
+    "markdown-it": "^14.1.0"
   }
 }
