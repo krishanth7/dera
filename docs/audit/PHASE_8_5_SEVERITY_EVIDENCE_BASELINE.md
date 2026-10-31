@@ -38,14 +38,14 @@ The repository audit verifies that all required foundational phases are merged, 
 
 ### 3.1 Existing Severity Model
 
-Located in [enums.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/diagnostics/enums.py):
+Located in [`enums.py`](../../packages/core/src/dera/diagnostics/enums.py):
 - `DiagnosticSeverity`: Five discrete levels: `INFORMATIONAL` (1), `LOW` (2), `MEDIUM` (3), `HIGH` (4), `CRITICAL` (5).
 - Rules assign a static `default_severity` in `RuleMetadata`.
 - The evaluator currently sorts findings strictly by `(-f.severity.rank, f.object_id, f.rule_id, f.fingerprint)`.
 
 ### 3.2 Existing Evidence Model
 
-Located in [evidence/models.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/diagnostics/evidence/models.py):
+Located in [`evidence/models.py`](../../packages/core/src/dera/diagnostics/evidence/models.py):
 - `DiagnosticEvidence`: Immutable frozen dataclass capturing `object_id`, `field_name`, `observed_value`, `expected_value`, `message`, `provenance_reference`, and `context_data`.
 - Basic credential sanitization using regex (`_SENSITIVE_KEY_PATTERN`, `_CONNECTION_STRING_PATTERN`).
 - Deterministic dictionary conversion via `to_canonical_dict()`.
@@ -58,7 +58,7 @@ Located in [evidence/models.py](file:///c:/Users/Administrator/Documents/GitHub/
 
 ### 3.4 Existing Finding Identity Model
 
-Located in [fingerprint.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/diagnostics/fingerprint.py):
+Located in [`fingerprint.py`](../../packages/core/src/dera/diagnostics/fingerprint.py):
 - `compute_finding_fingerprint(rule_id, rule_version, object_id, evidence)` generates a SHA-256 hash.
 - Volatile timestamps are correctly excluded.
 - Deduplication is not formally managed across runs or lifecycle transitions.

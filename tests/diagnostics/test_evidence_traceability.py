@@ -171,6 +171,7 @@ def test_build_evidence_traceability_matrix() -> None:
 
 def test_validate_and_enrich_evidence_with_unhashable_graph_nodes() -> None:
     """Verifies that graphs with node objects containing unhashable attributes (like dicts) do not raise TypeError."""
+
     @dataclass(frozen=True)
     class DummyGraphNode:
         object_id: str
@@ -202,4 +203,3 @@ def test_validate_and_enrich_evidence_with_unhashable_graph_nodes() -> None:
     res = validate_and_enrich_evidence(raw_ev, context)
     assert res.completeness == EvidenceCompleteness.COMPLETE
     assert res.confidence == FindingConfidence.VERIFIED
-
