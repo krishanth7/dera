@@ -57,3 +57,4 @@ export class DeraSchemaCanvas {
 }
 
 export * from "./components/diagnostics";
+export * from "./lib/diagnostics";
