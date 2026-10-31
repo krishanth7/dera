@@ -94,7 +94,7 @@ export default function OverviewPage() {
               {currentWorkspace?.name || "Local Workspace"}
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
-              Role: {currentWorkspace?.role || "OWNER"}
+              Role: {currentWorkspace?.current_user_role?.toUpperCase() || "OWNER"}
             </p>
           </CardContent>
         </Card>

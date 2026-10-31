@@ -34,12 +34,60 @@ export interface SystemMeta {
   supported_dialects: string[];
 }
 
+export interface UserResponse {
+  id: string;
+  email: string;
+  status: "active" | "suspended" | "pending";
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface AuthResponse {
+  user: UserResponse;
+  session_id: string;
+  csrf_token: string;
+  expires_at: string;
+}
+
 export interface WorkspaceSummary {
   id: string;
   name: string;
   slug: string;
-  role: string;
+  status: string;
   created_at: string;
+  updated_at?: string;
+  current_user_role?: "owner" | "admin" | "editor" | "viewer";
+}
+
+export interface MembershipResponse {
+  id: string;
+  workspace_id: string;
+  user_id: string;
+  user_email?: string | null;
+  role: "owner" | "admin" | "editor" | "viewer";
+  status: "active" | "invited" | "suspended";
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CreateWorkspacePayload {
+  name: string;
+  slug: string;
+}
+
+export interface AddMemberPayload {
+  email: string;
+  role: "owner" | "admin" | "editor" | "viewer";
+}
+
+export interface UpdateMemberRolePayload {
+  role: "owner" | "admin" | "editor" | "viewer";
+}
+
+function getCsrfTokenFromCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)dera_csrf=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
 export class DeraApiClient {
@@ -60,6 +108,15 @@ export class DeraApiClient {
       "Content-Type": "application/json",
       ...((options.headers as Record<string, string>) || {}),
     };
+
+    // Attach CSRF token for state-changing requests if present
+    const method = (options.method || "GET").toUpperCase();
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
+      const csrf = getCsrfTokenFromCookie();
+      if (csrf && !headers["X-CSRF-Token"]) {
+        headers["X-CSRF-Token"] = csrf;
+      }
+    }
 
     const res = await fetch(url, {
       ...options,
@@ -98,18 +155,80 @@ export class DeraApiClient {
     return this.request<SystemMeta>("/api/v1/meta");
   }
 
+  // Authentication
+  async register(email: string, password: string): Promise<AuthResponse> {
+    return this.request<AuthResponse>("/api/v1/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+  }
+
+  async login(email: string, password: string): Promise<AuthResponse> {
+    return this.request<AuthResponse>("/api/v1/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+  }
+
+  async logout(): Promise<void> {
+    return this.request<void>("/api/v1/auth/logout", {
+      method: "POST",
+    });
+  }
+
+  async logoutAll(): Promise<void> {
+    return this.request<void>("/api/v1/auth/logout-all", {
+      method: "POST",
+    });
+  }
+
+  async getCurrentUser(): Promise<UserResponse> {
+    return this.request<UserResponse>("/api/v1/auth/me");
+  }
+
   // Workspaces
-  async listWorkspaces(): Promise<{ items: WorkspaceSummary[]; total: number }> {
-    return this.request<{ items: WorkspaceSummary[]; total: number }>("/api/v1/workspaces");
+  async listWorkspaces(): Promise<WorkspaceSummary[]> {
+    return this.request<WorkspaceSummary[]>("/api/v1/workspaces");
   }
 
-  async getWorkspace(id: string): Promise<WorkspaceSummary> {
-    return this.request<WorkspaceSummary>(`/api/v1/workspaces/${id}`);
+  async createWorkspace(payload: CreateWorkspacePayload): Promise<WorkspaceSummary> {
+    return this.request<WorkspaceSummary>("/api/v1/workspaces", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   }
 
-  // Auth Status
-  async getCurrentUser(): Promise<{ id: string; email: string; is_active: boolean }> {
-    return this.request<{ id: string; email: string; is_active: boolean }>("/api/v1/auth/me");
+  async getWorkspace(slug: string): Promise<WorkspaceSummary> {
+    return this.request<WorkspaceSummary>(`/api/v1/workspaces/${slug}`);
+  }
+
+  // Memberships
+  async listMembers(workspaceSlug: string): Promise<MembershipResponse[]> {
+    return this.request<MembershipResponse[]>(`/api/v1/workspaces/${workspaceSlug}/members`);
+  }
+
+  async addMember(workspaceSlug: string, payload: AddMemberPayload): Promise<MembershipResponse> {
+    return this.request<MembershipResponse>(`/api/v1/workspaces/${workspaceSlug}/members`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async updateMemberRole(
+    workspaceSlug: string,
+    userId: string,
+    payload: UpdateMemberRolePayload
+  ): Promise<MembershipResponse> {
+    return this.request<MembershipResponse>(`/api/v1/workspaces/${workspaceSlug}/members/${userId}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async removeMember(workspaceSlug: string, userId: string): Promise<void> {
+    return this.request<void>(`/api/v1/workspaces/${workspaceSlug}/members/${userId}`, {
+      method: "DELETE",
+    });
   }
 }
 

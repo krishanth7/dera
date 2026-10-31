@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +32,11 @@ const navItems: NavItem[] = [
     title: "Overview",
     href: "/app/overview",
     icon: <LayoutDashboard className="w-4 h-4" />,
+  },
+  {
+    title: "Workspaces",
+    href: "/app/workspaces",
+    icon: <Layers className="w-4 h-4" />,
   },
   {
     title: "Connections",
