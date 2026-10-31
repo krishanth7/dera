@@ -339,7 +339,6 @@ export interface SnapshotSummaryItem {
   table_count: number;
   tags: string[];
 }
-
 function getCsrfTokenFromCookie(): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(/(?:^|;\s*)dera_csrf=([^;]+)/);

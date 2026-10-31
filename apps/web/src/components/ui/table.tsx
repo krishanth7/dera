@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 export function Table({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="relative w-full overflow-auto">
+    <div className="relative w-full overflow-x-auto focus-visible:ring-1 focus-visible:ring-blue-500 rounded" role="region" aria-label="Scrollable data table" tabIndex={0}>
       <table className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   );

@@ -36,8 +36,8 @@ export function Header({ onToggleMobileSidebar }: HeaderProps) {
         <button
           type="button"
           onClick={onToggleMobileSidebar}
-          className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          aria-label="Toggle navigation menu"
+          className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
+          aria-label="Open mobile navigation menu"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -45,7 +45,7 @@ export function Header({ onToggleMobileSidebar }: HeaderProps) {
         {/* Workspace Switcher */}
         <Link
           href="/app/workspaces"
-          className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors"
+          className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
           title="Click to view all workspaces"
         >
           <Layers className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
@@ -69,8 +69,8 @@ export function Header({ onToggleMobileSidebar }: HeaderProps) {
           <button
             type="button"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2 rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            aria-label="Toggle theme"
+            className="p-2 rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
             title={`Current theme: ${theme}`}
           >
             {theme === "dark" ? (

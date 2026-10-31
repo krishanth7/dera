@@ -14,8 +14,27 @@ export function AppShell({ children }: AppShellProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Close mobile drawer on Escape key press
+  React.useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && mobileOpen) {
+        setMobileOpen(false);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen]);
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-white dark:bg-slate-950 font-sans">
+      {/* Skip to Content Navigation Link for Screen Readers & Keyboard Users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:font-semibold focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
+      >
+        Skip to main content
+      </a>
+
       {/* Desktop Sidebar */}
       <Sidebar
         isCollapsed={isCollapsed}
@@ -34,6 +53,9 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Mobile Drawer */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation drawer"
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-64 md:hidden transition-transform duration-300 ease-in-out bg-white dark:bg-slate-950",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
