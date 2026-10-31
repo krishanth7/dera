@@ -57,17 +57,17 @@ class TypedRef(BaseModel, Generic[T]):
 
 ```python
 class ForeignKeyReference(BaseModel):
-    foreign_key_id: str                 # Canonical ObjectId of the FK
-    foreign_key_name: str               # Native or surrogate constraint name
-    source_table_id: str                # Child table ObjectId
-    source_table_name: str              # Native child table name
-    source_columns: tuple[str, ...]     # Referencing columns in child table
-    referenced_table_id: str | None     # Resolved parent table ObjectId
-    referenced_table_name: str          # Target parent table name
-    referenced_schema: str | None       # Target parent schema name
-    referenced_columns: tuple[str, ...] # Referenced columns in parent table
-    on_update: str = "NO ACTION"        # Referential action on UPDATE
-    on_delete: str = "NO ACTION"        # Referential action on DELETE
+    foreign_key_id: str  # Canonical ObjectId of the FK
+    foreign_key_name: str  # Native or surrogate constraint name
+    source_table_id: str  # Child table ObjectId
+    source_table_name: str  # Native child table name
+    source_columns: tuple[str, ...]  # Referencing columns in child table
+    referenced_table_id: str | None  # Resolved parent table ObjectId
+    referenced_table_name: str  # Target parent table name
+    referenced_schema: str | None  # Target parent schema name
+    referenced_columns: tuple[str, ...]  # Referenced columns in parent table
+    on_update: str = "NO ACTION"  # Referential action on UPDATE
+    on_delete: str = "NO ACTION"  # Referential action on DELETE
     status: ResolutionStatus = MISSING  # Resolution status in schema registry
 ```
 

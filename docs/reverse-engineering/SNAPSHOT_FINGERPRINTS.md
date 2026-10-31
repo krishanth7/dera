@@ -25,6 +25,7 @@ FINGERPRINT = SHA256( "DERA:SCHEMA:STRUCTURAL:V1\n" || RFC8785_CANONICAL_BYTES(p
 ```python
 import hashlib
 
+
 def compute_structural_fingerprint(payload: SnapshotStructuralPayload) -> str:
     canonical_bytes = serialize_structural_payload_to_bytes(payload)
     hasher = hashlib.sha256()

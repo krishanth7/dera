@@ -84,6 +84,166 @@ export interface UpdateMemberRolePayload {
   role: "owner" | "admin" | "editor" | "viewer";
 }
 
+export interface ConnectorEngine {
+  engine: "postgresql" | "sqlite" | "mysql" | "mariadb";
+  display_name: string;
+  default_port: number | null;
+  is_experimental: boolean;
+  supported_providers: string[];
+}
+
+export interface ConnectionTestPayload {
+  engine: "postgresql" | "sqlite" | "mysql" | "mariadb";
+  database: string;
+  host?: string | null;
+  port?: number | null;
+  username?: string | null;
+  password?: string | null;
+  ssl_mode?: string;
+}
+
+export interface ConnectionTestResult {
+  success: boolean;
+  latency_ms: number;
+  engine: string;
+  server_version?: string | null;
+  error_code?: string | null;
+  error_message?: string | null;
+}
+
+export interface ConnectionItem {
+  id: string;
+  workspace_id: string;
+  name: string;
+  engine: "postgresql" | "sqlite" | "mysql" | "mariadb";
+  provider: string;
+  database: string;
+  host?: string | null;
+  port?: number | null;
+  username?: string | null;
+  has_password: boolean;
+  ssl_mode: string;
+  status: "not_tested" | "connected" | "failed" | "testing";
+  last_tested_at?: string | null;
+  last_inspected_at?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+  error_message?: string | null;
+}
+
+export interface CreateConnectionPayload {
+  name: string;
+  engine: "postgresql" | "sqlite" | "mysql" | "mariadb";
+  database: string;
+  provider?: string;
+  host?: string | null;
+  port?: number | null;
+  username?: string | null;
+  password?: string | null;
+  ssl_mode?: string;
+}
+
+export interface UpdateConnectionPayload {
+  name?: string;
+  database?: string;
+  provider?: string;
+  host?: string | null;
+  port?: number | null;
+  username?: string | null;
+  password?: string | null;
+  ssl_mode?: string;
+}
+
+export interface SchemaSummary {
+  schema_id: string;
+  database_id: string;
+  database_name: string;
+  engine: string;
+  namespace_count: number;
+  table_count: number;
+  view_count: number;
+  foreign_key_count: number;
+  completeness: string;
+  source_engine: string;
+  source_version?: string | null;
+  connector_version: string;
+  collection_timestamp: string;
+}
+
+export interface NamespaceItem {
+  namespace_id: string;
+  name: string;
+  table_count: number;
+}
+
+export interface TableSummaryItem {
+  table_id: string;
+  namespace: string;
+  name: string;
+  table_type: string;
+  column_count: number;
+  has_primary_key: boolean;
+  foreign_key_count: number;
+}
+
+export interface ColumnDetailItem {
+  column_id: string;
+  table_id: string;
+  name: string;
+  ordinal_position: number;
+  native_type: string;
+  canonical_type: string;
+  is_nullable: boolean;
+  is_primary_key: boolean;
+  default_expression?: string | null;
+}
+
+export interface PrimaryKeyItem {
+  constraint_id: string;
+  name: string;
+  columns: string[];
+}
+
+export interface ForeignKeySummaryItem {
+  constraint_id: string;
+  name: string;
+  source_columns: string[];
+  referenced_table_id?: string | null;
+  referenced_table_name: string;
+  referenced_columns: string[];
+  on_delete?: string | null;
+  on_update?: string | null;
+}
+
+export interface ConstraintSummaryItem {
+  constraint_id: string;
+  name: string;
+  constraint_type: string;
+  columns: string[];
+  raw_expression?: string | null;
+}
+
+export interface IndexSummaryItem {
+  index_id: string;
+  name: string;
+  is_unique: boolean;
+  is_primary: boolean;
+  columns: string[];
+}
+
+export interface TableDetailItem {
+  table_id: string;
+  namespace: string;
+  name: string;
+  table_type: string;
+  columns: ColumnDetailItem[];
+  primary_key?: PrimaryKeyItem | null;
+  foreign_keys: ForeignKeySummaryItem[];
+  unique_constraints: ConstraintSummaryItem[];
+  check_constraints: ConstraintSummaryItem[];
+  indexes: IndexSummaryItem[];
+}
+
 function getCsrfTokenFromCookie(): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(/(?:^|;\s*)dera_csrf=([^;]+)/);
@@ -230,6 +390,169 @@ export class DeraApiClient {
       method: "DELETE",
     });
   }
+
+  // Database Connections (Phase 7.3)
+  async listSupportedEngines(): Promise<ConnectorEngine[]> {
+    return this.request<ConnectorEngine[]>("/api/v1/connectors/engines");
+  }
+
+  async testRawConnection(payload: ConnectionTestPayload): Promise<ConnectionTestResult> {
+    return this.request<ConnectionTestResult>("/api/v1/connections/test", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async listConnections(workspaceId: string): Promise<ConnectionItem[]> {
+    const res = await this.request<{ connections: ConnectionItem[]; total_count: number }>(
+      `/api/v1/workspaces/${workspaceId}/connections`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+    return res.connections;
+  }
+
+  async createConnection(
+    workspaceId: string,
+    payload: CreateConnectionPayload
+  ): Promise<ConnectionItem> {
+    return this.request<ConnectionItem>(`/api/v1/workspaces/${workspaceId}/connections`, {
+      method: "POST",
+      headers: { "X-Workspace-Id": workspaceId },
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async getConnection(workspaceId: string, connectionId: string): Promise<ConnectionItem> {
+    return this.request<ConnectionItem>(
+      `/api/v1/workspaces/${workspaceId}/connections/${connectionId}`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async updateConnection(
+    workspaceId: string,
+    connectionId: string,
+    payload: UpdateConnectionPayload
+  ): Promise<ConnectionItem> {
+    return this.request<ConnectionItem>(
+      `/api/v1/workspaces/${workspaceId}/connections/${connectionId}`,
+      {
+        method: "PATCH",
+        headers: { "X-Workspace-Id": workspaceId },
+        body: JSON.stringify(payload),
+      }
+    );
+  }
+
+  async deleteConnection(workspaceId: string, connectionId: string): Promise<void> {
+    return this.request<void>(
+      `/api/v1/workspaces/${workspaceId}/connections/${connectionId}`,
+      {
+        method: "DELETE",
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async testConnection(workspaceId: string, connectionId: string): Promise<ConnectionTestResult> {
+    return this.request<ConnectionTestResult>(
+      `/api/v1/workspaces/${workspaceId}/connections/${connectionId}/test`,
+      {
+        method: "POST",
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async inspectConnection(
+    workspaceId: string,
+    connectionId: string
+  ): Promise<SchemaSummary> {
+    return this.request<SchemaSummary>(
+      `/api/v1/workspaces/${workspaceId}/connections/${connectionId}/inspect`,
+      {
+        method: "POST",
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  // Schema Explorer (Phase 7.3 & Phase 6.6)
+  async listSchemas(workspaceId: string): Promise<SchemaSummary[]> {
+    return this.request<SchemaSummary[]>("/api/v1/reverse-engineering/schemas", {
+      headers: { "X-Workspace-Id": workspaceId },
+    });
+  }
+
+  async getSchemaSummary(schemaId: string, workspaceId: string): Promise<SchemaSummary> {
+    return this.request<SchemaSummary>(
+      `/api/v1/reverse-engineering/schemas/${schemaId}`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async listNamespaces(schemaId: string, workspaceId: string): Promise<NamespaceItem[]> {
+    const res = await this.request<{ namespaces: NamespaceItem[]; total_count: number }>(
+      `/api/v1/reverse-engineering/schemas/${schemaId}/namespaces`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+    return res.namespaces;
+  }
+
+  async listTables(
+    schemaId: string,
+    workspaceId: string,
+    params?: { namespace?: string; table_type?: string; limit?: number; offset?: number }
+  ): Promise<{ tables: TableSummaryItem[]; total_count: number }> {
+    const searchParams = new URLSearchParams();
+    if (params?.namespace) searchParams.set("namespace", params.namespace);
+    if (params?.table_type) searchParams.set("table_type", params.table_type);
+    if (params?.limit) searchParams.set("limit", String(params.limit));
+    if (params?.offset) searchParams.set("offset", String(params.offset));
+
+    const qs = searchParams.toString();
+    return this.request<{ tables: TableSummaryItem[]; total_count: number }>(
+      `/api/v1/reverse-engineering/schemas/${schemaId}/tables${qs ? `?${qs}` : ""}`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async getTableDetail(
+    schemaId: string,
+    tableId: string,
+    workspaceId: string
+  ): Promise<TableDetailItem> {
+    return this.request<TableDetailItem>(
+      `/api/v1/reverse-engineering/schemas/${schemaId}/tables/${tableId}`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async getColumnDetail(
+    schemaId: string,
+    columnId: string,
+    workspaceId: string
+  ): Promise<ColumnDetailItem> {
+    return this.request<ColumnDetailItem>(
+      `/api/v1/reverse-engineering/schemas/${schemaId}/columns/${columnId}`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
 }
 
 export const apiClient = new DeraApiClient();
+

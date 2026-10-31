@@ -21,20 +21,20 @@ from dera.reverse_engineering.schema import SchemaRepresentation
 ```python
 class SchemaRepresentation(BaseModel):
     contract_version: str = "1.0.0"
-    database_id: str                      # Canonical ObjectId: dera:database:<24hex>
-    database_name: str                    # Logical database identifier
-    engine: str                           # 'postgresql', 'sqlite', 'mysql', 'mariadb'
-    engine_version: str | None = None     # Server version string
-    source_reference: str                 # Authorized connection label (no credentials)
-    provenance: MetadataProvenance        # Audit extraction provenance
-    database: CanonicalDatabase           # Normalized CanonicalDatabase root
-    namespaces: tuple[CanonicalNamespace, ...] # Deterministically ordered schemas
-    foreign_key_references: tuple[ForeignKeyReference, ...] # Resolved FK links
+    database_id: str  # Canonical ObjectId: dera:database:<24hex>
+    database_name: str  # Logical database identifier
+    engine: str  # 'postgresql', 'sqlite', 'mysql', 'mariadb'
+    engine_version: str | None = None  # Server version string
+    source_reference: str  # Authorized connection label (no credentials)
+    provenance: MetadataProvenance  # Audit extraction provenance
+    database: CanonicalDatabase  # Normalized CanonicalDatabase root
+    namespaces: tuple[CanonicalNamespace, ...]  # Deterministically ordered schemas
+    foreign_key_references: tuple[ForeignKeyReference, ...]  # Resolved FK links
     capability_profile: SchemaCapabilityProfile | None = None
     completeness: MetadataCompleteness = MetadataCompleteness.COMPLETE
-    is_validated: bool = False            # Referential integrity validation status
+    is_validated: bool = False  # Referential integrity validation status
     validation_issues: tuple[str, ...] = ()
-    resource_metrics: dict[str, Any]      # Bounded metrics (object counts, etc.)
+    resource_metrics: dict[str, Any]  # Bounded metrics (object counts, etc.)
 ```
 
 ---

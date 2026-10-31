@@ -8,11 +8,13 @@ interface WorkspaceContextType {
   currentWorkspace: WorkspaceSummary | null;
   workspaces: WorkspaceSummary[];
   isLoading: boolean;
+  loading: boolean;
   error: string | null;
   setCurrentWorkspace: (workspace: WorkspaceSummary) => void;
   createWorkspace: (name: string, slug: string) => Promise<WorkspaceSummary>;
   refreshWorkspaces: () => Promise<void>;
 }
+
 
 const defaultLocalWorkspace: WorkspaceSummary = {
   id: "ws-default-local",
@@ -86,6 +88,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         currentWorkspace,
         workspaces,
         isLoading,
+        loading: isLoading,
         error,
         setCurrentWorkspace,
         createWorkspace,

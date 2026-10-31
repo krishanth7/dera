@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 
 export interface ErrorStateProps {
   title?: string;
-  message: string;
+  message?: string;
+  description?: string;
   onRetry?: () => void;
   className?: string;
 }
@@ -13,9 +14,12 @@ export interface ErrorStateProps {
 export function ErrorState({
   title = "An error occurred",
   message,
+  description,
   onRetry,
   className,
 }: ErrorStateProps) {
+  const displayMessage = message || description || "An unexpected error occurred.";
+
   return (
     <div
       className={cn(
@@ -28,7 +32,7 @@ export function ErrorState({
         <AlertCircle className="h-6 w-6" />
       </div>
       <h3 className="text-sm font-semibold text-red-900 dark:text-red-200">{title}</h3>
-      <p className="mt-1 text-xs text-red-700 dark:text-red-400 max-w-sm">{message}</p>
+      <p className="mt-1 text-xs text-red-700 dark:text-red-400 max-w-sm">{displayMessage}</p>
       {onRetry && (
         <div className="mt-4">
           <Button size="sm" variant="outline" onClick={onRetry} className="border-red-300 dark:border-red-800 text-red-800 dark:text-red-300">

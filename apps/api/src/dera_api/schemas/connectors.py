@@ -98,3 +98,65 @@ class TableInspectionResponse(BaseModel):
     foreign_key_count: int
     index_count: int
     comment: str | None = None
+
+
+class CreateConnectionRequest(BaseModel):
+    """Payload to configure a new database connection within a workspace."""
+
+    name: str = Field(..., min_length=1, max_length=100, description="Display name for connection.")
+    engine: DatabaseEngine
+    database: str = Field(
+        ..., min_length=1, description="Target database name or catalog identifier."
+    )
+    provider: DatabaseProvider = DatabaseProvider.GENERIC
+    host: str | None = None
+    port: int | None = None
+    username: str | None = None
+    password: str | None = None
+    ssl_mode: str = "prefer"
+
+
+class UpdateConnectionRequest(BaseModel):
+    """Payload to update an existing database connection."""
+
+    name: str | None = None
+    database: str | None = None
+    provider: DatabaseProvider | None = None
+    host: str | None = None
+    port: int | None = None
+    username: str | None = None
+    password: str | None = None
+    ssl_mode: str | None = None
+
+
+class ConnectionResponse(BaseModel):
+    """Safe connection representation with redacted credentials."""
+
+    model_config = ConfigDict(frozen=True)
+
+    id: str
+    workspace_id: str
+    name: str
+    engine: DatabaseEngine
+    provider: DatabaseProvider
+    database: str
+    host: str | None = None
+    port: int | None = None
+    username: str | None = None
+    has_password: bool = False
+    ssl_mode: str = "prefer"
+    status: str = "not_tested"
+    last_tested_at: str | None = None
+    last_inspected_at: str | None = None
+    created_at: str
+    updated_at: str | None = None
+    error_message: str | None = None
+
+
+class ConnectionListResponse(BaseModel):
+    """List of connections authorized in a workspace."""
+
+    model_config = ConfigDict(frozen=True)
+
+    connections: list[ConnectionResponse]
+    total_count: int

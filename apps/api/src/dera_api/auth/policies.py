@@ -14,6 +14,9 @@ ROLE_PERMISSIONS: dict[WorkspaceRole, frozenset[Permission]] = {
             Permission.MEMBER_READ,
             Permission.JOB_READ,
             Permission.CONNECTION_READ,
+            Permission.SCHEMA_READ,
+            Permission.SNAPSHOT_READ,
+            Permission.EXPORT_READ,
         }
     ),
     WorkspaceRole.EDITOR: frozenset(
@@ -28,6 +31,12 @@ ROLE_PERMISSIONS: dict[WorkspaceRole, frozenset[Permission]] = {
             Permission.CONNECTION_CREATE,
             Permission.CONNECTION_UPDATE,
             Permission.CONNECTION_DELETE,
+            Permission.SCHEMA_READ,
+            Permission.SNAPSHOT_CREATE,
+            Permission.SNAPSHOT_READ,
+            Permission.SNAPSHOT_VERIFY,
+            Permission.EXPORT_CREATE,
+            Permission.EXPORT_READ,
         }
     ),
     WorkspaceRole.ADMIN: frozenset(
@@ -48,6 +57,12 @@ ROLE_PERMISSIONS: dict[WorkspaceRole, frozenset[Permission]] = {
             Permission.CONNECTION_CREATE,
             Permission.CONNECTION_UPDATE,
             Permission.CONNECTION_DELETE,
+            Permission.SCHEMA_READ,
+            Permission.SNAPSHOT_CREATE,
+            Permission.SNAPSHOT_READ,
+            Permission.SNAPSHOT_VERIFY,
+            Permission.EXPORT_CREATE,
+            Permission.EXPORT_READ,
         }
     ),
     WorkspaceRole.OWNER: frozenset(
@@ -69,6 +84,12 @@ ROLE_PERMISSIONS: dict[WorkspaceRole, frozenset[Permission]] = {
             Permission.CONNECTION_CREATE,
             Permission.CONNECTION_UPDATE,
             Permission.CONNECTION_DELETE,
+            Permission.SCHEMA_READ,
+            Permission.SNAPSHOT_CREATE,
+            Permission.SNAPSHOT_READ,
+            Permission.SNAPSHOT_VERIFY,
+            Permission.EXPORT_CREATE,
+            Permission.EXPORT_READ,
         }
     ),
 }

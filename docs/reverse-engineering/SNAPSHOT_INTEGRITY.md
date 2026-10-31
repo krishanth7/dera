@@ -5,7 +5,10 @@
 DERA provides a standalone, deterministic verification function:
 
 ```python
-from dera.reverse_engineering.snapshots.integrity import verify_snapshot_integrity, IntegrityVerificationStatus
+from dera.reverse_engineering.snapshots.integrity import (
+    verify_snapshot_integrity,
+    IntegrityVerificationStatus,
+)
 
 report = verify_snapshot_integrity(snapshot)
 if not report.is_valid:

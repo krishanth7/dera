@@ -54,11 +54,11 @@ To prevent Denial-of-Service (DoS) and Out-Of-Memory (OOM) vulnerabilities from 
 
 ```python
 class SchemaResourceLimits(BaseModel):
-    max_total_objects: int = 100_000       # Maximum schema objects allowed
-    max_nesting_depth: int = 10            # Maximum hierarchy tree depth
-    max_identifier_length: int = 256       # Maximum chars for tables, columns, constraints
+    max_total_objects: int = 100_000  # Maximum schema objects allowed
+    max_nesting_depth: int = 10  # Maximum hierarchy tree depth
+    max_identifier_length: int = 256  # Maximum chars for tables, columns, constraints
     max_definition_bytes: int = 1_000_000  # Maximum bytes for raw view/trigger SQL
-    max_references: int = 50_000           # Maximum foreign key/typed references
+    max_references: int = 50_000  # Maximum foreign key/typed references
 ```
 
 Breaches trigger `SchemaResourceLimitError` immediately, preventing unbounded memory consumption.

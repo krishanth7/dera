@@ -29,7 +29,11 @@ It acts as the canonical bridge between raw connector inspection reports and dow
 
 ```python
 from dera_connectors.metadata import DatabaseMetadataReport, SchemaInfo, TableInfo, ColumnInfo
-from dera.metadata import MetadataNormalizer, serialize_canonical_database, compute_canonical_database_hash
+from dera.metadata import (
+    MetadataNormalizer,
+    serialize_canonical_database,
+    compute_canonical_database_hash,
+)
 
 # 1. Instantiate the Normalizer for the target dialect
 normalizer = MetadataNormalizer(
