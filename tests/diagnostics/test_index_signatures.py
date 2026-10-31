@@ -231,4 +231,3 @@ def test_partial_index_predicate_case_preservation() -> None:
     assert sig_upper.signature_hash() != sig_lower.signature_hash()
     is_dup, _ = are_indexes_exactly_duplicate(idx_upper, idx_lower)
     assert is_dup is False
-
