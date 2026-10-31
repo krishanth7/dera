@@ -167,3 +167,39 @@ def test_build_evidence_traceability_matrix() -> None:
     assert "public.orders" in matrix["by_object"]
     assert "DERA-CON-001" in matrix["by_rule"]
     assert "DERA-IDX-003" in matrix["by_rule"]
+
+
+def test_validate_and_enrich_evidence_with_unhashable_graph_nodes() -> None:
+    """Verifies that graphs with node objects containing unhashable attributes (like dicts) do not raise TypeError."""
+    @dataclass(frozen=True)
+    class DummyGraphNode:
+        object_id: str
+        name: str
+        fully_qualified_name: str
+        native_attributes: dict[str, Any]
+
+    @dataclass
+    class DummyGraph:
+        nodes: list[Any]
+
+    node = DummyGraphNode(
+        object_id="tbl_123",
+        name="customers",
+        fully_qualified_name="public.customers",
+        native_attributes={"engine": "postgres"},
+    )
+    graph = DummyGraph(nodes=[node])
+    context = DiagnosticContext(graph=graph)
+
+    raw_ev = [
+        DiagnosticEvidence(
+            object_id="tbl_123",
+            field_name="primary_key",
+            observed_value=None,
+        )
+    ]
+
+    res = validate_and_enrich_evidence(raw_ev, context)
+    assert res.completeness == EvidenceCompleteness.COMPLETE
+    assert res.confidence == FindingConfidence.VERIFIED
+

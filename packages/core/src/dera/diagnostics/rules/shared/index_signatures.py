@@ -35,6 +35,13 @@ class CanonicalIndexTermSignature:
         }
 
 
+def normalize_predicate(predicate: str | None) -> str | None:
+    """Normalizes whitespace in partial index predicates while preserving literal case."""
+    if not predicate:
+        return None
+    return " ".join(predicate.strip().split())
+
+
 @dataclass(frozen=True)
 class CanonicalIndexSignature:
     """Cryptographic and semantic signature of a database index."""
@@ -52,7 +59,7 @@ class CanonicalIndexSignature:
             "type": self.index_type.lower(),
             "unique": self.is_unique,
             "terms": [t.to_dict() for t in self.terms],
-            "predicate": self.predicate.strip().lower() if self.predicate else None,
+            "predicate": normalize_predicate(self.predicate),
         }
         serialized = json.dumps(canonical_dict, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
@@ -109,7 +116,7 @@ def compute_index_signature(index: Any) -> CanonicalIndexSignature:
         index_type=idx_type_val,
         is_unique=bool(getattr(index, "is_unique", False)),
         terms=tuple(norm_terms),
-        predicate=str(predicate_val).strip() if predicate_val else None,
+        predicate=normalize_predicate(str(predicate_val)) if predicate_val else None,
     )
 
 
@@ -166,13 +173,13 @@ def is_btree_leftmost_prefix(idx_narrow: Any, idx_wide: Any) -> tuple[bool, str]
     if len(sig_narrow.terms) == 0:
         return False, "Narrow index has no terms"
 
-    # If narrow index enforces uniqueness, a composite index cannot replace it
-    if sig_narrow.is_unique and not sig_wide.is_unique:
-        return False, "Narrow index enforces UNIQUE constraint which wide index does not"
+    # A wider index (unique or not) never enforces uniqueness on the narrower prefix alone
+    if sig_narrow.is_unique:
+        return False, "Narrow index enforces UNIQUE semantics that a wider index cannot preserve"
 
-    # Predicates must match exactly
-    pred_narrow = sig_narrow.predicate.lower() if sig_narrow.predicate else None
-    pred_wide = sig_wide.predicate.lower() if sig_wide.predicate else None
+    # Predicates must match exactly (preserving literal case and structure)
+    pred_narrow = normalize_predicate(sig_narrow.predicate)
+    pred_wide = normalize_predicate(sig_wide.predicate)
     if pred_narrow != pred_wide:
         return False, "Indexes have differing partial index predicates"
 

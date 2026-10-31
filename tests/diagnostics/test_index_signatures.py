@@ -186,3 +186,49 @@ def test_engine_capability_matrix() -> None:
 
     assert engine_supports_expression_indexes("postgresql") is True
     assert engine_supports_check_constraints("postgresql") is True
+
+
+def test_unique_narrow_index_never_redundant_to_unique_wide_index() -> None:
+    """A narrow unique index UNIQUE(a) is never redundant to a wider index UNIQUE(a, b)."""
+    narrow = MockIndex(
+        name="idx_uq_narrow",
+        id="i1",
+        is_unique=True,
+        terms=(MockTerm(column_name="email", ordinal_position=1),),
+    )
+    wide = MockIndex(
+        name="idx_uq_wide",
+        id="i2",
+        is_unique=True,
+        terms=(
+            MockTerm(column_name="email", ordinal_position=1),
+            MockTerm(column_name="tenant_id", ordinal_position=2),
+        ),
+    )
+    is_prefix, reason = is_btree_leftmost_prefix(narrow, wide)
+    assert is_prefix is False
+    assert "UNIQUE semantics" in reason
+
+
+def test_partial_index_predicate_case_preservation() -> None:
+    """Case-sensitive string literals in partial index predicates must not collide."""
+    idx_upper = MockIndex(
+        name="idx_active_upper",
+        id="i1",
+        terms=(MockTerm(column_name="user_id", ordinal_position=1),),
+        predicate="status = 'ACTIVE'",
+    )
+    idx_lower = MockIndex(
+        name="idx_active_lower",
+        id="i2",
+        terms=(MockTerm(column_name="user_id", ordinal_position=1),),
+        predicate="status = 'active'",
+    )
+
+    sig_upper = compute_index_signature(idx_upper)
+    sig_lower = compute_index_signature(idx_lower)
+
+    assert sig_upper.signature_hash() != sig_lower.signature_hash()
+    is_dup, _ = are_indexes_exactly_duplicate(idx_upper, idx_lower)
+    assert is_dup is False
+
