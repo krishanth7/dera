@@ -109,10 +109,20 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
                     capability_state=prov_data.get("capability_state"),
                 )
 
-            ev_type_val = ev_data.get(
-                "evidence_type", EvidenceType.CANONICAL_OBJECT_REFERENCE.value
-            )
-            ev_comp_val = ev_data.get("completeness", EvidenceCompleteness.COMPLETE.value)
+            if "evidence_type" in ev_data:
+                ev_type = EvidenceType(ev_data["evidence_type"])
+            else:
+                ev_type = EvidenceType.CANONICAL_OBJECT_REFERENCE
+
+            if "completeness" in ev_data:
+                raw_comp = ev_data["completeness"]
+                ev_comp = (
+                    EvidenceCompleteness(raw_comp)
+                    if raw_comp in EvidenceCompleteness._value2member_map_
+                    else EvidenceCompleteness.UNKNOWN
+                )
+            else:
+                ev_comp = EvidenceCompleteness.COMPLETE
 
             evidence_list.append(
                 DiagnosticEvidence(
@@ -123,16 +133,8 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
                     message=ev_data.get("message", ""),
                     provenance_reference=ev_data.get("provenance_reference"),
                     context_data=ev_data.get("context_data", {}),
-                    evidence_type=(
-                        EvidenceType(ev_type_val)
-                        if ev_type_val in EvidenceType._value2member_map_
-                        else EvidenceType.CANONICAL_OBJECT_REFERENCE
-                    ),
-                    completeness=(
-                        EvidenceCompleteness(ev_comp_val)
-                        if ev_comp_val in EvidenceCompleteness._value2member_map_
-                        else EvidenceCompleteness.COMPLETE
-                    ),
+                    evidence_type=ev_type,
+                    completeness=ev_comp,
                     provenance=provenance,
                 )
             )
@@ -141,8 +143,26 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
         cls_val = f_data.get(
             "classification", FindingClassification.POTENTIAL_ENGINEERING_CONCERN.value
         )
-        conf_val = f_data.get("confidence", FindingConfidence.VERIFIED.value)
-        comp_val = f_data.get("metadata_completeness", EvidenceCompleteness.COMPLETE.value)
+        if "confidence" in f_data:
+            raw_conf = f_data["confidence"]
+            finding_confidence = (
+                FindingConfidence(raw_conf)
+                if raw_conf in FindingConfidence._value2member_map_
+                else FindingConfidence.INCOMPLETE
+            )
+        else:
+            finding_confidence = FindingConfidence.VERIFIED
+
+        if "metadata_completeness" in f_data:
+            raw_comp = f_data["metadata_completeness"]
+            finding_completeness = (
+                EvidenceCompleteness(raw_comp)
+                if raw_comp in EvidenceCompleteness._value2member_map_
+                else EvidenceCompleteness.UNKNOWN
+            )
+        else:
+            finding_completeness = EvidenceCompleteness.COMPLETE
+
         lc_val = f_data.get("lifecycle_state", FindingLifecycleState.OPEN.value)
         pr_val = f_data.get("priority_rank", PriorityRank.P5_INFORMATIONAL.value)
 
@@ -192,16 +212,8 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
                     else FindingClassification.POTENTIAL_ENGINEERING_CONCERN
                 ),
                 original_severity=original_severity,
-                confidence=(
-                    FindingConfidence(conf_val)
-                    if conf_val in FindingConfidence._value2member_map_
-                    else FindingConfidence.VERIFIED
-                ),
-                metadata_completeness=(
-                    EvidenceCompleteness(comp_val)
-                    if comp_val in EvidenceCompleteness._value2member_map_
-                    else EvidenceCompleteness.COMPLETE
-                ),
+                confidence=finding_confidence,
+                metadata_completeness=finding_completeness,
                 structured_recommendation=structured_rec,
                 lifecycle_state=(
                     FindingLifecycleState(lc_val)
