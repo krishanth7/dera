@@ -48,6 +48,14 @@ from dera.diagnostics.models import (
 )
 from dera.diagnostics.protocols import DiagnosticRule
 from dera.diagnostics.registry import DiagnosticRuleRegistry
+from dera.diagnostics.rules.constraints import (
+    ALL_CONSTRAINT_RULES,
+    CheckConstraintMetadataRule,
+    ConstraintColumnIntegrityRule,
+    ForeignKeyIntegrityRule,
+    PrimaryKeyIntegrityRule,
+    UniqueConstraintIntegrityRule,
+)
 from dera.diagnostics.rules.foundational import (
     ALL_FOUNDATIONAL_RULES,
     CanonicalIdentityCollisionRule,
@@ -56,11 +64,42 @@ from dera.diagnostics.rules.foundational import (
     UnresolvedRelationshipTargetRule,
     UnsupportedCapabilityRule,
 )
+from dera.diagnostics.rules.indexes import (
+    ALL_INDEX_RULES,
+    DuplicateIndexesRule,
+    FkIndexCoverageRule,
+    IndexColumnIntegrityRule,
+    RedundantIndexesRule,
+)
+from dera.diagnostics.rules.relationships import (
+    ALL_DEPENDENCY_RULES,
+    ALL_PHASE_8_3_RULES,
+    ALL_RELATIONSHIP_RULES,
+    CompositeForeignKeyMappingRule,
+    CrossNamespaceDependenciesRule,
+    CyclicDependenciesRule,
+    DependencyConcentrationRule,
+    DependencyDepthRule,
+    RelationshipGraphIntegrityRule,
+    StructuralImpactRadiusRule,
+    UnresolvedRelationshipTargetsRule,
+)
 from dera.diagnostics.serialization import (
     compute_report_content_hash,
     deserialize_diagnostic_report,
     serialize_diagnostic_report,
 )
+
+ALL_PHASE_8_2_RULES = [
+    *ALL_INDEX_RULES,
+    *ALL_CONSTRAINT_RULES,
+]
+
+ALL_RULES = [
+    *ALL_FOUNDATIONAL_RULES,
+    *ALL_PHASE_8_2_RULES,
+    *ALL_PHASE_8_3_RULES,
+]
 
 if TYPE_CHECKING:
     from dera.models import DatabaseTable
@@ -176,6 +215,34 @@ __all__ = [
     "MissingStructuralMetadataRule",
     "UnresolvedRelationshipTargetRule",
     "UnsupportedCapabilityRule",
+    # Index Rules
+    "ALL_INDEX_RULES",
+    "DuplicateIndexesRule",
+    "RedundantIndexesRule",
+    "FkIndexCoverageRule",
+    "IndexColumnIntegrityRule",
+    # Constraint Rules
+    "ALL_CONSTRAINT_RULES",
+    "PrimaryKeyIntegrityRule",
+    "ForeignKeyIntegrityRule",
+    "UniqueConstraintIntegrityRule",
+    "CheckConstraintMetadataRule",
+    "ConstraintColumnIntegrityRule",
+    # Relationship & Dependency Rules (Phase 8.3)
+    "ALL_RELATIONSHIP_RULES",
+    "ALL_DEPENDENCY_RULES",
+    "ALL_PHASE_8_3_RULES",
+    "RelationshipGraphIntegrityRule",
+    "UnresolvedRelationshipTargetsRule",
+    "CompositeForeignKeyMappingRule",
+    "CrossNamespaceDependenciesRule",
+    "CyclicDependenciesRule",
+    "DependencyDepthRule",
+    "DependencyConcentrationRule",
+    "StructuralImpactRadiusRule",
+    # Aggregations
+    "ALL_PHASE_8_2_RULES",
+    "ALL_RULES",
     # Exceptions
     "DiagnosticEngineError",
     "DuplicateRuleError",
