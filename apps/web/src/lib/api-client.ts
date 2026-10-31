@@ -244,6 +244,40 @@ export interface TableDetailItem {
   indexes: IndexSummaryItem[];
 }
 
+export interface RelationshipNodeItem {
+  table_id: string;
+  namespace: string;
+  name: string;
+}
+
+export interface RelationshipEdgeItem {
+  edge_id: string;
+  source_table_id: string;
+  source_table_name: string;
+  target_table_id: string;
+  target_table_name: string;
+  constraint_name: string;
+  source_columns: string[];
+  target_columns: string[];
+  on_delete?: string | null;
+  on_update?: string | null;
+}
+
+export interface RelationshipGraphResponse {
+  database_name: string;
+  engine: string;
+  node_count: number;
+  edge_count: number;
+  nodes: RelationshipNodeItem[];
+  edges: RelationshipEdgeItem[];
+}
+
+export interface TableRelationshipsResponse {
+  table_id: string;
+  incoming: RelationshipEdgeItem[];
+  outgoing: RelationshipEdgeItem[];
+}
+
 function getCsrfTokenFromCookie(): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(/(?:^|;\s*)dera_csrf=([^;]+)/);
@@ -547,6 +581,32 @@ export class DeraApiClient {
   ): Promise<ColumnDetailItem> {
     return this.request<ColumnDetailItem>(
       `/api/v1/reverse-engineering/schemas/${schemaId}/columns/${columnId}`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  // Phase 7.4 Relationship Graph APIs (Phase 6.6)
+  async getSchemaRelationships(
+    schemaId: string,
+    workspaceId: string
+  ): Promise<RelationshipGraphResponse> {
+    return this.request<RelationshipGraphResponse>(
+      `/api/v1/reverse-engineering/schemas/${schemaId}/relationships`,
+      {
+        headers: { "X-Workspace-Id": workspaceId },
+      }
+    );
+  }
+
+  async getTableRelationships(
+    schemaId: string,
+    tableId: string,
+    workspaceId: string
+  ): Promise<TableRelationshipsResponse> {
+    return this.request<TableRelationshipsResponse>(
+      `/api/v1/reverse-engineering/schemas/${schemaId}/tables/${tableId}/relationships`,
       {
         headers: { "X-Workspace-Id": workspaceId },
       }
