@@ -13,8 +13,11 @@ from typing import Any
 from dera.diagnostics.enums import (
     DiagnosticSeverity,
     EvaluationStatus,
+    RuleCategory,
 )
 from dera.diagnostics.evidence import DiagnosticEvidence
+from dera.diagnostics.evidence.models import EvidenceCompleteness, FindingConfidence
+from dera.diagnostics.governance.lifecycle import FindingLifecycleState
 from dera.diagnostics.models import (
     DiagnosticCoverage,
     DiagnosticFinding,
@@ -22,6 +25,9 @@ from dera.diagnostics.models import (
     DiagnosticSummaryCounts,
     RuleEvaluation,
 )
+from dera.diagnostics.prioritization.classification import FindingClassification
+from dera.diagnostics.prioritization.ranking import PriorityRank
+from dera.diagnostics.reports.explainability import ReportExplainabilitySummary
 
 
 def _canonical_json_dump(data: Any) -> str:
@@ -55,6 +61,10 @@ def compute_report_content_hash(report_dict: dict[str, Any]) -> str:
     stable_content = {
         "snapshot_id": report_dict.get("snapshot_id"),
         "rule_set_version": report_dict.get("rule_set_version"),
+        "severity_policy_version": report_dict.get("severity_policy_version", "1.0.0"),
+        "recommendation_catalog_version": report_dict.get(
+            "recommendation_catalog_version", "1.0.0"
+        ),
         "config_fingerprint": report_dict.get("config_fingerprint"),
         "source_engine": report_dict.get("source_engine"),
         "summary": report_dict.get("summary"),
@@ -93,6 +103,20 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
                 )
             )
 
+        cat_val = f_data.get("category", RuleCategory.STRUCTURAL_INTEGRITY.value)
+        cls_val = f_data.get(
+            "classification", FindingClassification.POTENTIAL_ENGINEERING_CONCERN.value
+        )
+        conf_val = f_data.get("confidence", FindingConfidence.VERIFIED.value)
+        comp_val = f_data.get("metadata_completeness", EvidenceCompleteness.COMPLETE.value)
+        lc_val = f_data.get("lifecycle_state", FindingLifecycleState.OPEN.value)
+        pr_val = f_data.get("priority_rank", PriorityRank.P5_INFORMATIONAL.value)
+
+        orig_sev = f_data.get("original_severity")
+        original_severity = (
+            DiagnosticSeverity(orig_sev) if orig_sev else DiagnosticSeverity(f_data["severity"])
+        )
+
         findings.append(
             DiagnosticFinding(
                 rule_id=f_data["rule_id"],
@@ -105,6 +129,29 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
                 severity_rationale=f_data.get("severity_rationale", ""),
                 recommendation=f_data.get("recommendation"),
                 fingerprint=f_data.get("fingerprint", ""),
+                category=RuleCategory(cat_val)
+                if cat_val in RuleCategory._value2member_map_
+                else RuleCategory.STRUCTURAL_INTEGRITY,
+                classification=FindingClassification(cls_val)
+                if cls_val in FindingClassification._value2member_map_
+                else FindingClassification.POTENTIAL_ENGINEERING_CONCERN,
+                original_severity=original_severity,
+                confidence=FindingConfidence(conf_val)
+                if conf_val in FindingConfidence._value2member_map_
+                else FindingConfidence.VERIFIED,
+                metadata_completeness=EvidenceCompleteness(comp_val)
+                if comp_val in EvidenceCompleteness._value2member_map_
+                else EvidenceCompleteness.COMPLETE,
+                lifecycle_state=FindingLifecycleState(lc_val)
+                if lc_val in FindingLifecycleState._value2member_map_
+                else FindingLifecycleState.OPEN,
+                is_suppressed=f_data.get("is_suppressed", False),
+                suppression_id=f_data.get("suppression_id"),
+                override_id=f_data.get("override_id"),
+                priority_score=f_data.get("priority_score", 0),
+                priority_rank=PriorityRank(pr_val)
+                if pr_val in PriorityRank._value2member_map_
+                else PriorityRank.P5_INFORMATIONAL,
             )
         )
 
@@ -144,6 +191,30 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
         errored_rules=tuple(cov_data.get("errored_rules", ())),
     )
 
+    expl_data = data.get("explainability")
+    explainability = None
+    if expl_data:
+        explainability = ReportExplainabilitySummary(
+            total_rules_considered=expl_data.get("total_rules_considered", 0),
+            evaluated_rules_count=expl_data.get("evaluated_rules_count", 0),
+            skipped_rules_count=expl_data.get("skipped_rules_count", 0),
+            unsupported_rules_count=expl_data.get("unsupported_rules_count", 0),
+            insufficient_metadata_count=expl_data.get("insufficient_metadata_count", 0),
+            errored_rules_count=expl_data.get("errored_rules_count", 0),
+            findings_by_severity=expl_data.get("findings_by_severity", {}),
+            findings_by_classification=expl_data.get("findings_by_classification", {}),
+            findings_by_lifecycle=expl_data.get("findings_by_lifecycle", {}),
+            findings_by_confidence=expl_data.get("findings_by_confidence", {}),
+            active_suppression_count=expl_data.get("active_suppression_count", 0),
+            severity_override_count=expl_data.get("severity_override_count", 0),
+            rule_set_version=expl_data.get("rule_set_version", "1.0.0"),
+            severity_policy_version=expl_data.get("severity_policy_version", "1.0.0"),
+            recommendation_catalog_version=expl_data.get("recommendation_catalog_version", "1.0.0"),
+            config_fingerprint=expl_data.get("config_fingerprint", ""),
+            skipped_reasons=expl_data.get("skipped_reasons", {}),
+            unsupported_reasons=expl_data.get("unsupported_reasons", {}),
+        )
+
     return DiagnosticReport(
         evaluation_id=data["evaluation_id"],
         evaluated_at=data["evaluated_at"],
@@ -156,4 +227,9 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
         coverage=coverage,
         source_engine=data.get("source_engine", "unknown"),
         report_hash=data.get("report_hash", ""),
+        explainability=explainability,
+        severity_policy_version=data.get("severity_policy_version", "1.0.0"),
+        recommendation_catalog_version=data.get("recommendation_catalog_version", "1.0.0"),
+        suppressions_applied=tuple(data.get("suppressions_applied", ())),
+        severity_overrides_applied=tuple(data.get("severity_overrides_applied", ())),
     )

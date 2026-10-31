@@ -837,6 +837,24 @@
             ],
             "description": "Explicit list of rule IDs to evaluate.",
             "title": "Enabled Rule Ids"
+          },
+          "severity_overrides": {
+            "description": "Configured severity overrides.",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Severity Overrides",
+            "type": "array"
+          },
+          "suppressions": {
+            "description": "Configured suppression records.",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Suppressions",
+            "type": "array"
           }
         },
         "title": "DiagnosticEvaluateRequest",
@@ -944,6 +962,42 @@
       "DiagnosticFindingResponse": {
         "description": "Structured diagnostic finding with verifiable evidence and recommendation.",
         "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Rule category.",
+            "title": "Category"
+          },
+          "classification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Finding classification.",
+            "title": "Classification"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Categorical confidence status.",
+            "title": "Confidence"
+          },
           "description": {
             "description": "Detailed description.",
             "title": "Description",
@@ -957,15 +1011,105 @@
             "title": "Evidence",
             "type": "array"
           },
+          "finding_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Unique finding ID.",
+            "title": "Finding Id"
+          },
           "fingerprint": {
             "description": "Stable SHA-256 finding fingerprint.",
             "title": "Fingerprint",
             "type": "string"
           },
+          "is_suppressed": {
+            "default": false,
+            "description": "Whether finding is suppressed.",
+            "title": "Is Suppressed",
+            "type": "boolean"
+          },
+          "lifecycle_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Finding lifecycle state.",
+            "title": "Lifecycle State"
+          },
+          "metadata_completeness": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Evidence completeness.",
+            "title": "Metadata Completeness"
+          },
           "object_id": {
             "description": "Canonical ID of the affected schema entity.",
             "title": "Object Id",
             "type": "string"
+          },
+          "original_severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original rule severity.",
+            "title": "Original Severity"
+          },
+          "override_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of severity override if applied.",
+            "title": "Override Id"
+          },
+          "priority_rank": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Priority rank.",
+            "title": "Priority Rank"
+          },
+          "priority_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Deterministic priority score.",
+            "title": "Priority Score"
           },
           "recommendation": {
             "anyOf": [
@@ -998,6 +1142,31 @@
             "description": "Explanation of assigned severity.",
             "title": "Severity Rationale",
             "type": "string"
+          },
+          "structured_recommendation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Structured recommendation details.",
+            "title": "Structured Recommendation"
+          },
+          "suppression_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of active suppression if applied.",
+            "title": "Suppression Id"
           },
           "title": {
             "description": "Finding title.",
@@ -1043,6 +1212,19 @@
             "title": "Evaluation Id",
             "type": "string"
           },
+          "explainability": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Report explainability metrics.",
+            "title": "Explainability"
+          },
           "findings": {
             "description": "Detected findings.",
             "items": {
@@ -1050,6 +1232,12 @@
             },
             "title": "Findings",
             "type": "array"
+          },
+          "recommendation_catalog_version": {
+            "default": "1.0.0",
+            "description": "Recommendation catalog version.",
+            "title": "Recommendation Catalog Version",
+            "type": "string"
           },
           "report_hash": {
             "description": "Cryptographic content hash of the report.",
@@ -1067,6 +1255,21 @@
           "rule_set_version": {
             "description": "Rule set version.",
             "title": "Rule Set Version",
+            "type": "string"
+          },
+          "severity_overrides_applied": {
+            "description": "Severity overrides applied.",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Severity Overrides Applied",
+            "type": "array"
+          },
+          "severity_policy_version": {
+            "default": "1.0.0",
+            "description": "Severity policy version.",
+            "title": "Severity Policy Version",
             "type": "string"
           },
           "snapshot_id": {
@@ -1091,6 +1294,15 @@
             "description": "Aggregated summary counts.",
             "title": "Summary",
             "type": "object"
+          },
+          "suppressions_applied": {
+            "description": "Suppressions applied during evaluation.",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Suppressions Applied",
+            "type": "array"
           }
         },
         "required": [

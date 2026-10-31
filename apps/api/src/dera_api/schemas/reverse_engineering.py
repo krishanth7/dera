@@ -428,6 +428,23 @@ class DiagnosticFindingResponse(BaseModel):
     )
     severity_rationale: str = Field(..., description="Explanation of assigned severity.")
     recommendation: str | None = Field(default=None, description="Recommended remediation action.")
+    category: str | None = Field(default=None, description="Rule category.")
+    classification: str | None = Field(default=None, description="Finding classification.")
+    original_severity: str | None = Field(default=None, description="Original rule severity.")
+    confidence: str | None = Field(default=None, description="Categorical confidence status.")
+    metadata_completeness: str | None = Field(default=None, description="Evidence completeness.")
+    structured_recommendation: dict[str, Any] | None = Field(
+        default=None, description="Structured recommendation details."
+    )
+    lifecycle_state: str | None = Field(default=None, description="Finding lifecycle state.")
+    is_suppressed: bool = Field(default=False, description="Whether finding is suppressed.")
+    suppression_id: str | None = Field(
+        default=None, description="ID of active suppression if applied."
+    )
+    override_id: str | None = Field(default=None, description="ID of severity override if applied.")
+    priority_score: int | None = Field(default=None, description="Deterministic priority score.")
+    priority_rank: str | None = Field(default=None, description="Priority rank.")
+    finding_id: str | None = Field(default=None, description="Unique finding ID.")
 
 
 class DiagnosticEvaluationResponse(BaseModel):
@@ -465,6 +482,19 @@ class DiagnosticReportResponse(BaseModel):
     rule_evaluations: list[DiagnosticEvaluationResponse] = Field(
         ..., description="Per-rule outcomes."
     )
+    explainability: dict[str, Any] | None = Field(
+        default=None, description="Report explainability metrics."
+    )
+    severity_policy_version: str = Field(default="1.0.0", description="Severity policy version.")
+    recommendation_catalog_version: str = Field(
+        default="1.0.0", description="Recommendation catalog version."
+    )
+    suppressions_applied: list[dict[str, Any]] = Field(
+        default_factory=list, description="Suppressions applied during evaluation."
+    )
+    severity_overrides_applied: list[dict[str, Any]] = Field(
+        default_factory=list, description="Severity overrides applied."
+    )
 
 
 class DiagnosticEvaluateRequest(BaseModel):
@@ -476,3 +506,9 @@ class DiagnosticEvaluateRequest(BaseModel):
         default=None, description="Explicit list of rule IDs to evaluate."
     )
     disabled_rule_ids: list[str] = Field(default_factory=list, description="Rule IDs to suppress.")
+    suppressions: list[dict[str, Any]] = Field(
+        default_factory=list, description="Configured suppression records."
+    )
+    severity_overrides: list[dict[str, Any]] = Field(
+        default_factory=list, description="Configured severity overrides."
+    )

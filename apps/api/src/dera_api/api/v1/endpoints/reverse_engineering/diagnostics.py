@@ -169,6 +169,51 @@ async def evaluate_schema_diagnostics(
             ],
             severity_rationale=f.severity_rationale,
             recommendation=f.recommendation,
+            category=(
+                f.category.value
+                if hasattr(f, "category") and hasattr(f.category, "value")
+                else None
+            ),
+            classification=(
+                f.classification.value
+                if hasattr(f, "classification") and hasattr(f.classification, "value")
+                else None
+            ),
+            original_severity=(
+                f.original_severity.value
+                if hasattr(f, "original_severity") and hasattr(f.original_severity, "value")
+                else None
+            ),
+            confidence=(
+                f.confidence.value
+                if hasattr(f, "confidence") and hasattr(f.confidence, "value")
+                else None
+            ),
+            metadata_completeness=(
+                f.metadata_completeness.value
+                if hasattr(f, "metadata_completeness") and hasattr(f.metadata_completeness, "value")
+                else None
+            ),
+            structured_recommendation=(
+                f.structured_recommendation.to_canonical_dict()
+                if hasattr(f, "structured_recommendation") and f.structured_recommendation
+                else None
+            ),
+            lifecycle_state=(
+                f.lifecycle_state.value
+                if hasattr(f, "lifecycle_state") and hasattr(f.lifecycle_state, "value")
+                else None
+            ),
+            is_suppressed=getattr(f, "is_suppressed", False),
+            suppression_id=getattr(f, "suppression_id", None),
+            override_id=getattr(f, "override_id", None),
+            priority_score=getattr(f, "priority_score", None),
+            priority_rank=(
+                f.priority_rank.value
+                if hasattr(f, "priority_rank") and hasattr(f.priority_rank, "value")
+                else None
+            ),
+            finding_id=getattr(f, "finding_id", None),
         )
         for f in report.findings
     ]
@@ -197,4 +242,13 @@ async def evaluate_schema_diagnostics(
         coverage=report.coverage.to_canonical_dict(),
         findings=findings_resp,
         rule_evaluations=evals_resp,
+        explainability=(
+            report.explainability.to_canonical_dict()
+            if getattr(report, "explainability", None)
+            else None
+        ),
+        severity_policy_version=getattr(report, "severity_policy_version", "1.0.0"),
+        recommendation_catalog_version=getattr(report, "recommendation_catalog_version", "1.0.0"),
+        suppressions_applied=list(getattr(report, "suppressions_applied", ())),
+        severity_overrides_applied=list(getattr(report, "severity_overrides_applied", ())),
     )
