@@ -21,6 +21,8 @@ from dera.diagnostics.rules.shared.graph_helpers import (
     group_parallel_edges,
     resolve_dependencies,
     resolve_graph,
+    resolve_namespaces,
+    resolve_tables,
 )
 from dera.diagnostics.rules.shared.index_signatures import (
     CanonicalIndexSignature,
@@ -51,5 +53,7 @@ __all__ = [
     "normalize_engine_name",
     "resolve_dependencies",
     "resolve_graph",
+    "resolve_namespaces",
+    "resolve_tables",
     "validate_column_references_exist",
 ]
