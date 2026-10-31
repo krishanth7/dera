@@ -77,10 +77,13 @@ class JobService:
             if existing is not None:
                 # Compare payloads to detect conflicting submissions
                 if existing.payload == validated_payload and existing.job_type == request.job_type:
+                    sanitized_idempotency_key = request.idempotency_key.replace("\r", "").replace(
+                        "\n", ""
+                    )
                     logger.info(
                         "Returning existing job %s for idempotency key '%s'.",
                         existing.id,
-                        request.idempotency_key,
+                        sanitized_idempotency_key,
                     )
                     return existing
                 raise IdempotencyConflictError(request.idempotency_key)
