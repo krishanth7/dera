@@ -71,6 +71,19 @@ from dera.diagnostics.rules.indexes import (
     IndexColumnIntegrityRule,
     RedundantIndexesRule,
 )
+from dera.diagnostics.rules.relationships import (
+    ALL_DEPENDENCY_RULES,
+    ALL_PHASE_8_3_RULES,
+    ALL_RELATIONSHIP_RULES,
+    CompositeForeignKeyMappingRule,
+    CrossNamespaceDependenciesRule,
+    CyclicDependenciesRule,
+    DependencyConcentrationRule,
+    DependencyDepthRule,
+    RelationshipGraphIntegrityRule,
+    StructuralImpactRadiusRule,
+    UnresolvedRelationshipTargetsRule,
+)
 from dera.diagnostics.serialization import (
     compute_report_content_hash,
     deserialize_diagnostic_report,
@@ -85,6 +98,7 @@ ALL_PHASE_8_2_RULES = [
 ALL_RULES = [
     *ALL_FOUNDATIONAL_RULES,
     *ALL_PHASE_8_2_RULES,
+    *ALL_PHASE_8_3_RULES,
 ]
 
 if TYPE_CHECKING:
@@ -214,6 +228,18 @@ __all__ = [
     "UniqueConstraintIntegrityRule",
     "CheckConstraintMetadataRule",
     "ConstraintColumnIntegrityRule",
+    # Relationship & Dependency Rules (Phase 8.3)
+    "ALL_RELATIONSHIP_RULES",
+    "ALL_DEPENDENCY_RULES",
+    "ALL_PHASE_8_3_RULES",
+    "RelationshipGraphIntegrityRule",
+    "UnresolvedRelationshipTargetsRule",
+    "CompositeForeignKeyMappingRule",
+    "CrossNamespaceDependenciesRule",
+    "CyclicDependenciesRule",
+    "DependencyDepthRule",
+    "DependencyConcentrationRule",
+    "StructuralImpactRadiusRule",
     # Aggregations
     "ALL_PHASE_8_2_RULES",
     "ALL_RULES",
