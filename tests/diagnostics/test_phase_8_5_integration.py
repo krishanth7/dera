@@ -231,6 +231,18 @@ def test_serialization_roundtrip_with_phase_8_5_fields() -> None:
     assert deser_f.classification == orig_f.classification
     assert deser_f.confidence == orig_f.confidence
     assert deser_f.priority_score == orig_f.priority_score
+    assert deser_f.finding_id == orig_f.finding_id
+    if orig_f.structured_recommendation:
+        assert deser_f.structured_recommendation is not None
+        assert deser_f.structured_recommendation.recommendation_id == orig_f.structured_recommendation.recommendation_id
+        assert deser_f.structured_recommendation.title == orig_f.structured_recommendation.title
+    if orig_f.evidence:
+        assert deser_f.evidence[0].evidence_type == orig_f.evidence[0].evidence_type
+        assert deser_f.evidence[0].completeness == orig_f.evidence[0].completeness
+
+    from dera.diagnostics.serialization import compute_report_content_hash
+    recomputed_hash = compute_report_content_hash(deserialized.to_canonical_dict())
+    assert recomputed_hash == report.report_hash
 
 
 def test_performance_benchmark_scale() -> None:

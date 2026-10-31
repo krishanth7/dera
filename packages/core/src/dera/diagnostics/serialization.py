@@ -16,7 +16,11 @@ from dera.diagnostics.enums import (
     RuleCategory,
 )
 from dera.diagnostics.evidence import DiagnosticEvidence
-from dera.diagnostics.evidence.models import EvidenceCompleteness, FindingConfidence
+from dera.diagnostics.evidence.models import (
+    EvidenceCompleteness,
+    EvidenceType,
+    FindingConfidence,
+)
 from dera.diagnostics.governance.lifecycle import FindingLifecycleState
 from dera.diagnostics.models import (
     DiagnosticCoverage,
@@ -91,6 +95,25 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
     for f_data in data.get("findings", []):
         evidence_list: list[DiagnosticEvidence] = []
         for ev_data in f_data.get("evidence", []):
+            prov_data = ev_data.get("provenance")
+            provenance = None
+            if prov_data:
+                from dera.diagnostics.evidence.models import EvidenceProvenance
+
+                provenance = EvidenceProvenance(
+                    source_engine=prov_data.get("source_engine", ""),
+                    connector_version=prov_data.get("connector_version", "1.0.0"),
+                    inspection_timestamp=prov_data.get("inspection_timestamp", ""),
+                    snapshot_id=prov_data.get("snapshot_id"),
+                    canonical_object_id=prov_data.get("canonical_object_id", ""),
+                    capability_state=prov_data.get("capability_state"),
+                )
+
+            ev_type_val = ev_data.get(
+                "evidence_type", EvidenceType.CANONICAL_OBJECT_REFERENCE.value
+            )
+            ev_comp_val = ev_data.get("completeness", EvidenceCompleteness.COMPLETE.value)
+
             evidence_list.append(
                 DiagnosticEvidence(
                     object_id=ev_data["object_id"],
@@ -100,6 +123,17 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
                     message=ev_data.get("message", ""),
                     provenance_reference=ev_data.get("provenance_reference"),
                     context_data=ev_data.get("context_data", {}),
+                    evidence_type=(
+                        EvidenceType(ev_type_val)
+                        if ev_type_val in EvidenceType._value2member_map_
+                        else EvidenceType.CANONICAL_OBJECT_REFERENCE
+                    ),
+                    completeness=(
+                        EvidenceCompleteness(ev_comp_val)
+                        if ev_comp_val in EvidenceCompleteness._value2member_map_
+                        else EvidenceCompleteness.COMPLETE
+                    ),
+                    provenance=provenance,
                 )
             )
 
@@ -117,6 +151,24 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
             DiagnosticSeverity(orig_sev) if orig_sev else DiagnosticSeverity(f_data["severity"])
         )
 
+        rec_data = f_data.get("structured_recommendation")
+        structured_rec = None
+        if rec_data:
+            from dera.diagnostics.recommendations.generator import StructuredRecommendation
+
+            structured_rec = StructuredRecommendation(
+                recommendation_id=rec_data.get("recommendation_id", ""),
+                rule_id=rec_data.get("rule_id", f_data["rule_id"]),
+                title=rec_data.get("title", ""),
+                description=rec_data.get("description", ""),
+                suggested_action=rec_data.get("suggested_action", ""),
+                risk_considerations=rec_data.get("risk_considerations", ""),
+                verification_steps=tuple(rec_data.get("verification_steps", ())),
+                limitations=rec_data.get("limitations", ""),
+                version=rec_data.get("version", "1.0.0"),
+                is_advisory=rec_data.get("is_advisory", True),
+            )
+
         findings.append(
             DiagnosticFinding(
                 rule_id=f_data["rule_id"],
@@ -129,29 +181,43 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
                 severity_rationale=f_data.get("severity_rationale", ""),
                 recommendation=f_data.get("recommendation"),
                 fingerprint=f_data.get("fingerprint", ""),
-                category=RuleCategory(cat_val)
-                if cat_val in RuleCategory._value2member_map_
-                else RuleCategory.STRUCTURAL_INTEGRITY,
-                classification=FindingClassification(cls_val)
-                if cls_val in FindingClassification._value2member_map_
-                else FindingClassification.POTENTIAL_ENGINEERING_CONCERN,
+                category=(
+                    RuleCategory(cat_val)
+                    if cat_val in RuleCategory._value2member_map_
+                    else RuleCategory.STRUCTURAL_INTEGRITY
+                ),
+                classification=(
+                    FindingClassification(cls_val)
+                    if cls_val in FindingClassification._value2member_map_
+                    else FindingClassification.POTENTIAL_ENGINEERING_CONCERN
+                ),
                 original_severity=original_severity,
-                confidence=FindingConfidence(conf_val)
-                if conf_val in FindingConfidence._value2member_map_
-                else FindingConfidence.VERIFIED,
-                metadata_completeness=EvidenceCompleteness(comp_val)
-                if comp_val in EvidenceCompleteness._value2member_map_
-                else EvidenceCompleteness.COMPLETE,
-                lifecycle_state=FindingLifecycleState(lc_val)
-                if lc_val in FindingLifecycleState._value2member_map_
-                else FindingLifecycleState.OPEN,
+                confidence=(
+                    FindingConfidence(conf_val)
+                    if conf_val in FindingConfidence._value2member_map_
+                    else FindingConfidence.VERIFIED
+                ),
+                metadata_completeness=(
+                    EvidenceCompleteness(comp_val)
+                    if comp_val in EvidenceCompleteness._value2member_map_
+                    else EvidenceCompleteness.COMPLETE
+                ),
+                structured_recommendation=structured_rec,
+                lifecycle_state=(
+                    FindingLifecycleState(lc_val)
+                    if lc_val in FindingLifecycleState._value2member_map_
+                    else FindingLifecycleState.OPEN
+                ),
                 is_suppressed=f_data.get("is_suppressed", False),
                 suppression_id=f_data.get("suppression_id"),
                 override_id=f_data.get("override_id"),
                 priority_score=f_data.get("priority_score", 0),
-                priority_rank=PriorityRank(pr_val)
-                if pr_val in PriorityRank._value2member_map_
-                else PriorityRank.P5_INFORMATIONAL,
+                priority_rank=(
+                    PriorityRank(pr_val)
+                    if pr_val in PriorityRank._value2member_map_
+                    else PriorityRank.P5_INFORMATIONAL
+                ),
+                finding_id=f_data.get("finding_id", ""),
             )
         )
 

@@ -105,7 +105,15 @@ def validate_and_enrich_evidence(
 
         if context.graph is not None:
             for node in getattr(context.graph, "nodes", ()):
-                known_objects.add(node)
+                if isinstance(node, str):
+                    known_objects.add(node)
+                else:
+                    node_id = getattr(node, "object_id", getattr(node, "name", None))
+                    if node_id:
+                        known_objects.add(str(node_id))
+                    fqn = getattr(node, "fully_qualified_name", None)
+                    if fqn:
+                        known_objects.add(str(fqn))
 
     has_partial = False
     has_restricted = False
