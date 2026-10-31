@@ -1,7 +1,8 @@
 """DERA Diagnostics — Evaluation Orchestrator.
 
 Orchestrates deterministic rule execution, resource limit enforcement,
-error isolation, and diagnostic report aggregation without AI or external dependencies.
+error isolation, evidence validation, severity derivation, recommendation generation,
+suppression governance, prioritization, and explainable report aggregation without AI or external dependencies.
 """
 
 from __future__ import annotations
@@ -9,18 +10,20 @@ from __future__ import annotations
 import time
 import uuid
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from dera.diagnostics.applicability import check_rule_applicability
 from dera.diagnostics.enums import (
     ApplicabilityStatus,
     DiagnosticSeverity,
     EvaluationStatus,
+    RuleCategory,
 )
+from dera.diagnostics.evidence.validator import validate_and_enrich_evidence
 from dera.diagnostics.exceptions import ResourceLimitExceededError
-from dera.diagnostics.fingerprint import (
-    compute_config_fingerprint,
-)
+from dera.diagnostics.fingerprint import compute_config_fingerprint
+from dera.diagnostics.governance.lifecycle import FindingLifecycleState
+from dera.diagnostics.governance.suppressions import DiagnosticSuppression
 from dera.diagnostics.models import (
     DiagnosticCoverage,
     DiagnosticFinding,
@@ -28,7 +31,22 @@ from dera.diagnostics.models import (
     DiagnosticSummaryCounts,
     RuleEvaluation,
 )
+from dera.diagnostics.prioritization.classification import classify_rule_finding
+from dera.diagnostics.prioritization.ordering import sort_findings_deterministically
+from dera.diagnostics.prioritization.ranking import (
+    compute_priority_score,
+    derive_priority_rank,
+)
+from dera.diagnostics.recommendations.catalog import RECOMMENDATION_CATALOG_VERSION
+from dera.diagnostics.recommendations.generator import generate_structured_recommendation
+from dera.diagnostics.reports.explainability import build_report_explainability
 from dera.diagnostics.serialization import compute_report_content_hash
+from dera.diagnostics.severity.overrides import SeverityOverride
+from dera.diagnostics.severity.policy import (
+    SEVERITY_POLICY_VERSION,
+    derive_effective_severity,
+)
+from dera.diagnostics.severity.rationale import build_severity_rationale
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -52,9 +70,12 @@ class DiagnosticEvaluator:
 
         Guarantees:
           - Deterministic rule sorting by rule_id.
-          - Deterministic finding sorting by (severity.rank DESC, object_id, rule_id, fingerprint).
-          - Error isolation: an exception in one rule produces an EVALUATION_ERROR outcome without aborting others.
-          - Enforced resource limits for objects, edges, and findings.
+          - Evidence validation, credential sanitization, and reference integrity.
+          - Conservative severity derivation and authorized override application.
+          - Deterministic, advisory engineering recommendation generation.
+          - Transparent suppression governance (suppressed findings remain auditable).
+          - Deterministic 6-element finding prioritization.
+          - Complete report explainability and cryptographic hash verification.
         """
         limits = context.config.limits
         schema = context.schema
@@ -81,15 +102,13 @@ class DiagnosticEvaluator:
         sorted_rules = sorted(rules, key=lambda r: r.metadata.rule_id)
 
         evaluations: list[RuleEvaluation] = []
-        all_findings: list[DiagnosticFinding] = []
+        raw_findings: list[DiagnosticFinding] = []
 
         evaluated_rule_ids: list[str] = []
         skipped_rule_ids: list[str] = []
         unsupported_rule_ids: list[str] = []
         insufficient_metadata_rule_ids: list[str] = []
         errored_rule_ids: list[str] = []
-
-        findings_by_severity: dict[str, int] = {s.value: 0 for s in DiagnosticSeverity}
 
         # 4. Sequential deterministic rule execution
         for rule in sorted_rules:
@@ -144,13 +163,11 @@ class DiagnosticEvaluator:
 
                 if evaluation.status == EvaluationStatus.FINDINGS_DETECTED:
                     for f in evaluation.findings:
-                        if len(all_findings) >= limits.max_findings:
+                        if len(raw_findings) >= limits.max_findings:
                             raise ResourceLimitExceededError(
-                                "findings", len(all_findings) + 1, limits.max_findings
+                                "findings", len(raw_findings) + 1, limits.max_findings
                             )
-                        all_findings.append(f)
-                        sev_str = f.severity.value
-                        findings_by_severity[sev_str] = findings_by_severity.get(sev_str, 0) + 1
+                        raw_findings.append(f)
 
                 elif evaluation.status == EvaluationStatus.INSUFFICIENT_METADATA:
                     insufficient_metadata_rule_ids.append(rule_id)
@@ -176,14 +193,125 @@ class DiagnosticEvaluator:
                     )
                 )
 
-        # 5. Deterministic sorting of findings
-        # Tuple: (severity.rank DESC, object_id ASC, rule_id ASC, fingerprint ASC)
-        sorted_findings = sorted(
-            all_findings,
-            key=lambda f: (-f.severity.rank, f.object_id, f.rule_id, f.fingerprint),
-        )
+        # 5. Extract suppressions and overrides from configuration
+        active_suppressions: list[DiagnosticSuppression] = [
+            s
+            for s in getattr(context.config, "suppressions", ())
+            if isinstance(s, DiagnosticSuppression) and s.is_active()
+        ]
+        overrides_by_fingerprint: dict[str, SeverityOverride] = {
+            o.finding_fingerprint: o
+            for o in getattr(context.config, "severity_overrides", ())
+            if isinstance(o, SeverityOverride)
+        }
 
-        # 6. Build summary counts & coverage
+        # 6. Phase 8.5 Post-Processing: Evidence, Severity, Recommendations, Governance
+        unified_findings: list[DiagnosticFinding] = []
+        applied_suppressions: list[dict[str, Any]] = []
+        applied_overrides: list[dict[str, Any]] = []
+        findings_by_severity: dict[str, int] = {s.value: 0 for s in DiagnosticSeverity}
+
+        rule_category_map: dict[str, RuleCategory] = {
+            r.metadata.rule_id: r.metadata.category for r in sorted_rules
+        }
+
+        for raw_f in raw_findings:
+            # 6.1 Validate and enrich evidence
+            ev_result = validate_and_enrich_evidence(raw_f.evidence, context)
+
+            # 6.2 Classify finding
+            classification = classify_rule_finding(raw_f.rule_id)
+
+            # 6.3 Severity evaluation
+            effective_sev, policy_reason = derive_effective_severity(
+                rule_id=raw_f.rule_id,
+                default_severity=raw_f.severity,
+                classification=classification,
+                completeness=ev_result.completeness,
+                confidence=ev_result.confidence,
+            )
+
+            # Check authorized override
+            override_id = None
+            if raw_f.fingerprint in overrides_by_fingerprint:
+                override = overrides_by_fingerprint[raw_f.fingerprint]
+                effective_sev = override.effective_severity
+                override_id = override.override_id
+                applied_overrides.append(override.to_canonical_dict())
+                policy_reason += f" Overridden by authorized actor '{override.authorized_actor}': {override.override_reason}."
+
+            # Build severity rationale
+            rationale = build_severity_rationale(
+                rule_id=raw_f.rule_id,
+                original_severity=raw_f.severity,
+                effective_severity=effective_sev,
+                classification=classification,
+                confidence=ev_result.confidence,
+                completeness=ev_result.completeness,
+                rule_reason=policy_reason,
+            )
+
+            # 6.4 Deterministic recommendation assembly
+            structured_rec = generate_structured_recommendation(raw_f)
+            rec_text = structured_rec.suggested_action if structured_rec else raw_f.recommendation
+
+            # 6.5 Suppression matching
+            is_suppressed = False
+            suppression_id = None
+            lifecycle_state = FindingLifecycleState.OPEN
+
+            for sup in active_suppressions:
+                if sup.matches(raw_f):
+                    is_suppressed = True
+                    suppression_id = sup.suppression_id
+                    lifecycle_state = FindingLifecycleState.SUPPRESSED
+                    applied_suppressions.append(sup.to_canonical_dict())
+                    break
+
+            # 6.6 Prioritization score and rank
+            priority_score = compute_priority_score(
+                severity=effective_sev,
+                confidence=ev_result.confidence,
+                classification=classification,
+            )
+            priority_rank = derive_priority_rank(effective_sev)
+
+            rule_cat = rule_category_map.get(raw_f.rule_id, RuleCategory.STRUCTURAL_INTEGRITY)
+
+            # 6.7 Assemble enriched finding
+            enriched_finding = DiagnosticFinding(
+                rule_id=raw_f.rule_id,
+                rule_version=raw_f.rule_version,
+                object_id=raw_f.object_id,
+                severity=effective_sev,
+                title=raw_f.title,
+                description=raw_f.description,
+                evidence=tuple(ev_result.validated_evidence),
+                severity_rationale=rationale,
+                recommendation=rec_text,
+                fingerprint=raw_f.fingerprint,
+                category=rule_cat,
+                classification=classification,
+                original_severity=raw_f.severity,
+                confidence=ev_result.confidence,
+                metadata_completeness=ev_result.completeness,
+                structured_recommendation=structured_rec,
+                lifecycle_state=lifecycle_state,
+                is_suppressed=is_suppressed,
+                suppression_id=suppression_id,
+                override_id=override_id,
+                priority_score=priority_score,
+                priority_rank=priority_rank,
+            )
+            unified_findings.append(enriched_finding)
+
+            sev_str = effective_sev.value
+            findings_by_severity[sev_str] = findings_by_severity.get(sev_str, 0) + 1
+
+        # 7. Deterministic multi-factor sorting of findings
+        sorted_findings = sort_findings_deterministically(unified_findings)
+
+        # 8. Build summary counts & coverage
         passed_count = sum(1 for e in evaluations if e.status == EvaluationStatus.PASS)
         findings_count = sum(
             1 for e in evaluations if e.status == EvaluationStatus.FINDINGS_DETECTED
@@ -217,13 +345,30 @@ class DiagnosticEvaluator:
         eval_id = f"eval_{uuid.uuid4().hex[:16]}"
         eval_time = datetime.now(UTC).isoformat()
 
+        # 9. Build Report Explainability
+        explainability = build_report_explainability(
+            summary=summary,
+            coverage=coverage,
+            evaluations=evaluations,
+            findings=sorted_findings,
+            rule_set_version=self.rule_set_version,
+            severity_policy_version=SEVERITY_POLICY_VERSION,
+            recommendation_catalog_version=RECOMMENDATION_CATALOG_VERSION,
+            config_fingerprint=config_fingerprint,
+        )
+
         report_dict = {
             "snapshot_id": context.snapshot_id,
             "rule_set_version": self.rule_set_version,
+            "severity_policy_version": SEVERITY_POLICY_VERSION,
+            "recommendation_catalog_version": RECOMMENDATION_CATALOG_VERSION,
             "config_fingerprint": config_fingerprint,
             "source_engine": context.source_engine,
             "summary": summary.to_canonical_dict(),
             "coverage": coverage.to_canonical_dict(),
+            "explainability": explainability.to_canonical_dict(),
+            "suppressions_applied": applied_suppressions,
+            "severity_overrides_applied": applied_overrides,
             "findings": [f.to_canonical_dict() for f in sorted_findings],
             "rule_evaluations": [e.to_canonical_dict() for e in evaluations],
         }
@@ -241,4 +386,9 @@ class DiagnosticEvaluator:
             coverage=coverage,
             source_engine=context.source_engine,
             report_hash=report_hash,
+            explainability=explainability,
+            severity_policy_version=SEVERITY_POLICY_VERSION,
+            recommendation_catalog_version=RECOMMENDATION_CATALOG_VERSION,
+            suppressions_applied=tuple(applied_suppressions),
+            severity_overrides_applied=tuple(applied_overrides),
         )

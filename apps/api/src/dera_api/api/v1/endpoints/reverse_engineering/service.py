@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from dera.diagnostics import (
-    ALL_FOUNDATIONAL_RULES,
+    ALL_RULES,
     DiagnosticContext,
     DiagnosticEngineConfig,
     DiagnosticEvaluator,
@@ -51,7 +51,7 @@ class ReverseEngineeringService:
         self._export_artifacts: dict[tuple[str, str], ExportArtifact] = {}
         self._export_jobs: dict[tuple[str, str], dict[str, Any]] = {}
         self._diagnostic_registry = DiagnosticRuleRegistry()
-        self._diagnostic_registry.register_many(ALL_FOUNDATIONAL_RULES)
+        self._diagnostic_registry.register_many(ALL_RULES)
         self._diagnostic_evaluator = DiagnosticEvaluator()
 
     # --- Schema Management ---

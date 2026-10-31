@@ -45,7 +45,8 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-reports/
+/reports/
+!packages/core/src/dera/diagnostics/reports/
 *.cover
 *.py.cover
 *.lcov
