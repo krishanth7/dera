@@ -36,10 +36,58 @@ class CanonicalIndexTermSignature:
 
 
 def normalize_predicate(predicate: str | None) -> str | None:
-    """Normalizes whitespace in partial index predicates while preserving literal case."""
+    """Normalizes whitespace outside SQL string literals while preserving literal contents and case.
+
+    If safe normalization is unavailable (e.g. unclosed string literal), returns the original stripped predicate.
+    """
     if not predicate:
         return None
-    return " ".join(predicate.strip().split())
+    cleaned = predicate.strip()
+    if not cleaned:
+        return None
+
+    parts: list[str] = []
+    i = 0
+    n = len(cleaned)
+    outside_buf: list[str] = []
+
+    while i < n:
+        char = cleaned[i]
+        if char == "'":
+            if outside_buf:
+                norm_outside = " ".join("".join(outside_buf).split())
+                if norm_outside:
+                    parts.append(norm_outside)
+                outside_buf.clear()
+
+            start = i
+            i += 1
+            closed = False
+            while i < n:
+                if cleaned[i] == "'":
+                    if i + 1 < n and cleaned[i + 1] == "'":
+                        i += 2
+                    else:
+                        i += 1
+                        closed = True
+                        break
+                else:
+                    i += 1
+
+            if not closed:
+                return cleaned
+
+            parts.append(cleaned[start:i])
+        else:
+            outside_buf.append(char)
+            i += 1
+
+    if outside_buf:
+        norm_outside = " ".join("".join(outside_buf).split())
+        if norm_outside:
+            parts.append(norm_outside)
+
+    return " ".join(parts)
 
 
 @dataclass(frozen=True)
