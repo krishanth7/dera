@@ -71,6 +71,18 @@ from dera.diagnostics.rules.indexes import (
     IndexColumnIntegrityRule,
     RedundantIndexesRule,
 )
+from dera.diagnostics.rules.maintainability import (
+    ALL_MAINTAINABILITY_RULES,
+    ALL_PHASE_8_4_RULES,
+    ColumnNullabilityRule,
+    ComplexDependencyTopologyRule,
+    LobConcentrationRule,
+    NamespaceImbalanceRule,
+    NamingConsistencyRule,
+    ReservedWordUsageRule,
+    StructuralCouplingRule,
+    TableWidthRule,
+)
 from dera.diagnostics.rules.relationships import (
     ALL_DEPENDENCY_RULES,
     ALL_PHASE_8_3_RULES,
@@ -99,6 +111,7 @@ ALL_RULES = [
     *ALL_FOUNDATIONAL_RULES,
     *ALL_PHASE_8_2_RULES,
     *ALL_PHASE_8_3_RULES,
+    *ALL_PHASE_8_4_RULES,
 ]
 
 if TYPE_CHECKING:
@@ -240,6 +253,17 @@ __all__ = [
     "DependencyDepthRule",
     "DependencyConcentrationRule",
     "StructuralImpactRadiusRule",
+    # Maintainability Rules (Phase 8.4)
+    "ALL_MAINTAINABILITY_RULES",
+    "ALL_PHASE_8_4_RULES",
+    "TableWidthRule",
+    "ColumnNullabilityRule",
+    "NamingConsistencyRule",
+    "ReservedWordUsageRule",
+    "NamespaceImbalanceRule",
+    "StructuralCouplingRule",
+    "ComplexDependencyTopologyRule",
+    "LobConcentrationRule",
     # Aggregations
     "ALL_PHASE_8_2_RULES",
     "ALL_RULES",
