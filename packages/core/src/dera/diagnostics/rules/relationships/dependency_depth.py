@@ -42,7 +42,7 @@ class DependencyDepthRule(DiagnosticRule):
             ),
             version="1.0.0",
             category=RuleCategory.DEPENDENCIES,
-            default_severity=DiagnosticSeverity.INFORMATIONAL,
+            default_severity=DiagnosticSeverity.LOW,
             supported_object_kinds=("table",),
             required_capabilities=("foreign_keys",),
             applicability_summary="Applies to schemas with relationship graph topology.",
@@ -87,9 +87,9 @@ class DependencyDepthRule(DiagnosticRule):
 
                 obj_name = f"{node.namespace_name}.{node.native_name}"
                 sev = (
-                    DiagnosticSeverity.LOW
-                    if metrics.depth_level >= max_depth + 3
-                    else DiagnosticSeverity.INFORMATIONAL
+                    DiagnosticSeverity.MEDIUM
+                    if metrics.depth_level >= max_depth * 2
+                    else DiagnosticSeverity.LOW
                 )
 
                 ev = (

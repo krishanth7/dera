@@ -67,14 +67,14 @@ class RelationshipGraphIntegrityRule(DiagnosticRule):
                 message="No relationship graph or canonical schema available.",
             )
 
-        if len(graph.nodes) == 0:
+        if len(graph.nodes) == 0 and len(graph.edges) == 0:
             return RuleEvaluation(
                 rule_id=self.metadata.rule_id,
                 rule_version=self.metadata.version,
                 status=EvaluationStatus.PASS,
                 findings=(),
                 execution_duration_ms=(time.perf_counter() - start_time) * 1000,
-                message="Graph contains zero table nodes.",
+                message="Graph contains zero table nodes and zero edges.",
             )
 
         node_map = get_table_node_map(graph)
