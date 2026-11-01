@@ -232,7 +232,7 @@ export function MigrationDashboard({
       // Step 5: Real Governance Initial Submission (Phase 9.5)
       const reviewRes = await apiClient.submitMigrationReview(workspaceId, {
         artifact_id: sqlRes.artifact_id,
-        title: `Schema Migration for ${currentWorkspace?.name || "Workspace"}`,
+        title: `Schema Migration for Workspace ${workspaceId}`,
         description: `Migration plan ${planRes.plan_id} generated for comparison ${compRes.comparison_id}`,
       });
       const normalizedReview: GovernanceReviewRequest = {
@@ -276,12 +276,11 @@ export function MigrationDashboard({
       setReview((prev) => prev ? {
         ...prev,
         status: res.status,
-        decisions: res.decisions,
-        export_eligibility: res.export_eligibility,
+        export_eligibility: res.status === "APPROVED" ? "ELIGIBLE" : "INELIGIBLE",
       } : undefined);
       // Reload audit
       const auditRes = await apiClient.getMigrationAuditTrail(workspaceId, review.review_id);
-      setAuditEvents(auditRes.events);
+      setAuditEvents(auditRes.events || []);
     } catch (err: any) {
       setActionError(err.message || "Failed to record governance decision.");
     }
