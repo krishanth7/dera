@@ -15,9 +15,9 @@ Proves:
 
 from __future__ import annotations
 
+import unittest
 import uuid
 from collections.abc import AsyncIterator
-import unittest
 
 from dera.comparison.tests.fixtures import (
     build_snapshot_from_payload,
@@ -161,7 +161,7 @@ class TestMigrationEndpointsSecurityAndGovernance(unittest.IsolatedAsyncioTestCa
 
         # Add User 2 as Admin to Workspace A
         add_mem = await self.client.post(
-            f"/api/v1/workspaces/workspace-alpha/members",
+            "/api/v1/workspaces/workspace-alpha/members",
             json={"email": "reviewer@tenant-a.com", "role": "admin"},
         )
         self.assertEqual(add_mem.status_code, 201)
@@ -425,6 +425,7 @@ class TestMigrationEndpointsSecurityAndGovernance(unittest.IsolatedAsyncioTestCa
         # 6. Verify Durable DB Persistence of Review
         async with self.session_factory() as db_session:
             from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+
             repo = MigrationGovernanceRepository(db_session)
             db_record = await repo.get_by_review_id(uuid.UUID(self.ws_a_id), rev_id)
             self.assertIsNotNone(db_record)
@@ -472,6 +473,7 @@ class TestMigrationEndpointsSecurityAndGovernance(unittest.IsolatedAsyncioTestCa
         # Suspend reviewer membership in DB
         async with self.session_factory() as db_session:
             from dera_api.repositories.memberships import MembershipRepository
+
             repo = MembershipRepository(db_session)
             mem = await repo.get_membership(uuid.UUID(self.ws_a_id), uuid.UUID(self.reviewer_id))
             self.assertIsNotNone(mem)

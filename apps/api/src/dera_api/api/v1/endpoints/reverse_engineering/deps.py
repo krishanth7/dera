@@ -63,6 +63,8 @@ async def resolve_authorized_workspace_id(
         ) from None
 
     # Extract session token (Bearer header or cookie)
+    from datetime import UTC, datetime
+
     from dera_api.auth.dependencies import extract_session_token
     from dera_api.auth.exceptions import (
         AccountDisabledError,
@@ -72,7 +74,6 @@ async def resolve_authorized_workspace_id(
     )
     from dera_api.auth.tokens import hash_session_token
     from dera_api.repositories.sessions import SessionRepository
-    from datetime import UTC, datetime
 
     token = extract_session_token(request)
 
@@ -89,7 +90,9 @@ async def resolve_authorized_workspace_id(
         # Even in detached environments, anonymous or untrusted access must fail closed if token is missing
         user_and_session = getattr(request.state, "user_and_session", None)
         if user_and_session is None and not token:
-            raise AuthenticationRequiredError("Authentication required. Missing session token or credentials.")
+            raise AuthenticationRequiredError(
+                "Authentication required. Missing session token or credentials."
+            )
         return str(ws_uuid)
 
     # Authoritative server-side verification with database

@@ -48,4 +48,3 @@
 ### Scenario G — Artifact Tampering Invalidation
 - **Steps**: Modify generated SQL artifact after approval has been granted. Attempt export.
 - **Result**: PASS (`test_artifact_tampering_blocks_export`). Tampering is detected via cryptographic SHA-256 fingerprint mismatch; export is blocked with HTTP 400.
-

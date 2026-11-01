@@ -11,7 +11,7 @@
 
 ## 1. Executive Summary & Objective
 
-This report documents the initial inspection, baseline audit, and empirical revalidation of the DERA repository across all 54 milestones (Phases 1.1 through 9.6). 
+This report documents the initial inspection, baseline audit, and empirical revalidation of the DERA repository across all 54 milestones (Phases 1.1 through 9.6).
 
 The primary objective is to transition DERA from demo-isolated UI fixtures and isolated core algorithms into a **fully integrated, server-authorized, multi-tenant, enterprise-grade database engineering platform**.
 
@@ -72,7 +72,7 @@ The primary objective is to transition DERA from demo-isolated UI fixtures and i
 ## 4. Remediation Plan Overview
 
 1. **Backend Migration API Integration (`apps/api`):**
-   - Implement `apps/api/src/dera_api/api/v1/endpoints/migrations.py` mounted at `/api/v1/workspaces/{workspace_id}/migrations/`.
+   - Implement `apps/api/src/dera_api/api/v1/endpoints/migrations.py` mounted at `/api/v1/migrations/`, resolving authorized workspace context via `resolve_authorized_workspace_id`.
    - Implement authenticated, RBAC-checked endpoints for:
      - `GET /snapshots` — List real workspace snapshots.
      - `POST /compare` — Execute deterministic Phase 9.1 comparison.

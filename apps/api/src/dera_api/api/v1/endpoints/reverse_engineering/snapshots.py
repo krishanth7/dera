@@ -104,8 +104,8 @@ async def list_schema_snapshots(
     """Retrieve paginated catalog of stored immutable snapshots belonging to authorized workspace."""
     snapshots = await service.list_snapshots(
         workspace_id=workspace_id,
-        database_id=database_id,
-        fingerprint=fingerprint,
+        database_name=database_id,
+        structural_fingerprint=fingerprint,
     )
 
     # Sort stably by capture_timestamp descending, then snapshot_id

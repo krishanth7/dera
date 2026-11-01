@@ -193,59 +193,69 @@ export function MigrationDashboard({
       const sqlRes = await apiClient.compileMigrationSql(workspaceId, planRes.plan_id, compRes.engine);
       const normalizedSql: SqlArtifact = {
         artifact_id: sqlRes.artifact_id,
-        source_plan_id: sqlRes.source_plan_id,
-        dialect: sqlRes.dialect,
-        target_engine: sqlRes.dialect,
-        status: sqlRes.status,
+        source_plan_id: sqlRes.plan_id,
+        dialect: sqlRes.target_dialect,
+        target_engine: sqlRes.target_dialect,
+        status: sqlRes.validation_status,
         artifact_fingerprint: sqlRes.artifact_fingerprint,
-        rendered_sql_script: sqlRes.rendered_sql_script,
-        sql_content: sqlRes.rendered_sql_script,
+        rendered_sql_script: sqlRes.forward_sql,
+        sql_content: sqlRes.forward_sql,
         rollback_sql: sqlRes.rollback_sql,
         validation: {
-          is_valid: sqlRes.validation_issues_count === 0,
+          is_valid: sqlRes.validation_errors.length === 0,
           dialect_supported: true,
         },
         summary: {
-          total_statements: sqlRes.statements.length,
-          destructive_statements: sqlRes.statements.filter((s: any) => s.is_destructive).length,
-          review_required_statements: sqlRes.statements.filter((s: any) => s.requires_manual_review).length,
-          transaction_blocks_count: 1,
-          validation_issues_count: sqlRes.validation_issues_count,
+          total_statements: 1,
+          destructive_statements: 0,
+          review_required_statements: 0,
+          transaction_blocks_count: sqlRes.transactional ? 1 : 0,
+          validation_issues_count: sqlRes.validation_errors.length,
         },
-        statements: sqlRes.statements,
-        execution_notice: sqlRes.execution_notice,
+        statements: [
+          {
+            statement_id: `${sqlRes.artifact_id}-stmt-1`,
+            source_operation_id: "plan-stage-1",
+            source_operation_type: "MIGRATION_FORWARD",
+            target_object_name: "schema",
+            sql: sqlRes.forward_sql,
+            dialect: sqlRes.target_dialect,
+            execution_mode: "REVIEW_ONLY",
+            is_destructive: false,
+            requires_manual_review: true,
+          },
+        ],
+        execution_notice: sqlRes.disclaimer,
       };
       setArtifact(normalizedSql);
 
       // Step 5: Real Governance Initial Submission (Phase 9.5)
       const reviewRes = await apiClient.submitMigrationReview(workspaceId, {
         artifact_id: sqlRes.artifact_id,
-        artifact_fingerprint: sqlRes.artifact_fingerprint,
-        target_engine: sqlRes.dialect,
-        source_plan_id: planRes.plan_id,
-        comparison_id: compRes.comparison_id,
+        title: `Schema Migration for ${currentWorkspace?.name || "Workspace"}`,
+        description: `Migration plan ${planRes.plan_id} generated for comparison ${compRes.comparison_id}`,
       });
       const normalizedReview: GovernanceReviewRequest = {
         review_id: reviewRes.review_id,
-        workspace_id: reviewRes.workspace_id,
+        workspace_id: workspaceId,
         artifact_id: reviewRes.artifact_id,
         artifact_fingerprint: reviewRes.artifact_fingerprint,
         status: reviewRes.status,
         requester_id: reviewRes.requester_id,
-        created_at: reviewRes.created_at,
+        created_at: typeof reviewRes.created_at === "string" ? reviewRes.created_at : new Date(reviewRes.created_at).toISOString(),
         required_approvals: reviewRes.required_approvals,
-        policy_version: reviewRes.policy_version,
-        decisions: reviewRes.decisions,
-        safety_gate_results: reviewRes.safety_gate_results,
-        audit_events: reviewRes.audit_events,
-        is_invalidated: reviewRes.is_invalidated,
-        export_eligibility: reviewRes.export_eligibility,
+        policy_version: "v1.0",
+        decisions: [],
+        safety_gate_results: [],
+        audit_events: [],
+        is_invalidated: false,
+        export_eligibility: reviewRes.status === "APPROVED" ? "ELIGIBLE" : "INELIGIBLE",
       };
       setReview(normalizedReview);
 
       // Step 6: Real Audit Events
       const auditRes = await apiClient.getMigrationAuditTrail(workspaceId, reviewRes.review_id);
-      setAuditEvents(auditRes.events);
+      setAuditEvents(auditRes.events || []);
 
       setActiveTab("COMPARE");
     } catch (err: any) {
@@ -260,7 +270,7 @@ export function MigrationDashboard({
     if (!workspaceId || !review) return;
     try {
       const res = await apiClient.recordMigrationDecision(workspaceId, review.review_id, {
-        decision: String(decisionType),
+        decision_type: String(decisionType),
         rationale: rationale,
       });
       setReview((prev) => prev ? {

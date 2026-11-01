@@ -49,4 +49,3 @@
 - **Verification**:
   - Database connection strings have passwords scrubbed before logging.
   - Audit trail events are cryptographically hashed using SHA-256 in an append-only chain.
-

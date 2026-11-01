@@ -28,7 +28,7 @@ All 54 milestones across Phases 1 through 9 have been individually audited and v
 | **Phase 8** | Diagnostics & Recommendations | 8.1 – 8.6 | **PASS** |
 | **Phase 9** | Schema Comparison & Migration Engineering | 9.1 – 9.6 | **PASS** |
 
-*(For full per-milestone evidence, references, and source files, see [PHASE_1_9_MASTER_COMPLETION_MATRIX.md](file:///docs/audit/PHASE_1_9_MASTER_COMPLETION_MATRIX.md)).*
+*(For full per-milestone evidence, references, and source files, see [PHASE_1_9_MASTER_COMPLETION_MATRIX.md](PHASE_1_9_MASTER_COMPLETION_MATRIX.md)).*
 
 ---
 

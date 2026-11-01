@@ -838,14 +838,27 @@ export class DeraApiClient {
   async compileMigrationSql(
     workspaceId: string,
     planId: string,
-    dialect?: string
-  ): Promise<any> {
+    targetDialect?: string
+  ): Promise<{
+    artifact_id: string;
+    plan_id: string;
+    target_dialect: string;
+    target_version: string;
+    compiled_at: string;
+    artifact_fingerprint: string;
+    forward_sql: string;
+    rollback_sql: string;
+    transactional: boolean;
+    validation_status: string;
+    validation_errors: string[];
+    disclaimer: string;
+  }> {
     return this.request(`/api/v1/migrations/sql-artifacts`, {
       method: "POST",
       headers: { "X-Workspace-Id": workspaceId },
       body: JSON.stringify({
         plan_id: planId,
-        dialect: dialect || "postgresql",
+        target_dialect: targetDialect || "postgresql",
       }),
     });
   }
@@ -854,16 +867,31 @@ export class DeraApiClient {
     workspaceId: string,
     payload: {
       artifact_id: string;
-      artifact_fingerprint: string;
-      target_engine: string;
-      source_plan_id: string;
-      comparison_id: string;
+      title: string;
+      description?: string;
+      required_approvals?: number;
     }
-  ): Promise<any> {
+  ): Promise<{
+    review_id: string;
+    artifact_id: string;
+    artifact_fingerprint: string;
+    requester_id: string;
+    status: string;
+    title: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+    required_approvals: number;
+  }> {
     return this.request(`/api/v1/migrations/reviews`, {
       method: "POST",
       headers: { "X-Workspace-Id": workspaceId },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        artifact_id: payload.artifact_id,
+        title: payload.title,
+        description: payload.description || "",
+        required_approvals: payload.required_approvals || 1,
+      }),
     });
   }
 
@@ -871,15 +899,28 @@ export class DeraApiClient {
     workspaceId: string,
     reviewId: string,
     payload: {
-      decision: string;
+      decision_type: string;
       rationale: string;
-      actor_role?: string;
     }
-  ): Promise<any> {
+  ): Promise<{
+    review_id: string;
+    artifact_id: string;
+    artifact_fingerprint: string;
+    requester_id: string;
+    status: string;
+    title: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+    required_approvals: number;
+  }> {
     return this.request(`/api/v1/migrations/reviews/${encodeURIComponent(reviewId)}/decisions`, {
       method: "POST",
       headers: { "X-Workspace-Id": workspaceId },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        decision_type: payload.decision_type,
+        rationale: payload.rationale,
+      }),
     });
   }
 

@@ -14,16 +14,17 @@ The primary P0 defect was that the frontend Migration Workspace (`apps/web/src/a
 - **Root Cause**: While Phase 9 core engines existed in `packages/core/src/dera/migration/`, no authenticated FastAPI endpoints existed to expose them to the web application.
 - **Implemented Remediation**:
   1. Built REST router in `apps/api/src/dera_api/api/v1/endpoints/migrations.py` mounted at `/api/v1/migrations/`.
-  2. Implemented `MigrationOrchestrationService` in `apps/api/src/dera_api/api/v1/endpoints/migrations_service.py` wrapping:
+  2. All migration handlers resolve and authorize the target workspace through `resolve_authorized_workspace_id`, enforcing server-side bearer session authentication and workspace membership fail-closed checks.
+  3. Implemented `MigrationOrchestrationService` in `apps/api/src/dera_api/api/v1/endpoints/migrations_service.py` wrapping:
      - `SchemaComparisonEngine` (Phase 9.1)
      - `MigrationRiskAnalysisEngine` (Phase 9.2)
      - `MigrationPlanningEngine` (Phase 9.3)
      - `SqlMigrationCompiler` (Phase 9.4)
      - `GovernanceEngine` & `AuditTrailManager` (Phase 9.5)
-  3. Added typed API client methods in `apps/web/src/lib/api-client.ts`.
-  4. Wired `MigrationDashboard.tsx` to call real backend endpoints asynchronously with error, empty, and loading states.
-  5. Refactored `apps/web/src/app/(app)/migrations/page.tsx` to fetch real snapshots for `currentWorkspace.id` from `apiClient.listMigrationSnapshots()`.
-  6. Completely segregated Demo Mode behind an explicit toggle, complete with prominent banner: `DEMO MODE — SAMPLE DATA — NOT LIVE RESULTS`.
+  4. Added typed API client methods in `apps/web/src/lib/api-client.ts`.
+  5. Wired `MigrationDashboard.tsx` to call real backend endpoints asynchronously with error, empty, and loading states.
+  6. Refactored `apps/web/src/app/(app)/migrations/page.tsx` to fetch real snapshots for `currentWorkspace.id` from `apiClient.listMigrationSnapshots()`.
+  7. Completely segregated Demo Mode behind an explicit toggle, complete with prominent banner: `DEMO MODE — SAMPLE DATA — NOT LIVE RESULTS`.
 
 ### Gap 2: Server-Side Governance Identity & Authorization Verification
 - **Original Problem**: Client-side requests could theoretically declare `actor_role` or approval parameters without server validation.

@@ -71,20 +71,27 @@ async def get_effective_user_role(
     """Resolve authoritative server-side role for the user within workspace, failing closed."""
     if current_user is None:
         from dera_api.auth.exceptions import AuthenticationRequiredError
+
         raise AuthenticationRequiredError("Authentication required. Missing user identity.")
 
     if db_session is None:
         # Without database session, role cannot be authoritatively verified
         from dera_api.auth.exceptions import WorkspaceAccessDeniedError
-        raise WorkspaceAccessDeniedError("Database session unavailable; cannot verify workspace authorization.")
+
+        raise WorkspaceAccessDeniedError(
+            "Database session unavailable; cannot verify workspace authorization."
+        )
 
     import uuid
+
     from dera_api.auth.exceptions import WorkspaceAccessDeniedError
 
     try:
         ws_uuid = uuid.UUID(workspace_id)
     except (ValueError, AttributeError):
-        raise WorkspaceAccessDeniedError(f"Invalid workspace ID format: '{workspace_id}'.") from None
+        raise WorkspaceAccessDeniedError(
+            f"Invalid workspace ID format: '{workspace_id}'."
+        ) from None
 
     membership_repo = MembershipRepository(db_session)
     membership = await membership_repo.get_membership(ws_uuid, current_user.id)
@@ -373,7 +380,10 @@ async def submit_governance_review(
     user_and_session = getattr(request.state, "user_and_session", None)
     if not user_and_session or not user_and_session[0]:
         from dera_api.auth.exceptions import AuthenticationRequiredError
-        raise AuthenticationRequiredError("Authentication required. Missing authenticated user context.")
+
+        raise AuthenticationRequiredError(
+            "Authentication required. Missing authenticated user context."
+        )
 
     current_user = user_and_session[0]
     requester_id = str(current_user.id)
@@ -396,15 +406,17 @@ async def submit_governance_review(
                 current_user=current_user,
                 db_session=db_session,
             )
+            from dera_api.auth.exceptions import PermissionDeniedError
             from dera_api.auth.policies import has_permission
             from dera_api.auth.roles import Permission
-            from dera_api.auth.exceptions import PermissionDeniedError
+
             if not has_permission(effective_role, Permission.MIGRATION_REVIEW):
                 raise PermissionDeniedError(
                     f"Your role '{effective_role}' lacks '{Permission.MIGRATION_REVIEW}' permission."
                 )
 
         from dera.migration.governance.models import GovernancePolicy
+
         policy = GovernancePolicy(
             policy_id="gov_policy_default",
             workspace_id=workspace_id,
@@ -519,7 +531,10 @@ async def record_governance_decision(
     user_and_session = getattr(request.state, "user_and_session", None)
     if not user_and_session or not user_and_session[0]:
         from dera_api.auth.exceptions import AuthenticationRequiredError
-        raise AuthenticationRequiredError("Authentication required. Missing authenticated user context.")
+
+        raise AuthenticationRequiredError(
+            "Authentication required. Missing authenticated user context."
+        )
 
     current_user = user_and_session[0]
     reviewer_id = str(current_user.id)
@@ -542,9 +557,10 @@ async def record_governance_decision(
                 current_user=current_user,
                 db_session=db_session,
             )
+            from dera_api.auth.exceptions import PermissionDeniedError
             from dera_api.auth.policies import has_permission
             from dera_api.auth.roles import Permission
-            from dera_api.auth.exceptions import PermissionDeniedError
+
             if not has_permission(effective_role, Permission.MIGRATION_APPROVE):
                 raise PermissionDeniedError(
                     f"Your role '{effective_role}' lacks '{Permission.MIGRATION_APPROVE}' permission."
@@ -659,7 +675,10 @@ async def export_approved_migration(
     user_and_session = getattr(request.state, "user_and_session", None)
     if not user_and_session or not user_and_session[0]:
         from dera_api.auth.exceptions import AuthenticationRequiredError
-        raise AuthenticationRequiredError("Authentication required. Missing authenticated user context.")
+
+        raise AuthenticationRequiredError(
+            "Authentication required. Missing authenticated user context."
+        )
 
     current_user = user_and_session[0]
     user_id = str(current_user.id)
@@ -682,9 +701,10 @@ async def export_approved_migration(
                 current_user=current_user,
                 db_session=db_session,
             )
+            from dera_api.auth.exceptions import PermissionDeniedError
             from dera_api.auth.policies import has_permission
             from dera_api.auth.roles import Permission
-            from dera_api.auth.exceptions import PermissionDeniedError
+
             if not has_permission(user_role, Permission.MIGRATION_EXPORT):
                 raise PermissionDeniedError(
                     f"Your role '{user_role}' lacks '{Permission.MIGRATION_EXPORT}' permission."

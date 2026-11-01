@@ -118,6 +118,7 @@ export default function MigrationsPage() {
 
       {isDemoMode ? (
         <MigrationDashboard
+          key="demo-dashboard"
           snapshots={SAMPLE_SNAPSHOTS}
           initialComparison={SAMPLE_COMPARISON}
           initialRiskReport={SAMPLE_RISK_REPORT}
@@ -129,6 +130,7 @@ export default function MigrationsPage() {
         />
       ) : (
         <MigrationDashboard
+          key={`live-dashboard-${currentWorkspace?.id || "none"}`}
           workspaceId={currentWorkspace?.id}
           snapshots={snapshots}
           isDemoMode={false}

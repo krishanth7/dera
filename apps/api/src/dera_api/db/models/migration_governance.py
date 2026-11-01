@@ -15,7 +15,6 @@ from sqlalchemy import (
     JSON,
     DateTime,
     ForeignKey,
-    Index,
     Integer,
     String,
     Text,

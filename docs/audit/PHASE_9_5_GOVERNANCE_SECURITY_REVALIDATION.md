@@ -42,7 +42,7 @@
 
 ### 2.5 Separation of Duties (SoD)
 - **Rule**: Requesters are strictly forbidden from approving their own migration requests.
-- **Enforcement**: In `GovernanceEngine.record_decision()`, if `decision.actor_id == review.requester_id` and `decision.decision == DecisionType.APPROVED`, a `SeparationOfDutiesViolation` is raised, returning HTTP 403.
+- **Enforcement**: In `GovernanceEngine.record_decision()`, if `decision.reviewer_id == review.requester_id` and `decision.decision_type == ReviewDecisionType.APPROVE`, a `SeparationOfDutiesViolation` is raised, returning HTTP 403.
 - **Test Evidence**: Verified by `test_separation_of_duties_self_approval_blocked`.
 
 ### 2.6 Authentic Risk-Report Fingerprint Linkage
@@ -56,7 +56,7 @@
 - **Rule**: Approvals are bound cryptographically to the SHA-256 fingerprint of the migration plan and generated SQL artifact.
 - **Enforcement**:
   - `GovernanceEngine` compares the stored `artifact_fingerprint` against the decision payload.
-  - The export endpoint (`/export`) verifies that `review.status == ReviewStatus.APPROVED` and that the artifact fingerprint matches the approved review record. Any mismatch returns HTTP 400 with an integrity violation error.
+  - The export endpoint (`/export`) verifies that `review.status == ReviewStatus.APPROVED` and confirms that the requested artifact fingerprint matches the approved review record. Any mismatch returns HTTP 400 with an integrity violation error.
 - **Test Evidence**: Verified by `test_artifact_tampering_blocks_export`.
 
 ---
@@ -70,4 +70,3 @@ All 7 dedicated security integration tests in `tests/integration/test_migration_
 5. `test_revoked_or_suspended_membership_fails` -> HTTP 403
 6. `test_artifact_tampering_blocks_export` -> HTTP 400 Integrity Error
 7. `test_end_to_end_safe_migration_and_durable_persistence` -> HTTP 200 with verified DB persistence and hash-chained audit events
-

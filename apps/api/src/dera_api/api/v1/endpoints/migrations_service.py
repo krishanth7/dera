@@ -10,8 +10,6 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from dera.comparison.engine import SchemaComparisonEngine
 from dera.comparison.models import ComparisonReport
 from dera.migration.engine import MigrationRiskAnalysisEngine
@@ -30,6 +28,7 @@ from dera.migration.reports.models import MigrationRiskReport
 from dera.migration.sql.compiler import SqlMigrationCompiler
 from dera.migration.sql.reports import SqlMigrationArtifact
 from dera.reverse_engineering.snapshots.models import SchemaSnapshot
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from dera_api.api.v1.endpoints.reverse_engineering.service import ReverseEngineeringService
 
@@ -199,6 +198,7 @@ class MigrationService:
         )
 
         from dera.migration.governance.safety import SafetyGateEvaluator
+
         gate_results = SafetyGateEvaluator.evaluate_artifact_gates(artifact, effective_policy)
 
         # Correct fingerprint linkage: link to source_risk_report_fingerprint
@@ -245,6 +245,7 @@ class MigrationService:
         if db_session is not None:
             ws_uuid = uuid.UUID(workspace_id)
             from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+
             repo = MigrationGovernanceRepository(db_session)
             await repo.save_review(
                 workspace_id=ws_uuid,
@@ -271,6 +272,7 @@ class MigrationService:
             try:
                 ws_uuid = uuid.UUID(workspace_id)
                 from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+
                 repo = MigrationGovernanceRepository(db_session)
                 record = await repo.get_by_review_id(ws_uuid, review_id)
                 if record:
@@ -366,6 +368,7 @@ class MigrationService:
         if db_session is not None:
             ws_uuid = uuid.UUID(workspace_id)
             from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+
             repo = MigrationGovernanceRepository(db_session)
             await repo.save_decision_and_audit(
                 workspace_id=ws_uuid,
@@ -439,12 +442,16 @@ class MigrationService:
         if db_session is not None:
             ws_uuid = uuid.UUID(workspace_id)
             from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+
             repo = MigrationGovernanceRepository(db_session)
             await repo.save_audit_event(
                 workspace_id=ws_uuid,
                 review_id=review_id,
                 audit_event=audit_event,
-                payload={"export_id": export_id, "disclaimer": "GENERATED FOR REVIEW — NOT EXECUTED"},
+                payload={
+                    "export_id": export_id,
+                    "disclaimer": "GENERATED FOR REVIEW — NOT EXECUTED",
+                },
             )
 
         # Extract forward and rollback sql
