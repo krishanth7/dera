@@ -329,13 +329,22 @@ class TestMigrationAdversarialSuite(unittest.IsolatedAsyncioTestCase):
         art_id, review_id = await self._setup_active_review()
         ws_id_str = str(self.ws1.id)
 
+        # Admin approves the review first
+        appr = await self.client.post(
+            f"/api/v1/migrations/reviews/{review_id}/decisions",
+            json={"decision_type": "APPROVE", "rationale": "Independent approval."},
+            headers={"Authorization": f"Bearer {self.token_admin}", "X-Workspace-Id": ws_id_str},
+        )
+        self.assertEqual(appr.status_code, status.HTTP_200_OK)
+        self.assertEqual(appr.json()["status"], "APPROVED")
+
         # Editor attempts export
         res = await self.client.get(
             f"/api/v1/migrations/reviews/{review_id}/export",
             headers={"Authorization": f"Bearer {self.token_sub}", "X-Workspace-Id": ws_id_str},
         )
-        # Fails closed with 403 because editor lacks MIGRATION_EXPORT or review is not approved
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn("migration:export", str(res.json()))
 
     async def test_03_cross_tenant_workspace_selection(self) -> None:
         """Prove that user in Workspace 2 cannot read or modify resources in Workspace 1."""

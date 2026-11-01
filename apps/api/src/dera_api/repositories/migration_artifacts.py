@@ -81,17 +81,47 @@ class MigrationArtifactsRepository:
         report: MigrationRiskReport,
     ) -> MigrationRiskRecord:
         """Persist migration risk assessment report."""
+        # Determine risk level from assessments or summary
+        risk_level = "LOW"
+        if hasattr(report, "overall_risk_level"):
+            risk_level = getattr(report.overall_risk_level, "value", str(report.overall_risk_level))
+        elif hasattr(report, "risk_assessments") and report.risk_assessments:
+            severities = [
+                r.severity.value for r in report.risk_assessments if hasattr(r, "severity")
+            ]
+            if "CRITICAL" in severities:
+                risk_level = "CRITICAL"
+            elif "HIGH" in severities:
+                risk_level = "HIGH"
+            elif "MEDIUM" in severities:
+                risk_level = "MEDIUM"
+        elif hasattr(report, "summary") and getattr(report.summary, "risks_by_severity", None):
+            sev_keys = report.summary.risks_by_severity.keys()
+            if "CRITICAL" in sev_keys:
+                risk_level = "CRITICAL"
+            elif "HIGH" in sev_keys:
+                risk_level = "HIGH"
+            elif "MEDIUM" in sev_keys:
+                risk_level = "MEDIUM"
+
+        has_breaking = getattr(report, "has_breaking_changes", False) or (
+            report.summary.potentially_breaking > 0 if hasattr(report, "summary") else False
+        )
+        has_destructive = getattr(report, "has_destructive_changes", False) or (
+            report.summary.removals > 0 if hasattr(report, "summary") else False
+        )
+
         record = MigrationRiskRecord(
             workspace_id=workspace_id,
             report_id_str=report.report_id,
             comparison_report_id=report.comparison_report_id,
-            comparison_fingerprint=report.comparison_report_fingerprint,
-            report_fingerprint=report.fingerprint,
-            risk_level=report.overall_risk_level.value
-            if hasattr(report.overall_risk_level, "value")
-            else str(report.overall_risk_level),
-            has_breaking_changes=report.has_breaking_changes,
-            has_destructive_changes=report.has_destructive_changes,
+            comparison_fingerprint=getattr(report, "comparison_fingerprint", "")
+            or getattr(report, "comparison_report_fingerprint", ""),
+            report_fingerprint=getattr(report, "report_fingerprint", "")
+            or getattr(report, "fingerprint", ""),
+            risk_level=risk_level,
+            has_breaking_changes=has_breaking,
+            has_destructive_changes=has_destructive,
             report_json=report.model_dump(mode="json"),
         )
         self._session.add(record)
@@ -125,11 +155,17 @@ class MigrationArtifactsRepository:
         record = MigrationPlanRecord(
             workspace_id=workspace_id,
             plan_id_str=plan.plan_id,
-            risk_report_id=plan.risk_report_id,
-            risk_report_fingerprint=plan.risk_report_fingerprint,
-            plan_fingerprint=plan.fingerprint,
-            operation_count=len(plan.planned_operations),
-            requires_manual_approval=plan.requires_manual_approval,
+            risk_report_id=getattr(plan, "risk_report_id", "") or "",
+            risk_report_fingerprint=getattr(plan, "risk_report_fingerprint", "") or "",
+            plan_fingerprint=getattr(plan, "plan_fingerprint", "")
+            or getattr(plan, "fingerprint", ""),
+            operation_count=len(
+                getattr(plan, "operations", []) or getattr(plan, "planned_operations", [])
+            ),
+            requires_manual_approval=bool(
+                getattr(plan, "manual_decision_gates", [])
+                or getattr(plan, "requires_manual_approval", False)
+            ),
             plan_json=plan.model_dump(mode="json"),
         )
         self._session.add(record)

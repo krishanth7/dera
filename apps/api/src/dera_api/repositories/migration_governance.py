@@ -229,6 +229,7 @@ class MigrationGovernanceRepository(BaseRepository[MigrationReviewRecord]):
             requester_id=record.requester_id,
             policy_version=record.policy_version,
             status=ReviewLifecycleStatus(record.status),
+            required_approvals=record.required_approvals,
             created_at=record.created_at.isoformat(),
             decisions=decisions,
             audit_events=audit_events,

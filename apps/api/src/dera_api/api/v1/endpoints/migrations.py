@@ -434,9 +434,7 @@ async def submit_governance_review(
         description=payload.description,
         created_at=review.created_at,
         updated_at=review.created_at,
-        required_approvals=review.required_approvals
-        if hasattr(review, "required_approvals")
-        else 1,
+        required_approvals=review.required_approvals,
         current_approvals=len([d for d in review.decisions if d.decision_type.value == "APPROVE"]),
         decisions=[d.model_dump(mode="json") for d in review.decisions],
     )
@@ -468,7 +466,7 @@ async def list_governance_reviews(
             description="",
             created_at=r.created_at,
             updated_at=r.created_at,
-            required_approvals=1,
+            required_approvals=r.required_approvals,
             current_approvals=len([d for d in r.decisions if d.decision_type.value == "APPROVE"]),
             decisions=[d.model_dump(mode="json") for d in r.decisions],
         )
@@ -511,7 +509,7 @@ async def get_governance_review(
         description="",
         created_at=review.created_at,
         updated_at=review.created_at,
-        required_approvals=1,
+        required_approvals=review.required_approvals,
         current_approvals=len([d for d in review.decisions if d.decision_type.value == "APPROVE"]),
         decisions=[d.model_dump(mode="json") for d in review.decisions],
     )
@@ -567,7 +565,7 @@ async def record_governance_decision(
         description="",
         created_at=review.created_at,
         updated_at=review.created_at,
-        required_approvals=1,
+        required_approvals=review.required_approvals,
         current_approvals=len([d for d in review.decisions if d.decision_type.value == "APPROVE"]),
         decisions=[d.model_dump(mode="json") for d in review.decisions],
     )

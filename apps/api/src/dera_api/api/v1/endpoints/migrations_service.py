@@ -113,12 +113,9 @@ class MigrationService:
         self._comparisons[key] = report
 
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationArtifactsRepository(db_session)
-                await repo.save_comparison(ws_uuid, report)
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            await repo.save_comparison(ws_uuid, report)
 
         return report
 
@@ -131,15 +128,12 @@ class MigrationService:
         """Retrieve comparison report for authorized workspace from DB (authoritative) or cache."""
         key = (workspace_id, comparison_id)
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationArtifactsRepository(db_session)
-                report = await repo.get_comparison(ws_uuid, comparison_id)
-                if report:
-                    self._comparisons[key] = report
-                    return report
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            report = await repo.get_comparison(ws_uuid, comparison_id)
+            if report:
+                self._comparisons[key] = report
+            return report
 
         return self._comparisons.get(key)
 
@@ -161,12 +155,9 @@ class MigrationService:
         self._risk_reports[key] = report
 
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationArtifactsRepository(db_session)
-                await repo.save_risk_report(ws_uuid, report)
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            await repo.save_risk_report(ws_uuid, report)
 
         return report
 
@@ -179,15 +170,12 @@ class MigrationService:
         """Retrieve risk report from DB (authoritative) or cache."""
         key = (workspace_id, report_id)
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationArtifactsRepository(db_session)
-                report = await repo.get_risk_report(ws_uuid, report_id)
-                if report:
-                    self._risk_reports[key] = report
-                    return report
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            report = await repo.get_risk_report(ws_uuid, report_id)
+            if report:
+                self._risk_reports[key] = report
+            return report
 
         return self._risk_reports.get(key)
 
@@ -224,12 +212,9 @@ class MigrationService:
         self._plans[key] = plan
 
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationArtifactsRepository(db_session)
-                await repo.save_plan(ws_uuid, plan)
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            await repo.save_plan(ws_uuid, plan)
 
         return plan
 
@@ -242,15 +227,12 @@ class MigrationService:
         """Retrieve migration plan from DB (authoritative) or cache."""
         key = (workspace_id, plan_id)
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationArtifactsRepository(db_session)
-                plan = await repo.get_plan(ws_uuid, plan_id)
-                if plan:
-                    self._plans[key] = plan
-                    return plan
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            plan = await repo.get_plan(ws_uuid, plan_id)
+            if plan:
+                self._plans[key] = plan
+            return plan
 
         return self._plans.get(key)
 
@@ -279,12 +261,9 @@ class MigrationService:
         self._artifacts[key] = artifact
 
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationArtifactsRepository(db_session)
-                await repo.save_sql_artifact(ws_uuid, artifact)
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            await repo.save_sql_artifact(ws_uuid, artifact)
 
         return artifact
 
@@ -297,15 +276,12 @@ class MigrationService:
         """Retrieve compiled SQL artifact from DB (authoritative) or cache."""
         key = (workspace_id, artifact_id)
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationArtifactsRepository(db_session)
-                artifact = await repo.get_sql_artifact(ws_uuid, artifact_id)
-                if artifact:
-                    self._artifacts[key] = artifact
-                    return artifact
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            artifact = await repo.get_sql_artifact(ws_uuid, artifact_id)
+            if artifact:
+                self._artifacts[key] = artifact
+            return artifact
 
         return self._artifacts.get(key)
 
@@ -368,6 +344,7 @@ class MigrationService:
             requester_id=requester_id,
             policy_version=effective_policy.policy_version,
             status=ReviewLifecycleStatus.SUBMITTED,
+            required_approvals=effective_policy.required_approval_quorum,
             created_at=now_iso,
             decisions=[],
             safety_gate_results=gate_results,
@@ -398,16 +375,14 @@ class MigrationService:
     ) -> MigrationReviewRequest | None:
         """Retrieve review request from durable persistence (authoritative) or cache."""
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationGovernanceRepository(db_session)
-                record = await repo.get_by_review_id(ws_uuid, review_id)
-                if record:
-                    domain_review = repo.to_domain_model(record)
-                    self._reviews[(workspace_id, review_id)] = domain_review
-                    return domain_review
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationGovernanceRepository(db_session)
+            record = await repo.get_by_review_id(ws_uuid, review_id)
+            if record:
+                domain_review = repo.to_domain_model(record)
+                self._reviews[(workspace_id, review_id)] = domain_review
+                return domain_review
+            return None
 
         return self._reviews.get((workspace_id, review_id))
 
@@ -418,16 +393,13 @@ class MigrationService:
     ) -> list[MigrationReviewRequest]:
         """List all governance reviews for authorized workspace."""
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                repo = MigrationGovernanceRepository(db_session)
-                records = await repo.list_reviews(ws_uuid)
-                domain_reviews = [repo.to_domain_model(r) for r in records]
-                for dr in domain_reviews:
-                    self._reviews[(workspace_id, dr.review_id)] = dr
-                return domain_reviews
-            except Exception:
-                pass
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationGovernanceRepository(db_session)
+            records = await repo.list_reviews(ws_uuid)
+            domain_reviews = [repo.to_domain_model(r) for r in records]
+            for dr in domain_reviews:
+                self._reviews[(workspace_id, dr.review_id)] = dr
+            return domain_reviews
 
         return [rev for (ws, _), rev in self._reviews.items() if ws == workspace_id]
 
@@ -479,7 +451,7 @@ class MigrationService:
                 effective_policy = GovernancePolicy(
                     policy_id="default_policy",
                     workspace_id=workspace_id,
-                    required_approval_quorum=1,
+                    required_approval_quorum=review.required_approvals,
                     enforce_separation_of_duties=True,
                     require_admin_for_destructive=True,
                     allowed_reviewer_roles=["owner", "admin", "editor"],

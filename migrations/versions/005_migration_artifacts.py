@@ -10,6 +10,7 @@ from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "005_migration_artifacts"
@@ -33,7 +34,7 @@ def upgrade() -> None:
         sa.Column("engine", sa.String(length=32), nullable=False),
         sa.Column("target_engine", sa.String(length=32), nullable=False),
         sa.Column("status", sa.String(length=32), nullable=False),
-        sa.Column("report_json", sa.JSON(), nullable=False),
+        sa.Column("report_json", sa.JSON().with_variant(postgresql.JSONB, "postgresql"), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(
             ["workspace_id"],
@@ -62,6 +63,18 @@ def upgrade() -> None:
         ["report_fingerprint"],
         unique=False,
     )
+    op.create_index(
+        op.f("ix_dera_migration_comparisons_baseline_snapshot_id"),
+        "dera_migration_comparisons",
+        ["baseline_snapshot_id"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_dera_migration_comparisons_target_snapshot_id"),
+        "dera_migration_comparisons",
+        ["target_snapshot_id"],
+        unique=False,
+    )
 
     # 2. dera_migration_risks
     op.create_table(
@@ -75,7 +88,7 @@ def upgrade() -> None:
         sa.Column("risk_level", sa.String(length=32), nullable=False),
         sa.Column("has_breaking_changes", sa.Boolean(), nullable=False),
         sa.Column("has_destructive_changes", sa.Boolean(), nullable=False),
-        sa.Column("report_json", sa.JSON(), nullable=False),
+        sa.Column("report_json", sa.JSON().with_variant(postgresql.JSONB, "postgresql"), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(
             ["workspace_id"],
@@ -104,6 +117,12 @@ def upgrade() -> None:
         ["report_fingerprint"],
         unique=False,
     )
+    op.create_index(
+        op.f("ix_dera_migration_risks_comparison_report_id"),
+        "dera_migration_risks",
+        ["comparison_report_id"],
+        unique=False,
+    )
 
     # 3. dera_migration_plans
     op.create_table(
@@ -116,7 +135,7 @@ def upgrade() -> None:
         sa.Column("plan_fingerprint", sa.String(length=128), nullable=False),
         sa.Column("operation_count", sa.Integer(), nullable=False),
         sa.Column("requires_manual_approval", sa.Boolean(), nullable=False),
-        sa.Column("plan_json", sa.JSON(), nullable=False),
+        sa.Column("plan_json", sa.JSON().with_variant(postgresql.JSONB, "postgresql"), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(
             ["workspace_id"],
@@ -145,6 +164,12 @@ def upgrade() -> None:
         ["plan_fingerprint"],
         unique=False,
     )
+    op.create_index(
+        op.f("ix_dera_migration_plans_risk_report_id"),
+        "dera_migration_plans",
+        ["risk_report_id"],
+        unique=False,
+    )
 
     # 4. dera_migration_sql_artifacts
     op.create_table(
@@ -158,7 +183,7 @@ def upgrade() -> None:
         sa.Column("artifact_fingerprint", sa.String(length=128), nullable=False),
         sa.Column("sql_content", sa.Text(), nullable=False),
         sa.Column("rollback_sql", sa.Text(), nullable=True),
-        sa.Column("artifact_json", sa.JSON(), nullable=False),
+        sa.Column("artifact_json", sa.JSON().with_variant(postgresql.JSONB, "postgresql"), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(
             ["workspace_id"],
@@ -187,6 +212,12 @@ def upgrade() -> None:
         ["artifact_fingerprint"],
         unique=False,
     )
+    op.create_index(
+        op.f("ix_dera_migration_sql_artifacts_plan_id"),
+        "dera_migration_sql_artifacts",
+        ["plan_id"],
+        unique=False,
+    )
 
     # 5. dera_migration_exports
     op.create_table(
@@ -199,7 +230,7 @@ def upgrade() -> None:
         sa.Column("artifact_fingerprint", sa.String(length=128), nullable=False),
         sa.Column("exported_by", sa.String(length=64), nullable=False),
         sa.Column("exported_at", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("package_json", sa.JSON(), nullable=False),
+        sa.Column("package_json", sa.JSON().with_variant(postgresql.JSONB, "postgresql"), nullable=False),
         sa.ForeignKeyConstraint(
             ["workspace_id"],
             ["dera_workspaces.id"],
@@ -220,6 +251,18 @@ def upgrade() -> None:
         "dera_migration_exports",
         ["export_id_str"],
         unique=True,
+    )
+    op.create_index(
+        op.f("ix_dera_migration_exports_review_id"),
+        "dera_migration_exports",
+        ["review_id"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_dera_migration_exports_artifact_id"),
+        "dera_migration_exports",
+        ["artifact_id"],
+        unique=False,
     )
 
 

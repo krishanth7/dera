@@ -50,7 +50,7 @@ Every request attempting to access or modify workspace data or execute migration
          │
          ▼
 [ Gate 4: Server-Side RBAC Permission Evaluation ]
-  - Retrieve role assigned to active membership (OWNER, ADMIN, MEMBER, VIEWER)
+  - Retrieve role assigned to active membership (OWNER, ADMIN, EDITOR, VIEWER)
   - Map role to granular permissions via `RolePolicy`
   - Assert that required permission is present in user's permission set
   -> Rejection: HTTP 403 Forbidden
@@ -70,17 +70,19 @@ All migration operations require specific server-side permissions:
 
 | Endpoint | HTTP Method | Operation | Required Permission | Allowed Roles |
 |:---|:---:|:---|:---|:---|
-| `/migrations/compare` | POST | Compare snapshots | `MIGRATION_COMPARE` | OWNER, ADMIN, MEMBER |
-| `/migrations/compare/{id}` | GET | Retrieve comparison report | `MIGRATION_READ` | OWNER, ADMIN, MEMBER, VIEWER |
-| `/migrations/risk-reports/{id}` | GET | Retrieve risk report | `MIGRATION_READ` | OWNER, ADMIN, MEMBER, VIEWER |
-| `/migrations/plans` | POST | Generate migration plan | `MIGRATION_PLAN` | OWNER, ADMIN, MEMBER |
-| `/migrations/plans/{id}` | GET | Retrieve migration plan | `MIGRATION_READ` | OWNER, ADMIN, MEMBER, VIEWER |
-| `/migrations/sql-artifacts` | POST | Compile review-only SQL | `MIGRATION_PLAN` | OWNER, ADMIN, MEMBER |
-| `/migrations/sql-artifacts/{id}` | GET | Retrieve SQL artifact | `MIGRATION_READ` | OWNER, ADMIN, MEMBER, VIEWER |
-| `/migrations/reviews` | POST | Submit governance review | `MIGRATION_REVIEW` | OWNER, ADMIN, MEMBER |
-| `/migrations/reviews/{id}` | GET | Retrieve review details | `MIGRATION_READ` | OWNER, ADMIN, MEMBER, VIEWER |
+| `/migrations/snapshots` | GET | List available snapshots | `SNAPSHOT_READ` | OWNER, ADMIN, EDITOR, VIEWER |
+| `/migrations/compare` | POST | Compare snapshots | `MIGRATION_COMPARE` | OWNER, ADMIN, EDITOR |
+| `/migrations/compare/{id}` | GET | Retrieve comparison report | `MIGRATION_READ` | OWNER, ADMIN, EDITOR, VIEWER |
+| `/migrations/risk-reports/{id}` | GET | Retrieve risk report | `MIGRATION_READ` | OWNER, ADMIN, EDITOR, VIEWER |
+| `/migrations/plans` | POST | Generate migration plan | `MIGRATION_PLAN` | OWNER, ADMIN, EDITOR |
+| `/migrations/plans/{id}` | GET | Retrieve migration plan | `MIGRATION_READ` | OWNER, ADMIN, EDITOR, VIEWER |
+| `/migrations/sql-artifacts` | POST | Compile review-only SQL | `MIGRATION_PLAN` | OWNER, ADMIN, EDITOR |
+| `/migrations/sql-artifacts/{id}` | GET | Retrieve SQL artifact | `MIGRATION_READ` | OWNER, ADMIN, EDITOR, VIEWER |
+| `/migrations/reviews` | POST | Submit governance review | `MIGRATION_REVIEW` | OWNER, ADMIN, EDITOR |
+| `/migrations/reviews` | GET | List governance reviews | `MIGRATION_READ` | OWNER, ADMIN, EDITOR, VIEWER |
+| `/migrations/reviews/{id}` | GET | Retrieve review details | `MIGRATION_READ` | OWNER, ADMIN, EDITOR, VIEWER |
 | `/migrations/reviews/{id}/decisions` | POST | Record reviewer decision | `MIGRATION_APPROVE` | OWNER, ADMIN |
-| `/migrations/reviews/{id}/audit` | GET | Retrieve audit trail | `MIGRATION_READ` | OWNER, ADMIN, MEMBER, VIEWER |
+| `/migrations/reviews/{id}/audit` | GET | Retrieve audit trail | `MIGRATION_READ` | OWNER, ADMIN, EDITOR, VIEWER |
 | `/migrations/reviews/{id}/export` | GET | Export approved SQL package | `MIGRATION_EXPORT` | OWNER, ADMIN |
 
 ---

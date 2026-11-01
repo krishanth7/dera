@@ -145,6 +145,7 @@ class MigrationPlanningEngine:
             target_snapshot_id=comparison_report.target_snapshot_id,
             comparison_fingerprint=comparison_report.report_fingerprint,
             risk_report_fingerprint=risk_report.report_fingerprint,
+            risk_report_id=getattr(risk_report, "report_id", ""),
             policy_version=self.POLICY_VERSION,
             catalog_version=OperationCatalog.CATALOG_VERSION,
             plan_fingerprint=fingerprint,

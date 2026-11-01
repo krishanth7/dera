@@ -88,6 +88,7 @@ class MigrationReviewRequest(BaseModel):
     policy_version: str = "1.0.0"
     status: ReviewLifecycleStatus = ReviewLifecycleStatus.DRAFT
     version_number: int = 1
+    required_approvals: int = 1
     created_at: str
 
     assigned_reviewer_ids: list[str] = Field(default_factory=list)
