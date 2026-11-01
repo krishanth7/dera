@@ -76,6 +76,12 @@ const navItems: NavItem[] = [
     badge: "Phase 8",
   },
   {
+    title: "Migrations",
+    href: "/app/migrations",
+    icon: <GitFork className="w-4 h-4" />,
+    badge: "Phase 9",
+  },
+  {
     title: "Snapshots",
     href: "/app/snapshots",
     icon: <Camera className="w-4 h-4" />,
