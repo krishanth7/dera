@@ -44,7 +44,7 @@ class DependencyConcentrationRule(DiagnosticRule):
             ),
             version="1.0.0",
             category=RuleCategory.DEPENDENCIES,
-            default_severity=DiagnosticSeverity.INFORMATIONAL,
+            default_severity=DiagnosticSeverity.LOW,
             supported_object_kinds=("table",),
             required_capabilities=("foreign_keys",),
             applicability_summary="Applies to schemas with relationship graph topology.",

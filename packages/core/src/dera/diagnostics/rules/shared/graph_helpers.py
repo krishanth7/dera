@@ -116,6 +116,8 @@ def compute_reverse_reachability(
 
         for child_id in dependent_adj.get(curr_id, ()):
             if child_id not in visited and child_id != target_node_id:
+                if len(visited) >= max_nodes:
+                    break
                 visited.add(child_id)
                 queue.append((child_id, depth + 1))
 
