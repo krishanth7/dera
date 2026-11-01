@@ -536,7 +536,7 @@ class TestMigrationEndpointsSecurityAndGovernance(unittest.IsolatedAsyncioTestCa
         )
         self.assertEqual(appr_res.status_code, 200)
 
-        # 3. Simulate artifact tampering in service cache
+        # 3. Simulate artifact tampering in service cache and database
         migration_service = self.app.state.migration_service
         cached_art = migration_service._artifacts.get((self.ws_a_id, art_id))
         self.assertIsNotNone(cached_art)
@@ -545,6 +545,17 @@ class TestMigrationEndpointsSecurityAndGovernance(unittest.IsolatedAsyncioTestCa
             update={"artifact_fingerprint": "corrupted_or_mutated_sha256_hash"}
         )
         migration_service._artifacts[(self.ws_a_id, art_id)] = tampered_art
+
+        async with self.session_factory() as session:
+            from dera_api.db.models.migration_artifacts import MigrationSqlArtifactRecord
+            from sqlalchemy import update
+
+            await session.execute(
+                update(MigrationSqlArtifactRecord)
+                .where(MigrationSqlArtifactRecord.artifact_id_str == art_id)
+                .values(artifact_fingerprint="corrupted_or_mutated_sha256_hash")
+            )
+            await session.commit()
 
         # 4. Attempt to export tampered artifact -> fail-closed (400)
         export_res = await self.client.get(

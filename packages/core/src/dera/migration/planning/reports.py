@@ -44,6 +44,7 @@ class MigrationPlanReport(BaseModel):
     policy_version: str = "1.0.0"
     catalog_version: str = "1.0.0"
     plan_fingerprint: str
+    risk_report_id: str = ""
 
     summary: MigrationPlanSummary
     operations: list[AbstractMigrationOperation] = Field(default_factory=list)

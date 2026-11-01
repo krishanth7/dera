@@ -2,6 +2,7 @@
 
 Coordinates schema comparisons, risk assessments, migration plans, SQL compilations,
 governance reviews, approval lifecycles, and audit evidence trails in a workspace-isolated environment.
+Persists all engineering artifacts and governance decisions to authoritative durable storage.
 """
 
 from __future__ import annotations
@@ -31,6 +32,8 @@ from dera.reverse_engineering.snapshots.models import SchemaSnapshot
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dera_api.api.v1.endpoints.reverse_engineering.service import ReverseEngineeringService
+from dera_api.repositories.migration_artifacts import MigrationArtifactsRepository
+from dera_api.repositories.migration_governance import MigrationGovernanceRepository
 
 
 class MigrationService:
@@ -43,12 +46,32 @@ class MigrationService:
         self._planning_engine = MigrationPlanningEngine()
         self._sql_compiler = SqlMigrationCompiler()
 
-        # In-memory tenant-isolated state store: (workspace_id, object_id) -> Object
+        # In-memory tenant-isolated cache: (workspace_id, object_id) -> Object
         self._comparisons: dict[tuple[str, str], ComparisonReport] = {}
         self._risk_reports: dict[tuple[str, str], MigrationRiskReport] = {}
         self._plans: dict[tuple[str, str], MigrationPlanReport] = {}
         self._artifacts: dict[tuple[str, str], SqlMigrationArtifact] = {}
         self._reviews: dict[tuple[str, str], MigrationReviewRequest] = {}
+
+    @staticmethod
+    def derive_governance_policy(
+        workspace_id: str, artifact: SqlMigrationArtifact
+    ) -> GovernancePolicy:
+        """Derive trusted governance policy enforcing risk-sensitive approval quorum."""
+        is_destructive = artifact.summary.destructive_statements > 0
+        is_review_required = artifact.summary.review_required_statements > 0
+
+        quorum = 2 if (is_destructive or is_review_required) else 1
+
+        return GovernancePolicy(
+            policy_id=f"gov_policy_{'critical' if is_destructive else 'standard'}",
+            policy_version="1.0.0",
+            workspace_id=workspace_id,
+            required_approval_quorum=quorum,
+            enforce_separation_of_duties=True,
+            require_admin_for_destructive=True,
+            allowed_reviewer_roles=["owner", "admin", "editor"],
+        )
 
     # --- Snapshots ---
 
@@ -69,6 +92,7 @@ class MigrationService:
         workspace_id: str,
         baseline_snapshot_id: str,
         target_snapshot_id: str,
+        db_session: AsyncSession | None = None,
     ) -> ComparisonReport:
         """Execute deterministic schema comparison between two workspace snapshots."""
         baseline = await self.get_snapshot(workspace_id, baseline_snapshot_id)
@@ -87,34 +111,84 @@ class MigrationService:
         report = self._comparison_engine.compare(baseline=baseline, target=target)
         key = (workspace_id, report.report_id)
         self._comparisons[key] = report
+
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            await repo.save_comparison(ws_uuid, report)
+
         return report
 
-    def get_comparison(self, workspace_id: str, comparison_id: str) -> ComparisonReport | None:
-        """Retrieve comparison report for authorized workspace."""
-        return self._comparisons.get((workspace_id, comparison_id))
+    async def get_comparison(
+        self,
+        workspace_id: str,
+        comparison_id: str,
+        db_session: AsyncSession | None = None,
+    ) -> ComparisonReport | None:
+        """Retrieve comparison report for authorized workspace from DB (authoritative) or cache."""
+        key = (workspace_id, comparison_id)
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            report = await repo.get_comparison(ws_uuid, comparison_id)
+            if report:
+                self._comparisons[key] = report
+            return report
+
+        return self._comparisons.get(key)
 
     # --- Risk Assessment (Phase 9.2) ---
 
-    def assess_risk(self, workspace_id: str, comparison_id: str) -> MigrationRiskReport:
+    async def assess_risk(
+        self,
+        workspace_id: str,
+        comparison_id: str,
+        db_session: AsyncSession | None = None,
+    ) -> MigrationRiskReport:
         """Execute deterministic risk assessment for a verified comparison."""
-        comparison = self.get_comparison(workspace_id, comparison_id)
+        comparison = await self.get_comparison(workspace_id, comparison_id, db_session=db_session)
         if not comparison:
             raise ValueError(f"Comparison '{comparison_id}' not found in workspace.")
 
         report = self._risk_engine.analyze(comparison_report=comparison)
         key = (workspace_id, report.report_id)
         self._risk_reports[key] = report
+
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            await repo.save_risk_report(ws_uuid, report)
+
         return report
 
-    def get_risk_report(self, workspace_id: str, report_id: str) -> MigrationRiskReport | None:
-        """Retrieve risk report."""
-        return self._risk_reports.get((workspace_id, report_id))
+    async def get_risk_report(
+        self,
+        workspace_id: str,
+        report_id: str,
+        db_session: AsyncSession | None = None,
+    ) -> MigrationRiskReport | None:
+        """Retrieve risk report from DB (authoritative) or cache."""
+        key = (workspace_id, report_id)
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            report = await repo.get_risk_report(ws_uuid, report_id)
+            if report:
+                self._risk_reports[key] = report
+            return report
+
+        return self._risk_reports.get(key)
 
     # --- Planning (Phase 9.3) ---
 
-    def generate_plan(self, workspace_id: str, comparison_id: str) -> MigrationPlanReport:
+    async def generate_plan(
+        self,
+        workspace_id: str,
+        comparison_id: str,
+        db_session: AsyncSession | None = None,
+    ) -> MigrationPlanReport:
         """Generate dependency-ordered migration plan from verified comparison and risk report."""
-        comparison = self.get_comparison(workspace_id, comparison_id)
+        comparison = await self.get_comparison(workspace_id, comparison_id, db_session=db_session)
         if not comparison:
             raise ValueError(f"Comparison '{comparison_id}' not found in workspace.")
 
@@ -126,7 +200,9 @@ class MigrationService:
                 break
 
         if not matching_risk:
-            matching_risk = self.assess_risk(workspace_id, comparison_id)
+            matching_risk = await self.assess_risk(
+                workspace_id, comparison_id, db_session=db_session
+            )
 
         plan = self._planning_engine.plan_migration(
             comparison_report=comparison,
@@ -134,23 +210,44 @@ class MigrationService:
         )
         key = (workspace_id, plan.plan_id)
         self._plans[key] = plan
+
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            await repo.save_plan(ws_uuid, plan)
+
         return plan
 
-    def get_plan(self, workspace_id: str, plan_id: str) -> MigrationPlanReport | None:
-        """Retrieve migration plan."""
-        return self._plans.get((workspace_id, plan_id))
+    async def get_plan(
+        self,
+        workspace_id: str,
+        plan_id: str,
+        db_session: AsyncSession | None = None,
+    ) -> MigrationPlanReport | None:
+        """Retrieve migration plan from DB (authoritative) or cache."""
+        key = (workspace_id, plan_id)
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            plan = await repo.get_plan(ws_uuid, plan_id)
+            if plan:
+                self._plans[key] = plan
+            return plan
+
+        return self._plans.get(key)
 
     # --- SQL Compilation (Phase 9.4) ---
 
-    def compile_sql_artifact(
+    async def compile_sql_artifact(
         self,
         workspace_id: str,
         plan_id: str,
         target_dialect: str | None = None,
         target_version: str | None = None,
+        db_session: AsyncSession | None = None,
     ) -> SqlMigrationArtifact:
         """Compile review-only SQL artifact from plan."""
-        plan = self.get_plan(workspace_id, plan_id)
+        plan = await self.get_plan(workspace_id, plan_id, db_session=db_session)
         if not plan:
             raise ValueError(f"Plan '{plan_id}' not found in workspace.")
 
@@ -162,11 +259,31 @@ class MigrationService:
         )
         key = (workspace_id, artifact.artifact_id)
         self._artifacts[key] = artifact
+
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            await repo.save_sql_artifact(ws_uuid, artifact)
+
         return artifact
 
-    def get_sql_artifact(self, workspace_id: str, artifact_id: str) -> SqlMigrationArtifact | None:
-        """Retrieve compiled SQL artifact."""
-        return self._artifacts.get((workspace_id, artifact_id))
+    async def get_sql_artifact(
+        self,
+        workspace_id: str,
+        artifact_id: str,
+        db_session: AsyncSession | None = None,
+    ) -> SqlMigrationArtifact | None:
+        """Retrieve compiled SQL artifact from DB (authoritative) or cache."""
+        key = (workspace_id, artifact_id)
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationArtifactsRepository(db_session)
+            artifact = await repo.get_sql_artifact(ws_uuid, artifact_id)
+            if artifact:
+                self._artifacts[key] = artifact
+            return artifact
+
+        return self._artifacts.get(key)
 
     # --- Governance & Approvals (Phase 9.5) ---
 
@@ -181,21 +298,15 @@ class MigrationService:
         db_session: AsyncSession | None = None,
     ) -> MigrationReviewRequest:
         """Create and submit a governance review request bound to an immutable artifact."""
-        artifact = self.get_sql_artifact(workspace_id, artifact_id)
+        artifact = await self.get_sql_artifact(workspace_id, artifact_id, db_session=db_session)
         if not artifact:
             raise ValueError(f"Artifact '{artifact_id}' not found in workspace.")
 
         review_id = f"rev_{uuid.uuid4().hex[:12]}"
         now_iso = datetime.now(UTC).isoformat()
 
-        # Enforce governance policy quorum and settings
-        effective_policy = policy or GovernancePolicy(
-            policy_id="gov_policy_default",
-            workspace_id=workspace_id,
-            required_approval_quorum=1,
-            enforce_separation_of_duties=True,
-            allowed_reviewer_roles=["owner", "admin", "editor"],
-        )
+        # Enforce risk-sensitive governance policy quorum and settings
+        effective_policy = policy or self.derive_governance_policy(workspace_id, artifact)
 
         from dera.migration.governance.safety import SafetyGateEvaluator
 
@@ -233,6 +344,7 @@ class MigrationService:
             requester_id=requester_id,
             policy_version=effective_policy.policy_version,
             status=ReviewLifecycleStatus.SUBMITTED,
+            required_approvals=effective_policy.required_approval_quorum,
             created_at=now_iso,
             decisions=[],
             safety_gate_results=gate_results,
@@ -244,8 +356,6 @@ class MigrationService:
 
         if db_session is not None:
             ws_uuid = uuid.UUID(workspace_id)
-            from dera_api.repositories.migration_governance import MigrationGovernanceRepository
-
             repo = MigrationGovernanceRepository(db_session)
             await repo.save_review(
                 workspace_id=ws_uuid,
@@ -263,26 +373,35 @@ class MigrationService:
         review_id: str,
         db_session: AsyncSession | None = None,
     ) -> MigrationReviewRequest | None:
-        """Retrieve review request from cache or durable persistence."""
-        cached = self._reviews.get((workspace_id, review_id))
-        if cached:
-            return cached
-
+        """Retrieve review request from durable persistence (authoritative) or cache."""
         if db_session is not None:
-            try:
-                ws_uuid = uuid.UUID(workspace_id)
-                from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationGovernanceRepository(db_session)
+            record = await repo.get_by_review_id(ws_uuid, review_id)
+            if record:
+                domain_review = repo.to_domain_model(record)
+                self._reviews[(workspace_id, review_id)] = domain_review
+                return domain_review
+            return None
 
-                repo = MigrationGovernanceRepository(db_session)
-                record = await repo.get_by_review_id(ws_uuid, review_id)
-                if record:
-                    domain_review = repo.to_domain_model(record)
-                    self._reviews[(workspace_id, review_id)] = domain_review
-                    return domain_review
-            except Exception:
-                pass
+        return self._reviews.get((workspace_id, review_id))
 
-        return None
+    async def list_reviews(
+        self,
+        workspace_id: str,
+        db_session: AsyncSession | None = None,
+    ) -> list[MigrationReviewRequest]:
+        """List all governance reviews for authorized workspace."""
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            repo = MigrationGovernanceRepository(db_session)
+            records = await repo.list_reviews(ws_uuid)
+            domain_reviews = [repo.to_domain_model(r) for r in records]
+            for dr in domain_reviews:
+                self._reviews[(workspace_id, dr.review_id)] = dr
+            return domain_reviews
+
+        return [rev for (ws, _), rev in self._reviews.items() if ws == workspace_id]
 
     async def record_decision(
         self,
@@ -320,14 +439,23 @@ class MigrationService:
             timestamp=now_iso,
         )
 
-        effective_policy = policy or GovernancePolicy(
-            policy_id="default_policy",
-            workspace_id=workspace_id,
-            required_approval_quorum=1,
-            enforce_separation_of_duties=True,
-            require_admin_for_destructive=True,
-            allowed_reviewer_roles=["owner", "admin", "editor"],
-        )
+        if policy:
+            effective_policy = policy
+        else:
+            artifact = await self.get_sql_artifact(
+                workspace_id, review.artifact_id, db_session=db_session
+            )
+            if artifact:
+                effective_policy = self.derive_governance_policy(workspace_id, artifact)
+            else:
+                effective_policy = GovernancePolicy(
+                    policy_id="default_policy",
+                    workspace_id=workspace_id,
+                    required_approval_quorum=review.required_approvals,
+                    enforce_separation_of_duties=True,
+                    require_admin_for_destructive=True,
+                    allowed_reviewer_roles=["owner", "admin", "editor"],
+                )
 
         # Enforce server-side role check: only admin or owner can record approve/reject decisions
         if effective_role.lower() not in ["owner", "admin"]:
@@ -367,8 +495,6 @@ class MigrationService:
 
         if db_session is not None:
             ws_uuid = uuid.UUID(workspace_id)
-            from dera_api.repositories.migration_governance import MigrationGovernanceRepository
-
             repo = MigrationGovernanceRepository(db_session)
             await repo.save_decision_and_audit(
                 workspace_id=ws_uuid,
@@ -409,7 +535,9 @@ class MigrationService:
                 f"Cannot export artifact for review with status '{review.status.value}'. Must be APPROVED."
             )
 
-        artifact = self.get_sql_artifact(workspace_id, review.artifact_id)
+        artifact = await self.get_sql_artifact(
+            workspace_id, review.artifact_id, db_session=db_session
+        )
         if not artifact:
             raise ValueError(f"Artifact '{review.artifact_id}' not found in workspace.")
 
@@ -439,25 +567,8 @@ class MigrationService:
         )
         review.audit_events.append(audit_event)
 
-        if db_session is not None:
-            ws_uuid = uuid.UUID(workspace_id)
-            from dera_api.repositories.migration_governance import MigrationGovernanceRepository
-
-            repo = MigrationGovernanceRepository(db_session)
-            await repo.save_audit_event(
-                workspace_id=ws_uuid,
-                review_id=review_id,
-                audit_event=audit_event,
-                payload={
-                    "export_id": export_id,
-                    "disclaimer": "GENERATED FOR REVIEW — NOT EXECUTED",
-                },
-            )
-
-        # Extract forward and rollback sql
         rollback_sql = "\n\n".join(r.sql for r in artifact.rollback_statements)
-
-        return {
+        export_pkg = {
             "export_id": export_id,
             "review_id": review.review_id,
             "artifact_id": artifact.artifact_id,
@@ -472,3 +583,23 @@ class MigrationService:
             "governance_status": "APPROVED",
             "disclaimer": "GENERATED FOR REVIEW — NOT EXECUTED",
         }
+
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            gov_repo = MigrationGovernanceRepository(db_session)
+            await gov_repo.save_audit_event(
+                workspace_id=ws_uuid,
+                review_id=review_id,
+                audit_event=audit_event,
+                payload={
+                    "export_id": export_id,
+                    "disclaimer": "GENERATED FOR REVIEW — NOT EXECUTED",
+                },
+            )
+            art_repo = MigrationArtifactsRepository(db_session)
+            await art_repo.save_export(
+                workspace_id=ws_uuid,
+                export_pkg=export_pkg,
+            )
+
+        return export_pkg
