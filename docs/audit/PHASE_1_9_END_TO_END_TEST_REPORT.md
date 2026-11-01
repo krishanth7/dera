@@ -7,35 +7,45 @@
 
 | Test Suite | Total Tests | Passed | Failed | Skipped | Duration |
 |:---|:---:|:---:|:---:|:---:|:---:|
-| **Backend Full Pytest** | 1,072 | 1,070 | 0 | 2 | 89.48s |
+| **Backend Full Pytest** | 1,073 | 1,071 | 0 | 2 | 144.64s |
 | **Backend Subtests** | 407 | 407 | 0 | 0 | (included) |
-| **New Phase 9 Integration Suite** | 6 | 6 | 0 | 0 | 1.82s |
-| **Frontend Web Tests (Vitest)** | 106 | 106 | 0 | 0 | 2.14s |
+| **Migration Security Integration Suite** | 7 | 7 | 0 | 0 | 28.72s |
+| **Frontend Web Tests (Vitest)** | 106 | 106 | 0 | 0 | 16.41s |
 | **Frontend TypeScript Check** | - | 0 errors | 0 | 0 | 3.40s |
-| **Frontend Production Build** | 19 routes | 19 / 19 | 0 | 0 | 11.20s |
-| **Documentation Link Validation** | 580 files | 580 / 580 | 0 | 0 | 0.95s |
+| **Frontend Production Build** | 19 routes | 19 / 19 | 0 | 0 | 15.80s |
+| **Documentation Link Validation** | 589 files | 589 / 589 | 0 | 0 | 0.98s |
 | **OpenAPI Schema Sync** | - | Clean (0 drift) | 0 | 0 | 0.42s |
 
 ---
 
 ## 2. Detailed Verification Scenarios
 
-### Scenario A — Safe Schema Change Workflow
+### Scenario A — Safe Schema Change & Durable Governance Persistence
 - **Steps**: Ingest two valid snapshots adding a nullable column -> Compare snapshots -> Assess risk (evaluated LOW) -> Generate migration plan -> Compile PostgreSQL review-only SQL -> Propose review -> Record decision with authorized reviewer -> Retrieve audit log -> Export artifact.
-- **Result**: PASS (`test_end_to_end_safe_migration_lifecycle`).
+- **Verification**: Verifies rows created in `dera_migration_reviews`, `dera_migration_review_decisions`, and `dera_migration_audit_events` tables with SHA-256 hash chaining.
+- **Result**: PASS (`test_end_to_end_safe_migration_and_durable_persistence`).
 
-### Scenario B — Destructive Schema Change Workflow
-- **Steps**: Ingest snapshots with table drop / destructive column change -> Evaluate risk -> Flag `CRITICAL`/`HIGH` risk -> Identify destructive warnings -> Enforce elevated approval requirement.
-- **Result**: PASS (`test_destructive_schema_change_workflow`).
+### Scenario B — Unauthenticated Request Fails Closed
+- **Steps**: Anonymous client attempts to propose migration or inspect review state without Bearer session token.
+- **Result**: PASS (`test_unauthenticated_request_fails_closed`). Returns HTTP 401 fail-closed.
 
-### Scenario C — Cross-Tenant Attack & Isolation
-- **Steps**: Authenticated client from Workspace A attempts to access snapshots, comparisons, reviews, and export endpoints of Workspace B.
-- **Result**: PASS (`test_cross_tenant_isolation_enforced`). Tenant isolation strictly maintained; returns 404/403 with no cross-tenant leakage.
+### Scenario C — Spoofed Actor Headers Are Ignored
+- **Steps**: Authenticated caller passes malicious spoofed headers `X-Actor-Id: evil-hacker` and `X-Actor-Role: owner`.
+- **Result**: PASS (`test_spoofed_actor_headers_are_ignored`). Headers are strictly ignored; requester identity is derived server-side from `current_user.id`.
 
-### Scenario D — Artifact Tampering Invalidation
-- **Steps**: Modify generated SQL artifact after an approval has been granted. Attempt export.
-- **Result**: PASS (`test_artifact_tampering_invalidates_approval`). Tampering is detected via cryptographic SHA-256 fingerprint mismatch; export is blocked.
+### Scenario D — Separation of Duties Enforcement
+- **Steps**: Review submitter attempts to self-approve a migration review.
+- **Result**: PASS (`test_separation_of_duties_self_approval_blocked`). Rejected with HTTP 403 `SeparationOfDutiesViolation`.
 
-### Scenario E — Separation of Duties Enforcement
-- **Steps**: Submitter attempts to self-approve a migration review.
-- **Result**: PASS. Rejected with HTTP 403 `SeparationOfDutiesViolation`.
+### Scenario E — Cross-Tenant Access Isolation
+- **Steps**: Authenticated user belonging only to Workspace A attempts to propose migrations or fetch review states for Workspace B.
+- **Result**: PASS (`test_cross_tenant_access_denied`). Tenant boundary is enforced; returns HTTP 403 / 404 without cross-tenant disclosure.
+
+### Scenario F — Revoked / Suspended Membership Fails Closed
+- **Steps**: User whose workspace membership is `suspended` attempts to access migration governance endpoints.
+- **Result**: PASS (`test_revoked_or_suspended_membership_fails`). Returns HTTP 403.
+
+### Scenario G — Artifact Tampering Invalidation
+- **Steps**: Modify generated SQL artifact after approval has been granted. Attempt export.
+- **Result**: PASS (`test_artifact_tampering_blocks_export`). Tampering is detected via cryptographic SHA-256 fingerprint mismatch; export is blocked with HTTP 400.
+

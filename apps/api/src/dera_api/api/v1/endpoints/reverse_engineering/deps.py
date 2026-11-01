@@ -62,29 +62,83 @@ async def resolve_authorized_workspace_id(
             detail=f"Invalid workspace ID format: '{raw_ws_id}'. Must be a valid UUID.",
         ) from None
 
-    # If full DB and auth context is provided, enforce workspace and membership checks
-    user_and_session = getattr(request.state, "user_and_session", None)
-    current_user = user_and_session[0] if user_and_session else None
+    # Extract session token (Bearer header or cookie)
+    from dera_api.auth.dependencies import extract_session_token
+    from dera_api.auth.exceptions import (
+        AccountDisabledError,
+        AuthenticationRequiredError,
+        SessionExpiredError,
+        SessionRevokedError,
+    )
+    from dera_api.auth.tokens import hash_session_token
+    from dera_api.repositories.sessions import SessionRepository
+    from datetime import UTC, datetime
+
+    token = extract_session_token(request)
+
+    # Resolve database session factory
     session_factory = (
         getattr(request.app.state, "db_session_factory", None)
         if hasattr(request, "app") and hasattr(request.app, "state")
         else None
     )
-    if session_factory is not None and current_user is not None:
+
+    # Fail closed: In production / DB-backed configurations, authentication and DB verification are strictly mandatory
+    if session_factory is None:
+        # Check if running in a decoupled test environment without database
+        # Even in detached environments, anonymous or untrusted access must fail closed if token is missing
+        user_and_session = getattr(request.state, "user_and_session", None)
+        if user_and_session is None and not token:
+            raise AuthenticationRequiredError("Authentication required. Missing session token or credentials.")
+        return str(ws_uuid)
+
+    # Authoritative server-side verification with database
+    if not token:
+        # Check if request.state has user_and_session already injected
+        user_and_session = getattr(request.state, "user_and_session", None)
+        if not user_and_session:
+            raise AuthenticationRequiredError("Authentication required. Missing session token.")
+        current_user = user_and_session[0]
+    else:
         async with session_factory() as db_session:
-            workspace_repo = WorkspaceRepository(db_session)
-            workspace = await workspace_repo.get_by_id(ws_uuid)
-            if not workspace or workspace.status != "active":
-                raise WorkspaceAccessDeniedError("Workspace does not exist or is inactive.")
+            token_hash = hash_session_token(token)
+            session_repo = SessionRepository(db_session)
+            user_session = await session_repo.get_by_token_hash(token_hash)
+            if not user_session:
+                raise AuthenticationRequiredError("Invalid or expired session token.")
 
-            membership_repo = MembershipRepository(db_session)
-            membership = await membership_repo.get_membership(workspace.id, current_user.id)
-            if not membership or membership.status != "active":
-                raise WorkspaceAccessDeniedError("You are not an active member of this workspace.")
+            if user_session.revoked_at is not None:
+                raise SessionRevokedError()
 
-            if not has_permission(membership.role, Permission.SCHEMA_READ):
-                raise PermissionDeniedError(
-                    f"Your role '{membership.role}' lacks the '{Permission.SCHEMA_READ}' permission."
-                )
+            now = datetime.now(UTC)
+            expires_at = user_session.expires_at
+            if expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=UTC)
+            if expires_at <= now:
+                raise SessionExpiredError()
+
+            current_user = user_session.user
+            if current_user.status != "active":
+                raise AccountDisabledError()
+
+            # Cache authenticated user in request state
+            request.state.user_and_session = (current_user, user_session)
+
+    # Verify workspace existence, active status, and membership
+    async with session_factory() as db_session:
+        workspace_repo = WorkspaceRepository(db_session)
+        workspace = await workspace_repo.get_by_id(ws_uuid)
+        if not workspace or workspace.status != "active":
+            raise WorkspaceAccessDeniedError("Workspace does not exist or is inactive.")
+
+        membership_repo = MembershipRepository(db_session)
+        membership = await membership_repo.get_membership(workspace.id, current_user.id)
+        if not membership or membership.status != "active":
+            raise WorkspaceAccessDeniedError("You are not an active member of this workspace.")
+
+        if not has_permission(membership.role, Permission.SCHEMA_READ):
+            raise PermissionDeniedError(
+                f"Your role '{membership.role}' lacks the '{Permission.SCHEMA_READ}' permission."
+            )
 
     return str(ws_uuid)

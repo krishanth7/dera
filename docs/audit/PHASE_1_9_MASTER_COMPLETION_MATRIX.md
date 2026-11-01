@@ -71,5 +71,5 @@ Total Milestones Audited: **54** (Phases 1.1 through 9.6)
 | **9.2** | Migration Risk Analysis | Blast radius & breaking change classifier | `MigrationRiskAnalysisEngine` categorizing risks and severity | **PASS** |
 | **9.3** | Deterministic Migration Planning | Topological ordering, DAG stage partitioning | `MigrationPlanningEngine` producing ordered execution plans | **PASS** |
 | **9.4** | Dialect-Aware SQL Compiler | Target-specific DDL compiler & offline validator | `SqlMigrationCompiler` generating review-only SQL with disclaimers | **PASS** |
-| **9.5** | Migration Governance & SoD | Separation of duties, multi-approval quorum | `GovernanceEngine` & `AuditTrailManager` enforcing SoD, role checks & cryptographic audit chaining | **PASS** |
+| **9.5** | Migration Governance & SoD | Separation of duties, multi-approval quorum, durable persistence | `GovernanceEngine`, `MigrationGovernanceRepository` enforcing SoD, role checks, relational DB persistence & cryptographic audit chaining | **PASS** |
 | **9.6** | Live Migration Workspace | End-to-end connected live dashboard | Genuine API integration in `MigrationDashboard.tsx`, live snapshots loaded, real pipeline triggered, demo mode isolated | **PASS** |

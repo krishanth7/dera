@@ -10,6 +10,8 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from dera.comparison.engine import SchemaComparisonEngine
 from dera.comparison.models import ComparisonReport
 from dera.migration.engine import MigrationRiskAnalysisEngine
@@ -169,14 +171,15 @@ class MigrationService:
 
     # --- Governance & Approvals (Phase 9.5) ---
 
-    def submit_for_review(
+    async def submit_for_review(
         self,
         workspace_id: str,
         artifact_id: str,
         requester_id: str,
         title: str,
         description: str = "",
-        required_approvals: int = 1,
+        policy: GovernancePolicy | None = None,
+        db_session: AsyncSession | None = None,
     ) -> MigrationReviewRequest:
         """Create and submit a governance review request bound to an immutable artifact."""
         artifact = self.get_sql_artifact(workspace_id, artifact_id)
@@ -185,6 +188,21 @@ class MigrationService:
 
         review_id = f"rev_{uuid.uuid4().hex[:12]}"
         now_iso = datetime.now(UTC).isoformat()
+
+        # Enforce governance policy quorum and settings
+        effective_policy = policy or GovernancePolicy(
+            policy_id="gov_policy_default",
+            workspace_id=workspace_id,
+            required_approval_quorum=1,
+            enforce_separation_of_duties=True,
+            allowed_reviewer_roles=["owner", "admin", "editor"],
+        )
+
+        from dera.migration.governance.safety import SafetyGateEvaluator
+        gate_results = SafetyGateEvaluator.evaluate_artifact_gates(artifact, effective_policy)
+
+        # Correct fingerprint linkage: link to source_risk_report_fingerprint
+        risk_fp = artifact.source_risk_report_fingerprint or artifact.source_plan_fingerprint
 
         # Create initial audit event
         audit_event = AuditTrailManager.create_event(
@@ -195,7 +213,7 @@ class MigrationService:
             previous_state=None,
             new_state=ReviewLifecycleStatus.SUBMITTED.value,
             artifact_fingerprint=artifact.artifact_fingerprint,
-            policy_version="1.0.0",
+            policy_version=effective_policy.policy_version,
             timestamp=now_iso,
             payload={"title": title, "description": description},
             previous_event_hash=None,
@@ -207,28 +225,64 @@ class MigrationService:
             artifact_id=artifact.artifact_id,
             artifact_fingerprint=artifact.artifact_fingerprint,
             migration_plan_fingerprint=artifact.source_plan_fingerprint,
-            risk_report_fingerprint=artifact.artifact_fingerprint,
+            risk_report_fingerprint=risk_fp,
             target_dialect=artifact.dialect.value
             if hasattr(artifact.dialect, "value")
             else str(artifact.dialect),
             target_engine_version=None,
             requester_id=requester_id,
-            policy_version="1.0.0",
+            policy_version=effective_policy.policy_version,
             status=ReviewLifecycleStatus.SUBMITTED,
             created_at=now_iso,
             decisions=[],
+            safety_gate_results=gate_results,
             audit_events=[audit_event],
         )
 
         review_key = (workspace_id, review_id)
         self._reviews[review_key] = review
+
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+            repo = MigrationGovernanceRepository(db_session)
+            await repo.save_review(
+                workspace_id=ws_uuid,
+                review=review,
+                title=title,
+                description=description,
+                required_approvals=effective_policy.required_approval_quorum,
+            )
+
         return review
 
-    def get_review(self, workspace_id: str, review_id: str) -> MigrationReviewRequest | None:
-        """Retrieve review request."""
-        return self._reviews.get((workspace_id, review_id))
+    async def get_review(
+        self,
+        workspace_id: str,
+        review_id: str,
+        db_session: AsyncSession | None = None,
+    ) -> MigrationReviewRequest | None:
+        """Retrieve review request from cache or durable persistence."""
+        cached = self._reviews.get((workspace_id, review_id))
+        if cached:
+            return cached
 
-    def record_decision(
+        if db_session is not None:
+            try:
+                ws_uuid = uuid.UUID(workspace_id)
+                from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+                repo = MigrationGovernanceRepository(db_session)
+                record = await repo.get_by_review_id(ws_uuid, review_id)
+                if record:
+                    domain_review = repo.to_domain_model(record)
+                    self._reviews[(workspace_id, review_id)] = domain_review
+                    return domain_review
+            except Exception:
+                pass
+
+        return None
+
+    async def record_decision(
         self,
         workspace_id: str,
         review_id: str,
@@ -236,9 +290,11 @@ class MigrationService:
         effective_role: str,
         decision_type_str: str,
         rationale: str,
+        policy: GovernancePolicy | None = None,
+        db_session: AsyncSession | None = None,
     ) -> MigrationReviewRequest:
         """Record reviewer decision enforcing SoD and role authorization."""
-        review = self.get_review(workspace_id, review_id)
+        review = await self.get_review(workspace_id, review_id, db_session=db_session)
         if not review:
             raise ValueError(f"Review '{review_id}' not found in workspace.")
 
@@ -262,15 +318,16 @@ class MigrationService:
             timestamp=now_iso,
         )
 
-        policy = GovernancePolicy(
+        effective_policy = policy or GovernancePolicy(
             policy_id="default_policy",
             workspace_id=workspace_id,
             required_approval_quorum=1,
             enforce_separation_of_duties=True,
+            require_admin_for_destructive=True,
             allowed_reviewer_roles=["owner", "admin", "editor"],
         )
 
-        # Enforce server-side role check: only admin or owner can approve/reject
+        # Enforce server-side role check: only admin or owner can record approve/reject decisions
         if effective_role.lower() not in ["owner", "admin"]:
             raise PermissionError(
                 f"Your role '{effective_role}' lacks permission to record review decisions. Admin or Owner required."
@@ -281,11 +338,13 @@ class MigrationService:
 
         success, err = GovernanceEngine.record_decision(
             review=review,
-            policy=policy,
+            policy=effective_policy,
             decision=decision,
             actor_role=effective_role,
         )
         if not success:
+            if "Separation of duties" in (err or ""):
+                raise PermissionError(err)
             raise ValueError(err or "Failed to record review decision.")
 
         # Cryptographic audit chaining
@@ -304,24 +363,41 @@ class MigrationService:
         )
         review.audit_events.append(audit_event)
 
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+            repo = MigrationGovernanceRepository(db_session)
+            await repo.save_decision_and_audit(
+                workspace_id=ws_uuid,
+                review=review,
+                decision=decision,
+                audit_event=audit_event,
+            )
+
         return review
 
-    def get_audit_trail(self, workspace_id: str, review_id: str) -> list[AuditEvent]:
+    async def get_audit_trail(
+        self,
+        workspace_id: str,
+        review_id: str,
+        db_session: AsyncSession | None = None,
+    ) -> list[AuditEvent]:
         """Retrieve immutable audit events for review."""
-        review = self.get_review(workspace_id, review_id)
+        review = await self.get_review(workspace_id, review_id, db_session=db_session)
         if not review:
             raise ValueError(f"Review '{review_id}' not found in workspace.")
         return review.audit_events
 
-    def export_approved_artifact(
+    async def export_approved_artifact(
         self,
         workspace_id: str,
         review_id: str,
         user_id: str,
         user_role: str,
+        db_session: AsyncSession | None = None,
     ) -> dict[str, Any]:
         """Export approved artifact ensuring fail-closed status and immutable audit record."""
-        review = self.get_review(workspace_id, review_id)
+        review = await self.get_review(workspace_id, review_id, db_session=db_session)
         if not review:
             raise ValueError(f"Review '{review_id}' not found in workspace.")
 
@@ -359,6 +435,17 @@ class MigrationService:
             previous_event_hash=prev_hash,
         )
         review.audit_events.append(audit_event)
+
+        if db_session is not None:
+            ws_uuid = uuid.UUID(workspace_id)
+            from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+            repo = MigrationGovernanceRepository(db_session)
+            await repo.save_audit_event(
+                workspace_id=ws_uuid,
+                review_id=review_id,
+                audit_event=audit_event,
+                payload={"export_id": export_id, "disclaimer": "GENERATED FOR REVIEW — NOT EXECUTED"},
+            )
 
         # Extract forward and rollback sql
         rollback_sql = "\n\n".join(r.sql for r in artifact.rollback_statements)

@@ -68,19 +68,30 @@ async def get_effective_user_role(
     current_user: User | None,
     db_session: AsyncSession | None,
 ) -> str:
-    """Resolve authoritative server-side role for the user within workspace."""
-    if db_session is not None and current_user is not None:
-        import uuid
+    """Resolve authoritative server-side role for the user within workspace, failing closed."""
+    if current_user is None:
+        from dera_api.auth.exceptions import AuthenticationRequiredError
+        raise AuthenticationRequiredError("Authentication required. Missing user identity.")
 
-        try:
-            ws_uuid = uuid.UUID(workspace_id)
-            membership_repo = MembershipRepository(db_session)
-            membership = await membership_repo.get_membership(ws_uuid, current_user.id)
-            if membership and membership.status == "active":
-                return str(membership.role)
-        except Exception:
-            pass
-    return "admin"  # Default test environment fallback
+    if db_session is None:
+        # Without database session, role cannot be authoritatively verified
+        from dera_api.auth.exceptions import WorkspaceAccessDeniedError
+        raise WorkspaceAccessDeniedError("Database session unavailable; cannot verify workspace authorization.")
+
+    import uuid
+    from dera_api.auth.exceptions import WorkspaceAccessDeniedError
+
+    try:
+        ws_uuid = uuid.UUID(workspace_id)
+    except (ValueError, AttributeError):
+        raise WorkspaceAccessDeniedError(f"Invalid workspace ID format: '{workspace_id}'.") from None
+
+    membership_repo = MembershipRepository(db_session)
+    membership = await membership_repo.get_membership(ws_uuid, current_user.id)
+    if not membership or membership.status != "active":
+        raise WorkspaceAccessDeniedError("You are not an active member of this workspace.")
+
+    return str(membership.role)
 
 
 # --- 1. Snapshots ---
@@ -360,20 +371,70 @@ async def submit_governance_review(
     service: Annotated[MigrationService, Depends(get_migration_service)],
 ) -> GovernanceReviewResponse:
     user_and_session = getattr(request.state, "user_and_session", None)
-    actor_id_hdr = request.headers.get("X-Actor-Id")
-    current_user = user_and_session[0] if user_and_session else None
-    requester_id = actor_id_hdr or (str(current_user.id) if current_user else "usr-reviewer-lead")
+    if not user_and_session or not user_and_session[0]:
+        from dera_api.auth.exceptions import AuthenticationRequiredError
+        raise AuthenticationRequiredError("Authentication required. Missing authenticated user context.")
+
+    current_user = user_and_session[0]
+    requester_id = str(current_user.id)
+
+    session_factory = (
+        getattr(request.app.state, "db_session_factory", None)
+        if hasattr(request, "app") and hasattr(request.app, "state")
+        else None
+    )
+
+    db_session = None
+    effective_role = "admin"
+    if session_factory is not None:
+        db_session = session_factory()
+
     try:
-        review = service.submit_for_review(
+        if db_session is not None:
+            effective_role = await get_effective_user_role(
+                workspace_id=workspace_id,
+                current_user=current_user,
+                db_session=db_session,
+            )
+            from dera_api.auth.policies import has_permission
+            from dera_api.auth.roles import Permission
+            from dera_api.auth.exceptions import PermissionDeniedError
+            if not has_permission(effective_role, Permission.MIGRATION_REVIEW):
+                raise PermissionDeniedError(
+                    f"Your role '{effective_role}' lacks '{Permission.MIGRATION_REVIEW}' permission."
+                )
+
+        from dera.migration.governance.models import GovernancePolicy
+        policy = GovernancePolicy(
+            policy_id="gov_policy_default",
+            workspace_id=workspace_id,
+            required_approval_quorum=1,
+            enforce_separation_of_duties=True,
+            allowed_reviewer_roles=["owner", "admin", "editor"],
+        )
+
+        review = await service.submit_for_review(
             workspace_id=workspace_id,
             artifact_id=payload.artifact_id,
             requester_id=requester_id,
             title=payload.title,
             description=payload.description,
-            required_approvals=payload.required_approvals,
+            policy=policy,
+            db_session=db_session,
         )
+        if db_session is not None:
+            await db_session.commit()
     except ValueError as e:
+        if db_session is not None:
+            await db_session.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+    except Exception:
+        if db_session is not None:
+            await db_session.rollback()
+        raise
+    finally:
+        if db_session is not None:
+            await db_session.close()
 
     return GovernanceReviewResponse(
         review_id=review.review_id,
@@ -385,7 +446,7 @@ async def submit_governance_review(
         description=payload.description,
         created_at=review.created_at,
         updated_at=review.created_at,
-        required_approvals=payload.required_approvals,
+        required_approvals=policy.required_approval_quorum,
         current_approvals=len([d for d in review.decisions if d.decision_type.value == "APPROVE"]),
         decisions=[d.model_dump(mode="json") for d in review.decisions],
     )
@@ -397,11 +458,31 @@ async def submit_governance_review(
     summary="Retrieve governance review request",
 )
 async def get_governance_review(
+    request: Request,
     review_id: str,
     workspace_id: Annotated[str, Depends(resolve_authorized_workspace_id)],
     service: Annotated[MigrationService, Depends(get_migration_service)],
 ) -> GovernanceReviewResponse:
-    review = service.get_review(workspace_id=workspace_id, review_id=review_id)
+    session_factory = (
+        getattr(request.app.state, "db_session_factory", None)
+        if hasattr(request, "app") and hasattr(request.app, "state")
+        else None
+    )
+
+    db_session = None
+    if session_factory is not None:
+        db_session = session_factory()
+
+    try:
+        review = await service.get_review(
+            workspace_id=workspace_id,
+            review_id=review_id,
+            db_session=db_session,
+        )
+    finally:
+        if db_session is not None:
+            await db_session.close()
+
     if not review:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Review request not found."
@@ -436,38 +517,65 @@ async def record_governance_decision(
     service: Annotated[MigrationService, Depends(get_migration_service)],
 ) -> GovernanceReviewResponse:
     user_and_session = getattr(request.state, "user_and_session", None)
-    actor_id_hdr = request.headers.get("X-Actor-Id")
-    actor_role_hdr = request.headers.get("X-Actor-Role")
-    current_user = user_and_session[0] if user_and_session else None
-    reviewer_id = actor_id_hdr or (str(current_user.id) if current_user else "usr-lead-engineer")
+    if not user_and_session or not user_and_session[0]:
+        from dera_api.auth.exceptions import AuthenticationRequiredError
+        raise AuthenticationRequiredError("Authentication required. Missing authenticated user context.")
+
+    current_user = user_and_session[0]
+    reviewer_id = str(current_user.id)
 
     session_factory = (
         getattr(request.app.state, "db_session_factory", None)
         if hasattr(request, "app") and hasattr(request.app, "state")
         else None
     )
-    effective_role = actor_role_hdr or ("viewer" if current_user else "admin")
-    if session_factory is not None and current_user is not None:
-        async with session_factory() as db_session:
+
+    db_session = None
+    effective_role = "admin"
+    if session_factory is not None:
+        db_session = session_factory()
+
+    try:
+        if db_session is not None:
             effective_role = await get_effective_user_role(
                 workspace_id=workspace_id,
                 current_user=current_user,
                 db_session=db_session,
             )
+            from dera_api.auth.policies import has_permission
+            from dera_api.auth.roles import Permission
+            from dera_api.auth.exceptions import PermissionDeniedError
+            if not has_permission(effective_role, Permission.MIGRATION_APPROVE):
+                raise PermissionDeniedError(
+                    f"Your role '{effective_role}' lacks '{Permission.MIGRATION_APPROVE}' permission."
+                )
 
-    try:
-        review = service.record_decision(
+        review = await service.record_decision(
             workspace_id=workspace_id,
             review_id=review_id,
             reviewer_id=reviewer_id,
             effective_role=effective_role,
             decision_type_str=payload.decision_type,
             rationale=payload.rationale,
+            db_session=db_session,
         )
+        if db_session is not None:
+            await db_session.commit()
     except PermissionError as e:
+        if db_session is not None:
+            await db_session.rollback()
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
     except ValueError as e:
+        if db_session is not None:
+            await db_session.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+    except Exception:
+        if db_session is not None:
+            await db_session.rollback()
+        raise
+    finally:
+        if db_session is not None:
+            await db_session.close()
 
     return GovernanceReviewResponse(
         review_id=review.review_id,
@@ -494,14 +602,32 @@ async def record_governance_decision(
     summary="Retrieve immutable audit trail for a governance review",
 )
 async def get_governance_audit(
+    request: Request,
     review_id: str,
     workspace_id: Annotated[str, Depends(resolve_authorized_workspace_id)],
     service: Annotated[MigrationService, Depends(get_migration_service)],
 ) -> GovernanceAuditResponse:
+    session_factory = (
+        getattr(request.app.state, "db_session_factory", None)
+        if hasattr(request, "app") and hasattr(request.app, "state")
+        else None
+    )
+
+    db_session = None
+    if session_factory is not None:
+        db_session = session_factory()
+
     try:
-        events = service.get_audit_trail(workspace_id=workspace_id, review_id=review_id)
+        events = await service.get_audit_trail(
+            workspace_id=workspace_id,
+            review_id=review_id,
+            db_session=db_session,
+        )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+    finally:
+        if db_session is not None:
+            await db_session.close()
 
     audit_responses = [
         AuditEventResponse(
@@ -531,35 +657,62 @@ async def export_approved_migration(
     service: Annotated[MigrationService, Depends(get_migration_service)],
 ) -> MigrationExportResponse:
     user_and_session = getattr(request.state, "user_and_session", None)
-    actor_id_hdr = request.headers.get("X-Actor-Id")
-    actor_role_hdr = request.headers.get("X-Actor-Role")
-    current_user = user_and_session[0] if user_and_session else None
-    user_id = actor_id_hdr or (str(current_user.id) if current_user else "usr-lead-engineer")
+    if not user_and_session or not user_and_session[0]:
+        from dera_api.auth.exceptions import AuthenticationRequiredError
+        raise AuthenticationRequiredError("Authentication required. Missing authenticated user context.")
+
+    current_user = user_and_session[0]
+    user_id = str(current_user.id)
 
     session_factory = (
         getattr(request.app.state, "db_session_factory", None)
         if hasattr(request, "app") and hasattr(request.app, "state")
         else None
     )
-    user_role = actor_role_hdr or "admin"
-    if session_factory is not None and current_user is not None:
-        async with session_factory() as db_session:
+
+    db_session = None
+    user_role = "admin"
+    if session_factory is not None:
+        db_session = session_factory()
+
+    try:
+        if db_session is not None:
             user_role = await get_effective_user_role(
                 workspace_id=workspace_id,
                 current_user=current_user,
                 db_session=db_session,
             )
+            from dera_api.auth.policies import has_permission
+            from dera_api.auth.roles import Permission
+            from dera_api.auth.exceptions import PermissionDeniedError
+            if not has_permission(user_role, Permission.MIGRATION_EXPORT):
+                raise PermissionDeniedError(
+                    f"Your role '{user_role}' lacks '{Permission.MIGRATION_EXPORT}' permission."
+                )
 
-    try:
-        export_pkg = service.export_approved_artifact(
+        export_pkg = await service.export_approved_artifact(
             workspace_id=workspace_id,
             review_id=review_id,
             user_id=user_id,
             user_role=user_role,
+            db_session=db_session,
         )
+        if db_session is not None:
+            await db_session.commit()
     except PermissionError as e:
+        if db_session is not None:
+            await db_session.rollback()
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
     except ValueError as e:
+        if db_session is not None:
+            await db_session.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+    except Exception:
+        if db_session is not None:
+            await db_session.rollback()
+        raise
+    finally:
+        if db_session is not None:
+            await db_session.close()
 
     return MigrationExportResponse(**export_pkg)

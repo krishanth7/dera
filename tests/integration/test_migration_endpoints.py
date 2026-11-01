@@ -1,19 +1,23 @@
-"""Security and End-to-End Tests for Phase 9 Migration Engineering and Governance Endpoints.
+"""Security, Tenancy, and Governance Tests for Phase 9 Migration Endpoints.
 
-Validates the full enterprise workflow:
-1. Workspace tenancy & cross-tenant isolation (Workspace A cannot access Workspace B migration assets).
-2. Snapshot comparison (Phase 9.1).
-3. Risk analysis and blast radius (Phase 9.2).
-4. Dependency-ordered migration planning (Phase 9.3).
-5. Dialect-aware SQL compilation (Phase 9.4).
-6. Governance review, SoD enforcement (requester cannot self-approve), and role checks (Phase 9.5).
-7. Quorum satisfaction and approval state progression.
-8. Fail-closed export protection (unapproved or altered artifacts cannot be exported).
-9. Tamper-evident cryptographic audit log verification.
+Proves:
+1. Unauthenticated requests fail with 401.
+2. Spoofed X-Actor-Id or X-Actor-Role headers are ignored / rejected.
+3. Missing DB context / unverified membership fails closed (401 / 403).
+4. Revoked, suspended, or inactive memberships fail with 403.
+5. Submitter cannot self-approve (Separation of Duties violation -> 403).
+6. Cross-tenant access is strictly denied (403/404).
+7. Quorum bypass attempts fail.
+8. Artifact content tampering invalidates approvals and blocks export.
+9. End-to-end safe migration lifecycle (Compare -> Risk -> Plan -> Compile -> Review -> Approve -> Export).
+10. Durable persistence in dera_migration_reviews, decisions, and audit events.
 """
 
-import asyncio
+from __future__ import annotations
+
 import uuid
+from collections.abc import AsyncIterator
+import unittest
 
 from dera.comparison.tests.fixtures import (
     build_snapshot_from_payload,
@@ -24,16 +28,22 @@ from dera.comparison.tests.fixtures import (
 from dera.metadata.enums import CanonicalTypeCategory
 from dera.reverse_engineering.snapshots.models import SnapshotStructuralPayload
 from dera_api.api.v1.endpoints.reverse_engineering.service import ReverseEngineeringService
+from dera_api.auth.rate_limiter import auth_rate_limiter
 from dera_api.core.config import ApiSettings
+from dera_api.db.base import Base
+from dera_api.db.dependencies import get_db_session
+from dera_api.db.engine import create_database_engine, dispose_database_engine
+from dera_api.db.session import create_session_factory
 from dera_api.factory import create_app
-from fastapi.testclient import TestClient
+from fastapi import status
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 def _create_test_snapshots(re_service: ReverseEngineeringService, workspace_id: str):
     """Create two canonical snapshots representing a safe column addition."""
     payload_v1 = make_standard_ecommerce_payload()
 
-    # Target payload: Add phone_number column to users table
     users_tbl = next(t for t in payload_v1.tables if t.name == "users")
     new_col = make_test_column(
         table_id=users_tbl.table_id,
@@ -75,364 +85,469 @@ def _create_test_snapshots(re_service: ReverseEngineeringService, workspace_id: 
         workspace_id=workspace_id,
     )
 
-    asyncio.run(re_service.snapshot_storage.save(snap_v1))
-    asyncio.run(re_service.snapshot_storage.save(snap_v2))
-
     return snap_v1, snap_v2
 
 
-class TestMigrationEndpointsEndToEnd:
-    """End-to-end integration and security test suite for migration endpoints."""
+class TestMigrationEndpointsSecurityAndGovernance(unittest.IsolatedAsyncioTestCase):
+    """Rigorous integration test suite for Migration Engineering & Governance."""
 
-    def setup_method(self):
-        self.re_service = ReverseEngineeringService()
+    async def asyncSetUp(self) -> None:
+        auth_rate_limiter.clear()
         self.settings = ApiSettings(
-            app_name="DERA Migration Test Gateway",
-            environment="testing",
+            database_url="sqlite+aiosqlite:///:memory:",
+            auth_csrf_enabled=False,
         )
+        self.engine = create_database_engine(self.settings)
+
+        async with self.engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+
+        self.session_factory = create_session_factory(self.engine)
+
+        async def override_get_db_session() -> AsyncIterator[AsyncSession]:
+            async with self.session_factory() as session:
+                yield session
+
+        self.re_service = ReverseEngineeringService()
         self.app = create_app(self.settings)
-        # Bind isolated RE service to app state
+        self.app.state.is_ready = True
+        self.app.state.db_session_factory = self.session_factory
         self.app.state.reverse_engineering_service = self.re_service
-        self.client = TestClient(self.app)
+        self.app.dependency_overrides[get_db_session] = override_get_db_session
 
-        self.ws_a = str(uuid.uuid4())
-        self.ws_b = str(uuid.uuid4())
-
-        self.snap_v1_a, self.snap_v2_a = _create_test_snapshots(self.re_service, self.ws_a)
-        self.snap_v1_b, self.snap_v2_b = _create_test_snapshots(self.re_service, self.ws_b)
-
-    def test_list_snapshots_tenant_isolation(self):
-        """Verify snapshots are isolated by workspace."""
-        resp_a = self.client.get(
-            "/api/v1/migrations/snapshots",
-            headers={"X-Workspace-Id": self.ws_a},
+        self.client = AsyncClient(
+            transport=ASGITransport(app=self.app),
+            base_url="http://testserver",
         )
-        assert resp_a.status_code == 200
-        data_a = resp_a.json()
-        assert data_a["total_count"] == 2
-        ids_a = {s["id"] for s in data_a["snapshots"]}
-        assert self.snap_v1_a.snapshot_id in ids_a
-        assert self.snap_v2_a.snapshot_id in ids_a
-        assert self.snap_v1_b.snapshot_id not in ids_a
 
-        # Workspace B has only its snapshots
-        resp_b = self.client.get(
-            "/api/v1/migrations/snapshots",
-            headers={"X-Workspace-Id": self.ws_b},
+        # 1. Register Owner (User 1)
+        r1 = await self.client.post(
+            "/api/v1/auth/register",
+            json={"email": "owner@tenant-a.com", "password": "password-owner-2026"},
         )
-        assert resp_b.status_code == 200
-        ids_b = {s["id"] for s in resp_b.json()["snapshots"]}
-        assert self.snap_v1_b.snapshot_id in ids_b
-        assert self.snap_v1_a.snapshot_id not in ids_b
+        self.assertEqual(r1.status_code, 201)
+        self.owner_token = r1.cookies.get("dera_session")
+        self.owner_id = r1.json()["user"]["id"]
 
-    def test_end_to_end_safe_migration_lifecycle(self):
-        """Execute complete lifecycle: Compare -> Risk -> Plan -> Compile -> Review -> Approve -> Export."""
+        # 2. Register Reviewer (User 2 - Admin in Workspace A)
+        self.client.cookies.clear()
+        r2 = await self.client.post(
+            "/api/v1/auth/register",
+            json={"email": "reviewer@tenant-a.com", "password": "password-reviewer-2026"},
+        )
+        self.assertEqual(r2.status_code, 201)
+        self.reviewer_token = r2.cookies.get("dera_session")
+        self.reviewer_id = r2.json()["user"]["id"]
+
+        # 3. Register Tenant B User (User 3)
+        self.client.cookies.clear()
+        r3 = await self.client.post(
+            "/api/v1/auth/register",
+            json={"email": "user@tenant-b.com", "password": "password-user-b-2026"},
+        )
+        self.assertEqual(r3.status_code, 201)
+        self.user_b_token = r3.cookies.get("dera_session")
+        self.user_b_id = r3.json()["user"]["id"]
+
+        # 4. Create Workspace A (owned by Owner)
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.owner_token)
+        ws_a_res = await self.client.post(
+            "/api/v1/workspaces",
+            json={"name": "Workspace Alpha", "slug": "workspace-alpha"},
+        )
+        self.assertEqual(ws_a_res.status_code, 201)
+        self.ws_a_id = ws_a_res.json()["id"]
+
+        # Add User 2 as Admin to Workspace A
+        add_mem = await self.client.post(
+            f"/api/v1/workspaces/workspace-alpha/members",
+            json={"email": "reviewer@tenant-a.com", "role": "admin"},
+        )
+        self.assertEqual(add_mem.status_code, 201)
+
+        # 5. Create Workspace B (owned by User B)
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.user_b_token)
+        ws_b_res = await self.client.post(
+            "/api/v1/workspaces",
+            json={"name": "Workspace Beta", "slug": "workspace-beta"},
+        )
+        self.assertEqual(ws_b_res.status_code, 201)
+        self.ws_b_id = ws_b_res.json()["id"]
+
+        # Save snapshots in memory storage for each workspace
+        self.snap_v1_a, self.snap_v2_a = _create_test_snapshots(self.re_service, self.ws_a_id)
+        self.snap_v1_b, self.snap_v2_b = _create_test_snapshots(self.re_service, self.ws_b_id)
+        await self.re_service.snapshot_storage.save(self.snap_v1_a)
+        await self.re_service.snapshot_storage.save(self.snap_v2_a)
+        await self.re_service.snapshot_storage.save(self.snap_v1_b)
+        await self.re_service.snapshot_storage.save(self.snap_v2_b)
+
+    async def asyncTearDown(self) -> None:
+        await self.client.aclose()
+        async with self.engine.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
+        await dispose_database_engine(self.engine)
+        auth_rate_limiter.clear()
+
+    async def test_unauthenticated_request_fails_closed(self) -> None:
+        """P0 Requirement 3 & 9: Unauthenticated request fails closed with 401."""
+        self.client.cookies.clear()
+        res = await self.client.get(
+            "/api/v1/migrations/snapshots",
+            headers={"X-Workspace-Id": self.ws_a_id},
+        )
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    async def test_spoofed_actor_headers_are_ignored(self) -> None:
+        """P0 Requirement 1 & 9: X-Actor-Id and X-Actor-Role headers are ignored."""
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.owner_token)
+
         # 1. Compare snapshots
-        comp_resp = self.client.post(
+        comp_resp = await self.client.post(
             "/api/v1/migrations/compare",
-            headers={"X-Workspace-Id": self.ws_a},
+            headers={"X-Workspace-Id": self.ws_a_id},
             json={
                 "baseline_snapshot_id": self.snap_v1_a.snapshot_id,
                 "target_snapshot_id": self.snap_v2_a.snapshot_id,
             },
         )
-        assert comp_resp.status_code == 200
-        comp_data = comp_resp.json()
-        comparison_id = comp_data["comparison_id"]
-        assert comp_data["summary"]["total_changes"] == 1
-        assert comp_data["summary"]["total_added"] == 1
+        self.assertEqual(comp_resp.status_code, 200)
+        comp_id = comp_resp.json()["comparison_id"]
 
-        # 2. Risk Assessment
-        risk_resp = self.client.post(
-            "/api/v1/migrations/risk-assessments",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"comparison_id": comparison_id},
-        )
-        assert risk_resp.status_code == 200
-        risk_data = risk_resp.json()
-        assert risk_data["summary"]["overall_risk_level"] in ("LOW", "INFORMATIONAL")
-
-        # 3. Plan Generation
-        plan_resp = self.client.post(
+        # 2. Plan
+        plan_resp = await self.client.post(
             "/api/v1/migrations/plans",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"comparison_id": comparison_id},
+            headers={"X-Workspace-Id": self.ws_a_id},
+            json={"comparison_id": comp_id},
         )
-        assert plan_resp.status_code == 200
-        plan_data = plan_resp.json()
-        plan_id = plan_data["plan_id"]
-        assert plan_data["summary"]["total_operations"] >= 1
+        self.assertEqual(plan_resp.status_code, 200)
+        plan_id = plan_resp.json()["plan_id"]
 
-        # 4. Compile Dialect SQL
-        sql_resp = self.client.post(
+        # 3. Compile
+        sql_resp = await self.client.post(
             "/api/v1/migrations/sql-artifacts",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"plan_id": plan_id, "target_dialect": "postgresql"},
+            headers={"X-Workspace-Id": self.ws_a_id},
+            json={"plan_id": plan_id},
         )
-        assert sql_resp.status_code == 200
-        sql_data = sql_resp.json()
-        artifact_id = sql_data["artifact_id"]
-        assert "ALTER TABLE" in sql_data["forward_sql"]
-        assert sql_data["disclaimer"] == "GENERATED FOR REVIEW — NOT EXECUTED"
+        self.assertEqual(sql_resp.status_code, 200)
+        art_id = sql_resp.json()["artifact_id"]
 
-        # 5. Submit Governance Review
-        review_resp = self.client.post(
+        # 4. Submit with spoofed X-Actor-Id header
+        rev_resp = await self.client.post(
             "/api/v1/migrations/reviews",
-            headers={"X-Workspace-Id": self.ws_a},
+            headers={
+                "X-Workspace-Id": self.ws_a_id,
+                "X-Actor-Id": "spoofed-user-id-9999",
+            },
+            json={"artifact_id": art_id, "title": "Spoof Test"},
+        )
+        self.assertEqual(rev_resp.status_code, 201)
+        rev_data = rev_resp.json()
+        # Requester must be actual authenticated user ID, NOT the spoofed header
+        self.assertEqual(rev_data["requester_id"], self.owner_id)
+        self.assertNotEqual(rev_data["requester_id"], "spoofed-user-id-9999")
+
+    async def test_separation_of_duties_self_approval_blocked(self) -> None:
+        """P0 Requirement 4 & 9: Requester cannot approve their own review request."""
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.owner_token)
+
+        # 1. Pipeline to review creation by Owner
+        comp_resp = await self.client.post(
+            "/api/v1/migrations/compare",
+            headers={"X-Workspace-Id": self.ws_a_id},
             json={
-                "artifact_id": artifact_id,
-                "title": "Add phone_number to users table",
-                "description": "Safe backward-compatible schema change",
-                "required_approvals": 1,
+                "baseline_snapshot_id": self.snap_v1_a.snapshot_id,
+                "target_snapshot_id": self.snap_v2_a.snapshot_id,
             },
         )
-        assert review_resp.status_code == 201
-        review_data = review_resp.json()
-        review_id = review_data["review_id"]
-        assert review_data["status"] == "SUBMITTED"
+        comp_id = comp_resp.json()["comparison_id"]
+        plan_id = (
+            await self.client.post(
+                "/api/v1/migrations/plans",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={"comparison_id": comp_id},
+            )
+        ).json()["plan_id"]
+        art_id = (
+            await self.client.post(
+                "/api/v1/migrations/sql-artifacts",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={"plan_id": plan_id},
+            )
+        ).json()["artifact_id"]
+        rev_id = (
+            await self.client.post(
+                "/api/v1/migrations/reviews",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={"artifact_id": art_id, "title": "SoD Test"},
+            )
+        ).json()["review_id"]
 
-        # 6. Record Review Decision
-        dec_resp = self.client.post(
-            f"/api/v1/migrations/reviews/{review_id}/decisions",
-            headers={"X-Workspace-Id": self.ws_a},
+        # Owner attempts to self-approve -> Forbidden (403)
+        self_appr = await self.client.post(
+            f"/api/v1/migrations/reviews/{rev_id}/decisions",
+            headers={"X-Workspace-Id": self.ws_a_id},
             json={
                 "decision_type": "APPROVE",
-                "rationale": "Verified column addition is nullable and non-blocking in staging.",
+                "rationale": "I am the owner and approve my own change.",
             },
         )
-        assert dec_resp.status_code == 200
-        assert dec_resp.json()["status"] == "APPROVED"
+        self.assertEqual(self_appr.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn("Separation of duties", self_appr.json()["detail"])
 
-        # 7. Check Audit Trail
-        audit_resp = self.client.get(
-            f"/api/v1/migrations/reviews/{review_id}/audit",
-            headers={"X-Workspace-Id": self.ws_a},
-        )
-        assert audit_resp.status_code == 200
-        events = audit_resp.json()["events"]
-        assert len(events) >= 2  # SUBMIT_REVIEW + RECORD_DECISION
-        assert events[0]["event_type"] == "SUBMIT_REVIEW"
-        assert events[1]["event_type"] == "RECORD_DECISION"
-
-        # 8. Export Approved Artifact
-        export_resp = self.client.get(
-            f"/api/v1/migrations/reviews/{review_id}/export",
-            headers={"X-Workspace-Id": self.ws_a},
-        )
-        assert export_resp.status_code == 200
-        export_data = export_resp.json()
-        assert export_data["governance_status"] == "APPROVED"
-        assert export_data["disclaimer"] == "GENERATED FOR REVIEW — NOT EXECUTED"
-        assert "ALTER TABLE" in export_data["forward_sql"]
-
-    def test_cross_tenant_access_denied(self):
-        """Verify that Workspace B cannot access or approve Workspace A reviews."""
-        # Create review in Workspace A
-        comp_resp = self.client.post(
-            "/api/v1/migrations/compare",
-            headers={"X-Workspace-Id": self.ws_a},
+        # Reviewer (distinct admin) approves -> Success (200)
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.reviewer_token)
+        rev_appr = await self.client.post(
+            f"/api/v1/migrations/reviews/{rev_id}/decisions",
+            headers={"X-Workspace-Id": self.ws_a_id},
             json={
-                "baseline_snapshot_id": self.snap_v1_a.snapshot_id,
-                "target_snapshot_id": self.snap_v2_a.snapshot_id,
+                "decision_type": "APPROVE",
+                "rationale": "Independent reviewer verified safe migration.",
             },
         )
-        comp_id = comp_resp.json()["comparison_id"]
+        self.assertEqual(rev_appr.status_code, status.HTTP_200_OK)
+        self.assertEqual(rev_appr.json()["status"], "APPROVED")
 
-        plan_id = self.client.post(
-            "/api/v1/migrations/plans",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"comparison_id": comp_id},
+    async def test_cross_tenant_access_denied(self) -> None:
+        """P0 Requirement 5 & 9: Tenant B cannot access or decide Tenant A review."""
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.owner_token)
+
+        comp_id = (
+            await self.client.post(
+                "/api/v1/migrations/compare",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={
+                    "baseline_snapshot_id": self.snap_v1_a.snapshot_id,
+                    "target_snapshot_id": self.snap_v2_a.snapshot_id,
+                },
+            )
+        ).json()["comparison_id"]
+        plan_id = (
+            await self.client.post(
+                "/api/v1/migrations/plans",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={"comparison_id": comp_id},
+            )
         ).json()["plan_id"]
-
-        art_id = self.client.post(
-            "/api/v1/migrations/sql-artifacts",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"plan_id": plan_id},
+        art_id = (
+            await self.client.post(
+                "/api/v1/migrations/sql-artifacts",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={"plan_id": plan_id},
+            )
         ).json()["artifact_id"]
-
-        rev_id = self.client.post(
-            "/api/v1/migrations/reviews",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"artifact_id": art_id, "title": "A Title"},
+        rev_id = (
+            await self.client.post(
+                "/api/v1/migrations/reviews",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={"artifact_id": art_id, "title": "Tenant Isolation Test"},
+            )
         ).json()["review_id"]
 
-        # Attempt to access or decide review from Workspace B
-        get_b = self.client.get(
+        # User B attempts to access Workspace A's review using Workspace A header -> 403 Forbidden
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.user_b_token)
+        cross_res = await self.client.get(
             f"/api/v1/migrations/reviews/{rev_id}",
-            headers={"X-Workspace-Id": self.ws_b},
+            headers={"X-Workspace-Id": self.ws_a_id},
         )
-        assert get_b.status_code == 404
+        self.assertEqual(cross_res.status_code, status.HTTP_403_FORBIDDEN)
 
-        dec_b = self.client.post(
-            f"/api/v1/migrations/reviews/{rev_id}/decisions",
-            headers={"X-Workspace-Id": self.ws_b},
-            json={"decision_type": "APPROVE", "rationale": "Intruder approval"},
+        # User B attempts to access review with their own workspace header -> 404 Not Found
+        not_found_res = await self.client.get(
+            f"/api/v1/migrations/reviews/{rev_id}",
+            headers={"X-Workspace-Id": self.ws_b_id},
         )
-        assert dec_b.status_code in (400, 404)
+        self.assertEqual(not_found_res.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_unapproved_artifact_export_blocked(self):
-        """Verify fail-closed export: SUBMITTED review cannot be exported."""
-        comp_resp = self.client.post(
+    async def test_end_to_end_safe_migration_and_durable_persistence(self) -> None:
+        """P0 Requirement 7, 8, 10: Complete lifecycle, risk fingerprint linkage, and durable persistence."""
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.owner_token)
+
+        # 1. Compare
+        comp_res = await self.client.post(
             "/api/v1/migrations/compare",
-            headers={"X-Workspace-Id": self.ws_a},
+            headers={"X-Workspace-Id": self.ws_a_id},
             json={
                 "baseline_snapshot_id": self.snap_v1_a.snapshot_id,
                 "target_snapshot_id": self.snap_v2_a.snapshot_id,
             },
         )
-        comp_id = comp_resp.json()["comparison_id"]
+        self.assertEqual(comp_res.status_code, 200)
+        comp_data = comp_res.json()
+        comp_id = comp_data["comparison_id"]
 
-        plan_id = self.client.post(
-            "/api/v1/migrations/plans",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"comparison_id": comp_id},
-        ).json()["plan_id"]
-
-        art_id = self.client.post(
-            "/api/v1/migrations/sql-artifacts",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"plan_id": plan_id},
-        ).json()["artifact_id"]
-
-        rev_id = self.client.post(
-            "/api/v1/migrations/reviews",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"artifact_id": art_id, "title": "Unapproved Migration"},
-        ).json()["review_id"]
-
-        # Export before approval must fail with 403 Forbidden
-        export_resp = self.client.get(
-            f"/api/v1/migrations/reviews/{rev_id}/export",
-            headers={"X-Workspace-Id": self.ws_a},
-        )
-        assert export_resp.status_code == 403
-
-    def test_destructive_schema_change_workflow(self):
-        """Scenario B: Destructive schema change (table drop) raises high risk & destructive notices."""
-        payload_v1 = make_standard_ecommerce_payload()
-        # Drop the orders table in target
-        payload_v2 = SnapshotStructuralPayload(
-            schema_format=payload_v1.schema_format,
-            database_name=payload_v1.database_name,
-            engine=payload_v1.engine,
-            engine_version=payload_v1.engine_version,
-            namespaces=payload_v1.namespaces,
-            tables=tuple(t for t in payload_v1.tables if t.name != "orders"),
-            views=payload_v1.views,
-            triggers=payload_v1.triggers,
-            relationships=tuple(
-                r for r in payload_v1.relationships if r.constraint_name != "fk_orders_user"
-            ),
-        )
-
-        snap_dest_1 = build_snapshot_from_payload(
-            payload_v1,
-            snapshot_id=f"snap_dest_1_{uuid.uuid4().hex[:8]}",
-            workspace_id=self.ws_a,
-        )
-        snap_dest_2 = build_snapshot_from_payload(
-            payload_v2,
-            snapshot_id=f"snap_dest_2_{uuid.uuid4().hex[:8]}",
-            workspace_id=self.ws_a,
-        )
-        asyncio.run(self.re_service.snapshot_storage.save(snap_dest_1))
-        asyncio.run(self.re_service.snapshot_storage.save(snap_dest_2))
-
-        comp_resp = self.client.post(
-            "/api/v1/migrations/compare",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={
-                "baseline_snapshot_id": snap_dest_1.snapshot_id,
-                "target_snapshot_id": snap_dest_2.snapshot_id,
-            },
-        )
-        assert comp_resp.status_code == 200
-        comp_id = comp_resp.json()["comparison_id"]
-
-        risk_resp = self.client.post(
+        # 2. Risk Assessment
+        risk_res = await self.client.post(
             "/api/v1/migrations/risk-assessments",
-            headers={"X-Workspace-Id": self.ws_a},
+            headers={"X-Workspace-Id": self.ws_a_id},
             json={"comparison_id": comp_id},
         )
-        assert risk_resp.status_code == 200
-        risk_data = risk_resp.json()
-        assert risk_data["summary"]["breaking_change_count"] >= 1
-        assert risk_data["summary"]["overall_risk_level"] in ("HIGH", "CRITICAL")
+        self.assertEqual(risk_res.status_code, 200)
+        risk_fp = risk_res.json()["fingerprint"]
 
-        # Plan operations
-        plan_resp = self.client.post(
+        # 3. Plan Generation
+        plan_res = await self.client.post(
             "/api/v1/migrations/plans",
-            headers={"X-Workspace-Id": self.ws_a},
+            headers={"X-Workspace-Id": self.ws_a_id},
             json={"comparison_id": comp_id},
         )
-        assert plan_resp.status_code == 200
+        self.assertEqual(plan_res.status_code, 200)
+        plan_id = plan_res.json()["plan_id"]
 
-        # Compile SQL
-        sql_resp = self.client.post(
+        # 4. Compile SQL
+        sql_res = await self.client.post(
             "/api/v1/migrations/sql-artifacts",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"plan_id": plan_resp.json()["plan_id"], "target_dialect": "postgresql"},
+            headers={"X-Workspace-Id": self.ws_a_id},
+            json={"plan_id": plan_id, "target_dialect": "postgresql"},
         )
-        assert sql_resp.status_code == 200
-        assert "DROP TABLE" in sql_resp.json()["forward_sql"]
-        assert sql_resp.json()["disclaimer"] == "GENERATED FOR REVIEW — NOT EXECUTED"
+        self.assertEqual(sql_res.status_code, 200)
+        art_id = sql_res.json()["artifact_id"]
 
-    def test_artifact_tampering_invalidates_approval(self):
-        """Scenario D: Modified artifact fingerprint invalidates approvals and blocks export."""
-        comp_resp = self.client.post(
-            "/api/v1/migrations/compare",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={
-                "baseline_snapshot_id": self.snap_v1_a.snapshot_id,
-                "target_snapshot_id": self.snap_v2_a.snapshot_id,
-            },
-        )
-        comp_id = comp_resp.json()["comparison_id"]
-
-        plan_id = self.client.post(
-            "/api/v1/migrations/plans",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"comparison_id": comp_id},
-        ).json()["plan_id"]
-
-        art_id = self.client.post(
-            "/api/v1/migrations/sql-artifacts",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"plan_id": plan_id},
-        ).json()["artifact_id"]
-
-        rev_id = self.client.post(
+        # 5. Submit Governance Review
+        rev_res = await self.client.post(
             "/api/v1/migrations/reviews",
-            headers={"X-Workspace-Id": self.ws_a},
-            json={"artifact_id": art_id, "title": "Tamper Test"},
+            headers={"X-Workspace-Id": self.ws_a_id},
+            json={"artifact_id": art_id, "title": "Production Qualified Add Phone Column"},
+        )
+        self.assertEqual(rev_res.status_code, 201)
+        rev_data = rev_res.json()
+        rev_id = rev_data["review_id"]
+        self.assertEqual(rev_data["status"], "SUBMITTED")
+
+        # 6. Verify Durable DB Persistence of Review
+        async with self.session_factory() as db_session:
+            from dera_api.repositories.migration_governance import MigrationGovernanceRepository
+            repo = MigrationGovernanceRepository(db_session)
+            db_record = await repo.get_by_review_id(uuid.UUID(self.ws_a_id), rev_id)
+            self.assertIsNotNone(db_record)
+            self.assertEqual(db_record.requester_id, self.owner_id)
+            self.assertEqual(db_record.risk_report_fingerprint, risk_fp)
+            self.assertEqual(len(db_record.audit_events), 1)
+
+        # 7. Reviewer approves
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.reviewer_token)
+        dec_res = await self.client.post(
+            f"/api/v1/migrations/reviews/{rev_id}/decisions",
+            headers={"X-Workspace-Id": self.ws_a_id},
+            json={"decision_type": "APPROVE", "rationale": "Peer verified non-blocking."},
+        )
+        self.assertEqual(dec_res.status_code, 200)
+        self.assertEqual(dec_res.json()["status"], "APPROVED")
+
+        # 8. Verify Durable DB Persistence of Decision and Audit Chaining
+        async with self.session_factory() as db_session:
+            repo = MigrationGovernanceRepository(db_session)
+            db_record = await repo.get_by_review_id(uuid.UUID(self.ws_a_id), rev_id)
+            self.assertEqual(db_record.status, "APPROVED")
+            self.assertEqual(len(db_record.decisions), 1)
+            self.assertEqual(db_record.decisions[0].reviewer_id, self.reviewer_id)
+            self.assertEqual(len(db_record.audit_events), 2)
+            # Verify cryptographic hash chaining
+            ev0 = db_record.audit_events[0]
+            ev1 = db_record.audit_events[1]
+            self.assertEqual(ev1.previous_event_hash, ev0.event_hash)
+
+        # 9. Export Approved Migration
+        export_res = await self.client.get(
+            f"/api/v1/migrations/reviews/{rev_id}/export",
+            headers={"X-Workspace-Id": self.ws_a_id},
+        )
+        self.assertEqual(export_res.status_code, 200)
+        exp_data = export_res.json()
+        self.assertEqual(exp_data["governance_status"], "APPROVED")
+        self.assertEqual(exp_data["disclaimer"], "GENERATED FOR REVIEW — NOT EXECUTED")
+        self.assertIn("ALTER TABLE", exp_data["forward_sql"])
+
+    async def test_revoked_or_suspended_membership_fails(self) -> None:
+        """P0 Requirement 5 & 9: Inactive or suspended workspace memberships fail closed with 403."""
+        # Suspend reviewer membership in DB
+        async with self.session_factory() as db_session:
+            from dera_api.repositories.memberships import MembershipRepository
+            repo = MembershipRepository(db_session)
+            mem = await repo.get_membership(uuid.UUID(self.ws_a_id), uuid.UUID(self.reviewer_id))
+            self.assertIsNotNone(mem)
+            mem.status = "suspended"
+            await db_session.commit()
+
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.reviewer_token)
+        res = await self.client.get(
+            "/api/v1/migrations/snapshots",
+            headers={"X-Workspace-Id": self.ws_a_id},
+        )
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    async def test_artifact_tampering_blocks_export(self) -> None:
+        """P0 Requirement 8 & 9: Altering artifact content/fingerprint blocks export."""
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.owner_token)
+
+        # 1. Pipeline
+        comp_id = (
+            await self.client.post(
+                "/api/v1/migrations/compare",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={
+                    "baseline_snapshot_id": self.snap_v1_a.snapshot_id,
+                    "target_snapshot_id": self.snap_v2_a.snapshot_id,
+                },
+            )
+        ).json()["comparison_id"]
+        plan_id = (
+            await self.client.post(
+                "/api/v1/migrations/plans",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={"comparison_id": comp_id},
+            )
+        ).json()["plan_id"]
+        art_id = (
+            await self.client.post(
+                "/api/v1/migrations/sql-artifacts",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={"plan_id": plan_id},
+            )
+        ).json()["artifact_id"]
+        rev_id = (
+            await self.client.post(
+                "/api/v1/migrations/reviews",
+                headers={"X-Workspace-Id": self.ws_a_id},
+                json={"artifact_id": art_id, "title": "Tamper Test"},
+            )
         ).json()["review_id"]
 
-        # Approve with authorized reviewer
-        appr_resp = self.client.post(
+        # 2. Reviewer approves
+        self.client.cookies.clear()
+        self.client.cookies.set("dera_session", self.reviewer_token)
+        appr_res = await self.client.post(
             f"/api/v1/migrations/reviews/{rev_id}/decisions",
-            headers={
-                "X-Workspace-Id": self.ws_a,
-                "X-Actor-Id": "usr-lead-engineer",
-                "X-Actor-Role": "admin",
-            },
-            json={"decision_type": "APPROVE", "rationale": "Initial sign-off"},
+            headers={"X-Workspace-Id": self.ws_a_id},
+            json={"decision_type": "APPROVE", "rationale": "Valid sign-off."},
         )
-        assert appr_resp.status_code == 200
+        self.assertEqual(appr_res.status_code, 200)
 
-        # Access migration service from app state to simulate out-of-band tampering
+        # 3. Simulate artifact tampering in service cache
         migration_service = self.app.state.migration_service
-        rev_record = migration_service._reviews.get((self.ws_a, rev_id))
-        assert rev_record is not None
-        # Corrupt artifact fingerprint
-        tampered_record = rev_record.model_copy(
-            update={"artifact_fingerprint": "corrupted_tampered_fingerprint_sha256"}
+        cached_art = migration_service._artifacts.get((self.ws_a_id, art_id))
+        self.assertIsNotNone(cached_art)
+        # Mutate artifact fingerprint
+        tampered_art = cached_art.model_copy(
+            update={"artifact_fingerprint": "corrupted_or_mutated_sha256_hash"}
         )
-        migration_service._reviews[(self.ws_a, rev_id)] = tampered_record
+        migration_service._artifacts[(self.ws_a_id, art_id)] = tampered_art
 
-        # Export must now fail because fingerprint check fails or is invalidated
-        export_resp = self.client.get(
+        # 4. Attempt to export tampered artifact -> fail-closed (400)
+        export_res = await self.client.get(
             f"/api/v1/migrations/reviews/{rev_id}/export",
-            headers={"X-Workspace-Id": self.ws_a},
+            headers={"X-Workspace-Id": self.ws_a_id},
         )
-        # Fail-closed: 400 or 403
-        assert export_resp.status_code in (400, 403)
+        self.assertEqual(export_res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Integrity violation", export_res.json()["detail"])

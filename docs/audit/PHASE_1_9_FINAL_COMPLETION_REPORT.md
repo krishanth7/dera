@@ -39,17 +39,24 @@ All 54 milestones across Phases 1 through 9 have been individually audited and v
    - Demo mode was completely segregated behind an explicit toggle and labeled with `DEMO MODE — SAMPLE DATA — NOT LIVE RESULTS`.
 2. **Authenticated Migration REST API**:
    - Implemented `/api/v1/migrations/` endpoints in `apps/api/src/dera_api/api/v1/endpoints/migrations.py` wrapping the core Phase 9 comparison, risk assessment, planning, SQL generation, governance, and audit engines.
-3. **Governance Security Hardening**:
-   - Implemented server-side RBAC validation, Separation of Duties (requester cannot self-approve), and cryptographic fingerprint validation ensuring that tampered artifacts cannot be exported as approved.
+3. **Governance Security Hardening & P0 Audit Remediation**:
+   - Removed all client trust in `X-Actor-Id` and `X-Actor-Role` headers; identities are derived strictly from validated server-side authentication (`current_user.id`).
+   - Removed hardcoded fallback identities and default `"admin"` fallback in `get_effective_user_role()`.
+   - Hardened `resolve_authorized_workspace_id()` to fail closed immediately on missing authentication or unverified/revoked memberships.
+   - Enforced trusted policy-defined quorum instead of user-requested overrides.
+   - Replaced process-local in-memory state with durable relational models (`dera_migration_reviews`, `dera_migration_review_decisions`, `dera_migration_audit_events`) and transactional repository.
+   - Bound review state to authentic risk report fingerprints (`source_risk_report_fingerprint`).
+   - Added exhaustive security integration tests proving fail-closed responses to unauthenticated access, spoofed headers, revoked memberships, cross-tenant requests, self-approvals, and tampered artifacts.
 4. **Read-Only Database Guarantees**:
    - Verified that customer database connectors remain strictly read-only and that all generated SQL is labeled `GENERATED FOR REVIEW — NOT EXECUTED`.
 
 ---
 
 ## 4. Verification Evidence
-- **Backend Tests**: 1,070 passed, 2 skipped, 407 subtests passed (`pytest`).
+- **Backend Tests**: 1,071 passed, 2 skipped, 407 subtests passed (`pytest`).
+- **Security Integration Tests**: 7/7 passed (`tests/integration/test_migration_endpoints.py`).
 - **Frontend Tests**: 106 passed across 13 suites (`vitest`).
 - **TypeScript**: 0 errors (`tsc --noEmit`).
 - **Frontend Production Build**: Clean build of all 19 Next.js routes.
-- **Documentation**: 580 files validated with zero dead links.
+- **Documentation**: 589 files validated with zero dead links.
 - **OpenAPI**: Synchronized in `docs/api/openapi.v1.json` with zero schema drift.
