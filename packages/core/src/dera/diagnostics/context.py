@@ -48,6 +48,8 @@ class DiagnosticEngineConfig:
     included_categories: frozenset[RuleCategory] | None = None
     excluded_categories: frozenset[RuleCategory] = field(default_factory=frozenset)
     rule_thresholds: dict[str, Any] = field(default_factory=dict)
+    suppressions: tuple[Any, ...] = ()
+    severity_overrides: tuple[Any, ...] = ()
     limits: DiagnosticResourceLimits = field(default_factory=DiagnosticResourceLimits)
 
     def to_canonical_dict(self) -> dict[str, Any]:
@@ -62,6 +64,14 @@ class DiagnosticEngineConfig:
             else None,
             "excluded_categories": sorted([c.value for c in self.excluded_categories]),
             "rule_thresholds": dict(sorted(self.rule_thresholds.items())),
+            "suppressions": [
+                s.to_canonical_dict() if hasattr(s, "to_canonical_dict") else str(s)
+                for s in self.suppressions
+            ],
+            "severity_overrides": [
+                o.to_canonical_dict() if hasattr(o, "to_canonical_dict") else str(o)
+                for o in self.severity_overrides
+            ],
             "limits": {
                 "max_objects": self.limits.max_objects,
                 "max_edges": self.limits.max_edges,

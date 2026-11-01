@@ -55,3 +55,5 @@ export class DeraSchemaCanvas {
     this.viewport = { ...this.viewport, ...viewport };
   }
 }
+
+export * from "./components/diagnostics";
