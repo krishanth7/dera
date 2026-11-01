@@ -762,6 +762,144 @@ export class DeraApiClient {
       }
     );
   }
+
+  // --- Phase 9 Migration Engineering Endpoints ---
+
+  async listMigrationSnapshots(
+    workspaceId: string
+  ): Promise<{ snapshots: Array<{
+    id: string;
+    name: string;
+    database_id: string;
+    database_name: string;
+    engine: string;
+    engine_version: string;
+    captured_at: string;
+    fingerprint: string;
+    table_count: number;
+    view_count: number;
+    tags: string[];
+  }>; total_count: number }> {
+    return this.request(`/api/v1/migrations/snapshots`, {
+      headers: { "X-Workspace-Id": workspaceId },
+    });
+  }
+
+  async compareMigrationSnapshots(
+    workspaceId: string,
+    baselineSnapshotId: string,
+    targetSnapshotId: string
+  ): Promise<any> {
+    return this.request(`/api/v1/migrations/compare`, {
+      method: "POST",
+      headers: { "X-Workspace-Id": workspaceId },
+      body: JSON.stringify({
+        baseline_snapshot_id: baselineSnapshotId,
+        target_snapshot_id: targetSnapshotId,
+      }),
+    });
+  }
+
+  async getMigrationComparison(
+    workspaceId: string,
+    comparisonId: string
+  ): Promise<any> {
+    return this.request(`/api/v1/migrations/compare/${encodeURIComponent(comparisonId)}`, {
+      headers: { "X-Workspace-Id": workspaceId },
+    });
+  }
+
+  async assessMigrationRisk(
+    workspaceId: string,
+    comparisonId: string
+  ): Promise<any> {
+    return this.request(`/api/v1/migrations/risk-assessments`, {
+      method: "POST",
+      headers: { "X-Workspace-Id": workspaceId },
+      body: JSON.stringify({
+        comparison_id: comparisonId,
+      }),
+    });
+  }
+
+  async generateMigrationPlan(
+    workspaceId: string,
+    comparisonId: string
+  ): Promise<any> {
+    return this.request(`/api/v1/migrations/plans`, {
+      method: "POST",
+      headers: { "X-Workspace-Id": workspaceId },
+      body: JSON.stringify({
+        comparison_id: comparisonId,
+      }),
+    });
+  }
+
+  async compileMigrationSql(
+    workspaceId: string,
+    planId: string,
+    dialect?: string
+  ): Promise<any> {
+    return this.request(`/api/v1/migrations/sql-artifacts`, {
+      method: "POST",
+      headers: { "X-Workspace-Id": workspaceId },
+      body: JSON.stringify({
+        plan_id: planId,
+        dialect: dialect || "postgresql",
+      }),
+    });
+  }
+
+  async submitMigrationReview(
+    workspaceId: string,
+    payload: {
+      artifact_id: string;
+      artifact_fingerprint: string;
+      target_engine: string;
+      source_plan_id: string;
+      comparison_id: string;
+    }
+  ): Promise<any> {
+    return this.request(`/api/v1/migrations/reviews`, {
+      method: "POST",
+      headers: { "X-Workspace-Id": workspaceId },
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async recordMigrationDecision(
+    workspaceId: string,
+    reviewId: string,
+    payload: {
+      decision: string;
+      rationale: string;
+      actor_role?: string;
+    }
+  ): Promise<any> {
+    return this.request(`/api/v1/migrations/reviews/${encodeURIComponent(reviewId)}/decisions`, {
+      method: "POST",
+      headers: { "X-Workspace-Id": workspaceId },
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async getMigrationAuditTrail(
+    workspaceId: string,
+    reviewId: string
+  ): Promise<any> {
+    return this.request(`/api/v1/migrations/reviews/${encodeURIComponent(reviewId)}/audit`, {
+      headers: { "X-Workspace-Id": workspaceId },
+    });
+  }
+
+  async exportMigrationArtifact(
+    workspaceId: string,
+    reviewId: string
+  ): Promise<any> {
+    return this.request(`/api/v1/migrations/reviews/${encodeURIComponent(reviewId)}/export`, {
+      headers: { "X-Workspace-Id": workspaceId },
+    });
+  }
 }
 
 export const apiClient = new DeraApiClient();

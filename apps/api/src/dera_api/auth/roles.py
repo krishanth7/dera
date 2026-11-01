@@ -53,3 +53,11 @@ class Permission(StrEnum):
     SNAPSHOT_VERIFY = "snapshot:verify"
     EXPORT_CREATE = "export:create"
     EXPORT_READ = "export:read"
+
+    # Migration engineering & governance operations (Phase 9)
+    MIGRATION_READ = "migration:read"
+    MIGRATION_COMPARE = "migration:compare"
+    MIGRATION_PLAN = "migration:plan"
+    MIGRATION_REVIEW = "migration:review"
+    MIGRATION_APPROVE = "migration:approve"
+    MIGRATION_EXPORT = "migration:export"

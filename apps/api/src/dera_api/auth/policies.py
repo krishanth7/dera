@@ -17,6 +17,7 @@ ROLE_PERMISSIONS: dict[WorkspaceRole, frozenset[Permission]] = {
             Permission.SCHEMA_READ,
             Permission.SNAPSHOT_READ,
             Permission.EXPORT_READ,
+            Permission.MIGRATION_READ,
         }
     ),
     WorkspaceRole.EDITOR: frozenset(
@@ -37,6 +38,10 @@ ROLE_PERMISSIONS: dict[WorkspaceRole, frozenset[Permission]] = {
             Permission.SNAPSHOT_VERIFY,
             Permission.EXPORT_CREATE,
             Permission.EXPORT_READ,
+            Permission.MIGRATION_READ,
+            Permission.MIGRATION_COMPARE,
+            Permission.MIGRATION_PLAN,
+            Permission.MIGRATION_REVIEW,
         }
     ),
     WorkspaceRole.ADMIN: frozenset(
@@ -63,6 +68,12 @@ ROLE_PERMISSIONS: dict[WorkspaceRole, frozenset[Permission]] = {
             Permission.SNAPSHOT_VERIFY,
             Permission.EXPORT_CREATE,
             Permission.EXPORT_READ,
+            Permission.MIGRATION_READ,
+            Permission.MIGRATION_COMPARE,
+            Permission.MIGRATION_PLAN,
+            Permission.MIGRATION_REVIEW,
+            Permission.MIGRATION_APPROVE,
+            Permission.MIGRATION_EXPORT,
         }
     ),
     WorkspaceRole.OWNER: frozenset(
@@ -90,6 +101,12 @@ ROLE_PERMISSIONS: dict[WorkspaceRole, frozenset[Permission]] = {
             Permission.SNAPSHOT_VERIFY,
             Permission.EXPORT_CREATE,
             Permission.EXPORT_READ,
+            Permission.MIGRATION_READ,
+            Permission.MIGRATION_COMPARE,
+            Permission.MIGRATION_PLAN,
+            Permission.MIGRATION_REVIEW,
+            Permission.MIGRATION_APPROVE,
+            Permission.MIGRATION_EXPORT,
         }
     ),
 }

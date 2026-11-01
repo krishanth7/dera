@@ -47,3 +47,23 @@ async def get_db_session(request: Request) -> AsyncIterator[AsyncSession]:
             raise
         finally:
             await session.close()
+
+
+async def get_optional_db_session(request: Request) -> AsyncIterator[AsyncSession | None]:
+    """Provide a request-scoped AsyncSession if database is configured; yield None otherwise."""
+    session_factory: async_sessionmaker[AsyncSession] | None = getattr(
+        request.app.state, "db_session_factory", None
+    )
+
+    if session_factory is None:
+        yield None
+        return
+
+    async with session_factory() as session:
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()

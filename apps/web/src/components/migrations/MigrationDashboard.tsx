@@ -28,13 +28,14 @@ import {
 } from "lucide-react";
 
 interface MigrationDashboardProps {
+  workspaceId?: string;
   snapshots: SchemaSnapshotSummary[];
-  initialComparison: SchemaComparisonReport;
-  initialRiskReport: RiskAssessmentReport;
-  initialPlan: MigrationPlan;
-  initialArtifact: SqlArtifact;
-  initialReview: GovernanceReviewRequest;
-  initialAuditEvents: AuditEventRecord[];
+  initialComparison?: SchemaComparisonReport;
+  initialRiskReport?: RiskAssessmentReport;
+  initialPlan?: MigrationPlan;
+  initialArtifact?: SqlArtifact;
+  initialReview?: GovernanceReviewRequest;
+  initialAuditEvents?: AuditEventRecord[];
   isDemoMode?: boolean;
 }
 
@@ -47,49 +48,239 @@ export type MigrationTab =
   | "GOVERNANCE"
   | "AUDIT";
 
+import { apiClient } from "@/lib/api-client";
+
 export function MigrationDashboard({
+  workspaceId,
   snapshots,
   initialComparison,
   initialRiskReport,
   initialPlan,
   initialArtifact,
   initialReview,
-  initialAuditEvents,
+  initialAuditEvents = [],
   isDemoMode = false,
 }: MigrationDashboardProps) {
   const [activeTab, setActiveTab] = useState<MigrationTab>("OVERVIEW");
   const [baselineId, setBaselineId] = useState<string>(
-    initialComparison.baseline_snapshot_id || initialComparison.source_snapshot_id || ""
+    initialComparison?.baseline_snapshot_id || initialComparison?.source_snapshot_id || snapshots[0]?.id || ""
   );
-  const [targetId, setTargetId] = useState<string>(initialComparison.target_snapshot_id || "");
+  const [targetId, setTargetId] = useState<string>(
+    initialComparison?.target_snapshot_id || snapshots[1]?.id || ""
+  );
   const [isComparing, setIsComparing] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // States for sub-engines
-  const [comparison, setComparison] = useState<SchemaComparisonReport>(initialComparison);
-  const [riskReport] = useState<RiskAssessmentReport>(initialRiskReport);
-  const [plan] = useState<MigrationPlan>(initialPlan);
-  const [artifact] = useState<SqlArtifact>(initialArtifact);
-  const [review] = useState<GovernanceReviewRequest>(initialReview);
-  const [auditEvents] = useState<AuditEventRecord[]>(initialAuditEvents);
+  const [comparison, setComparison] = useState<SchemaComparisonReport | undefined>(initialComparison);
+  const [riskReport, setRiskReport] = useState<RiskAssessmentReport | undefined>(initialRiskReport);
+  const [plan, setPlan] = useState<MigrationPlan | undefined>(initialPlan);
+  const [artifact, setArtifact] = useState<SqlArtifact | undefined>(initialArtifact);
+  const [review, setReview] = useState<GovernanceReviewRequest | undefined>(initialReview);
+  const [auditEvents, setAuditEvents] = useState<AuditEventRecord[]>(initialAuditEvents);
 
-  const handleRunComparison = () => {
+  const handleRunComparison = async () => {
+    if (!baselineId || !targetId) {
+      setActionError("Please select both a baseline and a target snapshot.");
+      return;
+    }
+
+    if (baselineId === targetId) {
+      setActionError("Baseline and target snapshots must be distinct.");
+      return;
+    }
+
     setIsComparing(true);
-    setTimeout(() => {
-      setComparison((prev) => ({
-        ...prev,
-        baseline_snapshot_id: baselineId,
-        source_snapshot_id: baselineId,
-        target_snapshot_id: targetId,
-      }));
-      setIsComparing(false);
+    setActionError(null);
+
+    // If in demo mode without workspaceId, fallback to fixture display
+    if (isDemoMode && !workspaceId) {
+      setTimeout(() => {
+        if (comparison) {
+          setComparison({
+            ...comparison,
+            baseline_snapshot_id: baselineId,
+            source_snapshot_id: baselineId,
+            target_snapshot_id: targetId,
+          });
+        }
+        setIsComparing(false);
+        setActiveTab("COMPARE");
+      }, 400);
+      return;
+    }
+
+    try {
+      if (!workspaceId) {
+        throw new Error("No active workspace selected.");
+      }
+
+      // Step 1: Real Comparison (Phase 9.1)
+      const compRes = await apiClient.compareMigrationSnapshots(workspaceId, baselineId, targetId);
+      
+      const normalizedComp: SchemaComparisonReport = {
+        report_id: compRes.comparison_id,
+        baseline_snapshot_id: compRes.baseline_snapshot_id,
+        target_snapshot_id: compRes.target_snapshot_id,
+        engine: compRes.engine,
+        target_engine: compRes.engine,
+        status: "COMPARED",
+        report_fingerprint: compRes.comparison_fingerprint,
+        summary: {
+          total_changes: compRes.summary.total_changes,
+          total_added: compRes.summary.total_added,
+          total_removed: compRes.summary.total_removed,
+          total_modified: compRes.summary.total_modified,
+        },
+        changes: compRes.changes,
+      };
+      setComparison(normalizedComp);
+
+      // Step 2: Real Risk Assessment (Phase 9.2)
+      const riskRes = await apiClient.assessMigrationRisk(workspaceId, compRes.comparison_id);
+      const normalizedRisk: RiskAssessmentReport = {
+        report_id: riskRes.report_id,
+        summary: {
+          total_changes: compRes.summary.total_changes,
+          additive_changes: riskRes.summary.safe_change_count ?? 0,
+          removals: compRes.summary.total_removed,
+          modifications: compRes.summary.total_modified,
+          potentially_breaking: riskRes.summary.potentially_breaking ?? 0,
+          requires_review: riskRes.summary.high_count + riskRes.summary.critical_count,
+          total_risks: riskRes.risks.length,
+          critical_count: riskRes.summary.critical_count,
+          high_count: riskRes.summary.high_count,
+          medium_count: riskRes.summary.medium_count,
+          low_count: riskRes.summary.low_count,
+          breaking_change_count: riskRes.summary.breaking_change_count,
+        },
+        risk_assessments: riskRes.risks,
+        report_fingerprint: riskRes.fingerprint,
+      };
+      setRiskReport(normalizedRisk);
+
+      // Step 3: Real Migration Plan (Phase 9.3)
+      const planRes = await apiClient.generateMigrationPlan(workspaceId, compRes.comparison_id);
+      const normalizedPlan: MigrationPlan = {
+        plan_id: planRes.plan_id,
+        plan_status: "GENERATED",
+        target_engine: planRes.engine,
+        plan_fingerprint: planRes.plan_fingerprint,
+        summary: {
+          total_operations: planRes.summary.total_operations,
+          supported_operations: planRes.summary.total_operations,
+          conditional_operations: 0,
+          blocked_operations: 0,
+          unsupported_operations: 0,
+          manual_decision_gates_count: planRes.summary.manual_decision_gates_count,
+          dependency_edges_count: 0,
+          stages_count: planRes.summary.total_stages,
+          destructive_operations_count: 0,
+        },
+        operations: [],
+        stages: planRes.stages.map((st: any) => ({
+          stage_id: st.stage_id,
+          stage_type: st.stage_type || "NORMAL",
+          stage_order: st.stage_index ?? st.stage_order ?? 0,
+          operation_ids: (st.operations || []).map((o: any) => o.operation_id),
+          operations: st.operations || [],
+          description: st.description || `Stage ${st.stage_index ?? st.stage_order ?? 0}`,
+        })),
+      };
+      setPlan(normalizedPlan);
+
+      // Step 4: Real SQL Compilation (Phase 9.4)
+      const sqlRes = await apiClient.compileMigrationSql(workspaceId, planRes.plan_id, compRes.engine);
+      const normalizedSql: SqlArtifact = {
+        artifact_id: sqlRes.artifact_id,
+        source_plan_id: sqlRes.source_plan_id,
+        dialect: sqlRes.dialect,
+        target_engine: sqlRes.dialect,
+        status: sqlRes.status,
+        artifact_fingerprint: sqlRes.artifact_fingerprint,
+        rendered_sql_script: sqlRes.rendered_sql_script,
+        sql_content: sqlRes.rendered_sql_script,
+        rollback_sql: sqlRes.rollback_sql,
+        validation: {
+          is_valid: sqlRes.validation_issues_count === 0,
+          dialect_supported: true,
+        },
+        summary: {
+          total_statements: sqlRes.statements.length,
+          destructive_statements: sqlRes.statements.filter((s: any) => s.is_destructive).length,
+          review_required_statements: sqlRes.statements.filter((s: any) => s.requires_manual_review).length,
+          transaction_blocks_count: 1,
+          validation_issues_count: sqlRes.validation_issues_count,
+        },
+        statements: sqlRes.statements,
+        execution_notice: sqlRes.execution_notice,
+      };
+      setArtifact(normalizedSql);
+
+      // Step 5: Real Governance Initial Submission (Phase 9.5)
+      const reviewRes = await apiClient.submitMigrationReview(workspaceId, {
+        artifact_id: sqlRes.artifact_id,
+        artifact_fingerprint: sqlRes.artifact_fingerprint,
+        target_engine: sqlRes.dialect,
+        source_plan_id: planRes.plan_id,
+        comparison_id: compRes.comparison_id,
+      });
+      const normalizedReview: GovernanceReviewRequest = {
+        review_id: reviewRes.review_id,
+        workspace_id: reviewRes.workspace_id,
+        artifact_id: reviewRes.artifact_id,
+        artifact_fingerprint: reviewRes.artifact_fingerprint,
+        status: reviewRes.status,
+        requester_id: reviewRes.requester_id,
+        created_at: reviewRes.created_at,
+        required_approvals: reviewRes.required_approvals,
+        policy_version: reviewRes.policy_version,
+        decisions: reviewRes.decisions,
+        safety_gate_results: reviewRes.safety_gate_results,
+        audit_events: reviewRes.audit_events,
+        is_invalidated: reviewRes.is_invalidated,
+        export_eligibility: reviewRes.export_eligibility,
+      };
+      setReview(normalizedReview);
+
+      // Step 6: Real Audit Events
+      const auditRes = await apiClient.getMigrationAuditTrail(workspaceId, reviewRes.review_id);
+      setAuditEvents(auditRes.events);
+
       setActiveTab("COMPARE");
-    }, 500);
+    } catch (err: any) {
+      console.error("Migration pipeline execution failed:", err);
+      setActionError(err.message || "Failed to execute migration engineering pipeline.");
+    } finally {
+      setIsComparing(false);
+    }
   };
 
-  const criticalCount = riskReport.summary.critical_count ?? 0;
-  const highCount = riskReport.summary.high_count ?? 1;
-  const breakingCount = riskReport.summary.breaking_change_count ?? riskReport.summary.potentially_breaking ?? 0;
-  const manualGatesCount = plan.summary.manual_gates_count ?? plan.summary.manual_decision_gates_count ?? 0;
+  const handleRecordDecision = async (decisionType: any, rationale: string) => {
+    if (!workspaceId || !review) return;
+    try {
+      const res = await apiClient.recordMigrationDecision(workspaceId, review.review_id, {
+        decision: String(decisionType),
+        rationale: rationale,
+      });
+      setReview((prev) => prev ? {
+        ...prev,
+        status: res.status,
+        decisions: res.decisions,
+        export_eligibility: res.export_eligibility,
+      } : undefined);
+      // Reload audit
+      const auditRes = await apiClient.getMigrationAuditTrail(workspaceId, review.review_id);
+      setAuditEvents(auditRes.events);
+    } catch (err: any) {
+      setActionError(err.message || "Failed to record governance decision.");
+    }
+  };
+
+  const criticalCount = riskReport?.summary?.critical_count ?? 0;
+  const highCount = riskReport?.summary?.high_count ?? 0;
+  const breakingCount = riskReport?.summary?.breaking_change_count ?? riskReport?.summary?.potentially_breaking ?? 0;
+  const manualGatesCount = plan?.summary?.manual_gates_count ?? plan?.summary?.manual_decision_gates_count ?? 0;
 
   return (
     <div className="space-y-6">
@@ -203,6 +394,19 @@ export function MigrationDashboard({
         </div>
       </div>
 
+      {actionError && (
+        <div className="bg-red-950/80 border border-red-800 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center justify-between">
+          <span>{actionError}</span>
+          <button
+            type="button"
+            onClick={() => setActionError(null)}
+            className="text-red-400 hover:text-red-200 text-xs font-semibold ml-4"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Snapshot Selector is always visible to switch or verify snapshots */}
       <SnapshotSelector
         snapshots={snapshots}
@@ -215,7 +419,7 @@ export function MigrationDashboard({
       />
 
       {/* Tab Content Rendering */}
-      {activeTab === "OVERVIEW" && (
+      {activeTab === "OVERVIEW" && comparison && riskReport && plan && review && (
         <div className="space-y-6">
           {/* Executive Metrics Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -316,12 +520,14 @@ export function MigrationDashboard({
         </div>
       )}
 
-      {activeTab === "COMPARE" && <SchemaDiffExplorer comparison={comparison} />}
-      {activeTab === "RISKS" && <RiskDetailPanel report={riskReport} />}
-      {activeTab === "PLANS" && <MigrationPlanViewer plan={plan} />}
-      {activeTab === "SQL" && <SqlArtifactViewer artifact={artifact} />}
-      {activeTab === "GOVERNANCE" && <GovernanceReviewPanel review={review} />}
-      {activeTab === "AUDIT" && (
+      {activeTab === "COMPARE" && comparison && <SchemaDiffExplorer comparison={comparison} />}
+      {activeTab === "RISKS" && riskReport && <RiskDetailPanel report={riskReport} />}
+      {activeTab === "PLANS" && plan && <MigrationPlanViewer plan={plan} />}
+      {activeTab === "SQL" && artifact && <SqlArtifactViewer artifact={artifact} />}
+      {activeTab === "GOVERNANCE" && review && (
+        <GovernanceReviewPanel review={review} onRecordDecision={handleRecordDecision} />
+      )}
+      {activeTab === "AUDIT" && review && artifact && (
         <AuditEvidencePanel events={auditEvents} review={review} artifact={artifact} />
       )}
     </div>
