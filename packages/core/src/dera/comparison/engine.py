@@ -15,13 +15,11 @@ Features:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from dera.comparison.compatibility import SnapshotCompatibilityValidator
 from dera.comparison.comparators.namespaces import NamespaceComparator
 from dera.comparison.comparators.relationships import RelationshipComparator
 from dera.comparison.comparators.tables import TableComparator
 from dera.comparison.comparators.views import ViewComparator
+from dera.comparison.compatibility import SnapshotCompatibilityValidator
 from dera.comparison.enums import ComparisonObjectType, ComparisonStatus
 from dera.comparison.limits import ComparisonResourceLimits
 from dera.comparison.models import (

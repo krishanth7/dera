@@ -4,7 +4,7 @@
 Phase 9.3 establishes DERA's **Deterministic Migration Planning and Dependency Ordering Engine**.
 It bridges Phase 9.1 (`ComparisonReport`) and Phase 9.2 (`MigrationRiskReport`) into a structured, reviewable, dependency-ordered `MigrationPlanReport`.
 
-```
+```text
 Phase 9.1 Comparison Report
           │
           ▼

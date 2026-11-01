@@ -144,16 +144,28 @@ def make_standard_ecommerce_payload(
         make_test_column(users_id, "id", 1, "integer", CanonicalTypeCategory.INTEGER, False),
         make_test_column(users_id, "email", 2, "varchar(255)", CanonicalTypeCategory.TEXT, False),
         make_test_column(users_id, "name", 3, "text", CanonicalTypeCategory.TEXT, True),
-        make_test_column(users_id, "created_at", 4, "timestamptz", CanonicalTypeCategory.TIMESTAMP, False, default_expression="NOW()"),
+        make_test_column(
+            users_id,
+            "created_at",
+            4,
+            "timestamptz",
+            CanonicalTypeCategory.TIMESTAMP,
+            False,
+            default_expression="NOW()",
+        ),
     )
     users_pk = SnapshotPrimaryKeyPayload(
-        constraint_id=compute_stable_object_id(kind="primary_key", parent_id=users_id, native_name="pk_users"),
+        constraint_id=compute_stable_object_id(
+            kind="primary_key", parent_id=users_id, native_name="pk_users"
+        ),
         name="pk_users",
         columns=("id",),
     )
     users_idx = (
         SnapshotIndexPayload(
-            index_id=compute_stable_object_id(kind="index", parent_id=users_id, native_name="idx_users_email"),
+            index_id=compute_stable_object_id(
+                kind="index", parent_id=users_id, native_name="idx_users_email"
+            ),
             name="idx_users_email",
             columns=("email",),
             is_unique=True,
@@ -173,17 +185,37 @@ def make_standard_ecommerce_payload(
     orders_cols = (
         make_test_column(orders_id, "id", 1, "integer", CanonicalTypeCategory.INTEGER, False),
         make_test_column(orders_id, "user_id", 2, "integer", CanonicalTypeCategory.INTEGER, False),
-        make_test_column(orders_id, "status", 3, "varchar(50)", CanonicalTypeCategory.TEXT, False, default_expression="'pending'"),
-        make_test_column(orders_id, "total", 4, "numeric(10,2)", CanonicalTypeCategory.DECIMAL, False, default_expression="0.00"),
+        make_test_column(
+            orders_id,
+            "status",
+            3,
+            "varchar(50)",
+            CanonicalTypeCategory.TEXT,
+            False,
+            default_expression="'pending'",
+        ),
+        make_test_column(
+            orders_id,
+            "total",
+            4,
+            "numeric(10,2)",
+            CanonicalTypeCategory.DECIMAL,
+            False,
+            default_expression="0.00",
+        ),
     )
     orders_pk = SnapshotPrimaryKeyPayload(
-        constraint_id=compute_stable_object_id(kind="primary_key", parent_id=orders_id, native_name="pk_orders"),
+        constraint_id=compute_stable_object_id(
+            kind="primary_key", parent_id=orders_id, native_name="pk_orders"
+        ),
         name="pk_orders",
         columns=("id",),
     )
     orders_fk = (
         SnapshotForeignKeyPayload(
-            constraint_id=compute_stable_object_id(kind="foreign_key", parent_id=orders_id, native_name="fk_orders_user"),
+            constraint_id=compute_stable_object_id(
+                kind="foreign_key", parent_id=orders_id, native_name="fk_orders_user"
+            ),
             name="fk_orders_user",
             source_columns=("user_id",),
             target_namespace="public",
@@ -195,7 +227,9 @@ def make_standard_ecommerce_payload(
     )
     orders_chk = (
         SnapshotCheckConstraintPayload(
-            constraint_id=compute_stable_object_id(kind="check_constraint", parent_id=orders_id, native_name="chk_orders_total"),
+            constraint_id=compute_stable_object_id(
+                kind="check_constraint", parent_id=orders_id, native_name="chk_orders_total"
+            ),
             name="chk_orders_total",
             expression="total >= 0",
         ),

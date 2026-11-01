@@ -13,7 +13,6 @@ Explicit Rules:
 7. View Dependencies: Referenced Tables -> View Creation.
 """
 
-from typing import Dict, List, Set, Tuple
 from dera.migration.planning.enums import MigrationOperationType
 from dera.migration.planning.models import AbstractMigrationOperation
 
@@ -21,13 +20,15 @@ from dera.migration.planning.models import AbstractMigrationOperation
 class OperationDependencyGraph:
     """Directed graph representing migration operation prerequisites."""
 
-    def __init__(self, operations: List[AbstractMigrationOperation]):
-        self.operations: Dict[str, AbstractMigrationOperation] = {op.operation_id: op for op in operations}
+    def __init__(self, operations: list[AbstractMigrationOperation]):
+        self.operations: dict[str, AbstractMigrationOperation] = {
+            op.operation_id: op for op in operations
+        }
         # Adjacency lists:
         # forward_edges: prerequisite_id -> list of dependent_ids
         # reverse_edges: dependent_id -> list of prerequisite_ids
-        self.forward_edges: Dict[str, Set[str]] = {op.operation_id: set() for op in operations}
-        self.reverse_edges: Dict[str, Set[str]] = {op.operation_id: set() for op in operations}
+        self.forward_edges: dict[str, set[str]] = {op.operation_id: set() for op in operations}
+        self.reverse_edges: dict[str, set[str]] = {op.operation_id: set() for op in operations}
         self._build_graph()
 
     def add_dependency(self, prerequisite_id: str, dependent_id: str) -> None:
@@ -42,10 +43,10 @@ class OperationDependencyGraph:
     def _build_graph(self) -> None:
         """Extract and link operation dependencies based on structural rules."""
         # Index operations by table and namespace
-        table_create_ops: Dict[Tuple[str, str], str] = {}  # (ns, table) -> op_id
-        table_drop_ops: Dict[Tuple[str, str], str] = {}    # (ns, table) -> op_id
-        fk_create_ops: List[AbstractMigrationOperation] = []
-        fk_drop_ops: List[AbstractMigrationOperation] = []
+        table_create_ops: dict[tuple[str, str], str] = {}  # (ns, table) -> op_id
+        table_drop_ops: dict[tuple[str, str], str] = {}  # (ns, table) -> op_id
+        fk_create_ops: list[AbstractMigrationOperation] = []
+        fk_drop_ops: list[AbstractMigrationOperation] = []
 
         for op in self.operations.values():
             ns = op.namespace or "public"

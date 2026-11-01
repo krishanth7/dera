@@ -6,8 +6,6 @@ backward compatibility based on change types, property diffs, and type rules.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from dera.comparison.enums import ComparisonChangeType, ComparisonObjectType
 from dera.comparison.models import SchemaChange
 from dera.migration.classification.models import ClassifiedChange

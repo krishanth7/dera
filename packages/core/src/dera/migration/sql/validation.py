@@ -4,8 +4,7 @@ Performs offline structural and dialect validation on generated SQL statements
 without executing them against live customer databases.
 """
 
-from typing import List, Tuple
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from dera.migration.sql.enums import SqlDialectType
 from dera.migration.sql.models import GeneratedSqlStatement
@@ -13,6 +12,7 @@ from dera.migration.sql.models import GeneratedSqlStatement
 
 class ValidationIssue(BaseModel):
     """Validation finding for a rendered SQL statement."""
+
     statement_id: str
     issue_type: str
     description: str
@@ -25,11 +25,11 @@ class SqlValidator:
     @classmethod
     def validate_statements(
         cls,
-        statements: List[GeneratedSqlStatement],
+        statements: list[GeneratedSqlStatement],
         dialect: SqlDialectType,
-    ) -> Tuple[bool, List[ValidationIssue]]:
+    ) -> tuple[bool, list[ValidationIssue]]:
         """Validate generated statements structurally."""
-        issues: List[ValidationIssue] = []
+        issues: list[ValidationIssue] = []
 
         for stmt in statements:
             sql = stmt.sql.strip()
@@ -45,7 +45,11 @@ class SqlValidator:
                 )
 
             # Rule 2: Unmatched quotation check
-            if dialect in (SqlDialectType.POSTGRESQL, SqlDialectType.SUPABASE, SqlDialectType.SQLITE):
+            if dialect in (
+                SqlDialectType.POSTGRESQL,
+                SqlDialectType.SUPABASE,
+                SqlDialectType.SQLITE,
+            ):
                 # Count unescaped double quotes
                 # Even count of quotes is required for proper escaping
                 quote_count = sql.count('"')

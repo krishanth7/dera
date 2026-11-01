@@ -4,7 +4,7 @@
 Phase 9.4 implements DERA's **Deterministic, Dialect-Aware Migration SQL Generation and Validation Engine**.
 It translates verified Phase 9.3 `MigrationPlanReport` specifications into offline, review-only SQL artifacts.
 
-```
+```text
 Phase 9.3 Migration Plan
           │
           ▼

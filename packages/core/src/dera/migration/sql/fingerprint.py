@@ -10,7 +10,8 @@ Excludes:
 
 import hashlib
 import json
-from typing import Any, Dict, List
+from typing import Any
+
 from dera.migration.sql.enums import SqlDialectType
 from dera.migration.sql.models import GeneratedSqlStatement, TransactionBlock
 
@@ -24,11 +25,11 @@ class SqlFingerprintCalculator:
         source_plan_fingerprint: str,
         dialect: SqlDialectType,
         compiler_version: str,
-        statements: List[GeneratedSqlStatement],
-        transaction_blocks: List[TransactionBlock],
+        statements: list[GeneratedSqlStatement],
+        transaction_blocks: list[TransactionBlock],
     ) -> str:
         """Compute canonical SQL artifact fingerprint."""
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "source_plan_fingerprint": source_plan_fingerprint,
             "dialect": dialect.value,
             "compiler_version": compiler_version,

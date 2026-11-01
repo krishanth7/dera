@@ -12,9 +12,7 @@ Orchestrates Phase 9.3 deterministic migration planning and dependency ordering:
 9. Emits the verified MigrationPlanReport.
 """
 
-from typing import List, Optional
 from dera.comparison.models import ComparisonReport
-from dera.migration.reports.models import MigrationRiskReport
 from dera.migration.planning.change_mapper import ChangeToOperationMapper
 from dera.migration.planning.cycles import CycleDetector
 from dera.migration.planning.enums import EngineCapabilityState, PlanStatus
@@ -28,6 +26,7 @@ from dera.migration.planning.models import (
 from dera.migration.planning.operation_catalog import OperationCatalog
 from dera.migration.planning.ordering import DeterministicOrderingEngine
 from dera.migration.planning.reports import MigrationPlanReport, MigrationPlanSummary
+from dera.migration.reports.models import MigrationRiskReport
 
 
 class MigrationPlanningEngine:
@@ -35,14 +34,14 @@ class MigrationPlanningEngine:
 
     POLICY_VERSION = "1.0.0"
 
-    def __init__(self, target_engine: Optional[str] = None):
+    def __init__(self, target_engine: str | None = None):
         self.target_engine = target_engine
 
     def plan_migration(
         self,
         comparison_report: ComparisonReport,
         risk_report: MigrationRiskReport,
-        override_engine: Optional[str] = None,
+        override_engine: str | None = None,
     ) -> MigrationPlanReport:
         """Generate a deterministic migration plan from comparison and risk inputs."""
         # 1. Input consistency verification
@@ -55,7 +54,9 @@ class MigrationPlanningEngine:
                 f"Mismatched target snapshots: comparison has '{comparison_report.target_snapshot_id}', risk has '{risk_report.target_snapshot_id}'."
             )
 
-        engine = (override_engine or self.target_engine or comparison_report.target_engine or "postgresql").lower()
+        engine = (
+            override_engine or self.target_engine or comparison_report.target_engine or "postgresql"
+        ).lower()
 
         # 2. Map changes to abstract operations
         mapper = ChangeToOperationMapper(target_engine=engine)
@@ -77,9 +78,9 @@ class MigrationPlanningEngine:
         ordered_ops, stages = ordering_engine.compute_ordering()
 
         # 6. Aggregate gates, validations, and rollback considerations
-        manual_gates: List[ManualDecisionGate] = []
-        validation_reqs: List[ValidationRequirement] = []
-        rollback_considerations: List[RollbackConsideration] = []
+        manual_gates: list[ManualDecisionGate] = []
+        validation_reqs: list[ValidationRequirement] = []
+        rollback_considerations: list[RollbackConsideration] = []
 
         for op in ordered_ops:
             manual_gates.extend(op.manual_decision_gates)
@@ -89,9 +90,15 @@ class MigrationPlanningEngine:
 
         # 7. Summary metrics
         total_ops = len(ordered_ops)
-        supported_ops = sum(1 for op in ordered_ops if op.engine_capability == EngineCapabilityState.SUPPORTED)
-        conditional_ops = sum(1 for op in ordered_ops if op.engine_capability == EngineCapabilityState.CONDITIONAL)
-        unsupported_ops = sum(1 for op in ordered_ops if op.engine_capability == EngineCapabilityState.UNSUPPORTED)
+        supported_ops = sum(
+            1 for op in ordered_ops if op.engine_capability == EngineCapabilityState.SUPPORTED
+        )
+        conditional_ops = sum(
+            1 for op in ordered_ops if op.engine_capability == EngineCapabilityState.CONDITIONAL
+        )
+        unsupported_ops = sum(
+            1 for op in ordered_ops if op.engine_capability == EngineCapabilityState.UNSUPPORTED
+        )
         blocked_ops = sum(1 for op in ordered_ops if op.is_blocked)
         destructive_ops = sum(1 for op in ordered_ops if op.is_destructive)
 

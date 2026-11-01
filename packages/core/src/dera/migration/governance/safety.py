@@ -7,7 +7,6 @@ Evaluates deterministic safety gates against a Phase 9.4 SqlMigrationArtifact:
 4. Generation status gate (not blocked or unsupported).
 """
 
-from typing import List
 from dera.migration.governance.enums import SafetyGateStatus
 from dera.migration.governance.models import GovernancePolicy, SafetyGateResult
 from dera.migration.sql.enums import SqlGenerationStatus
@@ -24,9 +23,9 @@ class SafetyGateEvaluator:
         cls,
         artifact: SqlMigrationArtifact,
         policy: GovernancePolicy,
-    ) -> List[SafetyGateResult]:
+    ) -> list[SafetyGateResult]:
         """Evaluate all safety rules for a migration artifact."""
-        results: List[SafetyGateResult] = []
+        results: list[SafetyGateResult] = []
 
         # Gate 1: Artifact Generation Status Gate
         if artifact.status in (SqlGenerationStatus.BLOCKED, SqlGenerationStatus.UNSUPPORTED):
@@ -52,7 +51,10 @@ class SafetyGateEvaluator:
             )
 
         # Gate 2: SQL Structural Validation Gate
-        if artifact.summary.validation_issues_count > 0 or artifact.status == SqlGenerationStatus.VALIDATION_FAILED:
+        if (
+            artifact.summary.validation_issues_count > 0
+            or artifact.status == SqlGenerationStatus.VALIDATION_FAILED
+        ):
             results.append(
                 SafetyGateResult(
                     gate_id="GATE-VALIDATION-002",
@@ -60,7 +62,9 @@ class SafetyGateEvaluator:
                     status=SafetyGateStatus.FAIL,
                     rationale=f"Artifact has {artifact.summary.validation_issues_count} structural validation issues.",
                     required_remediation="Fix syntax errors, unmatched quotes, or formatting issues in generated SQL.",
-                    input_evidence={"validation_issues_count": artifact.summary.validation_issues_count},
+                    input_evidence={
+                        "validation_issues_count": artifact.summary.validation_issues_count
+                    },
                 )
             )
         else:
@@ -83,7 +87,9 @@ class SafetyGateEvaluator:
                     status=SafetyGateStatus.REVIEW_REQUIRED,
                     rationale=f"Artifact contains {artifact.summary.destructive_statements} destructive statements (DROP TABLE/COLUMN/etc).",
                     required_remediation="Requires explicit admin approval and verified data backup acknowledgement.",
-                    input_evidence={"destructive_statements": artifact.summary.destructive_statements},
+                    input_evidence={
+                        "destructive_statements": artifact.summary.destructive_statements
+                    },
                 )
             )
         else:
@@ -106,7 +112,9 @@ class SafetyGateEvaluator:
                     status=SafetyGateStatus.REVIEW_REQUIRED,
                     rationale=f"Artifact contains {artifact.summary.review_required_statements} statements requiring engineering review.",
                     required_remediation="Reviewer must inspect dialect limitations and advisory notes.",
-                    input_evidence={"review_required_statements": artifact.summary.review_required_statements},
+                    input_evidence={
+                        "review_required_statements": artifact.summary.review_required_statements
+                    },
                 )
             )
         else:

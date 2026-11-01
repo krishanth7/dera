@@ -49,7 +49,7 @@ Before designing and implementing Phase 9.1, a full repository audit was conduct
 
 ### 3.1 Core Package Layout
 The comparison engine will be structured under `packages/core/src/dera/comparison/`:
-```
+```text
 packages/core/src/dera/comparison/
 ├── __init__.py
 ├── models.py            # Strongly typed change records, property diffs, report models

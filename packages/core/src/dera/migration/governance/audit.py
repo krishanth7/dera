@@ -6,7 +6,8 @@ Every event links to the preceding event hash, forming an audit chain.
 
 import hashlib
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from dera.migration.governance.models import AuditEvent
 
 
@@ -22,13 +23,13 @@ class AuditTrailManager:
         workspace_id: str,
         actor_id: str,
         event_type: str,
-        previous_state: Optional[str],
+        previous_state: str | None,
         new_state: str,
         artifact_fingerprint: str,
         policy_version: str,
         timestamp: str,
-        payload: Dict[str, Any],
-        previous_event_hash: Optional[str] = None,
+        payload: dict[str, Any],
+        previous_event_hash: str | None = None,
     ) -> AuditEvent:
         """Construct a new audit event and advance the cryptographic hash chain."""
         prev_hash = previous_event_hash or cls.GENESIS_HASH
@@ -71,7 +72,7 @@ class AuditTrailManager:
         )
 
     @classmethod
-    def verify_chain(cls, events: List[AuditEvent]) -> bool:
+    def verify_chain(cls, events: list[AuditEvent]) -> bool:
         """Verify unbroken cryptographic integrity of the event hash chain."""
         if not events:
             return True

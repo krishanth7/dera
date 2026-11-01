@@ -4,7 +4,7 @@
 Phase 9.5 establishes DERA's **Production-Grade Migration Governance, Review, Approval, and Safety Control Engine**.
 It wraps Phase 9.4 generated SQL migration artifacts in an immutable review lifecycle, enforcing separation of duties, role-based authorization, safety gates, quorum requirements, approval invalidation upon artifact mutation, and tamper-evident append-only audit chaining.
 
-```
+```text
 Phase 9.4 SQL Migration Artifact
               │
               ▼

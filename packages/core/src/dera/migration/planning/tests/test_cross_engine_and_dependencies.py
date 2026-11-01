@@ -8,11 +8,16 @@ Covers:
 5. Serialization and schema immutability during planning.
 """
 
-import pytest
 from dera.comparison.enums import ComparisonChangeType, ComparisonObjectType, ComparisonStatus
-from dera.comparison.evidence import ObjectEvidence, PropertyDifference
-from dera.comparison.models import ComparisonConfig, ComparisonReport, ComparisonSummary, SchemaChange
+from dera.comparison.evidence import ObjectEvidence
+from dera.comparison.models import (
+    ComparisonConfig,
+    ComparisonReport,
+    ComparisonSummary,
+    SchemaChange,
+)
 from dera.diagnostics.enums import DiagnosticSeverity
+from dera.migration.classification.models import ClassifiedChange
 from dera.migration.enums import (
     CompatibilityLevel,
     ReversibilityClassification,
@@ -21,17 +26,16 @@ from dera.migration.enums import (
     RiskEvidenceCertainty,
     StructuralChangeCategory,
 )
-from dera.migration.classification.models import ClassifiedChange
-from dera.migration.reports.models import MigrationRiskReport
-from dera.migration.risk.models import MigrationRiskAssessment
 from dera.migration.planning import (
     EngineCapabilityState,
     ManualGateStatus,
     MigrationOperationType,
     MigrationPlanningEngine,
-    PlanStatus,
     PlanningStageType,
+    PlanStatus,
 )
+from dera.migration.reports.models import MigrationRiskReport
+from dera.migration.risk.models import MigrationRiskAssessment
 
 
 def _make_fixture_plan(changes: list[SchemaChange], engine: str = "postgresql"):
@@ -64,7 +68,9 @@ def _make_fixture_plan(changes: list[SchemaChange], engine: str = "postgresql"):
             source_fingerprint=c.fingerprint,
             object_type=c.object_type,
             change_type=c.change_type,
-            category=StructuralChangeCategory.ADDITIVE if c.change_type == ComparisonChangeType.ADDED else StructuralChangeCategory.REMOVAL,
+            category=StructuralChangeCategory.ADDITIVE
+            if c.change_type == ComparisonChangeType.ADDED
+            else StructuralChangeCategory.REMOVAL,
             canonical_id=c.canonical_id,
             namespace=c.namespace,
             name=c.name,
@@ -80,10 +86,16 @@ def _make_fixture_plan(changes: list[SchemaChange], engine: str = "postgresql"):
             source_change_fingerprint=c.fingerprint,
             rule_id="RULE-RISK-001",
             dimension=RiskDimension.DATA_PRESERVATION,
-            severity=DiagnosticSeverity.HIGH if c.change_type == ComparisonChangeType.REMOVED else DiagnosticSeverity.INFORMATIONAL,
-            priority=ReviewPriority.P2_HIGH if c.change_type == ComparisonChangeType.REMOVED else ReviewPriority.P4_LOW,
+            severity=DiagnosticSeverity.HIGH
+            if c.change_type == ComparisonChangeType.REMOVED
+            else DiagnosticSeverity.INFORMATIONAL,
+            priority=ReviewPriority.P2_HIGH
+            if c.change_type == ComparisonChangeType.REMOVED
+            else ReviewPriority.P4_LOW,
             certainty=RiskEvidenceCertainty.VERIFIED,
-            reversibility=ReversibilityClassification.REQUIRES_PRESERVED_DATA if c.change_type == ComparisonChangeType.REMOVED else ReversibilityClassification.POTENTIALLY_REVERSIBLE,
+            reversibility=ReversibilityClassification.REQUIRES_PRESERVED_DATA
+            if c.change_type == ComparisonChangeType.REMOVED
+            else ReversibilityClassification.POTENTIALLY_REVERSIBLE,
             title="Assessed change",
             description="Structural impact analyzed.",
             evidence_summary={},

@@ -17,7 +17,7 @@ The workspace prominently displays:
 All generated SQL artifacts, comparison diffs, and migration plans are advisory artifacts designed for human engineering peer review and controlled CI/CD export. No execution or mutation triggers exist in the frontend or backend API.
 
 ## Frontend Directory & Component Layout
-```
+```text
 apps/web/src/
 ├── app/(app)/
 │   └── migrations/

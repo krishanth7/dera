@@ -4,7 +4,6 @@ Enforces strict SQL injection prevention, reserved keyword handling,
 and proper dialect-specific quoting without vulnerable string interpolations.
 """
 
-import re
 from dera.migration.sql.enums import SqlDialectType
 
 

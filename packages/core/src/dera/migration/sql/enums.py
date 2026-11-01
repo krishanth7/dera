@@ -4,11 +4,12 @@ Defines deterministic enumeration types for SQL generation status, supported dia
 transaction execution modes, and rollback feasibility.
 """
 
-from enum import Enum
+from enum import StrEnum
 
 
-class SqlDialectType(str, Enum):
+class SqlDialectType(StrEnum):
     """Supported SQL dialect targets."""
+
     POSTGRESQL = "POSTGRESQL"
     SUPABASE = "SUPABASE"
     SQLITE = "SQLITE"
@@ -16,8 +17,9 @@ class SqlDialectType(str, Enum):
     MARIADB = "MARIADB"
 
 
-class SqlGenerationStatus(str, Enum):
+class SqlGenerationStatus(StrEnum):
     """Overall status of SQL generation."""
+
     GENERATED = "GENERATED"
     GENERATED_WITH_REVIEW_REQUIRED = "GENERATED_WITH_REVIEW_REQUIRED"
     PARTIAL = "PARTIAL"
@@ -26,15 +28,17 @@ class SqlGenerationStatus(str, Enum):
     VALIDATION_FAILED = "VALIDATION_FAILED"
 
 
-class TransactionExecutionMode(str, Enum):
+class TransactionExecutionMode(StrEnum):
     """Transaction wrapping mode for generated statements."""
+
     TRANSACTIONAL = "TRANSACTIONAL"
     NON_TRANSACTIONAL = "NON_TRANSACTIONAL"
     IMPLICIT_COMMIT = "IMPLICIT_COMMIT"
 
 
-class RollbackFeasibility(str, Enum):
+class RollbackFeasibility(StrEnum):
     """Feasibility classification for generating safe rollback SQL."""
+
     AVAILABLE_UNDER_CONDITIONS = "AVAILABLE_UNDER_CONDITIONS"
     REQUIRES_PRESERVED_DATA = "REQUIRES_PRESERVED_DATA"
     MANUAL_REVIEW_REQUIRED = "MANUAL_REVIEW_REQUIRED"

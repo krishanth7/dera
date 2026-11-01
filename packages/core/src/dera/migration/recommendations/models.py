@@ -13,7 +13,9 @@ class EngineeringRecommendation(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    recommendation_id: str = Field(description="Deterministic recommendation identifier (e.g. 'rec_...').")
+    recommendation_id: str = Field(
+        description="Deterministic recommendation identifier (e.g. 'rec_...')."
+    )
     risk_id: str = Field(description="Identifier of the risk assessment being addressed.")
     title: str = Field(description="Concise recommendation title.")
     description: str = Field(description="Detailed suggested action.")

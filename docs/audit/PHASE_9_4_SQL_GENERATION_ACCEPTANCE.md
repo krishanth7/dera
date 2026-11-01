@@ -9,6 +9,7 @@
 ---
 
 ## 1. Prerequisite Verification
+
 | Prerequisite | Reference | Verdict |
 |---|---|---|
 | Phase 9.1 Schema Comparison | [docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md) | **PASS** |
@@ -28,6 +29,7 @@
 - [packages/core/src/dera/migration/sql/compiler.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/compiler.py): Main `SqlMigrationCompiler` orchestrator.
 
 ## 3. Test Verification
+
 | Test Suite | Tests Executed | Passed | Status |
 |---|---|---|---|
 | Phase 9.4 SQL Generation Tests | 6 | 6 | **PASS** |

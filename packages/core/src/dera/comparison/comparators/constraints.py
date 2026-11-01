@@ -21,7 +21,6 @@ from dera.comparison.matching import (
     check_constraint_canonical_key,
     foreign_key_canonical_key,
     match_by_key,
-    primary_key_canonical_key,
     unique_constraint_canonical_key,
 )
 from dera.comparison.models import SchemaChange
@@ -30,7 +29,6 @@ from dera.metadata.enums import MetadataCompleteness
 from dera.reverse_engineering.snapshots.models import (
     SnapshotCheckConstraintPayload,
     SnapshotForeignKeyPayload,
-    SnapshotPrimaryKeyPayload,
     SnapshotTablePayload,
     SnapshotUniqueConstraintPayload,
 )

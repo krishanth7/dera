@@ -9,6 +9,7 @@
 ---
 
 ## 1. Prerequisite Verification
+
 | Prerequisite | Reference | Verdict |
 |---|---|---|
 | Phase 9.1 Schema Comparison | [docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md) | **PASS** |
@@ -24,6 +25,7 @@
 - [packages/core/src/dera/migration/governance/lifecycle.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/governance/lifecycle.py): `GovernanceEngine` state machine enforcing RBAC, Separation of Duties (SoD), approval quorum, approval invalidation upon artifact mutation, export eligibility, and evidence bundles.
 
 ## 3. Test Verification
+
 | Test Suite | Tests Executed | Passed | Status |
 |---|---|---|---|
 | Phase 9.5 Governance Tests | 7 | 7 | **PASS** |

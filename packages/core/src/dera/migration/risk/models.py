@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import hashlib
 from typing import Any
-from pydantic import BaseModel, ConfigDict, Field
 
 from dera.comparison.serializers import dumps_canonical_bytes
 from dera.diagnostics.enums import DiagnosticSeverity
@@ -19,6 +18,7 @@ from dera.migration.enums import (
     RiskEvidenceCertainty,
 )
 from dera.migration.recommendations.models import EngineeringRecommendation
+from pydantic import BaseModel, ConfigDict, Field
 
 RISK_FINGERPRINT_DOMAIN = "DERA:MIGRATION:RISK:V1\n"
 

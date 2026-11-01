@@ -6,15 +6,14 @@ Defines the complete, immutable migration risk analysis report contract.
 from __future__ import annotations
 
 import hashlib
-from typing import Any
 from collections import Counter
-from pydantic import BaseModel, ConfigDict, Field
 
 from dera.comparison.serializers import dumps_canonical_bytes
 from dera.migration.classification.models import ClassifiedChange
 from dera.migration.impact.blast_radius import BlastRadiusMetrics
 from dera.migration.recommendations.models import EngineeringRecommendation
 from dera.migration.risk.models import MigrationRiskAssessment
+from pydantic import BaseModel, ConfigDict, Field
 
 MIGRATION_REPORT_DOMAIN = "DERA:MIGRATION:REPORT:V1\n"
 MIGRATION_POLICY_VERSION = "dera.migration.risk.v1"
@@ -29,12 +28,22 @@ class MigrationRiskSummary(BaseModel):
     additive_changes: int = Field(default=0, description="Count of additive structural changes.")
     removals: int = Field(default=0, description="Count of structural removals.")
     modifications: int = Field(default=0, description="Count of structural modifications.")
-    potentially_breaking: int = Field(default=0, description="Count of changes rated breaking or potentially breaking.")
-    requires_review: int = Field(default=0, description="Count of changes requiring manual engineering review.")
+    potentially_breaking: int = Field(
+        default=0, description="Count of changes rated breaking or potentially breaking."
+    )
+    requires_review: int = Field(
+        default=0, description="Count of changes requiring manual engineering review."
+    )
     total_risks: int = Field(default=0, description="Total count of generated risk assessments.")
-    risks_by_severity: dict[str, int] = Field(default_factory=dict, description="Risks by DiagnosticSeverity.")
-    risks_by_priority: dict[str, int] = Field(default_factory=dict, description="Risks by ReviewPriority.")
-    risks_by_dimension: dict[str, int] = Field(default_factory=dict, description="Risks by RiskDimension.")
+    risks_by_severity: dict[str, int] = Field(
+        default_factory=dict, description="Risks by DiagnosticSeverity."
+    )
+    risks_by_priority: dict[str, int] = Field(
+        default_factory=dict, description="Risks by ReviewPriority."
+    )
+    risks_by_dimension: dict[str, int] = Field(
+        default_factory=dict, description="Risks by RiskDimension."
+    )
 
 
 class MigrationRiskReport(BaseModel):
@@ -49,7 +58,9 @@ class MigrationRiskReport(BaseModel):
     target_snapshot_id: str = Field(description="Target snapshot ID.")
     target_fingerprint: str = Field(description="Target snapshot structural fingerprint.")
     comparison_report_id: str = Field(description="ID of source ComparisonReport.")
-    comparison_fingerprint: str = Field(description="Report fingerprint of source ComparisonReport.")
+    comparison_fingerprint: str = Field(
+        description="Report fingerprint of source ComparisonReport."
+    )
     engine: str = Field(description="Source database engine.")
     summary: MigrationRiskSummary = Field(description="Aggregated risk metrics.")
     classified_changes: tuple[ClassifiedChange, ...] = Field(
@@ -72,7 +83,9 @@ class MigrationRiskReport(BaseModel):
         default_factory=tuple,
         description="Documented metadata limitations.",
     )
-    report_fingerprint: str = Field(default="", description="Stable SHA-256 fingerprint over report content.")
+    report_fingerprint: str = Field(
+        default="", description="Stable SHA-256 fingerprint over report content."
+    )
 
     @classmethod
     def create(

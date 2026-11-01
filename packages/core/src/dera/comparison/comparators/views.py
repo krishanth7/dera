@@ -41,14 +41,10 @@ class ViewComparator:
         changes: list[SchemaChange] = []
 
         b_views = [
-            v
-            for v in baseline.payload.views
-            if cls._is_namespace_allowed(v.namespace, config)
+            v for v in baseline.payload.views if cls._is_namespace_allowed(v.namespace, config)
         ]
         t_views = [
-            v
-            for v in target.payload.views
-            if cls._is_namespace_allowed(v.namespace, config)
+            v for v in target.payload.views if cls._is_namespace_allowed(v.namespace, config)
         ]
 
         matches = match_by_key(

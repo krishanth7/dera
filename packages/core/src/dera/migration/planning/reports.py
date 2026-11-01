@@ -3,7 +3,6 @@
 Represents the top-level structured, reviewable contract for Phase 9.3.
 """
 
-from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from dera.migration.planning.enums import PlanStatus
@@ -18,6 +17,7 @@ from dera.migration.planning.models import (
 
 class MigrationPlanSummary(BaseModel):
     """High-level metrics summarizing the migration plan."""
+
     total_operations: int
     supported_operations: int
     conditional_operations: int
@@ -33,6 +33,7 @@ class MigrationPlanSummary(BaseModel):
 
 class MigrationPlanReport(BaseModel):
     """Deterministic, structured migration plan report."""
+
     plan_id: str
     plan_status: PlanStatus
     target_engine: str
@@ -45,10 +46,10 @@ class MigrationPlanReport(BaseModel):
     plan_fingerprint: str
 
     summary: MigrationPlanSummary
-    operations: List[AbstractMigrationOperation] = Field(default_factory=list)
-    stages: List[PlanningStage] = Field(default_factory=list)
-    manual_decision_gates: List[ManualDecisionGate] = Field(default_factory=list)
-    validation_requirements: List[ValidationRequirement] = Field(default_factory=list)
-    rollback_considerations: List[RollbackConsideration] = Field(default_factory=list)
-    detected_cycles: List[List[str]] = Field(default_factory=list)
-    limitations: List[str] = Field(default_factory=list)
+    operations: list[AbstractMigrationOperation] = Field(default_factory=list)
+    stages: list[PlanningStage] = Field(default_factory=list)
+    manual_decision_gates: list[ManualDecisionGate] = Field(default_factory=list)
+    validation_requirements: list[ValidationRequirement] = Field(default_factory=list)
+    rollback_considerations: list[RollbackConsideration] = Field(default_factory=list)
+    detected_cycles: list[list[str]] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)

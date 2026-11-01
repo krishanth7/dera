@@ -8,6 +8,7 @@
 - **Backend Stack:** Python 3.13, FastAPI, Pytest
 
 ## 2. Verification Checklist
+
 | Requirement | Status | Evidence |
 | :--- | :--- | :--- |
 | **Workspace Navigation** | PASS | Integrated `/app/migrations` into `Sidebar.tsx` with `"Phase 9"` badge. |

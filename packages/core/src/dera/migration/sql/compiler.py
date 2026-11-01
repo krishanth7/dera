@@ -11,7 +11,6 @@ Translates verified Phase 9.3 MigrationPlanReport plans into reviewable SQL arti
 8. Produces canonical SHA-256 artifact fingerprint and reviewable SqlMigrationArtifact.
 """
 
-from typing import List, Optional
 from dera.migration.planning.enums import PlanStatus
 from dera.migration.planning.reports import MigrationPlanReport
 from dera.migration.sql.enums import SqlDialectType, SqlGenerationStatus
@@ -25,7 +24,7 @@ from dera.migration.sql.models import (
 from dera.migration.sql.registry import DialectRegistry
 from dera.migration.sql.reports import SqlArtifactSummary, SqlMigrationArtifact
 from dera.migration.sql.transaction_planner import TransactionPlanner
-from dera.migration.sql.validation import SqlValidator, ValidationIssue
+from dera.migration.sql.validation import SqlValidator
 
 
 class SqlMigrationCompiler:
@@ -33,14 +32,14 @@ class SqlMigrationCompiler:
 
     COMPILER_VERSION = "1.0.0"
 
-    def __init__(self, default_dialect: Optional[SqlDialectType] = None):
+    def __init__(self, default_dialect: SqlDialectType | None = None):
         self.default_dialect = default_dialect
 
     def compile_plan(
         self,
         plan_report: MigrationPlanReport,
-        target_engine: Optional[str] = None,
-        target_version: Optional[str] = None,
+        target_engine: str | None = None,
+        target_version: str | None = None,
         allow_partial: bool = False,
     ) -> SqlMigrationArtifact:
         """Compile a Phase 9.3 migration plan into a reviewable SQL artifact."""
@@ -49,8 +48,15 @@ class SqlMigrationCompiler:
         renderer = DialectRegistry.get_renderer(engine)
 
         # 1. Plan status verification
-        if plan_report.plan_status in (PlanStatus.BLOCKED, PlanStatus.UNSUPPORTED) and not allow_partial:
-            status = SqlGenerationStatus.BLOCKED if plan_report.plan_status == PlanStatus.BLOCKED else SqlGenerationStatus.UNSUPPORTED
+        if (
+            plan_report.plan_status in (PlanStatus.BLOCKED, PlanStatus.UNSUPPORTED)
+            and not allow_partial
+        ):
+            status = (
+                SqlGenerationStatus.BLOCKED
+                if plan_report.plan_status == PlanStatus.BLOCKED
+                else SqlGenerationStatus.UNSUPPORTED
+            )
             return self._build_empty_artifact(
                 plan_report=plan_report,
                 dialect=dialect_type,
@@ -60,7 +66,7 @@ class SqlMigrationCompiler:
             )
 
         # 2. Compile operations into statements in plan order
-        statements: List[GeneratedSqlStatement] = []
+        statements: list[GeneratedSqlStatement] = []
         for op in plan_report.operations:
             rendered_stmts = renderer.render_operation(op, target_version=target_version)
             statements.extend(rendered_stmts)
@@ -72,8 +78,8 @@ class SqlMigrationCompiler:
         is_valid, validation_issues = SqlValidator.validate_statements(statements, dialect_type)
 
         # 5. Extract preflights and rollbacks
-        preflight_checks: List[PreflightCheck] = []
-        rollback_statements: List[RollbackStatement] = []
+        preflight_checks: list[PreflightCheck] = []
+        rollback_statements: list[RollbackStatement] = []
         destructive_count = 0
         review_required_count = 0
 
@@ -107,7 +113,10 @@ class SqlMigrationCompiler:
         # 8. Generation status derivation
         if not is_valid:
             status = SqlGenerationStatus.VALIDATION_FAILED
-        elif review_required_count > 0 or plan_report.plan_status == PlanStatus.REQUIRES_MANUAL_DECISION:
+        elif (
+            review_required_count > 0
+            or plan_report.plan_status == PlanStatus.REQUIRES_MANUAL_DECISION
+        ):
             status = SqlGenerationStatus.GENERATED_WITH_REVIEW_REQUIRED
         else:
             status = SqlGenerationStatus.GENERATED
@@ -147,18 +156,18 @@ class SqlMigrationCompiler:
 
     def _render_full_script(
         self,
-        transaction_blocks: List[TransactionBlock],
+        transaction_blocks: list[TransactionBlock],
         dialect: SqlDialectType,
         plan_report: MigrationPlanReport,
     ) -> str:
         header = [
-            f"-- ============================================================================",
-            f"-- DERA MIGRATION SQL ARTIFACT",
+            "-- ============================================================================",
+            "-- DERA MIGRATION SQL ARTIFACT",
             f"-- Dialect: {dialect.value}",
             f"-- Source Plan: {plan_report.plan_id}",
             f"-- Baseline: {plan_report.baseline_snapshot_id} -> Target: {plan_report.target_snapshot_id}",
-            f"-- STATUS: GENERATED FOR REVIEW — NOT EXECUTED",
-            f"-- ============================================================================\n",
+            "-- STATUS: GENERATED FOR REVIEW — NOT EXECUTED",
+            "-- ============================================================================\n",
         ]
 
         body = [block.rendered_block_sql for block in transaction_blocks]

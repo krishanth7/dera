@@ -11,7 +11,7 @@ Invariants:
 
 from __future__ import annotations
 
-from typing import Generic, TypeVar
+from typing import TypeVar
 
 from dera.reverse_engineering.snapshots.models import (
     SnapshotCheckConstraintPayload,
@@ -29,7 +29,7 @@ from dera.reverse_engineering.snapshots.models import (
 T = TypeVar("T")
 
 
-class ObjectMatch(Generic[T]):
+class ObjectMatch[T]:
     """Pair of matched objects from baseline and target snapshots."""
 
     __slots__ = ("key", "baseline", "target")
@@ -52,7 +52,7 @@ class ObjectMatch(Generic[T]):
         return self.baseline is not None and self.target is not None
 
 
-def match_by_key(
+def match_by_key[T](
     baseline_items: tuple[T, ...] | list[T],
     target_items: tuple[T, ...] | list[T],
     key_fn: callable,

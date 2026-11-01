@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import time
-import pytest
 
 from dera.comparison.engine import SchemaComparisonEngine
 from dera.comparison.tests.fixtures import (
@@ -15,17 +14,11 @@ from dera.comparison.tests.fixtures import (
 from dera.metadata.enums import CanonicalTypeCategory
 from dera.migration.engine import MigrationRiskAnalysisEngine
 from dera.migration.enums import (
-    CompatibilityLevel,
-    ReviewPriority,
     RiskDimension,
-    TypeConversionSafety,
 )
 from dera.migration.reports.models import MigrationRiskReport
 from dera.reverse_engineering.snapshots.models import (
-    SnapshotIndexPayload,
-    SnapshotPrimaryKeyPayload,
     SnapshotStructuralPayload,
-    SnapshotUniqueConstraintPayload,
 )
 
 
@@ -46,7 +39,9 @@ class TestMigrationRiskIntegrationAndProperties:
         # Users: drop 'name', add 'full_name' (varchar 200)
         u_cols = [c for c in users_tbl.columns if c.name != "name"]
         u_cols.append(
-            make_test_column(users_tbl.table_id, "full_name", 5, "varchar(200)", CanonicalTypeCategory.TEXT, True)
+            make_test_column(
+                users_tbl.table_id, "full_name", 5, "varchar(200)", CanonicalTypeCategory.TEXT, True
+            )
         )
         mod_users = users_tbl.model_copy(update={"columns": tuple(u_cols)})
 
@@ -77,18 +72,24 @@ class TestMigrationRiskIntegrationAndProperties:
         """Cross-Engine: Verify risk evaluation across supported dialects (PostgreSQL, SQLite, MySQL)."""
         for engine_name in ("postgresql", "sqlite", "mysql", "mariadb"):
             base_payload = make_standard_ecommerce_payload(engine=engine_name)
-            snap_base = build_snapshot_from_payload(base_payload, snapshot_id=f"snap_{engine_name}_1")
+            snap_base = build_snapshot_from_payload(
+                base_payload, snapshot_id=f"snap_{engine_name}_1"
+            )
 
             # Remove a table in target
             target_payload = base_payload.model_copy(update={"tables": (base_payload.tables[0],)})
-            snap_target = build_snapshot_from_payload(target_payload, snapshot_id=f"snap_{engine_name}_2")
+            snap_target = build_snapshot_from_payload(
+                target_payload, snapshot_id=f"snap_{engine_name}_2"
+            )
 
             comp_report = SchemaComparisonEngine().compare(snap_base, snap_target)
             risk_report = MigrationRiskAnalysisEngine().analyze(comp_report)
 
             assert risk_report.engine == engine_name
             assert risk_report.summary.removals == 1
-            assert any(r.dimension == RiskDimension.DATA_PRESERVATION for r in risk_report.risk_assessments)
+            assert any(
+                r.dimension == RiskDimension.DATA_PRESERVATION for r in risk_report.risk_assessments
+            )
 
     def test_property_invariants(self) -> None:
         """Property Invariants:
@@ -105,7 +106,9 @@ class TestMigrationRiskIntegrationAndProperties:
         # Change email to not nullable -> triggers RISK-COMPAT-002
         u_cols[2] = u_cols[2].model_copy(update={"is_nullable": False})
         mod_users = users_tbl.model_copy(update={"columns": tuple(u_cols)})
-        target_payload = base_payload.model_copy(update={"tables": (base_payload.tables[0], mod_users)})
+        target_payload = base_payload.model_copy(
+            update={"tables": (base_payload.tables[0], mod_users)}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         comp_report = SchemaComparisonEngine().compare(snap_base, snap_target)
@@ -132,7 +135,9 @@ class TestMigrationRiskIntegrationAndProperties:
         for i in range(100):
             tbl_id = f"tbl_{i:03d}"
             cols = tuple(
-                make_test_column(tbl_id, f"col_{j:02d}", j + 1, "integer", CanonicalTypeCategory.INTEGER, True)
+                make_test_column(
+                    tbl_id, f"col_{j:02d}", j + 1, "integer", CanonicalTypeCategory.INTEGER, True
+                )
                 for j in range(10)
             )
             tables_list.append(make_test_table(namespace="public", name=f"t_{i:03d}", columns=cols))

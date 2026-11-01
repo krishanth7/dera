@@ -44,7 +44,7 @@ Before architecting and implementing Phase 9.2, a complete prerequisite verifica
 ## 3. Phase 9.2 Implementation Plan & Architecture
 
 The migration risk analysis engine will be organized under `packages/core/src/dera/migration/`:
-```
+```text
 packages/core/src/dera/migration/
 ├── __init__.py
 ├── contracts.py                 # Protocol and execution contracts

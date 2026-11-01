@@ -8,10 +8,9 @@ from __future__ import annotations
 
 from collections import deque
 from typing import TYPE_CHECKING
-from pydantic import BaseModel, ConfigDict, Field
 
-from dera.metadata.identity import ObjectId
 from dera.migration.limits import MigrationRiskLimits
+from pydantic import BaseModel, ConfigDict, Field
 
 if TYPE_CHECKING:
     from dera.reverse_engineering.dependencies.models import DependencyAnalysisResult
@@ -37,10 +36,16 @@ class BlastRadiusMetrics(BaseModel):
 
     target_table_id: str = Field(description="ObjectId of changed table.")
     direct_dependents_count: int = Field(default=0, description="Count of direct child dependents.")
-    transitive_dependents_count: int = Field(default=0, description="Count of indirect transitive dependents.")
-    affected_namespaces: tuple[str, ...] = Field(default=(), description="Namespaces containing affected dependents.")
+    transitive_dependents_count: int = Field(
+        default=0, description="Count of indirect transitive dependents."
+    )
+    affected_namespaces: tuple[str, ...] = Field(
+        default=(), description="Namespaces containing affected dependents."
+    )
     max_dependency_depth: int = Field(default=0, description="Maximum reachability path length.")
-    is_part_of_cycle: bool = Field(default=False, description="True if table participates in a dependency cycle.")
+    is_part_of_cycle: bool = Field(
+        default=False, description="True if table participates in a dependency cycle."
+    )
     dependents: tuple[DependentObject, ...] = Field(
         default_factory=tuple,
         description="Ordered sequence of dependent objects.",
@@ -65,9 +70,13 @@ class DependencyImpactAnalyzer:
 
         # Build reverse adjacency map: parent -> list of child tables
         # Recall graph direction: edge.source_table_id (child holding FK) -> edge.referenced_table_id (parent)
-        reverse_adj: dict[str, list[tuple[str, str, str]]] = {}  # parent -> [(child_id, child_ns, child_name)]
+        reverse_adj: dict[
+            str, list[tuple[str, str, str]]
+        ] = {}  # parent -> [(child_id, child_ns, child_name)]
         for edge in graph.edges:
-            parent_id = str(getattr(edge, "referenced_table_id", None) or getattr(edge, "target_table_id", ""))
+            parent_id = str(
+                getattr(edge, "referenced_table_id", None) or getattr(edge, "target_table_id", "")
+            )
             child_id = str(edge.source_table_id)
             child_ns = edge.source_namespace or ""
             child_name = edge.source_table_name or ""

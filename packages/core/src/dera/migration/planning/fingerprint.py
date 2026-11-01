@@ -10,7 +10,8 @@ Excludes:
 
 import hashlib
 import json
-from typing import Any, Dict, List
+from typing import Any
+
 from dera.migration.planning.models import AbstractMigrationOperation, PlanningStage
 
 
@@ -25,11 +26,11 @@ class PlanFingerprintCalculator:
         engine: str,
         policy_version: str,
         catalog_version: str,
-        operations: List[AbstractMigrationOperation],
-        stages: List[PlanningStage],
+        operations: list[AbstractMigrationOperation],
+        stages: list[PlanningStage],
     ) -> str:
         """Compute canonical plan fingerprint."""
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "comparison_fingerprint": comparison_fingerprint,
             "risk_report_fingerprint": risk_report_fingerprint,
             "engine": engine.lower(),

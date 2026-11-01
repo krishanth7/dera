@@ -4,11 +4,12 @@ Defines deterministic enumeration types for abstract migration operations,
 planning status, pipeline stages, manual decision gates, and engine support states.
 """
 
-from enum import Enum
+from enum import StrEnum
 
 
-class MigrationOperationType(str, Enum):
+class MigrationOperationType(StrEnum):
     """Supported canonical abstract migration operations."""
+
     CREATE_NAMESPACE = "CREATE_NAMESPACE"
     DROP_NAMESPACE = "DROP_NAMESPACE"
     CREATE_TABLE = "CREATE_TABLE"
@@ -34,8 +35,9 @@ class MigrationOperationType(str, Enum):
     MODIFY_VIEW = "MODIFY_VIEW"
 
 
-class PlanStatus(str, Enum):
+class PlanStatus(StrEnum):
     """Overall status of a generated migration plan."""
+
     READY_FOR_REVIEW = "READY_FOR_REVIEW"
     REQUIRES_MANUAL_DECISION = "REQUIRES_MANUAL_DECISION"
     PARTIALLY_PLANNED = "PARTIALLY_PLANNED"
@@ -43,8 +45,9 @@ class PlanStatus(str, Enum):
     UNSUPPORTED = "UNSUPPORTED"
 
 
-class PlanningStageType(str, Enum):
+class PlanningStageType(StrEnum):
     """Logical planning stages ordered by prerequisite lifecycle."""
+
     PREREQUISITE_VERIFICATION = "PREREQUISITE_VERIFICATION"
     STRUCTURAL_PREPARATION = "STRUCTURAL_PREPARATION"
     DEPENDENCY_ADJUSTMENT = "DEPENDENCY_ADJUSTMENT"
@@ -54,16 +57,18 @@ class PlanningStageType(str, Enum):
     FINAL_REVIEW = "FINAL_REVIEW"
 
 
-class ManualGateStatus(str, Enum):
+class ManualGateStatus(StrEnum):
     """Status of manual engineering decision gates."""
+
     REQUIRED = "REQUIRED"
     SATISFIED_BY_VERIFIED_EVIDENCE = "SATISFIED_BY_VERIFIED_EVIDENCE"
     UNRESOLVED = "UNRESOLVED"
     NOT_APPLICABLE = "NOT_APPLICABLE"
 
 
-class PreconditionType(str, Enum):
+class PreconditionType(StrEnum):
     """Types of preconditions required prior to operation execution."""
+
     OBJECT_EXISTENCE = "OBJECT_EXISTENCE"
     OBJECT_ABSENCE = "OBJECT_ABSENCE"
     DATA_VALIDATION_REQUIRED = "DATA_VALIDATION_REQUIRED"
@@ -74,8 +79,9 @@ class PreconditionType(str, Enum):
     APPLICATION_COMPATIBILITY_REVIEW = "APPLICATION_COMPATIBILITY_REVIEW"
 
 
-class EngineCapabilityState(str, Enum):
+class EngineCapabilityState(StrEnum):
     """Engine support classification for an operation."""
+
     SUPPORTED = "SUPPORTED"
     CONDITIONAL = "CONDITIONAL"
     UNSUPPORTED = "UNSUPPORTED"

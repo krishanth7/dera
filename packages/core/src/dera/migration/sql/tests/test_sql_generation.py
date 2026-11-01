@@ -11,8 +11,14 @@ Covers:
 
 import pytest
 from dera.comparison.enums import ComparisonChangeType, ComparisonObjectType, ComparisonStatus
-from dera.comparison.models import ComparisonConfig, ComparisonReport, ComparisonSummary, SchemaChange
+from dera.comparison.models import (
+    ComparisonConfig,
+    ComparisonReport,
+    ComparisonSummary,
+    SchemaChange,
+)
 from dera.diagnostics.enums import DiagnosticSeverity
+from dera.migration.classification.models import ClassifiedChange
 from dera.migration.enums import (
     CompatibilityLevel,
     ReversibilityClassification,
@@ -21,12 +27,10 @@ from dera.migration.enums import (
     RiskEvidenceCertainty,
     StructuralChangeCategory,
 )
-from dera.migration.classification.models import ClassifiedChange
+from dera.migration.planning import MigrationPlanningEngine
 from dera.migration.reports.models import MigrationRiskReport
 from dera.migration.risk.models import MigrationRiskAssessment
-from dera.migration.planning import MigrationPlanningEngine
 from dera.migration.sql import (
-    DialectRegistry,
     IdentifierQuoter,
     SqlDialectType,
     SqlGenerationStatus,
@@ -66,7 +70,9 @@ def _make_dummy_plan(changes, engine="postgresql"):
             source_fingerprint=c.fingerprint,
             object_type=c.object_type,
             change_type=c.change_type,
-            category=StructuralChangeCategory.ADDITIVE if c.change_type == ComparisonChangeType.ADDED else StructuralChangeCategory.REMOVAL,
+            category=StructuralChangeCategory.ADDITIVE
+            if c.change_type == ComparisonChangeType.ADDED
+            else StructuralChangeCategory.REMOVAL,
             canonical_id=c.canonical_id,
             namespace=c.namespace,
             name=c.name,
@@ -115,11 +121,16 @@ def test_safe_identifier_quoting_and_injection_prevention():
     assert IdentifierQuoter.quote_identifier("users", SqlDialectType.MYSQL) == "`users`"
 
     # Embedded quote escaping
-    assert IdentifierQuoter.quote_identifier('user"table', SqlDialectType.POSTGRESQL) == '"user""table"'
+    assert (
+        IdentifierQuoter.quote_identifier('user"table', SqlDialectType.POSTGRESQL)
+        == '"user""table"'
+    )
     assert IdentifierQuoter.quote_identifier("user`table", SqlDialectType.MYSQL) == "`user``table`"
 
     # Injection with semicolons or comments is safely treated as literal identifier text
-    quoted_pg = IdentifierQuoter.quote_identifier("users; DROP TABLE evil; --", SqlDialectType.POSTGRESQL)
+    quoted_pg = IdentifierQuoter.quote_identifier(
+        "users; DROP TABLE evil; --", SqlDialectType.POSTGRESQL
+    )
     assert quoted_pg == '"users; DROP TABLE evil; --"'
 
     # Malicious null byte must raise ValueError
@@ -155,7 +166,10 @@ def test_postgresql_ddl_and_transaction_wrapping():
     artifact = compiler.compile_plan(plan)
 
     assert artifact.dialect == SqlDialectType.POSTGRESQL
-    assert artifact.status in (SqlGenerationStatus.GENERATED, SqlGenerationStatus.GENERATED_WITH_REVIEW_REQUIRED)
+    assert artifact.status in (
+        SqlGenerationStatus.GENERATED,
+        SqlGenerationStatus.GENERATED_WITH_REVIEW_REQUIRED,
+    )
     assert "BEGIN;" in artifact.rendered_sql_script
     assert "COMMIT;" in artifact.rendered_sql_script
     assert '"public"."users"' in artifact.rendered_sql_script
@@ -240,7 +254,9 @@ def test_deterministic_sql_artifact_fingerprint():
 
     assert art1.artifact_fingerprint == art2.artifact_fingerprint
     assert art1.rendered_sql_script == art2.rendered_sql_script
-    assert [s.statement_fingerprint for s in art1.statements] == [s.statement_fingerprint for s in art2.statements]
+    assert [s.statement_fingerprint for s in art1.statements] == [
+        s.statement_fingerprint for s in art2.statements
+    ]
 
 
 def test_offline_validator_detects_unbalanced_quotes():

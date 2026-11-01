@@ -4,7 +4,6 @@ Defines the required interface for dialect-specific SQL rendering.
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 from dera.migration.planning.models import AbstractMigrationOperation
 from dera.migration.sql.enums import SqlDialectType
@@ -24,7 +23,7 @@ class DialectRenderer(ABC):
     def render_operation(
         self,
         operation: AbstractMigrationOperation,
-        target_version: Optional[str] = None,
-    ) -> List[GeneratedSqlStatement]:
+        target_version: str | None = None,
+    ) -> list[GeneratedSqlStatement]:
         """Compile an abstract migration operation into 1+ verified dialect statements."""
         pass

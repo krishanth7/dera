@@ -8,7 +8,6 @@ Accounts for SQLite DDL limitations:
 """
 
 import hashlib
-from typing import List, Optional
 
 from dera.migration.planning.enums import EngineCapabilityState, MigrationOperationType
 from dera.migration.planning.models import AbstractMigrationOperation
@@ -21,7 +20,6 @@ from dera.migration.sql.enums import (
 from dera.migration.sql.identifiers import IdentifierQuoter
 from dera.migration.sql.models import (
     GeneratedSqlStatement,
-    PreflightCheck,
     RollbackStatement,
 )
 
@@ -36,8 +34,8 @@ class SqliteRenderer(DialectRenderer):
     def render_operation(
         self,
         operation: AbstractMigrationOperation,
-        target_version: Optional[str] = None,
-    ) -> List[GeneratedSqlStatement]:
+        target_version: str | None = None,
+    ) -> list[GeneratedSqlStatement]:
         op_type = operation.operation_type
 
         # Check unsupported ops
@@ -68,9 +66,9 @@ class SqliteRenderer(DialectRenderer):
         self,
         op: AbstractMigrationOperation,
         sql: str,
-        rollback: Optional[RollbackStatement] = None,
+        rollback: RollbackStatement | None = None,
         requires_review: bool = False,
-        review_reasons: Optional[List[str]] = None,
+        review_reasons: list[str] | None = None,
     ) -> GeneratedSqlStatement:
         clean_sql = sql.strip()
         if not clean_sql.endswith(";"):
@@ -107,10 +105,12 @@ class SqliteRenderer(DialectRenderer):
             op,
             sql,
             requires_review=True,
-            review_reasons=[f"Operation {op.operation_type.value} requires 12-step table recreation procedure on SQLite."],
+            review_reasons=[
+                f"Operation {op.operation_type.value} requires 12-step table recreation procedure on SQLite."
+            ],
         )
 
-    def _render_create_table(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_create_table(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         tbl = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"CREATE TABLE IF NOT EXISTS {tbl} (id INTEGER PRIMARY KEY);"
         rb = RollbackStatement(
@@ -120,7 +120,7 @@ class SqliteRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_drop_table(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_drop_table(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         tbl = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"DROP TABLE IF EXISTS {tbl};"
         rb = RollbackStatement(
@@ -130,25 +130,27 @@ class SqliteRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_add_column(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_add_column(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         tbl = IdentifierQuoter.quote_identifier(op.table_name or "table", self.dialect)
         col = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         col_type = op.operation_properties.get("type", {}).get("after", "TEXT")
         sql = f"ALTER TABLE {tbl} ADD COLUMN {col} {col_type};"
         return [self._make_statement(op, sql)]
 
-    def _render_drop_column(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_drop_column(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         tbl = IdentifierQuoter.quote_identifier(op.table_name or "table", self.dialect)
         col = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"ALTER TABLE {tbl} DROP COLUMN {col};"
-        return [self._make_statement(
-            op,
-            sql,
-            requires_review=True,
-            review_reasons=["SQLite DROP COLUMN requires SQLite >= 3.35.0."],
-        )]
+        return [
+            self._make_statement(
+                op,
+                sql,
+                requires_review=True,
+                review_reasons=["SQLite DROP COLUMN requires SQLite >= 3.35.0."],
+            )
+        ]
 
-    def _render_create_index(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_create_index(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         tbl = IdentifierQuoter.quote_identifier(op.table_name or "table", self.dialect)
         idx = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"CREATE INDEX IF NOT EXISTS {idx} ON {tbl} ();"
@@ -159,17 +161,17 @@ class SqliteRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_drop_index(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_drop_index(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         idx = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"DROP INDEX IF EXISTS {idx};"
         return [self._make_statement(op, sql)]
 
-    def _render_create_view(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_create_view(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         view = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"CREATE VIEW IF NOT EXISTS {view} AS SELECT 1;"
         return [self._make_statement(op, sql)]
 
-    def _render_drop_view(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_drop_view(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         view = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"DROP VIEW IF EXISTS {view};"
         return [self._make_statement(op, sql)]

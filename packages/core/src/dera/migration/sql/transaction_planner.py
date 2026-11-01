@@ -7,7 +7,6 @@ respecting dialect-specific transactional DDL capabilities:
 - MySQL/MariaDB: Disables multi-statement transaction wrapping due to implicit commits on DDL.
 """
 
-from typing import List
 from dera.migration.sql.enums import SqlDialectType, TransactionExecutionMode
 from dera.migration.sql.models import GeneratedSqlStatement, TransactionBlock
 
@@ -18,9 +17,9 @@ class TransactionPlanner:
     @classmethod
     def plan_transactions(
         cls,
-        statements: List[GeneratedSqlStatement],
+        statements: list[GeneratedSqlStatement],
         dialect: SqlDialectType,
-    ) -> List[TransactionBlock]:
+    ) -> list[TransactionBlock]:
         """Group statements into transaction blocks."""
         if not statements:
             return []

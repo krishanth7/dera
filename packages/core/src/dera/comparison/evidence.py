@@ -7,6 +7,7 @@ difference is claimed without cryptographic or literal provenance.
 from __future__ import annotations
 
 from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from dera.comparison.enums import PropertyComparisonStatus
@@ -37,7 +38,9 @@ class PropertyDifference(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    property_name: str = Field(description="Name of the changed property (e.g. 'is_nullable', 'native_data_type').")
+    property_name: str = Field(
+        description="Name of the changed property (e.g. 'is_nullable', 'native_data_type')."
+    )
     before_value: Any = Field(description="Value in baseline snapshot.")
     after_value: Any = Field(description="Value in target snapshot.")
     status: PropertyComparisonStatus = Field(

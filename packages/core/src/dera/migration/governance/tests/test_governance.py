@@ -10,10 +10,7 @@ Covers:
 7. Controlled export eligibility and evidence bundle generation.
 """
 
-import pytest
 from dera.migration.governance import (
-    ApprovalEvidenceBundle,
-    AuditEvent,
     AuditTrailManager,
     ExportEligibilityStatus,
     GovernanceEngine,
@@ -30,7 +27,9 @@ from dera.migration.sql.enums import SqlDialectType, SqlGenerationStatus
 from dera.migration.sql.reports import SqlArtifactSummary, SqlMigrationArtifact
 
 
-def _make_dummy_artifact(is_destructive=False, validation_issues_count=0, status=SqlGenerationStatus.GENERATED):
+def _make_dummy_artifact(
+    is_destructive=False, validation_issues_count=0, status=SqlGenerationStatus.GENERATED
+):
     return SqlMigrationArtifact(
         artifact_id="art_test_123",
         source_plan_id="plan_123",
@@ -56,15 +55,40 @@ def _make_dummy_artifact(is_destructive=False, validation_issues_count=0, status
 def test_review_lifecycle_transitions():
     """Verify that permitted and forbidden state transitions are enforced."""
     # Permitted: DRAFT -> SUBMITTED -> UNDER_REVIEW -> APPROVED
-    assert GovernanceEngine.validate_transition(ReviewLifecycleStatus.DRAFT, ReviewLifecycleStatus.SUBMITTED) is True
-    assert GovernanceEngine.validate_transition(ReviewLifecycleStatus.SUBMITTED, ReviewLifecycleStatus.UNDER_REVIEW) is True
-    assert GovernanceEngine.validate_transition(ReviewLifecycleStatus.UNDER_REVIEW, ReviewLifecycleStatus.APPROVED) is True
+    assert (
+        GovernanceEngine.validate_transition(
+            ReviewLifecycleStatus.DRAFT, ReviewLifecycleStatus.SUBMITTED
+        )
+        is True
+    )
+    assert (
+        GovernanceEngine.validate_transition(
+            ReviewLifecycleStatus.SUBMITTED, ReviewLifecycleStatus.UNDER_REVIEW
+        )
+        is True
+    )
+    assert (
+        GovernanceEngine.validate_transition(
+            ReviewLifecycleStatus.UNDER_REVIEW, ReviewLifecycleStatus.APPROVED
+        )
+        is True
+    )
 
     # Forbidden: DRAFT directly to APPROVED
-    assert GovernanceEngine.validate_transition(ReviewLifecycleStatus.DRAFT, ReviewLifecycleStatus.APPROVED) is False
+    assert (
+        GovernanceEngine.validate_transition(
+            ReviewLifecycleStatus.DRAFT, ReviewLifecycleStatus.APPROVED
+        )
+        is False
+    )
 
     # Forbidden: APPROVED back to DRAFT
-    assert GovernanceEngine.validate_transition(ReviewLifecycleStatus.APPROVED, ReviewLifecycleStatus.DRAFT) is False
+    assert (
+        GovernanceEngine.validate_transition(
+            ReviewLifecycleStatus.APPROVED, ReviewLifecycleStatus.DRAFT
+        )
+        is False
+    )
 
 
 def test_safety_gate_evaluation():

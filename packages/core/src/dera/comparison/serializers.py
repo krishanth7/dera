@@ -42,7 +42,9 @@ def _validate_numeric_values(data: Any) -> None:
             _validate_numeric_values(item)
     elif isinstance(data, float):
         if math.isnan(data) or math.isinf(data):
-            raise ComparisonError(f"Non-finite float value '{data}' is prohibited in canonical JSON.")
+            raise ComparisonError(
+                f"Non-finite float value '{data}' is prohibited in canonical JSON."
+            )
 
 
 def dumps_canonical_json(data: Any, indent: int | None = None) -> str:

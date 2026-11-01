@@ -8,7 +8,6 @@ Strict Non-Negotiable:
 - Operations involved in cycles are flagged as BLOCKED with clear explanatory reasons.
 """
 
-from typing import Dict, List, Set
 from dera.migration.planning.graph import OperationDependencyGraph
 
 
@@ -18,14 +17,14 @@ class CycleDetector:
     def __init__(self, graph: OperationDependencyGraph):
         self.graph = graph
 
-    def find_cycles(self) -> List[List[str]]:
+    def find_cycles(self) -> list[list[str]]:
         """Identify all strongly connected components with 2+ operations or self-loops."""
         index = 0
-        indices: Dict[str, int] = {}
-        lowlinks: Dict[str, int] = {}
-        on_stack: Set[str] = set()
-        stack: List[str] = []
-        sccs: List[List[str]] = []
+        indices: dict[str, int] = {}
+        lowlinks: dict[str, int] = {}
+        on_stack: set[str] = set()
+        stack: list[str] = []
+        sccs: list[list[str]] = []
 
         def strongconnect(v: str):
             nonlocal index
@@ -62,7 +61,7 @@ class CycleDetector:
         # Sort SCCs deterministically by first element
         return sorted(sccs, key=lambda comp: comp[0] if comp else "")
 
-    def annotate_blocked_operations(self) -> List[List[str]]:
+    def annotate_blocked_operations(self) -> list[list[str]]:
         """Detect cycles and mark affected operations as blocked."""
         cycles = self.find_cycles()
         for cycle in cycles:

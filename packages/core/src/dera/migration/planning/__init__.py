@@ -5,14 +5,19 @@ change-to-operation mapping, dependency DAG construction, cycle detection (Tarja
 topological ordering, stage grouping, manual decision gates, and plan reporting.
 """
 
+from dera.migration.planning.change_mapper import ChangeToOperationMapper
+from dera.migration.planning.cycles import CycleDetector
+from dera.migration.planning.engine import MigrationPlanningEngine
 from dera.migration.planning.enums import (
     EngineCapabilityState,
     ManualGateStatus,
     MigrationOperationType,
-    PlanStatus,
     PlanningStageType,
+    PlanStatus,
     PreconditionType,
 )
+from dera.migration.planning.fingerprint import PlanFingerprintCalculator
+from dera.migration.planning.graph import OperationDependencyGraph
 from dera.migration.planning.models import (
     AbstractMigrationOperation,
     ManualDecisionGate,
@@ -23,13 +28,8 @@ from dera.migration.planning.models import (
     ValidationRequirement,
 )
 from dera.migration.planning.operation_catalog import OperationCatalog
-from dera.migration.planning.change_mapper import ChangeToOperationMapper
-from dera.migration.planning.graph import OperationDependencyGraph
-from dera.migration.planning.cycles import CycleDetector
 from dera.migration.planning.ordering import DeterministicOrderingEngine
-from dera.migration.planning.fingerprint import PlanFingerprintCalculator
 from dera.migration.planning.reports import MigrationPlanReport, MigrationPlanSummary
-from dera.migration.planning.engine import MigrationPlanningEngine
 
 __all__ = [
     "AbstractMigrationOperation",

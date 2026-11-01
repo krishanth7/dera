@@ -47,14 +47,10 @@ class TableComparator:
         changes: list[SchemaChange] = []
 
         b_tables = [
-            t
-            for t in baseline.payload.tables
-            if cls._is_namespace_allowed(t.namespace, config)
+            t for t in baseline.payload.tables if cls._is_namespace_allowed(t.namespace, config)
         ]
         t_tables = [
-            t
-            for t in target.payload.tables
-            if cls._is_namespace_allowed(t.namespace, config)
+            t for t in target.payload.tables if cls._is_namespace_allowed(t.namespace, config)
         ]
 
         matches = match_by_key(

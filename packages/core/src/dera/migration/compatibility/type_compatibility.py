@@ -97,7 +97,10 @@ def evaluate_type_conversion_safety(
                     TypeConversionSafety.POTENTIAL_NARROWING,
                     f"Scale reduction from {b.scale} to {a.scale} may truncate decimal fractions.",
                 )
-            return (TypeConversionSafety.SAFE_WIDENING, "Precision/scale expansion is backward-compatible.")
+            return (
+                TypeConversionSafety.SAFE_WIDENING,
+                "Precision/scale expansion is backward-compatible.",
+            )
 
         return (TypeConversionSafety.SAFE_WIDENING, "Equivalent native data types.")
 
@@ -135,7 +138,7 @@ def evaluate_type_conversion_safety(
     if b.base_name == "date" and "timestamp" in a.base_name:
         return (
             TypeConversionSafety.SAFE_WIDENING,
-            f"Date to timestamp conversion adds time component without loss of date information.",
+            "Date to timestamp conversion adds time component without loss of date information.",
         )
 
     # Timestamp to Date (Narrowing)

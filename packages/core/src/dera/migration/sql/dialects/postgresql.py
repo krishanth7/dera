@@ -9,7 +9,6 @@ Supports:
 """
 
 import hashlib
-from typing import List, Optional
 
 from dera.migration.planning.enums import MigrationOperationType
 from dera.migration.planning.models import AbstractMigrationOperation
@@ -40,8 +39,8 @@ class PostgresqlRenderer(DialectRenderer):
     def render_operation(
         self,
         operation: AbstractMigrationOperation,
-        target_version: Optional[str] = None,
-    ) -> List[GeneratedSqlStatement]:
+        target_version: str | None = None,
+    ) -> list[GeneratedSqlStatement]:
         op_type = operation.operation_type
         statements = []
 
@@ -91,8 +90,8 @@ class PostgresqlRenderer(DialectRenderer):
         op: AbstractMigrationOperation,
         sql: str,
         execution_mode: TransactionExecutionMode = TransactionExecutionMode.TRANSACTIONAL,
-        rollback: Optional[RollbackStatement] = None,
-        preflights: Optional[List[PreflightCheck]] = None,
+        rollback: RollbackStatement | None = None,
+        preflights: list[PreflightCheck] | None = None,
     ) -> GeneratedSqlStatement:
         clean_sql = sql.strip()
         if not clean_sql.endswith(";"):
@@ -126,7 +125,9 @@ class PostgresqlRenderer(DialectRenderer):
             rollback_statement=rollback,
         )
 
-    def _render_create_namespace(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_create_namespace(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
         ns = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"CREATE SCHEMA IF NOT EXISTS {ns};"
         rb = RollbackStatement(
@@ -137,7 +138,7 @@ class PostgresqlRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_drop_namespace(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_drop_namespace(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         ns = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"DROP SCHEMA IF EXISTS {ns} CASCADE;"
         rb = RollbackStatement(
@@ -147,8 +148,10 @@ class PostgresqlRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_create_table(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.target_object_name, op.namespace, self.dialect)
+    def _render_create_table(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.target_object_name, op.namespace, self.dialect
+        )
         sql = f"CREATE TABLE IF NOT EXISTS {tbl} ();"
         rb = RollbackStatement(
             statement_id=f"rb_{op.operation_id}",
@@ -157,8 +160,10 @@ class PostgresqlRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_drop_table(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.target_object_name, op.namespace, self.dialect)
+    def _render_drop_table(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.target_object_name, op.namespace, self.dialect
+        )
         sql = f"DROP TABLE IF EXISTS {tbl};"
         rb = RollbackStatement(
             statement_id=f"rb_{op.operation_id}",
@@ -167,8 +172,10 @@ class PostgresqlRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_add_column(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_add_column(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         col = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         # Type extraction from operation_properties
         col_type = op.operation_properties.get("type", {}).get("after", "TEXT")
@@ -180,8 +187,10 @@ class PostgresqlRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_drop_column(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_drop_column(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         col = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"ALTER TABLE {tbl} DROP COLUMN IF EXISTS {col};"
         rb = RollbackStatement(
@@ -191,60 +200,94 @@ class PostgresqlRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_alter_column_type(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_alter_column_type(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         col = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         target_type = op.operation_properties.get("type", {}).get("after", "TEXT")
         sql = f"ALTER TABLE {tbl} ALTER COLUMN {col} TYPE {target_type};"
         return [self._make_statement(op, sql)]
 
-    def _render_alter_column_nullability(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_alter_column_nullability(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         col = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         is_nullable = op.operation_properties.get("is_nullable", {}).get("after", True)
         action = "DROP NOT NULL" if is_nullable else "SET NOT NULL"
         sql = f"ALTER TABLE {tbl} ALTER COLUMN {col} {action};"
         return [self._make_statement(op, sql)]
 
-    def _render_alter_column_default(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_alter_column_default(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         col = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         default_val = op.operation_properties.get("default", {}).get("after")
         action = f"SET DEFAULT {default_val}" if default_val else "DROP DEFAULT"
         sql = f"ALTER TABLE {tbl} ALTER COLUMN {col} {action};"
         return [self._make_statement(op, sql)]
 
-    def _render_add_primary_key(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_add_primary_key(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         pk_name = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"ALTER TABLE {tbl} ADD CONSTRAINT {pk_name} PRIMARY KEY ();"
         return [self._make_statement(op, sql)]
 
-    def _render_drop_primary_key(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_drop_primary_key(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         pk_name = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"ALTER TABLE {tbl} DROP CONSTRAINT IF EXISTS {pk_name};"
         return [self._make_statement(op, sql)]
 
-    def _render_add_unique_constraint(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_add_unique_constraint(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         cname = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"ALTER TABLE {tbl} ADD CONSTRAINT {cname} UNIQUE ();"
         return [self._make_statement(op, sql)]
 
-    def _render_drop_unique_constraint(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_drop_unique_constraint(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         cname = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"ALTER TABLE {tbl} DROP CONSTRAINT IF EXISTS {cname};"
         return [self._make_statement(op, sql)]
 
-    def _render_add_foreign_key(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_add_foreign_key(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         fk_name = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         ref_tbl = op.operation_properties.get("referenced_table", "ref_table")
         ref_ns = op.operation_properties.get("referenced_schema", op.namespace)
         ref_target = IdentifierQuoter.quote_qualified_name(ref_tbl, ref_ns, self.dialect)
-        sql = f"ALTER TABLE {tbl} ADD CONSTRAINT {fk_name} FOREIGN KEY () REFERENCES {ref_target} ();"
+        sql = (
+            f"ALTER TABLE {tbl} ADD CONSTRAINT {fk_name} FOREIGN KEY () REFERENCES {ref_target} ();"
+        )
         rb = RollbackStatement(
             statement_id=f"rb_{op.operation_id}",
             sql=f"ALTER TABLE {tbl} DROP CONSTRAINT IF EXISTS {fk_name};",
@@ -252,14 +295,20 @@ class PostgresqlRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_drop_foreign_key(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_drop_foreign_key(
+        self, op: AbstractMigrationOperation
+    ) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         fk_name = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"ALTER TABLE {tbl} DROP CONSTRAINT IF EXISTS {fk_name};"
         return [self._make_statement(op, sql)]
 
-    def _render_create_index(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        tbl = IdentifierQuoter.quote_qualified_name(op.table_name or "table", op.namespace, self.dialect)
+    def _render_create_index(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
+        tbl = IdentifierQuoter.quote_qualified_name(
+            op.table_name or "table", op.namespace, self.dialect
+        )
         idx = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"CREATE INDEX IF NOT EXISTS {idx} ON {tbl} ();"
         rb = RollbackStatement(
@@ -269,13 +318,15 @@ class PostgresqlRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_drop_index(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
+    def _render_drop_index(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
         idx = IdentifierQuoter.quote_identifier(op.target_object_name, self.dialect)
         sql = f"DROP INDEX IF EXISTS {idx};"
         return [self._make_statement(op, sql)]
 
-    def _render_create_view(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        view = IdentifierQuoter.quote_qualified_name(op.target_object_name, op.namespace, self.dialect)
+    def _render_create_view(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
+        view = IdentifierQuoter.quote_qualified_name(
+            op.target_object_name, op.namespace, self.dialect
+        )
         sql = f"CREATE OR REPLACE VIEW {view} AS SELECT 1;"
         rb = RollbackStatement(
             statement_id=f"rb_{op.operation_id}",
@@ -284,7 +335,9 @@ class PostgresqlRenderer(DialectRenderer):
         )
         return [self._make_statement(op, sql, rollback=rb)]
 
-    def _render_drop_view(self, op: AbstractMigrationOperation) -> List[GeneratedSqlStatement]:
-        view = IdentifierQuoter.quote_qualified_name(op.target_object_name, op.namespace, self.dialect)
+    def _render_drop_view(self, op: AbstractMigrationOperation) -> list[GeneratedSqlStatement]:
+        view = IdentifierQuoter.quote_qualified_name(
+            op.target_object_name, op.namespace, self.dialect
+        )
         sql = f"DROP VIEW IF EXISTS {view};"
         return [self._make_statement(op, sql)]

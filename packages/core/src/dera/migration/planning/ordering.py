@@ -5,7 +5,6 @@ with lexicographical tie-breaking over operation IDs and priority.
 Groups operations into sequential PlanningStages without violating any dependency order.
 """
 
-from typing import Dict, List, Set, Tuple
 from dera.migration.planning.enums import MigrationOperationType, PlanningStageType
 from dera.migration.planning.graph import OperationDependencyGraph
 from dera.migration.planning.models import AbstractMigrationOperation, PlanningStage
@@ -17,17 +16,17 @@ class DeterministicOrderingEngine:
     def __init__(self, graph: OperationDependencyGraph):
         self.graph = graph
 
-    def compute_ordering(self) -> Tuple[List[AbstractMigrationOperation], List[PlanningStage]]:
+    def compute_ordering(self) -> tuple[list[AbstractMigrationOperation], list[PlanningStage]]:
         """Compute deterministic topological sort and planning stages."""
-        in_degree: Dict[str, int] = {
+        in_degree: dict[str, int] = {
             op_id: len(prereqs) for op_id, prereqs in self.graph.reverse_edges.items()
         }
 
         # Available queue: nodes with in_degree == 0
         # Sorted lexicographically by operation_id for stable tie-breaking
-        ready: List[str] = sorted([op_id for op_id, deg in in_degree.items() if deg == 0])
+        ready: list[str] = sorted([op_id for op_id, deg in in_degree.items() if deg == 0])
 
-        ordered_op_ids: List[str] = []
+        ordered_op_ids: list[str] = []
 
         while ready:
             # Deterministic pick: lexicographical order of operation_id
@@ -47,9 +46,11 @@ class DeterministicOrderingEngine:
 
         return ordered_ops, stages
 
-    def _group_into_stages(self, ordered_ops: List[AbstractMigrationOperation]) -> List[PlanningStage]:
+    def _group_into_stages(
+        self, ordered_ops: list[AbstractMigrationOperation]
+    ) -> list[PlanningStage]:
         """Group operations into 7 sequential logical planning stages."""
-        stage_buckets: Dict[PlanningStageType, List[str]] = {
+        stage_buckets: dict[PlanningStageType, list[str]] = {
             PlanningStageType.PREREQUISITE_VERIFICATION: [],
             PlanningStageType.STRUCTURAL_PREPARATION: [],
             PlanningStageType.DEPENDENCY_ADJUSTMENT: [],
@@ -63,7 +64,7 @@ class DeterministicOrderingEngine:
             stype = self._map_operation_to_stage_type(op.operation_type)
             stage_buckets[stype].append(op.operation_id)
 
-        stages: List[PlanningStage] = []
+        stages: list[PlanningStage] = []
         stage_order = 1
         stage_descriptions = {
             PlanningStageType.PREREQUISITE_VERIFICATION: "Verify namespaces, prerequisites, and operational environments.",

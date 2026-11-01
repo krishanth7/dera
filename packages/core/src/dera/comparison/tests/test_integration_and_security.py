@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import time
-import pytest
 
+import pytest
 from dera.comparison.engine import SchemaComparisonEngine
 from dera.comparison.enums import (
     ComparisonChangeType,
@@ -43,8 +43,12 @@ class TestComparisonIntegrationAndProperties:
             namespace="public",
             name="products",
             columns=(
-                make_test_column("tbl_prod", "id", 1, "integer", CanonicalTypeCategory.INTEGER, False),
-                make_test_column("tbl_prod", "sku", 2, "varchar(100)", CanonicalTypeCategory.TEXT, False),
+                make_test_column(
+                    "tbl_prod", "id", 1, "integer", CanonicalTypeCategory.INTEGER, False
+                ),
+                make_test_column(
+                    "tbl_prod", "sku", 2, "varchar(100)", CanonicalTypeCategory.TEXT, False
+                ),
             ),
         )
 
@@ -63,8 +67,16 @@ class TestComparisonIntegrationAndProperties:
         assert report_ab.summary.total_modified == report_ba.summary.total_modified
 
         # Verify added products table in AB is removed table in BA
-        prod_ab = next(c for c in report_ab.changes if c.object_type == ComparisonObjectType.TABLE and c.name == "products")
-        prod_ba = next(c for c in report_ba.changes if c.object_type == ComparisonObjectType.TABLE and c.name == "products")
+        prod_ab = next(
+            c
+            for c in report_ab.changes
+            if c.object_type == ComparisonObjectType.TABLE and c.name == "products"
+        )
+        prod_ba = next(
+            c
+            for c in report_ba.changes
+            if c.object_type == ComparisonObjectType.TABLE and c.name == "products"
+        )
         assert prod_ab.change_type == ComparisonChangeType.ADDED
         assert prod_ba.change_type == ComparisonChangeType.REMOVED
 
@@ -116,7 +128,9 @@ class TestComparisonIntegrationAndProperties:
         for i in range(100):
             tbl_id = f"tbl_{i:03d}"
             cols = tuple(
-                make_test_column(tbl_id, f"col_{j:02d}", j + 1, "integer", CanonicalTypeCategory.INTEGER, True)
+                make_test_column(
+                    tbl_id, f"col_{j:02d}", j + 1, "integer", CanonicalTypeCategory.INTEGER, True
+                )
                 for j in range(10)
             )
             tables_list.append(make_test_table(namespace="public", name=f"t_{i:03d}", columns=cols))

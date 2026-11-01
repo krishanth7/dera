@@ -4,11 +4,12 @@ Defines deterministic enumeration types for the review lifecycle, safety gate ou
 decision types, and export eligibility statuses.
 """
 
-from enum import Enum
+from enum import StrEnum
 
 
-class ReviewLifecycleStatus(str, Enum):
+class ReviewLifecycleStatus(StrEnum):
     """Authoritative states in the migration review lifecycle."""
+
     DRAFT = "DRAFT"
     SUBMITTED = "SUBMITTED"
     UNDER_REVIEW = "UNDER_REVIEW"
@@ -20,8 +21,9 @@ class ReviewLifecycleStatus(str, Enum):
     BLOCKED = "BLOCKED"
 
 
-class SafetyGateStatus(str, Enum):
+class SafetyGateStatus(StrEnum):
     """Outcome of evaluating an individual governance safety gate."""
+
     PASS = "PASS"
     FAIL = "FAIL"
     REVIEW_REQUIRED = "REVIEW_REQUIRED"
@@ -29,16 +31,18 @@ class SafetyGateStatus(str, Enum):
     NOT_APPLICABLE = "NOT_APPLICABLE"
 
 
-class ReviewDecisionType(str, Enum):
+class ReviewDecisionType(StrEnum):
     """Decision submitted by an assigned reviewer."""
+
     APPROVE = "APPROVE"
     REJECT = "REJECT"
     REQUEST_CHANGES = "REQUEST_CHANGES"
     ABSTAIN = "ABSTAIN"
 
 
-class ExportEligibilityStatus(str, Enum):
+class ExportEligibilityStatus(StrEnum):
     """Evaluation status for controlled artifact export."""
+
     ELIGIBLE_FOR_CONTROLLED_EXPORT = "ELIGIBLE_FOR_CONTROLLED_EXPORT"
     REVIEW_REQUIRED = "REVIEW_REQUIRED"
     BLOCKED = "BLOCKED"

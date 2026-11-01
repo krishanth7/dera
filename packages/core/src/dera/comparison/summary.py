@@ -6,8 +6,8 @@ object categories, and namespaces.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 from collections import Counter
+from typing import TYPE_CHECKING
 
 from dera.comparison.enums import ComparisonChangeType
 from dera.comparison.models import ComparisonSummary

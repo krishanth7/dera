@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 from dera.comparison.enums import ComparisonChangeType, ComparisonObjectType
 from dera.comparison.evidence import ObjectEvidence
 from dera.comparison.models import SchemaChange
-from dera.metadata.enums import MetadataCompleteness
 
 if TYPE_CHECKING:
     from dera.comparison.models import ComparisonConfig

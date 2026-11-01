@@ -3,36 +3,25 @@
 from __future__ import annotations
 
 import pytest
-
 from dera.comparison.engine import SchemaComparisonEngine
 from dera.comparison.enums import (
     ComparisonChangeType,
     ComparisonObjectType,
     ComparisonStatus,
-    PropertyComparisonStatus,
 )
 from dera.comparison.errors import (
     ComparisonResourceLimitExceededError,
-    IncompatibleSnapshotError,
-    InvalidSnapshotError,
     UnsupportedEngineComparisonError,
 )
 from dera.comparison.limits import ComparisonResourceLimits
-from dera.comparison.models import ComparisonConfig
 from dera.comparison.tests.fixtures import (
     build_snapshot_from_payload,
     make_standard_ecommerce_payload,
     make_test_column,
-    make_test_table,
 )
-from dera.metadata.enums import CanonicalTypeCategory, MetadataCompleteness, TableType
-from dera.metadata.identity import compute_stable_object_id
+from dera.metadata.enums import CanonicalTypeCategory
 from dera.reverse_engineering.snapshots.models import (
-    SnapshotIndexPayload,
-    SnapshotPrimaryKeyPayload,
-    SnapshotStructuralPayload,
     SnapshotUniqueConstraintPayload,
-    SnapshotViewPayload,
 )
 
 
@@ -65,7 +54,9 @@ class TestComparisonEngineUnit:
 
         # Create target by removing 'orders' table
         target_tables = tuple(t for t in base_payload.tables if t.name != "orders")
-        target_payload = base_payload.model_copy(update={"tables": target_tables, "relationships": ()})
+        target_payload = base_payload.model_copy(
+            update={"tables": target_tables, "relationships": ()}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         engine = SchemaComparisonEngine()
@@ -73,7 +64,9 @@ class TestComparisonEngineUnit:
         # Base -> Target (orders removed)
         report_fwd = engine.compare(snap_base, snap_target)
         assert report_fwd.status == ComparisonStatus.DIFFERENCES_FOUND
-        table_changes = [c for c in report_fwd.changes if c.object_type == ComparisonObjectType.TABLE]
+        table_changes = [
+            c for c in report_fwd.changes if c.object_type == ComparisonObjectType.TABLE
+        ]
         assert len(table_changes) == 1
         assert table_changes[0].name == "orders"
         assert table_changes[0].change_type == ComparisonChangeType.REMOVED
@@ -83,7 +76,9 @@ class TestComparisonEngineUnit:
         # Target -> Base (orders added, relationship added)
         report_rev = engine.compare(snap_target, snap_base)
         assert report_rev.status == ComparisonStatus.DIFFERENCES_FOUND
-        rev_table_changes = [c for c in report_rev.changes if c.object_type == ComparisonObjectType.TABLE]
+        rev_table_changes = [
+            c for c in report_rev.changes if c.object_type == ComparisonObjectType.TABLE
+        ]
         assert len(rev_table_changes) == 1
         assert rev_table_changes[0].name == "orders"
         assert rev_table_changes[0].change_type == ComparisonChangeType.ADDED
@@ -113,14 +108,20 @@ class TestComparisonEngineUnit:
 
         mod_users = users_table.model_copy(update={"columns": tuple(new_cols)})
         other_tables = [t for t in base_payload.tables if t.name != "users"]
-        target_payload = base_payload.model_copy(update={"tables": tuple(other_tables + [mod_users])})
+        target_payload = base_payload.model_copy(
+            update={"tables": tuple(other_tables + [mod_users])}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         engine = SchemaComparisonEngine()
         report = engine.compare(snap_base, snap_target)
 
         assert report.status == ComparisonStatus.DIFFERENCES_FOUND
-        col_changes = [c for c in report.changes if c.object_type == ComparisonObjectType.COLUMN and c.name == "name"]
+        col_changes = [
+            c
+            for c in report.changes
+            if c.object_type == ComparisonObjectType.COLUMN and c.name == "name"
+        ]
         assert len(col_changes) == 1
         chg = col_changes[0]
         assert chg.change_type == ComparisonChangeType.MODIFIED
@@ -155,13 +156,19 @@ class TestComparisonEngineUnit:
         )
         mod_users = users_table.model_copy(update={"columns": users_table.columns + (new_col,)})
         other_tables = [t for t in base_payload.tables if t.name != "users"]
-        target_payload = base_payload.model_copy(update={"tables": tuple(other_tables + [mod_users])})
+        target_payload = base_payload.model_copy(
+            update={"tables": tuple(other_tables + [mod_users])}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         engine = SchemaComparisonEngine()
         report = engine.compare(snap_base, snap_target)
 
-        col_changes = [c for c in report.changes if c.object_type == ComparisonObjectType.COLUMN and c.name == "avatar_url"]
+        col_changes = [
+            c
+            for c in report.changes
+            if c.object_type == ComparisonObjectType.COLUMN and c.name == "avatar_url"
+        ]
         assert len(col_changes) == 1
         assert col_changes[0].change_type == ComparisonChangeType.ADDED
         assert col_changes[0].after_evidence is not None
@@ -186,20 +193,26 @@ class TestComparisonEngineUnit:
             }
         )
         other_tables = [t for t in base_payload.tables if t.name != "users"]
-        target_payload = base_payload.model_copy(update={"tables": tuple(other_tables + [mod_users])})
+        target_payload = base_payload.model_copy(
+            update={"tables": tuple(other_tables + [mod_users])}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         engine = SchemaComparisonEngine()
         report = engine.compare(snap_base, snap_target)
 
         # PK modified
-        pk_changes = [c for c in report.changes if c.object_type == ComparisonObjectType.PRIMARY_KEY]
+        pk_changes = [
+            c for c in report.changes if c.object_type == ComparisonObjectType.PRIMARY_KEY
+        ]
         assert len(pk_changes) == 1
         assert pk_changes[0].change_type == ComparisonChangeType.MODIFIED
         assert pk_changes[0].property_differences[0].property_name == "columns"
 
         # Unique constraint added
-        uc_changes = [c for c in report.changes if c.object_type == ComparisonObjectType.UNIQUE_CONSTRAINT]
+        uc_changes = [
+            c for c in report.changes if c.object_type == ComparisonObjectType.UNIQUE_CONSTRAINT
+        ]
         assert len(uc_changes) == 1
         assert uc_changes[0].change_type == ComparisonChangeType.ADDED
         assert uc_changes[0].name == "unq_users_email"
@@ -223,11 +236,15 @@ class TestComparisonEngineUnit:
         engine = SchemaComparisonEngine()
         report = engine.compare(snap_base, snap_target)
 
-        fk_changes = [c for c in report.changes if c.object_type == ComparisonObjectType.FOREIGN_KEY]
+        fk_changes = [
+            c for c in report.changes if c.object_type == ComparisonObjectType.FOREIGN_KEY
+        ]
         assert len(fk_changes) == 1
         assert fk_changes[0].change_type == ComparisonChangeType.REMOVED
 
-        rel_changes = [c for c in report.changes if c.object_type == ComparisonObjectType.RELATIONSHIP]
+        rel_changes = [
+            c for c in report.changes if c.object_type == ComparisonObjectType.RELATIONSHIP
+        ]
         assert len(rel_changes) == 1
         assert rel_changes[0].change_type == ComparisonChangeType.REMOVED
 
@@ -246,7 +263,9 @@ class TestComparisonEngineUnit:
         )
         mod_users = users_table.model_copy(update={"indexes": (mod_idx,)})
         other_tables = [t for t in base_payload.tables if t.name != "users"]
-        target_payload = base_payload.model_copy(update={"tables": tuple(other_tables + [mod_users])})
+        target_payload = base_payload.model_copy(
+            update={"tables": tuple(other_tables + [mod_users])}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         engine = SchemaComparisonEngine()
@@ -348,7 +367,7 @@ class TestComparisonEngineUnit:
         users_tbl = next(t for t in base_payload.tables if t.name == "users")
 
         # Modify both tables
-        mod_orders = orders_tbl.model_copy(update={"comment": "Orders table comment"})
+        orders_tbl.model_copy(update={"comment": "Orders table comment"})
         mod_users = users_tbl.model_copy(update={"comment": "Users table comment"})
 
         # Canonical ordering has tables sorted by (namespace, name): orders then users

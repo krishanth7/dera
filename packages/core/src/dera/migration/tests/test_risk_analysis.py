@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 import pytest
-
 from dera.comparison.engine import SchemaComparisonEngine
-from dera.comparison.models import ComparisonReport
 from dera.comparison.tests.fixtures import (
     build_snapshot_from_payload,
     make_standard_ecommerce_payload,
     make_test_column,
-    make_test_table,
 )
 from dera.diagnostics.enums import DiagnosticSeverity
 from dera.metadata.enums import CanonicalTypeCategory
@@ -20,13 +17,11 @@ from dera.migration.enums import (
     ReviewPriority,
     RiskDimension,
     StructuralChangeCategory,
-    TypeConversionSafety,
 )
 from dera.migration.errors import InvalidComparisonReportError, RiskResourceLimitExceededError
 from dera.migration.limits import MigrationRiskLimits
 from dera.reverse_engineering.graph.models import (
     ForeignKeyEdge,
-    ForeignKeyGraph,
 )
 from dera.reverse_engineering.graph.nodes import TableNode
 
@@ -41,7 +36,9 @@ class TestMigrationRiskAnalysisUnit:
 
         # Target drops 'orders' table
         target_tables = tuple(t for t in base_payload.tables if t.name != "orders")
-        target_payload = base_payload.model_copy(update={"tables": target_tables, "relationships": ()})
+        target_payload = base_payload.model_copy(
+            update={"tables": target_tables, "relationships": ()}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         # 1. Diff report from Phase 9.1
@@ -57,16 +54,16 @@ class TestMigrationRiskAnalysisUnit:
         assert risk_report.summary.potentially_breaking >= 1
 
         # Locate classified table removal
-        table_classified = next(
-            c for c in risk_report.classified_changes if c.name == "orders"
-        )
+        table_classified = next(c for c in risk_report.classified_changes if c.name == "orders")
         assert table_classified.category == StructuralChangeCategory.REMOVAL
         assert table_classified.compatibility == CompatibilityLevel.POTENTIALLY_BREAKING
         assert table_classified.is_potentially_breaking is True
 
         # Check risk assessments
         data_risks = [
-            r for r in risk_report.risk_assessments if r.dimension == RiskDimension.DATA_PRESERVATION
+            r
+            for r in risk_report.risk_assessments
+            if r.dimension == RiskDimension.DATA_PRESERVATION
         ]
         assert len(data_risks) >= 1
         top_risk = data_risks[0]
@@ -93,7 +90,9 @@ class TestMigrationRiskAnalysisUnit:
         )
         mod_users = users_table.model_copy(update={"columns": users_table.columns + (new_col,)})
         other_tables = [t for t in base_payload.tables if t.name != "users"]
-        target_payload = base_payload.model_copy(update={"tables": tuple(other_tables + [mod_users])})
+        target_payload = base_payload.model_copy(
+            update={"tables": tuple(other_tables + [mod_users])}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         comp_report = SchemaComparisonEngine().compare(snap_base, snap_target)
@@ -107,9 +106,7 @@ class TestMigrationRiskAnalysisUnit:
         assert col_classified.is_potentially_breaking is True
 
         # Risk assessment for NOT NULL column without default
-        compat_risks = [
-            r for r in risk_report.risk_assessments if r.rule_id == "RISK-COMPAT-001"
-        ]
+        compat_risks = [r for r in risk_report.risk_assessments if r.rule_id == "RISK-COMPAT-001"]
         assert len(compat_risks) == 1
         assert compat_risks[0].priority == ReviewPriority.P2_HIGH
         assert len(compat_risks[0].recommendations) >= 1
@@ -129,15 +126,15 @@ class TestMigrationRiskAnalysisUnit:
                 new_cols.append(c)
         mod_users = users_table.model_copy(update={"columns": tuple(new_cols)})
         other_tables = [t for t in base_payload.tables if t.name != "users"]
-        target_payload = base_payload.model_copy(update={"tables": tuple(other_tables + [mod_users])})
+        target_payload = base_payload.model_copy(
+            update={"tables": tuple(other_tables + [mod_users])}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         comp_report = SchemaComparisonEngine().compare(snap_base, snap_target)
         risk_report = MigrationRiskAnalysisEngine().analyze(comp_report)
 
-        type_risks = [
-            r for r in risk_report.risk_assessments if r.rule_id == "RISK-DATA-003"
-        ]
+        type_risks = [r for r in risk_report.risk_assessments if r.rule_id == "RISK-DATA-003"]
         assert len(type_risks) == 1
         assert type_risks[0].dimension == RiskDimension.DATA_PRESERVATION
         assert "varchar(50)" in type_risks[0].evidence_summary["after_type"]
@@ -152,6 +149,7 @@ class TestMigrationRiskAnalysisUnit:
         orders_tbl = next(t for t in base_payload.tables if t.name == "orders")
 
         from datetime import UTC, datetime
+
         from dera.metadata.provenance import MetadataProvenance
 
         prov = MetadataProvenance(
@@ -198,17 +196,21 @@ class TestMigrationRiskAnalysisUnit:
 
         # Drop 'users' in target
         target_tables = (orders_tbl,)
-        target_payload = base_payload.model_copy(update={"tables": target_tables, "relationships": ()})
+        target_payload = base_payload.model_copy(
+            update={"tables": target_tables, "relationships": ()}
+        )
         snap_target = build_snapshot_from_payload(target_payload, snapshot_id="snap_target")
 
         comp_report = SchemaComparisonEngine().compare(snap_base, snap_target)
-        risk_report = MigrationRiskAnalysisEngine().analyze(
-            comp_report, dependency_graph=graph
-        )
+        risk_report = MigrationRiskAnalysisEngine().analyze(comp_report, dependency_graph=graph)
 
         # Check blast radius metrics
         user_blast = next(
-            (b for b in risk_report.blast_radius_reports if b.target_table_id == users_tbl.table_id),
+            (
+                b
+                for b in risk_report.blast_radius_reports
+                if b.target_table_id == users_tbl.table_id
+            ),
             None,
         )
         assert user_blast is not None
@@ -216,17 +218,13 @@ class TestMigrationRiskAnalysisUnit:
         assert user_blast.dependents[0].name == "orders"
 
         # Check blast radius risk assessment
-        blast_risks = [
-            r for r in risk_report.risk_assessments if r.rule_id == "RISK-BLAST-001"
-        ]
+        blast_risks = [r for r in risk_report.risk_assessments if r.rule_id == "RISK-BLAST-001"]
         assert len(blast_risks) >= 1
         assert blast_risks[0].priority == ReviewPriority.P1_CRITICAL
 
     def test_input_validation_and_resource_limits(self) -> None:
         """Verify strict input validation and resource bounding."""
-        engine = MigrationRiskAnalysisEngine(
-            limits=MigrationRiskLimits(max_changes_to_analyze=0)
-        )
+        engine = MigrationRiskAnalysisEngine(limits=MigrationRiskLimits(max_changes_to_analyze=0))
         base_payload = make_standard_ecommerce_payload()
         snap_base = build_snapshot_from_payload(base_payload, snapshot_id="snap_base")
         snap_target = build_snapshot_from_payload(

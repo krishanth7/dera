@@ -5,17 +5,14 @@ instances into AbstractMigrationOperation models with verified preconditions,
 postconditions, manual decision gates, and rollback considerations.
 """
 
-from typing import Dict, List, Optional
 from dera.comparison.enums import ComparisonChangeType, ComparisonObjectType
 from dera.comparison.models import SchemaChange
-from dera.migration.enums import ReversibilityClassification, ReviewPriority
 from dera.migration.classification.models import ClassifiedChange
-from dera.migration.risk.models import MigrationRiskAssessment
+from dera.migration.enums import ReversibilityClassification, ReviewPriority
 from dera.migration.planning.enums import (
     EngineCapabilityState,
     ManualGateStatus,
     MigrationOperationType,
-    PreconditionType,
 )
 from dera.migration.planning.models import (
     AbstractMigrationOperation,
@@ -26,6 +23,7 @@ from dera.migration.planning.models import (
     ValidationRequirement,
 )
 from dera.migration.planning.operation_catalog import OperationCatalog
+from dera.migration.risk.models import MigrationRiskAssessment
 
 
 class ChangeToOperationMapper:
@@ -36,22 +34,24 @@ class ChangeToOperationMapper:
 
     def map_changes(
         self,
-        schema_changes: tuple[SchemaChange, ...] | List[SchemaChange],
-        classified_changes: Optional[tuple[ClassifiedChange, ...] | List[ClassifiedChange]] = None,
-        risk_assessments: Optional[tuple[MigrationRiskAssessment, ...] | List[MigrationRiskAssessment]] = None,
-    ) -> List[AbstractMigrationOperation]:
+        schema_changes: tuple[SchemaChange, ...] | list[SchemaChange],
+        classified_changes: tuple[ClassifiedChange, ...] | list[ClassifiedChange] | None = None,
+        risk_assessments: tuple[MigrationRiskAssessment, ...]
+        | list[MigrationRiskAssessment]
+        | None = None,
+    ) -> list[AbstractMigrationOperation]:
         """Map all changes into abstract migration operations."""
-        classified_map: Dict[str, ClassifiedChange] = {}
+        classified_map: dict[str, ClassifiedChange] = {}
         if classified_changes:
             for cc in classified_changes:
                 classified_map[cc.source_fingerprint] = cc
 
-        risk_map: Dict[str, List[MigrationRiskAssessment]] = {}
+        risk_map: dict[str, list[MigrationRiskAssessment]] = {}
         if risk_assessments:
             for ra in risk_assessments:
                 risk_map.setdefault(ra.source_change_fingerprint, []).append(ra)
 
-        operations: List[AbstractMigrationOperation] = []
+        operations: list[AbstractMigrationOperation] = []
         for change in sorted(schema_changes, key=lambda c: c.fingerprint):
             classified = classified_map.get(change.fingerprint)
             risks = risk_map.get(change.fingerprint, [])
@@ -63,17 +63,19 @@ class ChangeToOperationMapper:
     def _map_single_change(
         self,
         change: SchemaChange,
-        classified: Optional[ClassifiedChange] = None,
-        risks: Optional[List[MigrationRiskAssessment]] = None,
-    ) -> List[AbstractMigrationOperation]:
+        classified: ClassifiedChange | None = None,
+        risks: list[MigrationRiskAssessment] | None = None,
+    ) -> list[AbstractMigrationOperation]:
         """Convert a single schema change to one or more operations."""
         op_type = self._resolve_operation_type(change)
         if op_type is None:
             return []
 
         op_id = f"op_{op_type.value.lower()}_{change.canonical_id}"
-        table_name = change.parent_name if change.parent_name else (
-            change.name if change.object_type == ComparisonObjectType.TABLE else None
+        table_name = (
+            change.parent_name
+            if change.parent_name
+            else (change.name if change.object_type == ComparisonObjectType.TABLE else None)
         )
         namespace = change.namespace or "public"
 
@@ -121,7 +123,7 @@ class ChangeToOperationMapper:
         # Check risks first for reversibility if available
         highest_reversibility = ReversibilityClassification.POTENTIALLY_REVERSIBLE
         highest_priority = ReviewPriority.P4_LOW
-        is_destructive = (change.change_type == ComparisonChangeType.REMOVED)
+        is_destructive = change.change_type == ComparisonChangeType.REMOVED
 
         if risks:
             for r in risks:
@@ -150,7 +152,7 @@ class ChangeToOperationMapper:
         # Manual decision gates
         manual_gates = self._build_manual_gates(change, op_type, is_destructive, engine_cap)
 
-        is_blocked = (engine_cap == EngineCapabilityState.UNSUPPORTED)
+        is_blocked = engine_cap == EngineCapabilityState.UNSUPPORTED
         blocking_reasons = []
         if is_blocked:
             blocking_reasons.append(
@@ -184,7 +186,7 @@ class ChangeToOperationMapper:
 
         return [operation]
 
-    def _resolve_operation_type(self, change: SchemaChange) -> Optional[MigrationOperationType]:
+    def _resolve_operation_type(self, change: SchemaChange) -> MigrationOperationType | None:
         """Map ComparisonChangeType and ComparisonObjectType to MigrationOperationType."""
         ct = change.change_type
         ot = change.object_type
@@ -255,7 +257,7 @@ class ChangeToOperationMapper:
         change: SchemaChange,
         op_type: MigrationOperationType,
         entry,
-    ) -> List[OperationPrecondition]:
+    ) -> list[OperationPrecondition]:
         preconditions = []
         for ptype in entry.default_preconditions:
             preconditions.append(
@@ -278,7 +280,7 @@ class ChangeToOperationMapper:
         op_type: MigrationOperationType,
         is_destructive: bool,
         engine_cap: EngineCapabilityState,
-    ) -> List[ManualDecisionGate]:
+    ) -> list[ManualDecisionGate]:
         gates = []
         op_id = f"op_{op_type.value.lower()}_{change.canonical_id}"
 
@@ -329,7 +331,9 @@ class ChangeToOperationMapper:
 
         return gates
 
-    def _determine_rollback_strategy(self, op_type: MigrationOperationType, is_destructive: bool) -> str:
+    def _determine_rollback_strategy(
+        self, op_type: MigrationOperationType, is_destructive: bool
+    ) -> str:
         if is_destructive:
             return "MANUAL_RESTORE_FROM_BACKUP"
         if op_type == MigrationOperationType.CREATE_TABLE:

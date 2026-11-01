@@ -10,11 +10,16 @@ Tests:
 7. Engine-specific capability evaluations (PostgreSQL, SQLite, MySQL).
 """
 
-import pytest
 from dera.comparison.enums import ComparisonChangeType, ComparisonObjectType, ComparisonStatus
 from dera.comparison.evidence import ObjectEvidence, PropertyDifference
-from dera.comparison.models import ComparisonConfig, ComparisonReport, ComparisonSummary, SchemaChange
+from dera.comparison.models import (
+    ComparisonConfig,
+    ComparisonReport,
+    ComparisonSummary,
+    SchemaChange,
+)
 from dera.diagnostics.enums import DiagnosticSeverity
+from dera.migration.classification.models import ClassifiedChange
 from dera.migration.enums import (
     CompatibilityLevel,
     ReversibilityClassification,
@@ -23,23 +28,17 @@ from dera.migration.enums import (
     RiskEvidenceCertainty,
     StructuralChangeCategory,
 )
-from dera.migration.classification.models import ClassifiedChange
-from dera.migration.reports.models import MigrationRiskReport
-from dera.migration.risk.models import MigrationRiskAssessment
 from dera.migration.planning import (
     ChangeToOperationMapper,
     CycleDetector,
-    DeterministicOrderingEngine,
     EngineCapabilityState,
-    ManualGateStatus,
     MigrationOperationType,
-    MigrationPlanReport,
     MigrationPlanningEngine,
     OperationDependencyGraph,
-    PlanFingerprintCalculator,
     PlanStatus,
-    PlanningStageType,
 )
+from dera.migration.reports.models import MigrationRiskReport
+from dera.migration.risk.models import MigrationRiskAssessment
 
 
 def _make_dummy_comparison_and_risk(changes: list[SchemaChange], engine="postgresql"):
@@ -354,4 +353,6 @@ def test_deterministic_plan_fingerprint():
 
     assert plan1.plan_fingerprint == plan2.plan_fingerprint
     assert plan1.plan_id == plan2.plan_id
-    assert [op.operation_id for op in plan1.operations] == [op.operation_id for op in plan2.operations]
+    assert [op.operation_id for op in plan1.operations] == [
+        op.operation_id for op in plan2.operations
+    ]

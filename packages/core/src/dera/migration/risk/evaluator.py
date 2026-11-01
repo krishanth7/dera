@@ -77,11 +77,15 @@ class RiskEvaluator:
             risks.append(cls._evaluate_primary_key(classified, raw_change))
 
         # 6. New Constraints (Unique, FK, Check)
-        elif classified.object_type in (
-            ComparisonObjectType.UNIQUE_CONSTRAINT,
-            ComparisonObjectType.FOREIGN_KEY,
-            ComparisonObjectType.CHECK_CONSTRAINT,
-        ) and classified.change_type == ComparisonChangeType.ADDED:
+        elif (
+            classified.object_type
+            in (
+                ComparisonObjectType.UNIQUE_CONSTRAINT,
+                ComparisonObjectType.FOREIGN_KEY,
+                ComparisonObjectType.CHECK_CONSTRAINT,
+            )
+            and classified.change_type == ComparisonChangeType.ADDED
+        ):
             risks.append(cls._evaluate_added_constraint(classified, raw_change))
 
         # 7. Dropped Index
@@ -136,7 +140,9 @@ class RiskEvaluator:
                 "namespace": classified.namespace,
                 "change_type": "REMOVED",
             },
-            assumptions=("Table may contain production data; data cannot be recovered without backup.",),
+            assumptions=(
+                "Table may contain production data; data cannot be recovered without backup.",
+            ),
             limitations=("Schema metadata cannot determine row count or customer table traffic.",),
             recommendations=recs,
         )
@@ -178,7 +184,9 @@ class RiskEvaluator:
                 "table_name": classified.parent_name,
             },
             assumptions=("Column contains populated historical data.",),
-            limitations=("Database metadata alone cannot verify external application code references.",),
+            limitations=(
+                "Database metadata alone cannot verify external application code references.",
+            ),
             recommendations=recs,
         )
 
@@ -252,7 +260,7 @@ class RiskEvaluator:
                         description=f"Run SELECT COUNT(*) WHERE {classified.name} IS NULL prior to applying NOT NULL.",
                         rationale="Enforcing NOT NULL fails if any existing tuple contains a NULL value.",
                         suggested_review_actions=(
-                            f"SELECT COUNT(*) FROM {classified.parent_name} WHERE {classified.name} IS NULL;",
+                            f"SELECT COUNT(*) FROM {classified.parent_name} WHERE {classified.name} IS NULL;",  # nosec B608
                             "Backfill any null occurrences with valid placeholder values.",
                         ),
                     ),
@@ -414,7 +422,10 @@ class RiskEvaluator:
             reversibility=ReversibilityClassification.POTENTIALLY_REVERSIBLE,
             title=f"Index '{classified.name}' dropped",
             description=f"Dropping index '{classified.name}' on '{classified.parent_name}' may affect query execution plans.",
-            evidence_summary={"index_name": classified.name, "parent_table": classified.parent_name},
+            evidence_summary={
+                "index_name": classified.name,
+                "parent_table": classified.parent_name,
+            },
             recommendations=recs,
         )
 

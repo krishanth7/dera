@@ -7,13 +7,13 @@ configuration, individual schema changes, metrics summaries, and complete diff r
 from __future__ import annotations
 
 from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from dera.comparison.enums import (
     ComparisonChangeType,
     ComparisonObjectType,
     ComparisonStatus,
-    DiffGranularity,
 )
 from dera.comparison.evidence import ObjectEvidence, PropertyDifference
 from dera.comparison.fingerprint import (
@@ -59,7 +59,9 @@ class ComparisonConfig(BaseModel):
     def to_canonical_dict(self) -> dict[str, Any]:
         """Convert config to canonical dictionary for fingerprint generation."""
         return {
-            "included_namespaces": sorted(self.included_namespaces) if self.included_namespaces else None,
+            "included_namespaces": sorted(self.included_namespaces)
+            if self.included_namespaces
+            else None,
             "excluded_namespaces": sorted(self.excluded_namespaces),
             "included_object_types": (
                 sorted(t.value for t in self.included_object_types)
@@ -83,7 +85,9 @@ class SchemaChange(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     change_id: str = Field(description="Unique deterministic identifier (e.g. 'chg_...').")
-    change_type: ComparisonChangeType = Field(description="Classification (ADDED, REMOVED, MODIFIED, etc.).")
+    change_type: ComparisonChangeType = Field(
+        description="Classification (ADDED, REMOVED, MODIFIED, etc.)."
+    )
     object_type: ComparisonObjectType = Field(description="Type of object changed.")
     canonical_id: str = Field(description="Canonical ObjectId of the object.")
     namespace: str = Field(description="Namespace / schema of the target or baseline object.")
@@ -211,7 +215,9 @@ class ComparisonReport(BaseModel):
     target_fingerprint: str = Field(description="Cryptographic fingerprint of target payload.")
     engine: str = Field(description="Database engine of baseline snapshot.")
     target_engine: str = Field(description="Database engine of target snapshot.")
-    configuration_fingerprint: str = Field(description="Fingerprint of applied comparison configuration.")
+    configuration_fingerprint: str = Field(
+        description="Fingerprint of applied comparison configuration."
+    )
     status: ComparisonStatus = Field(description="Overall comparison status.")
     summary: ComparisonSummary = Field(description="Aggregated change metrics.")
     changes: tuple[SchemaChange, ...] = Field(

@@ -6,15 +6,12 @@ backward compatibility ratings, and affected schema dimensions.
 
 from __future__ import annotations
 
-from typing import Any
-from pydantic import BaseModel, ConfigDict, Field
-
 from dera.comparison.enums import ComparisonChangeType, ComparisonObjectType
-from dera.comparison.models import SchemaChange
 from dera.migration.enums import (
     CompatibilityLevel,
     StructuralChangeCategory,
 )
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ClassifiedChange(BaseModel):

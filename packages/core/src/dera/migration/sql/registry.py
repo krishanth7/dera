@@ -3,7 +3,6 @@
 Resolves dialect renderers deterministically for target database engines.
 """
 
-from typing import Dict, Type
 from dera.migration.sql.dialects.base import DialectRenderer
 from dera.migration.sql.dialects.mysql import MysqlRenderer
 from dera.migration.sql.dialects.postgresql import PostgresqlRenderer
@@ -14,7 +13,7 @@ from dera.migration.sql.enums import SqlDialectType
 class DialectRegistry:
     """Deterministic lookup registry for SQL dialect compilers."""
 
-    _REGISTRY: Dict[str, DialectRenderer] = {
+    _REGISTRY: dict[str, DialectRenderer] = {
         "postgresql": PostgresqlRenderer(is_supabase=False),
         "postgres": PostgresqlRenderer(is_supabase=False),
         "supabase": PostgresqlRenderer(is_supabase=True),
