@@ -39,7 +39,7 @@ DERA enforces strict, deterministic governance policies across all schema migrat
 
 The audit trail for every migration review forms an immutable cryptographic hash chain:
 
-```
+```text
 [ Event 0: SUBMIT_FOR_REVIEW ]
   - actor_id: "usr_alice"
   - state: "SUBMITTED"

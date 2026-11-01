@@ -24,7 +24,7 @@ An independent architectural security review identified two P0 authorization def
 
 Every request attempting to access or modify workspace data or execute migration operations must pass through five sequential gates:
 
-```
+```text
 [ Incoming Request ]
          │
          ▼

@@ -28,7 +28,7 @@ In this remediation:
 
 ## 2. Relational Schema Architecture
 
-```
+```text
                   ┌──────────────────────┐
                   │   dera_workspaces    │
                   └──────────┬───────────┘
