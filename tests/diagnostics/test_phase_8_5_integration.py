@@ -462,3 +462,78 @@ def test_evaluator_isolates_recommendation_safety_violation() -> None:
     assert report.summary.total_findings == 0
     assert "DERA-UNSAFE-001" in report.coverage.errored_rules
     assert report.rule_evaluations[0].status == EvaluationStatus.EVALUATION_ERROR
+
+
+def test_evaluator_isolates_recommendation_safety_violation_multi_findings() -> None:
+    """Verifies that if one finding in a multi-finding rule triggers a safety violation, all findings from that rule are dropped atomically."""
+    from unittest.mock import patch
+
+    from dera.diagnostics.context import DiagnosticContext
+    from dera.diagnostics.evaluator import DiagnosticEvaluator
+    from dera.diagnostics.models import (
+        DiagnosticFinding,
+        DiagnosticSeverity,
+        EvaluationStatus,
+        RuleCategory,
+        RuleEvaluation,
+        RuleMetadata,
+    )
+    from dera.diagnostics.recommendations.safety import RecommendationSafetyViolationError
+
+    class MultiFindingRule:
+        metadata = RuleMetadata(
+            rule_id="DERA-MULTI-001",
+            version="1.0.0",
+            title="Multi Finding Rule",
+            description="Emits multiple findings",
+            category=RuleCategory.STRUCTURAL_INTEGRITY,
+            default_severity=DiagnosticSeverity.HIGH,
+            supported_object_kinds=("table",),
+        )
+
+        def evaluate(self, context: DiagnosticContext) -> RuleEvaluation:
+            f1 = DiagnosticFinding(
+                rule_id=self.metadata.rule_id,
+                rule_version=self.metadata.version,
+                object_id="public.users",
+                severity=DiagnosticSeverity.HIGH,
+                title="Safe Finding",
+                description="Safe",
+                evidence=(),
+                severity_rationale="High risk",
+            )
+            f2 = DiagnosticFinding(
+                rule_id=self.metadata.rule_id,
+                rule_version=self.metadata.version,
+                object_id="public.orders",
+                severity=DiagnosticSeverity.HIGH,
+                title="Unsafe Finding",
+                description="Unsafe",
+                evidence=(),
+                severity_rationale="High risk",
+            )
+            return RuleEvaluation(
+                rule_id=self.metadata.rule_id,
+                rule_version=self.metadata.version,
+                status=EvaluationStatus.FINDINGS_DETECTED,
+                findings=(f1, f2),
+            )
+
+    def side_effect(finding: DiagnosticFinding):
+        if "Unsafe" in finding.title:
+            raise RecommendationSafetyViolationError("Unsafe action detected")
+        return None
+
+    evaluator = DiagnosticEvaluator()
+    context = DiagnosticContext()
+
+    with patch(
+        "dera.diagnostics.evaluator.generate_structured_recommendation", side_effect=side_effect
+    ):
+        report = evaluator.evaluate(context, rules=[MultiFindingRule()])
+
+    assert report.summary.rules_errored == 1
+    assert report.summary.rules_with_findings == 0
+    assert report.summary.total_findings == 0
+    assert len(report.findings) == 0
+    assert report.rule_evaluations[0].status == EvaluationStatus.EVALUATION_ERROR

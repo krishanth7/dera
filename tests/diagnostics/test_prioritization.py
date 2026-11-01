@@ -69,8 +69,34 @@ def test_priority_score_formula_and_stratification() -> None:
     )
 
     assert score_critical > score_high > score_med > score_low
-    assert score_critical == (5 * 1000) + (4 * 100) + 100  # 5500
-    assert score_high == (4 * 1000) + (4 * 100) + 100  # 4500
+    assert score_critical == (5 * 1000) + (4 * 100) + 100 + 2  # 5502 (default scope=table)
+    assert score_high == (4 * 1000) + (4 * 100) + 100 + 2  # 4502 (default scope=table)
+
+
+def test_priority_score_scope_stratification() -> None:
+    """Verifies that findings with identical severity/confidence/classification are differentiated by scope."""
+    score_schema = compute_priority_score(
+        DiagnosticSeverity.HIGH,
+        FindingConfidence.VERIFIED,
+        FindingClassification.CONFIRMED_STRUCTURAL_DEFECT,
+        scope="schema",
+    )
+    score_table = compute_priority_score(
+        DiagnosticSeverity.HIGH,
+        FindingConfidence.VERIFIED,
+        FindingClassification.CONFIRMED_STRUCTURAL_DEFECT,
+        scope="table",
+    )
+    score_column = compute_priority_score(
+        DiagnosticSeverity.HIGH,
+        FindingConfidence.VERIFIED,
+        FindingClassification.CONFIRMED_STRUCTURAL_DEFECT,
+        scope="column",
+    )
+
+    assert score_schema > score_table > score_column
+    assert score_schema - score_table == 1
+    assert score_table - score_column == 1
 
 
 def test_derive_priority_rank() -> None:

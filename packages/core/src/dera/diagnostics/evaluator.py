@@ -207,6 +207,32 @@ class DiagnosticEvaluator:
         }
 
         # 6. Phase 8.5 Post-Processing: Evidence, Severity, Recommendations, Governance
+        # 6.0 Atomic recommendation pre-computation and safety validation per rule
+        raw_recommendations: dict[str, tuple[Any, str | None]] = {}
+        for raw_f in raw_findings:
+            if raw_f.rule_id in errored_rule_ids:
+                continue
+            try:
+                structured_rec = generate_structured_recommendation(raw_f)
+                rec_text = (
+                    structured_rec.suggested_action if structured_rec else raw_f.recommendation
+                )
+                raw_recommendations[raw_f.fingerprint] = (structured_rec, rec_text)
+            except RecommendationSafetyViolationError as rec_err:
+                if raw_f.rule_id not in errored_rule_ids:
+                    errored_rule_ids.append(raw_f.rule_id)
+                for idx, ev in enumerate(evaluations):
+                    if ev.rule_id == raw_f.rule_id:
+                        evaluations[idx] = RuleEvaluation(
+                            rule_id=ev.rule_id,
+                            rule_version=ev.rule_version,
+                            status=EvaluationStatus.EVALUATION_ERROR,
+                            findings=(),
+                            execution_duration_ms=ev.execution_duration_ms,
+                            message=f"Recommendation safety rejected: {rec_err}",
+                            error_details=str(rec_err),
+                        )
+
         unified_findings: list[DiagnosticFinding] = []
         applied_suppressions: list[dict[str, Any]] = []
         applied_overrides: list[dict[str, Any]] = []
@@ -217,6 +243,9 @@ class DiagnosticEvaluator:
         }
 
         for raw_f in raw_findings:
+            if raw_f.rule_id in errored_rule_ids:
+                continue
+
             # 6.1 Validate and enrich evidence
             ev_result = validate_and_enrich_evidence(raw_f.evidence, context)
 
@@ -252,33 +281,9 @@ class DiagnosticEvaluator:
                 rule_reason=policy_reason,
             )
 
-            # 6.4 Deterministic recommendation assembly
-            try:
-                structured_rec = generate_structured_recommendation(raw_f)
-                rec_text = (
-                    structured_rec.suggested_action if structured_rec else raw_f.recommendation
-                )
-            except RecommendationSafetyViolationError as rec_err:
-                if raw_f.rule_id not in errored_rule_ids:
-                    errored_rule_ids.append(raw_f.rule_id)
-                for idx, ev in enumerate(evaluations):
-                    if ev.rule_id == raw_f.rule_id:
-                        evaluations[idx] = RuleEvaluation(
-                            rule_id=ev.rule_id,
-                            rule_version=ev.rule_version,
-                            status=EvaluationStatus.EVALUATION_ERROR,
-                            findings=(),
-                            execution_duration_ms=ev.execution_duration_ms,
-                            message=f"Recommendation safety rejected: {rec_err}",
-                            error_details=str(rec_err),
-                        )
-                unified_findings = [f for f in unified_findings if f.rule_id != raw_f.rule_id]
-                findings_by_severity = {s.value: 0 for s in DiagnosticSeverity}
-                for f in unified_findings:
-                    findings_by_severity[f.severity.value] = (
-                        findings_by_severity.get(f.severity.value, 0) + 1
-                    )
-                continue
+            # 6.4 Use pre-generated recommendation
+            rec_entry = raw_recommendations.get(raw_f.fingerprint)
+            structured_rec, rec_text = rec_entry if rec_entry else (None, raw_f.recommendation)
 
             # 6.5 Suppression matching
             is_suppressed = False

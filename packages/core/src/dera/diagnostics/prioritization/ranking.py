@@ -43,22 +43,37 @@ def compute_priority_score(
     severity: DiagnosticSeverity,
     confidence: FindingConfidence,
     classification: FindingClassification,
+    scope: str = "table",
 ) -> int:
     """Calculates an explainable, deterministic priority score.
 
     Formula:
-        Score = (Severity.rank * 1000) + (Confidence.rank * 100) + Classification.priority_weight
+        Score = (Severity.rank * 1000) + (Confidence.rank * 100) + Classification.priority_weight + Scope.weight
 
     Component ranges:
       - Severity.rank: 1 to 5 (Weight: 1,000 to 5,000)
       - Confidence.rank: 1 to 4 (Weight: 100 to 400)
       - Classification.priority_weight: 10 to 100
+      - Scope weight: Schema/Global (3), Table (2), Column/Index/Constraint (1)
 
     This guarantees strict severity stratification: higher severity findings always
     outrank lower severity findings, with ties broken by verified evidence confidence,
-    followed by classification criticality.
+    followed by classification criticality, then scope specificity.
     """
-    return (severity.rank * 1000) + (confidence.rank * 100) + classification.priority_weight
+    scope_lower = (scope or "table").lower()
+    if scope_lower in ("schema", "global", "database"):
+        scope_weight = 3
+    elif scope_lower in ("table", "relation", "view"):
+        scope_weight = 2
+    else:
+        scope_weight = 1
+
+    return (
+        (severity.rank * 1000)
+        + (confidence.rank * 100)
+        + classification.priority_weight
+        + scope_weight
+    )
 
 
 def derive_priority_rank(severity: DiagnosticSeverity) -> PriorityRank:
