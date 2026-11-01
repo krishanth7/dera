@@ -130,9 +130,89 @@ async def evaluate_schema_diagnostics(
     if payload is not None:
         enabled = frozenset(payload.enabled_rule_ids) if payload.enabled_rule_ids else None
         disabled = frozenset(payload.disabled_rule_ids)
+
+        from dera.diagnostics.enums import DiagnosticSeverity
+        from dera.diagnostics.governance import (
+            DiagnosticSuppression,
+            SuppressionScope,
+            SuppressionStatus,
+        )
+        from dera.diagnostics.severity import SeverityOverride
+
+        parsed_suppressions: list[DiagnosticSuppression] = []
+        for s in payload.suppressions:
+            if isinstance(s, DiagnosticSuppression):
+                parsed_suppressions.append(s)
+            elif isinstance(s, dict):
+                try:
+                    scope_raw = s.get("scope", SuppressionScope.FINGERPRINT.value)
+                    scope_val = (
+                        scope_raw
+                        if isinstance(scope_raw, SuppressionScope)
+                        else SuppressionScope(scope_raw)
+                    )
+                    status_raw = s.get("status", SuppressionStatus.ACTIVE.value)
+                    status_val = (
+                        status_raw
+                        if isinstance(status_raw, SuppressionStatus)
+                        else SuppressionStatus(status_raw)
+                    )
+                    parsed_suppressions.append(
+                        DiagnosticSuppression(
+                            suppression_id=s.get("suppression_id", ""),
+                            scope=scope_val,
+                            reason=s.get("reason", ""),
+                            authorized_actor=s.get("authorized_actor", ""),
+                            created_at=s.get("created_at", ""),
+                            rule_id=s.get("rule_id"),
+                            fingerprint=s.get("fingerprint"),
+                            scoped_object_id=s.get("scoped_object_id"),
+                            expires_at=s.get("expires_at"),
+                            status=status_val,
+                            notes=s.get("notes", ""),
+                        )
+                    )
+                except Exception:
+                    continue
+
+        parsed_overrides: list[SeverityOverride] = []
+        for o in payload.severity_overrides:
+            if isinstance(o, SeverityOverride):
+                parsed_overrides.append(o)
+            elif isinstance(o, dict):
+                try:
+                    orig_sev = o.get("original_severity")
+                    orig_sev_val = (
+                        orig_sev
+                        if isinstance(orig_sev, DiagnosticSeverity)
+                        else DiagnosticSeverity(orig_sev)
+                    )
+                    eff_sev = o.get("effective_severity")
+                    eff_sev_val = (
+                        eff_sev
+                        if isinstance(eff_sev, DiagnosticSeverity)
+                        else DiagnosticSeverity(eff_sev)
+                    )
+                    parsed_overrides.append(
+                        SeverityOverride(
+                            override_id=o.get("override_id", ""),
+                            finding_fingerprint=o.get("finding_fingerprint", ""),
+                            original_severity=orig_sev_val,
+                            effective_severity=eff_sev_val,
+                            override_reason=o.get("override_reason", ""),
+                            authorized_actor=o.get("authorized_actor", ""),
+                            timestamp=o.get("timestamp", ""),
+                            policy_version=o.get("policy_version", "1.0.0"),
+                        )
+                    )
+                except Exception:
+                    continue
+
         config = DiagnosticEngineConfig(
             enabled_rule_ids=enabled,
             disabled_rule_ids=disabled,
+            suppressions=tuple(parsed_suppressions),
+            severity_overrides=tuple(parsed_overrides),
         )
 
     report = service.evaluate_diagnostics(

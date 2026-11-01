@@ -87,6 +87,14 @@ def serialize_diagnostic_report(report: DiagnosticReport) -> str:
     return _canonical_json_dump(report_dict)
 
 
+def _parse_enum(enum_cls: Any, val: Any, default: Any) -> Any:
+    """Safely parses an enum value, returning default on ValueError, TypeError, or KeyError."""
+    try:
+        return enum_cls(val)
+    except (ValueError, TypeError, KeyError):
+        return default
+
+
 def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
     """Deserializes a JSON string into a structured DiagnosticReport instance."""
     data = json.loads(json_str)
@@ -115,11 +123,8 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
                 ev_type = EvidenceType.CANONICAL_OBJECT_REFERENCE
 
             if "completeness" in ev_data:
-                raw_comp = ev_data["completeness"]
-                ev_comp = (
-                    EvidenceCompleteness(raw_comp)
-                    if raw_comp in EvidenceCompleteness._value2member_map_
-                    else EvidenceCompleteness.UNKNOWN
+                ev_comp = _parse_enum(
+                    EvidenceCompleteness, ev_data["completeness"], EvidenceCompleteness.UNKNOWN
                 )
             else:
                 ev_comp = EvidenceCompleteness.COMPLETE
@@ -144,21 +149,15 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
             "classification", FindingClassification.POTENTIAL_ENGINEERING_CONCERN.value
         )
         if "confidence" in f_data:
-            raw_conf = f_data["confidence"]
-            finding_confidence = (
-                FindingConfidence(raw_conf)
-                if raw_conf in FindingConfidence._value2member_map_
-                else FindingConfidence.INCOMPLETE
+            finding_confidence = _parse_enum(
+                FindingConfidence, f_data["confidence"], FindingConfidence.INCOMPLETE
             )
         else:
             finding_confidence = FindingConfidence.VERIFIED
 
         if "metadata_completeness" in f_data:
-            raw_comp = f_data["metadata_completeness"]
-            finding_completeness = (
-                EvidenceCompleteness(raw_comp)
-                if raw_comp in EvidenceCompleteness._value2member_map_
-                else EvidenceCompleteness.UNKNOWN
+            finding_completeness = _parse_enum(
+                EvidenceCompleteness, f_data["metadata_completeness"], EvidenceCompleteness.UNKNOWN
             )
         else:
             finding_completeness = EvidenceCompleteness.COMPLETE
@@ -201,34 +200,24 @@ def deserialize_diagnostic_report(json_str: str) -> DiagnosticReport:
                 severity_rationale=f_data.get("severity_rationale", ""),
                 recommendation=f_data.get("recommendation"),
                 fingerprint=f_data.get("fingerprint", ""),
-                category=(
-                    RuleCategory(cat_val)
-                    if cat_val in RuleCategory._value2member_map_
-                    else RuleCategory.STRUCTURAL_INTEGRITY
-                ),
-                classification=(
-                    FindingClassification(cls_val)
-                    if cls_val in FindingClassification._value2member_map_
-                    else FindingClassification.POTENTIAL_ENGINEERING_CONCERN
+                category=_parse_enum(RuleCategory, cat_val, RuleCategory.STRUCTURAL_INTEGRITY),
+                classification=_parse_enum(
+                    FindingClassification,
+                    cls_val,
+                    FindingClassification.POTENTIAL_ENGINEERING_CONCERN,
                 ),
                 original_severity=original_severity,
                 confidence=finding_confidence,
                 metadata_completeness=finding_completeness,
                 structured_recommendation=structured_rec,
-                lifecycle_state=(
-                    FindingLifecycleState(lc_val)
-                    if lc_val in FindingLifecycleState._value2member_map_
-                    else FindingLifecycleState.OPEN
+                lifecycle_state=_parse_enum(
+                    FindingLifecycleState, lc_val, FindingLifecycleState.OPEN
                 ),
                 is_suppressed=f_data.get("is_suppressed", False),
                 suppression_id=f_data.get("suppression_id"),
                 override_id=f_data.get("override_id"),
                 priority_score=f_data.get("priority_score", 0),
-                priority_rank=(
-                    PriorityRank(pr_val)
-                    if pr_val in PriorityRank._value2member_map_
-                    else PriorityRank.P5_INFORMATIONAL
-                ),
+                priority_rank=_parse_enum(PriorityRank, pr_val, PriorityRank.P5_INFORMATIONAL),
                 finding_id=f_data.get("finding_id", ""),
             )
         )
