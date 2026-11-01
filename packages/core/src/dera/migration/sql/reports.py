@@ -33,6 +33,7 @@ class SqlMigrationArtifact(BaseModel):
     artifact_id: str
     source_plan_id: str
     source_plan_fingerprint: str
+    source_risk_report_fingerprint: str = ""
     dialect: SqlDialectType
     target_engine: str
     compiler_version: str = "1.0.0"

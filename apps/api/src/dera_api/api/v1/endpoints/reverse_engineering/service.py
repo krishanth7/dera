@@ -149,14 +149,14 @@ class ReverseEngineeringService:
     async def list_snapshots(
         self,
         workspace_id: str,
-        database_id: str | None = None,
-        fingerprint: str | None = None,
+        database_name: str | None = None,
+        structural_fingerprint: str | None = None,
     ) -> list[SchemaSnapshot]:
         """List snapshots matching criteria within workspace boundary."""
         filter_criteria = SnapshotFilter(
             workspace_id=workspace_id,
-            database_id=database_id,
-            fingerprint=fingerprint,
+            database_name=database_name,
+            structural_fingerprint=structural_fingerprint,
         )
         return await self._snapshot_storage.list_snapshots(filter_criteria)
 

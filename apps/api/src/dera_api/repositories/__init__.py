@@ -7,6 +7,7 @@ from dera_api.repositories.base import (
 )
 from dera_api.repositories.jobs import JobOutboxRepository, JobRepository
 from dera_api.repositories.memberships import MembershipRepository
+from dera_api.repositories.migration_governance import MigrationGovernanceRepository
 from dera_api.repositories.sessions import SessionRepository
 from dera_api.repositories.users import UserRepository
 from dera_api.repositories.workspaces import WorkspaceRepository
@@ -17,6 +18,7 @@ __all__ = [
     "JobOutboxRepository",
     "JobRepository",
     "MembershipRepository",
+    "MigrationGovernanceRepository",
     "PlatformMetadataRepository",
     "SessionRepository",
     "UserRepository",

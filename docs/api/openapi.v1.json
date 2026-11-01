@@ -33,6 +33,70 @@
         "title": "AddMemberRequest",
         "type": "object"
       },
+      "AuditEventResponse": {
+        "description": "Cryptographic audit event log entry.",
+        "properties": {
+          "actor_id": {
+            "description": "Actor user ID",
+            "title": "Actor Id",
+            "type": "string"
+          },
+          "actor_role": {
+            "description": "Actor role at time of event",
+            "title": "Actor Role",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          },
+          "event_id": {
+            "description": "Unique event identifier",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "event_type": {
+            "description": "LIFECYCLE_CHANGE, DECISION_RECORDED, ARTIFACT_EXPORTED",
+            "title": "Event Type",
+            "type": "string"
+          },
+          "payload_hash": {
+            "description": "SHA-256 hash of event payload",
+            "title": "Payload Hash",
+            "type": "string"
+          },
+          "review_id": {
+            "description": "Bound review identifier",
+            "title": "Review Id",
+            "type": "string"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "format": "date-time",
+                "type": "string"
+              }
+            ],
+            "description": "Event timestamp",
+            "title": "Timestamp"
+          }
+        },
+        "required": [
+          "event_id",
+          "review_id",
+          "event_type",
+          "actor_id",
+          "actor_role",
+          "timestamp",
+          "payload_hash"
+        ],
+        "title": "AuditEventResponse",
+        "type": "object"
+      },
       "AuthResponse": {
         "description": "Authentication response payload containing user data and CSRF token.",
         "properties": {
@@ -125,6 +189,38 @@
           "is_primary_key"
         ],
         "title": "ColumnDetailResponse",
+        "type": "object"
+      },
+      "ComparisonSummarySchema": {
+        "description": "Summary metrics of structural diffs.",
+        "properties": {
+          "tables_affected": {
+            "default": 0,
+            "title": "Tables Affected",
+            "type": "integer"
+          },
+          "total_added": {
+            "default": 0,
+            "title": "Total Added",
+            "type": "integer"
+          },
+          "total_changes": {
+            "default": 0,
+            "title": "Total Changes",
+            "type": "integer"
+          },
+          "total_modified": {
+            "default": 0,
+            "title": "Total Modified",
+            "type": "integer"
+          },
+          "total_removed": {
+            "default": 0,
+            "title": "Total Removed",
+            "type": "integer"
+          }
+        },
+        "title": "ComparisonSummarySchema",
         "type": "object"
       },
       "ConnectionListResponse": {
@@ -1713,6 +1809,183 @@
         "title": "ForeignKeySummaryResponse",
         "type": "object"
       },
+      "GovernanceAuditResponse": {
+        "description": "Comprehensive audit trail for a governance review.",
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEventResponse"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "review_id": {
+            "description": "Review identifier",
+            "title": "Review Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "review_id"
+        ],
+        "title": "GovernanceAuditResponse",
+        "type": "object"
+      },
+      "GovernanceDecisionSubmitRequest": {
+        "description": "Request by an authorized reviewer to record an approval, rejection, or changes request.",
+        "properties": {
+          "decision_type": {
+            "description": "APPROVE, REJECT, or REQUEST_CHANGES",
+            "title": "Decision Type",
+            "type": "string"
+          },
+          "rationale": {
+            "description": "Technical rationale for the decision",
+            "minLength": 5,
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision_type",
+          "rationale"
+        ],
+        "title": "GovernanceDecisionSubmitRequest",
+        "type": "object"
+      },
+      "GovernanceReviewResponse": {
+        "description": "Current governance review state and approval progress.",
+        "properties": {
+          "artifact_fingerprint": {
+            "description": "Cryptographic fingerprint of reviewed SQL",
+            "title": "Artifact Fingerprint",
+            "type": "string"
+          },
+          "artifact_id": {
+            "description": "Bound artifact identifier",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "format": "date-time",
+                "type": "string"
+              }
+            ],
+            "description": "Creation timestamp",
+            "title": "Created At"
+          },
+          "current_approvals": {
+            "default": 0,
+            "title": "Current Approvals",
+            "type": "integer"
+          },
+          "decisions": {
+            "description": "Recorded reviewer decisions",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Decisions",
+            "type": "array"
+          },
+          "description": {
+            "default": "",
+            "description": "Review description",
+            "title": "Description",
+            "type": "string"
+          },
+          "requester_id": {
+            "description": "User ID who created the review request",
+            "title": "Requester Id",
+            "type": "string"
+          },
+          "required_approvals": {
+            "default": 1,
+            "title": "Required Approvals",
+            "type": "integer"
+          },
+          "review_id": {
+            "description": "Unique review identifier",
+            "title": "Review Id",
+            "type": "string"
+          },
+          "status": {
+            "description": "SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED, CHANGES_REQUESTED",
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "description": "Review title",
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "format": "date-time",
+                "type": "string"
+              }
+            ],
+            "description": "Last update timestamp",
+            "title": "Updated At"
+          }
+        },
+        "required": [
+          "review_id",
+          "artifact_id",
+          "artifact_fingerprint",
+          "requester_id",
+          "status",
+          "title",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "GovernanceReviewResponse",
+        "type": "object"
+      },
+      "GovernanceReviewSubmitRequest": {
+        "description": "Request to submit a compiled migration artifact for governance review.",
+        "properties": {
+          "artifact_id": {
+            "description": "Artifact ID to submit",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "description": "Business rationale and migration scope",
+            "title": "Description",
+            "type": "string"
+          },
+          "required_approvals": {
+            "default": 1,
+            "description": "Required approval quorum",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Required Approvals",
+            "type": "integer"
+          },
+          "title": {
+            "description": "Review title or ticket reference",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "title"
+        ],
+        "title": "GovernanceReviewSubmitRequest",
+        "type": "object"
+      },
       "HealthResponse": {
         "description": "Schema for legacy backward-compatible health check (/health).",
         "properties": {
@@ -2314,6 +2587,462 @@
         "title": "MetaResponse",
         "type": "object"
       },
+      "MigrationCompareRequest": {
+        "description": "Request to compare two snapshots within authorized workspace.",
+        "properties": {
+          "baseline_snapshot_id": {
+            "description": "Source baseline snapshot ID",
+            "title": "Baseline Snapshot Id",
+            "type": "string"
+          },
+          "target_snapshot_id": {
+            "description": "Target destination snapshot ID",
+            "title": "Target Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "baseline_snapshot_id",
+          "target_snapshot_id"
+        ],
+        "title": "MigrationCompareRequest",
+        "type": "object"
+      },
+      "MigrationExportResponse": {
+        "description": "Authorized download package for an approved migration artifact.",
+        "properties": {
+          "artifact_fingerprint": {
+            "description": "Cryptographic SHA-256 fingerprint",
+            "title": "Artifact Fingerprint",
+            "type": "string"
+          },
+          "artifact_id": {
+            "description": "Artifact identifier",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "disclaimer": {
+            "default": "GENERATED FOR REVIEW \u2014 NOT EXECUTED",
+            "description": "Mandatory safety guarantee",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "export_id": {
+            "description": "Unique export identifier",
+            "title": "Export Id",
+            "type": "string"
+          },
+          "exported_at": {
+            "description": "Export generation timestamp",
+            "format": "date-time",
+            "title": "Exported At",
+            "type": "string"
+          },
+          "exported_by": {
+            "description": "Authorizing user ID who exported the artifact",
+            "title": "Exported By",
+            "type": "string"
+          },
+          "forward_sql": {
+            "description": "Approved forward migration SQL",
+            "title": "Forward Sql",
+            "type": "string"
+          },
+          "governance_status": {
+            "default": "APPROVED",
+            "description": "Verified governance approval state",
+            "title": "Governance Status",
+            "type": "string"
+          },
+          "review_id": {
+            "description": "Approved review identifier",
+            "title": "Review Id",
+            "type": "string"
+          },
+          "rollback_sql": {
+            "default": "",
+            "description": "Approved rollback SQL",
+            "title": "Rollback Sql",
+            "type": "string"
+          },
+          "target_dialect": {
+            "description": "SQL dialect",
+            "title": "Target Dialect",
+            "type": "string"
+          }
+        },
+        "required": [
+          "export_id",
+          "review_id",
+          "artifact_id",
+          "artifact_fingerprint",
+          "target_dialect",
+          "forward_sql",
+          "exported_at",
+          "exported_by"
+        ],
+        "title": "MigrationExportResponse",
+        "type": "object"
+      },
+      "MigrationPlanRequest": {
+        "description": "Request to generate a dependency-ordered migration plan.",
+        "properties": {
+          "comparison_id": {
+            "description": "Comparison ID to plan operations for",
+            "title": "Comparison Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparison_id"
+        ],
+        "title": "MigrationPlanRequest",
+        "type": "object"
+      },
+      "MigrationPlanResponse": {
+        "description": "Deterministic, dependency-ordered migration plan.",
+        "properties": {
+          "comparison_id": {
+            "description": "Source comparison identifier",
+            "title": "Comparison Id",
+            "type": "string"
+          },
+          "engine": {
+            "description": "Target database engine",
+            "title": "Engine",
+            "type": "string"
+          },
+          "plan_fingerprint": {
+            "description": "SHA-256 fingerprint of migration plan",
+            "title": "Plan Fingerprint",
+            "type": "string"
+          },
+          "plan_id": {
+            "description": "Unique plan identifier",
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "stages": {
+            "description": "Ordered execution stages",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Stages",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/PlanSummarySchema"
+          },
+          "unsupported_operations": {
+            "description": "Operations requiring manual migration",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Unsupported Operations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "plan_id",
+          "comparison_id",
+          "engine",
+          "plan_fingerprint"
+        ],
+        "title": "MigrationPlanResponse",
+        "type": "object"
+      },
+      "MigrationRiskRequest": {
+        "description": "Request to evaluate migration risks from a verified comparison report.",
+        "properties": {
+          "comparison_id": {
+            "description": "Identifier of the comparison report to analyze",
+            "title": "Comparison Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparison_id"
+        ],
+        "title": "MigrationRiskRequest",
+        "type": "object"
+      },
+      "MigrationRiskResponse": {
+        "description": "Deterministic risk analysis and recommendation report.",
+        "properties": {
+          "comparison_id": {
+            "description": "Comparison ID analyzed",
+            "title": "Comparison Id",
+            "type": "string"
+          },
+          "fingerprint": {
+            "description": "Cryptographic SHA-256 fingerprint",
+            "title": "Fingerprint",
+            "type": "string"
+          },
+          "generated_at": {
+            "description": "Generation timestamp",
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "recommendations": {
+            "description": "Prescriptive engineering recommendations",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Recommendations",
+            "type": "array"
+          },
+          "report_id": {
+            "description": "Unique risk report identifier",
+            "title": "Report Id",
+            "type": "string"
+          },
+          "risks": {
+            "description": "Individual classified risk items",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Risks",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/RiskSummarySchema"
+          }
+        },
+        "required": [
+          "report_id",
+          "comparison_id",
+          "generated_at",
+          "fingerprint"
+        ],
+        "title": "MigrationRiskResponse",
+        "type": "object"
+      },
+      "MigrationSnapshotListResponse": {
+        "description": "Catalog of snapshots accessible to the authorized workspace.",
+        "properties": {
+          "snapshots": {
+            "items": {
+              "$ref": "#/components/schemas/MigrationSnapshotSummary"
+            },
+            "title": "Snapshots",
+            "type": "array"
+          },
+          "total_count": {
+            "default": 0,
+            "title": "Total Count",
+            "type": "integer"
+          }
+        },
+        "title": "MigrationSnapshotListResponse",
+        "type": "object"
+      },
+      "MigrationSnapshotSummary": {
+        "description": "Summary of an immutable schema snapshot available for migration comparison.",
+        "properties": {
+          "captured_at": {
+            "description": "Snapshot capture timestamp",
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "database_id": {
+            "description": "Source database identifier",
+            "title": "Database Id",
+            "type": "string"
+          },
+          "database_name": {
+            "description": "Database name",
+            "title": "Database Name",
+            "type": "string"
+          },
+          "engine": {
+            "description": "Database engine (postgresql, sqlite, mysql, mariadb)",
+            "title": "Engine",
+            "type": "string"
+          },
+          "engine_version": {
+            "default": "unknown",
+            "description": "Database engine version",
+            "title": "Engine Version",
+            "type": "string"
+          },
+          "fingerprint": {
+            "description": "Cryptographic SHA-256 schema fingerprint",
+            "title": "Fingerprint",
+            "type": "string"
+          },
+          "id": {
+            "description": "Unique snapshot identifier",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "Display name or database identifier",
+            "title": "Name",
+            "type": "string"
+          },
+          "table_count": {
+            "default": 0,
+            "description": "Number of tables in snapshot",
+            "title": "Table Count",
+            "type": "integer"
+          },
+          "tags": {
+            "description": "Categorization tags",
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "view_count": {
+            "default": 0,
+            "description": "Number of views in snapshot",
+            "title": "View Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "database_id",
+          "database_name",
+          "engine",
+          "captured_at",
+          "fingerprint"
+        ],
+        "title": "MigrationSnapshotSummary",
+        "type": "object"
+      },
+      "MigrationSqlArtifactResponse": {
+        "description": "Review-only compiled SQL artifact and validation report.",
+        "properties": {
+          "artifact_fingerprint": {
+            "description": "Cryptographic SHA-256 artifact hash",
+            "title": "Artifact Fingerprint",
+            "type": "string"
+          },
+          "artifact_id": {
+            "description": "Unique artifact identifier",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "compiled_at": {
+            "description": "Compilation timestamp",
+            "format": "date-time",
+            "title": "Compiled At",
+            "type": "string"
+          },
+          "disclaimer": {
+            "default": "GENERATED FOR REVIEW \u2014 NOT EXECUTED",
+            "description": "Mandatory safety guarantee",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "forward_sql": {
+            "description": "Forward DDL statements for migration",
+            "title": "Forward Sql",
+            "type": "string"
+          },
+          "plan_id": {
+            "description": "Source plan identifier",
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "rollback_sql": {
+            "default": "",
+            "description": "Compensating rollback SQL if structurally possible",
+            "title": "Rollback Sql",
+            "type": "string"
+          },
+          "target_dialect": {
+            "description": "Compiled SQL dialect",
+            "title": "Target Dialect",
+            "type": "string"
+          },
+          "target_version": {
+            "default": "default",
+            "description": "Dialect version",
+            "title": "Target Version",
+            "type": "string"
+          },
+          "transactional": {
+            "default": true,
+            "description": "Whether DDL can be wrapped in a transaction",
+            "title": "Transactional",
+            "type": "boolean"
+          },
+          "validation_errors": {
+            "description": "Offline validation errors or warnings",
+            "items": {
+              "type": "string"
+            },
+            "title": "Validation Errors",
+            "type": "array"
+          },
+          "validation_status": {
+            "default": "VALIDATED",
+            "description": "Offline structural validation status",
+            "title": "Validation Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "plan_id",
+          "target_dialect",
+          "compiled_at",
+          "artifact_fingerprint",
+          "forward_sql"
+        ],
+        "title": "MigrationSqlArtifactResponse",
+        "type": "object"
+      },
+      "MigrationSqlCompileRequest": {
+        "description": "Request to compile review-only SQL artifact from plan.",
+        "properties": {
+          "plan_id": {
+            "description": "Plan ID to compile SQL statements for",
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "target_dialect": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional dialect override (must match engine)",
+            "title": "Target Dialect"
+          },
+          "target_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Engine version",
+            "title": "Target Version"
+          }
+        },
+        "required": [
+          "plan_id"
+        ],
+        "title": "MigrationSqlCompileRequest",
+        "type": "object"
+      },
       "NamespaceListResponse": {
         "description": "Paginated list of namespaces.",
         "properties": {
@@ -2369,6 +3098,38 @@
           "table_count"
         ],
         "title": "NamespaceSummary",
+        "type": "object"
+      },
+      "PlanSummarySchema": {
+        "description": "Metrics regarding planned migration stages and operations.",
+        "properties": {
+          "estimated_duration_seconds": {
+            "default": 0.0,
+            "title": "Estimated Duration Seconds",
+            "type": "number"
+          },
+          "manual_decision_gates_count": {
+            "default": 0,
+            "title": "Manual Decision Gates Count",
+            "type": "integer"
+          },
+          "manual_gates_count": {
+            "default": 0,
+            "title": "Manual Gates Count",
+            "type": "integer"
+          },
+          "total_operations": {
+            "default": 0,
+            "title": "Total Operations",
+            "type": "integer"
+          },
+          "total_stages": {
+            "default": 0,
+            "title": "Total Stages",
+            "type": "integer"
+          }
+        },
+        "title": "PlanSummarySchema",
         "type": "object"
       },
       "PlatformInfoResponse": {
@@ -2756,6 +3517,63 @@
         "title": "RelationshipGraphResponse",
         "type": "object"
       },
+      "RiskSummarySchema": {
+        "description": "Aggregate risk counts and backward-compatibility metrics.",
+        "properties": {
+          "breaking_change_count": {
+            "default": 0,
+            "title": "Breaking Change Count",
+            "type": "integer"
+          },
+          "critical_count": {
+            "default": 0,
+            "title": "Critical Count",
+            "type": "integer"
+          },
+          "high_count": {
+            "default": 0,
+            "title": "High Count",
+            "type": "integer"
+          },
+          "informational_count": {
+            "default": 0,
+            "title": "Informational Count",
+            "type": "integer"
+          },
+          "low_count": {
+            "default": 0,
+            "title": "Low Count",
+            "type": "integer"
+          },
+          "medium_count": {
+            "default": 0,
+            "title": "Medium Count",
+            "type": "integer"
+          },
+          "overall_recommendation": {
+            "default": "PROCEED",
+            "title": "Overall Recommendation",
+            "type": "string"
+          },
+          "overall_risk_level": {
+            "default": "LOW",
+            "title": "Overall Risk Level",
+            "type": "string"
+          },
+          "potentially_breaking": {
+            "default": 0,
+            "title": "Potentially Breaking",
+            "type": "integer"
+          },
+          "safe_change_count": {
+            "default": 0,
+            "title": "Safe Change Count",
+            "type": "integer"
+          }
+        },
+        "title": "RiskSummarySchema",
+        "type": "object"
+      },
       "SCCResponse": {
         "description": "Strongly connected component detail.",
         "properties": {
@@ -2786,6 +3604,64 @@
           "size"
         ],
         "title": "SCCResponse",
+        "type": "object"
+      },
+      "SchemaComparisonResponse": {
+        "description": "Deterministic comparison report between two schema snapshots.",
+        "properties": {
+          "baseline_snapshot_id": {
+            "description": "Source baseline snapshot ID",
+            "title": "Baseline Snapshot Id",
+            "type": "string"
+          },
+          "changes": {
+            "description": "Normalized structural changes",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Changes",
+            "type": "array"
+          },
+          "compared_at": {
+            "description": "Comparison generation timestamp",
+            "format": "date-time",
+            "title": "Compared At",
+            "type": "string"
+          },
+          "comparison_fingerprint": {
+            "description": "SHA-256 fingerprint of comparison report",
+            "title": "Comparison Fingerprint",
+            "type": "string"
+          },
+          "comparison_id": {
+            "description": "Deterministic comparison ID",
+            "title": "Comparison Id",
+            "type": "string"
+          },
+          "engine": {
+            "description": "Database engine",
+            "title": "Engine",
+            "type": "string"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ComparisonSummarySchema"
+          },
+          "target_snapshot_id": {
+            "description": "Target destination snapshot ID",
+            "title": "Target Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparison_id",
+          "baseline_snapshot_id",
+          "target_snapshot_id",
+          "engine",
+          "compared_at",
+          "comparison_fingerprint"
+        ],
+        "title": "SchemaComparisonResponse",
         "type": "object"
       },
       "SchemaSummaryResponse": {
@@ -4411,6 +5287,1598 @@
         "summary": "Platform Capabilities & Architecture Metadata",
         "tags": [
           "System"
+        ]
+      }
+    },
+    "/api/v1/migrations/compare": {
+      "post": {
+        "description": "Compare baseline and target schema snapshots deterministically.",
+        "operationId": "compare_snapshots_api_v1_migrations_compare_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MigrationCompareRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaComparisonResponse"
+                }
+              }
+            },
+            "description": "Comparison completed."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Invalid request or incompatible snapshots."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication required."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access denied."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Execute deterministic schema comparison between two snapshots",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/compare/{comparison_id}": {
+      "get": {
+        "operationId": "get_comparison_api_v1_migrations_compare__comparison_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "comparison_id",
+            "required": true,
+            "schema": {
+              "title": "Comparison Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaComparisonResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Retrieve comparison report",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/plans": {
+      "post": {
+        "operationId": "generate_migration_plan_api_v1_migrations_plans_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MigrationPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MigrationPlanResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Generate dependency-ordered migration plan",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/reviews": {
+      "post": {
+        "operationId": "submit_governance_review_api_v1_migrations_reviews_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GovernanceReviewSubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GovernanceReviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Submit compiled SQL artifact for governance review",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/reviews/{review_id}": {
+      "get": {
+        "operationId": "get_governance_review_api_v1_migrations_reviews__review_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "review_id",
+            "required": true,
+            "schema": {
+              "title": "Review Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GovernanceReviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Retrieve governance review request",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/reviews/{review_id}/audit": {
+      "get": {
+        "operationId": "get_governance_audit_api_v1_migrations_reviews__review_id__audit_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "review_id",
+            "required": true,
+            "schema": {
+              "title": "Review Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GovernanceAuditResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Retrieve immutable audit trail for a governance review",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/reviews/{review_id}/decisions": {
+      "post": {
+        "operationId": "record_governance_decision_api_v1_migrations_reviews__review_id__decisions_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "review_id",
+            "required": true,
+            "schema": {
+              "title": "Review Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GovernanceDecisionSubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GovernanceReviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Record reviewer governance decision enforcing SoD and role authorization",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/reviews/{review_id}/export": {
+      "get": {
+        "operationId": "export_approved_migration_api_v1_migrations_reviews__review_id__export_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "review_id",
+            "required": true,
+            "schema": {
+              "title": "Review Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MigrationExportResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Export approved migration SQL artifact ensuring fail-closed status",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/risk-assessments": {
+      "post": {
+        "operationId": "assess_migration_risk_api_v1_migrations_risk_assessments_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MigrationRiskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MigrationRiskResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Assess migration risks from verified comparison",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/snapshots": {
+      "get": {
+        "description": "Retrieve all immutable snapshots available within the authorized workspace.",
+        "operationId": "list_migration_snapshots_api_v1_migrations_snapshots_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MigrationSnapshotListResponse"
+                }
+              }
+            },
+            "description": "Snapshots retrieved."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Invalid workspace context."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication required."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access denied."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List immutable schema snapshots for migration comparison",
+        "tags": [
+          "Migration Engineering"
+        ]
+      }
+    },
+    "/api/v1/migrations/sql-artifacts": {
+      "post": {
+        "operationId": "compile_sql_artifact_api_v1_migrations_sql_artifacts_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MigrationSqlCompileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MigrationSqlArtifactResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Compile review-only dialect SQL artifact",
+        "tags": [
+          "Migration Engineering"
         ]
       }
     },
