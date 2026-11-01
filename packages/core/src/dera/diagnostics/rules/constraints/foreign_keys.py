@@ -95,7 +95,11 @@ class ForeignKeyIntegrityRule:
         for t in sorted_tables:
             t_name = getattr(t, "name", "").lower()
             table_map[t_name] = t
-            s_name = getattr(t, "schema_name", None) or getattr(t, "schema", None)
+            s_name = (
+                getattr(t, "schema_name", None)
+                or getattr(t, "namespace", None)
+                or getattr(t, "schema", None)
+            )
             if s_name:
                 table_map[f"{str(s_name).lower()}.{t_name}"] = t
 
