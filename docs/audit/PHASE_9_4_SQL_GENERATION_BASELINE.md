@@ -8,9 +8,9 @@
 ---
 
 ## 1. Verified Prerequisites
-- [docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md) — **VERIFIED PASS**
-- [docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) — **VERIFIED PASS**
-- [docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_1_COMPARISON_ACCEPTANCE.md](PHASE_9_1_COMPARISON_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) — **VERIFIED PASS**
 - Phase 9.3 Abstract Planning Engine & Operation Models:
   - `MigrationPlanReport`, `AbstractMigrationOperation`, `OperationCatalog` (v1.0.0), `PlanningStage`, `ManualDecisionGate`.
 

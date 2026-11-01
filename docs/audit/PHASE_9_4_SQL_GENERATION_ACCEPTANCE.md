@@ -12,21 +12,21 @@
 
 | Prerequisite | Reference | Verdict |
 |---|---|---|
-| Phase 9.1 Schema Comparison | [docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md) | **PASS** |
-| Phase 9.2 Migration Risk Analysis | [docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) | **PASS** |
-| Phase 9.3 Migration Planning | [docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) | **PASS** |
+| Phase 9.1 Schema Comparison | [PHASE_9_1_COMPARISON_ACCEPTANCE.md](PHASE_9_1_COMPARISON_ACCEPTANCE.md) | **PASS** |
+| Phase 9.2 Migration Risk Analysis | [PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) | **PASS** |
+| Phase 9.3 Migration Planning | [PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) | **PASS** |
 
 ## 2. Implemented Architecture Modules
-- [packages/core/src/dera/migration/sql/enums.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/enums.py): `SqlDialectType`, `SqlGenerationStatus`, `TransactionExecutionMode`, `RollbackFeasibility`.
-- [packages/core/src/dera/migration/sql/identifiers.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/identifiers.py): `IdentifierQuoter` for injection-safe dialect quoting.
-- [packages/core/src/dera/migration/sql/models.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/models.py): `GeneratedSqlStatement`, `TransactionBlock`, `PreflightCheck`, `RollbackStatement`.
-- [packages/core/src/dera/migration/sql/dialects/](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/dialects/): Dialect compilers for `PostgresqlRenderer`, `SqliteRenderer`, `MysqlRenderer`.
-- [packages/core/src/dera/migration/sql/registry.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/registry.py): `DialectRegistry` engine resolver.
-- [packages/core/src/dera/migration/sql/transaction_planner.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/transaction_planner.py): Dialect-specific transaction boundary planner.
-- [packages/core/src/dera/migration/sql/validation.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/validation.py): `SqlValidator` offline structural validator.
-- [packages/core/src/dera/migration/sql/fingerprint.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/fingerprint.py): RFC 8785 canonical JSON SHA-256 fingerprint calculator.
-- [packages/core/src/dera/migration/sql/reports.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/reports.py): `SqlMigrationArtifact` and `SqlArtifactSummary`.
-- [packages/core/src/dera/migration/sql/compiler.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/sql/compiler.py): Main `SqlMigrationCompiler` orchestrator.
+- [../../packages/core/src/dera/migration/sql/enums.py](../../packages/core/src/dera/migration/sql/enums.py): `SqlDialectType`, `SqlGenerationStatus`, `TransactionExecutionMode`, `RollbackFeasibility`.
+- [../../packages/core/src/dera/migration/sql/identifiers.py](../../packages/core/src/dera/migration/sql/identifiers.py): `IdentifierQuoter` for injection-safe dialect quoting.
+- [../../packages/core/src/dera/migration/sql/models.py](../../packages/core/src/dera/migration/sql/models.py): `GeneratedSqlStatement`, `TransactionBlock`, `PreflightCheck`, `RollbackStatement`.
+- [../../packages/core/src/dera/migration/sql/dialects/](../../packages/core/src/dera/migration/sql/dialects/): Dialect compilers for `PostgresqlRenderer`, `SqliteRenderer`, `MysqlRenderer`.
+- [../../packages/core/src/dera/migration/sql/registry.py](../../packages/core/src/dera/migration/sql/registry.py): `DialectRegistry` engine resolver.
+- [../../packages/core/src/dera/migration/sql/transaction_planner.py](../../packages/core/src/dera/migration/sql/transaction_planner.py): Dialect-specific transaction boundary planner.
+- [../../packages/core/src/dera/migration/sql/validation.py](../../packages/core/src/dera/migration/sql/validation.py): `SqlValidator` offline structural validator.
+- [../../packages/core/src/dera/migration/sql/fingerprint.py](../../packages/core/src/dera/migration/sql/fingerprint.py): RFC 8785 canonical JSON SHA-256 fingerprint calculator.
+- [../../packages/core/src/dera/migration/sql/reports.py](../../packages/core/src/dera/migration/sql/reports.py): `SqlMigrationArtifact` and `SqlArtifactSummary`.
+- [../../packages/core/src/dera/migration/sql/compiler.py](../../packages/core/src/dera/migration/sql/compiler.py): Main `SqlMigrationCompiler` orchestrator.
 
 ## 3. Test Verification
 

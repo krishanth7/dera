@@ -5,8 +5,8 @@
 **Repository:** [https://github.com/krishanth7/dera](https://github.com/krishanth7/dera)  
 **Branch:** `feat/phase-9.3-migration-planning-dependency-ordering`  
 **Prerequisites Verified:**
-- [docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md) — VERIFIED PASS
-- [docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) — VERIFIED PASS
+- [PHASE_9_1_COMPARISON_ACCEPTANCE.md](PHASE_9_1_COMPARISON_ACCEPTANCE.md) — VERIFIED PASS
+- [PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) — VERIFIED PASS
 - Phase 6 Canonical Schema Representation & Graph (`ForeignKeyGraph`, `TableNode`, `ForeignKeyEdge`, `TarjanSCC`) — VERIFIED PASS
 - Phase 8 Deterministic Diagnostic Contracts & Evidence Models — VERIFIED PASS
 

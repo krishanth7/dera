@@ -8,10 +8,10 @@
 ---
 
 ## 1. Verified Prerequisites
-- [docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md) — **VERIFIED PASS**
-- [docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) — **VERIFIED PASS**
-- [docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) — **VERIFIED PASS**
-- [docs/audit/PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_1_COMPARISON_ACCEPTANCE.md](PHASE_9_1_COMPARISON_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md](PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md) — **VERIFIED PASS**
 - Phase 4 RBAC & Persistence:
   - `WorkspaceRole` (`OWNER`, `ADMIN`, `EDITOR`, `VIEWER`), `Permission` registry.
   - PostgreSQL persistence, FastAPI routing patterns.

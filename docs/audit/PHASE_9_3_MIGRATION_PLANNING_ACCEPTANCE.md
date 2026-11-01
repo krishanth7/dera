@@ -12,22 +12,22 @@
 
 | Prerequisite | Document / Module | Result |
 |---|---|---|
-| Phase 9.1 Schema Comparison Engine | [docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md) | **PASS** |
-| Phase 9.2 Risk Analysis Engine | [docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) | **PASS** |
+| Phase 9.1 Schema Comparison Engine | [PHASE_9_1_COMPARISON_ACCEPTANCE.md](PHASE_9_1_COMPARISON_ACCEPTANCE.md) | **PASS** |
+| Phase 9.2 Risk Analysis Engine | [PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) | **PASS** |
 | Phase 6 Canonical Metadata & Graph | `dera.reverse_engineering.graph.models` | **PASS** |
 | Phase 8 Diagnostics & Evidence Contracts | `dera.diagnostics.enums` | **PASS** |
 
 ## 2. Implemented Architecture Modules
-- [packages/core/src/dera/migration/planning/enums.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/enums.py): `MigrationOperationType`, `PlanStatus`, `PlanningStageType`, `ManualGateStatus`, `PreconditionType`, `EngineCapabilityState`.
-- [packages/core/src/dera/migration/planning/models.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/models.py): `AbstractMigrationOperation`, `OperationPrecondition`, `OperationPostcondition`, `ValidationRequirement`, `ManualDecisionGate`, `RollbackConsideration`, `PlanningStage`.
-- [packages/core/src/dera/migration/planning/operation_catalog.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/operation_catalog.py): Versioned deterministic operation catalog across PostgreSQL, Supabase, SQLite, MySQL, and MariaDB.
-- [packages/core/src/dera/migration/planning/change_mapper.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/change_mapper.py): Traceable mapping from `SchemaChange` and `ClassifiedChange` to `AbstractMigrationOperation`.
-- [packages/core/src/dera/migration/planning/graph.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/graph.py): Operation dependency DAG enforcing `Prerequisite Operation -> Dependent Operation`.
-- [packages/core/src/dera/migration/planning/cycles.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/cycles.py): Tarjan SCC cycle detection with non-negotiable blocking semantics (no silent cycle resolution).
-- [packages/core/src/dera/migration/planning/ordering.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/ordering.py): Deterministic topological ordering with stable tie-breaking and 7 sequential lifecycle stages.
-- [packages/core/src/dera/migration/planning/fingerprint.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/fingerprint.py): RFC 8785 canonical JSON SHA-256 plan fingerprinting.
-- [packages/core/src/dera/migration/planning/reports.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/reports.py): `MigrationPlanReport` and `MigrationPlanSummary`.
-- [packages/core/src/dera/migration/planning/engine.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/planning/engine.py): Main facade coordinating input validation, mapping, dependency graph, cycle detection, ordering, and reporting.
+- [../../packages/core/src/dera/migration/planning/enums.py](../../packages/core/src/dera/migration/planning/enums.py): `MigrationOperationType`, `PlanStatus`, `PlanningStageType`, `ManualGateStatus`, `PreconditionType`, `EngineCapabilityState`.
+- [../../packages/core/src/dera/migration/planning/models.py](../../packages/core/src/dera/migration/planning/models.py): `AbstractMigrationOperation`, `OperationPrecondition`, `OperationPostcondition`, `ValidationRequirement`, `ManualDecisionGate`, `RollbackConsideration`, `PlanningStage`.
+- [../../packages/core/src/dera/migration/planning/operation_catalog.py](../../packages/core/src/dera/migration/planning/operation_catalog.py): Versioned deterministic operation catalog across PostgreSQL, Supabase, SQLite, MySQL, and MariaDB.
+- [../../packages/core/src/dera/migration/planning/change_mapper.py](../../packages/core/src/dera/migration/planning/change_mapper.py): Traceable mapping from `SchemaChange` and `ClassifiedChange` to `AbstractMigrationOperation`.
+- [../../packages/core/src/dera/migration/planning/graph.py](../../packages/core/src/dera/migration/planning/graph.py): Operation dependency DAG enforcing `Prerequisite Operation -> Dependent Operation`.
+- [../../packages/core/src/dera/migration/planning/cycles.py](../../packages/core/src/dera/migration/planning/cycles.py): Tarjan SCC cycle detection with non-negotiable blocking semantics (no silent cycle resolution).
+- [../../packages/core/src/dera/migration/planning/ordering.py](../../packages/core/src/dera/migration/planning/ordering.py): Deterministic topological ordering with stable tie-breaking and 7 sequential lifecycle stages.
+- [../../packages/core/src/dera/migration/planning/fingerprint.py](../../packages/core/src/dera/migration/planning/fingerprint.py): RFC 8785 canonical JSON SHA-256 plan fingerprinting.
+- [../../packages/core/src/dera/migration/planning/reports.py](../../packages/core/src/dera/migration/planning/reports.py): `MigrationPlanReport` and `MigrationPlanSummary`.
+- [../../packages/core/src/dera/migration/planning/engine.py](../../packages/core/src/dera/migration/planning/engine.py): Main facade coordinating input validation, mapping, dependency graph, cycle detection, ordering, and reporting.
 
 ## 3. Test Verification
 

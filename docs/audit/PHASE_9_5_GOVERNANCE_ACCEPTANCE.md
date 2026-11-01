@@ -12,17 +12,17 @@
 
 | Prerequisite | Reference | Verdict |
 |---|---|---|
-| Phase 9.1 Schema Comparison | [docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md) | **PASS** |
-| Phase 9.2 Migration Risk Analysis | [docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) | **PASS** |
-| Phase 9.3 Migration Planning | [docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) | **PASS** |
-| Phase 9.4 SQL Generation | [docs/audit/PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md) | **PASS** |
+| Phase 9.1 Schema Comparison | [PHASE_9_1_COMPARISON_ACCEPTANCE.md](PHASE_9_1_COMPARISON_ACCEPTANCE.md) | **PASS** |
+| Phase 9.2 Migration Risk Analysis | [PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) | **PASS** |
+| Phase 9.3 Migration Planning | [PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) | **PASS** |
+| Phase 9.4 SQL Generation | [PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md](PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md) | **PASS** |
 
 ## 2. Implemented Governance Modules
-- [packages/core/src/dera/migration/governance/enums.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/governance/enums.py): `ReviewLifecycleStatus`, `SafetyGateStatus`, `ReviewDecisionType`, `ExportEligibilityStatus`.
-- [packages/core/src/dera/migration/governance/models.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/governance/models.py): `MigrationReviewRequest`, `ReviewDecision`, `SafetyGateResult`, `GovernancePolicy`, `AuditEvent`, `ApprovalEvidenceBundle`.
-- [packages/core/src/dera/migration/governance/safety.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/governance/safety.py): Deterministic `SafetyGateEvaluator` verifying status, structural validation, destructive statements, and manual review gates.
-- [packages/core/src/dera/migration/governance/audit.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/governance/audit.py): `AuditTrailManager` with cryptographic SHA-256 hash chaining and tamper-detection verification.
-- [packages/core/src/dera/migration/governance/lifecycle.py](file:///c:/Users/Administrator/Documents/GitHub/dera/packages/core/src/dera/migration/governance/lifecycle.py): `GovernanceEngine` state machine enforcing RBAC, Separation of Duties (SoD), approval quorum, approval invalidation upon artifact mutation, export eligibility, and evidence bundles.
+- [../../packages/core/src/dera/migration/governance/enums.py](../../packages/core/src/dera/migration/governance/enums.py): `ReviewLifecycleStatus`, `SafetyGateStatus`, `ReviewDecisionType`, `ExportEligibilityStatus`.
+- [../../packages/core/src/dera/migration/governance/models.py](../../packages/core/src/dera/migration/governance/models.py): `MigrationReviewRequest`, `ReviewDecision`, `SafetyGateResult`, `GovernancePolicy`, `AuditEvent`, `ApprovalEvidenceBundle`.
+- [../../packages/core/src/dera/migration/governance/safety.py](../../packages/core/src/dera/migration/governance/safety.py): Deterministic `SafetyGateEvaluator` verifying status, structural validation, destructive statements, and manual review gates.
+- [../../packages/core/src/dera/migration/governance/audit.py](../../packages/core/src/dera/migration/governance/audit.py): `AuditTrailManager` with cryptographic SHA-256 hash chaining and tamper-detection verification.
+- [../../packages/core/src/dera/migration/governance/lifecycle.py](../../packages/core/src/dera/migration/governance/lifecycle.py): `GovernanceEngine` state machine enforcing RBAC, Separation of Duties (SoD), approval quorum, approval invalidation upon artifact mutation, export eligibility, and evidence bundles.
 
 ## 3. Test Verification
 

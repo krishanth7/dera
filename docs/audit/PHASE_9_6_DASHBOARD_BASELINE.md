@@ -8,11 +8,11 @@
 ---
 
 ## 1. Verified Prerequisites
-- [docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_1_COMPARISON_ACCEPTANCE.md) — **VERIFIED PASS**
-- [docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) — **VERIFIED PASS**
-- [docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) — **VERIFIED PASS**
-- [docs/audit/PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md) — **VERIFIED PASS**
-- [docs/audit/PHASE_9_5_GOVERNANCE_ACCEPTANCE.md](file:///c:/Users/Administrator/Documents/GitHub/dera/docs/audit/PHASE_9_5_GOVERNANCE_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_1_COMPARISON_ACCEPTANCE.md](PHASE_9_1_COMPARISON_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md](PHASE_9_2_RISK_ANALYSIS_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md](PHASE_9_3_MIGRATION_PLANNING_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md](PHASE_9_4_SQL_GENERATION_ACCEPTANCE.md) — **VERIFIED PASS**
+- [PHASE_9_5_GOVERNANCE_ACCEPTANCE.md](PHASE_9_5_GOVERNANCE_ACCEPTANCE.md) — **VERIFIED PASS**
 
 ## 2. Frontend & Backend Architecture
 - **Web App:** Next.js 14/15 App Router, React 19, TypeScript, Tailwind CSS, Lucide icons.
