@@ -121,6 +121,11 @@ gantt
 - [ ] Dependency-ordered migration DDL script generation.
 
 ### Phase 10 — SQL Analysis & Engineering Tools
+
+Phase 10.1 is in open PR #76 at `d449215`; Phase 10.2 is implemented on the dependent
+`feat/phase-10-2-sql-diagnostics` branch. Neither is claimed
+as merged on main. See [Phase 10.2 architecture](../phase-10/PHASE_10_2_ARCHITECTURE.md).
+
 - [ ] SQL parsing and AST inspection via SQLGlot.
 - [ ] Transpilation between SQL dialects.
 - [ ] Execution plan visualization and cost analysis.
