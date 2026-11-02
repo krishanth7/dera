@@ -73,7 +73,11 @@ def evaluate(
                 alias_identifier = (
                     source.args["alias"].this if source.args.get("alias") else source.this
                 )
-                sources[alias_value(alias_identifier)] = matches[0]
+                alias = alias_value(alias_identifier)
+                if alias in sources:
+                    unresolved = True
+                else:
+                    sources[alias] = matches[0]
             elif not matches:
                 # An exact-case mismatch is not absence when server case rules are unknown.
                 case_matches = [
@@ -124,7 +128,19 @@ def evaluate(
             name = identifier_value(column.this)
             qualifier = alias_value(column.args.get("table"))
             if not qualifier and name in projection_aliases:
-                return None
+                ancestor = column.parent
+                while ancestor is not None and ancestor is not scope.expression:
+                    if isinstance(ancestor, exp.Order):
+                        return None
+                    if isinstance(ancestor, exp.Group):
+                        # GROUP BY source/alias precedence is dialect dependent.
+                        skipped["SQL102"] = "GROUP BY output alias resolution is not established."
+                        return None
+                    if isinstance(ancestor, exp.Having) and dialect != "postgresql":
+                        return None
+                    if isinstance(ancestor, exp.Where) and dialect == "sqlite":
+                        return None
+                    ancestor = ancestor.parent
             candidates = [
                 (alias, table)
                 for alias, table in sources.items()

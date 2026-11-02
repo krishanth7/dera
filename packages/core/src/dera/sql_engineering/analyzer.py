@@ -3,6 +3,7 @@
 import sqlglot
 from sqlglot import exp
 from sqlglot.errors import ErrorLevel, SqlglotError
+from sqlglot.optimizer.scope import traverse_scope
 
 from .dialects import resolve
 from .models import Analysis, Diagnostic, Dialect, Span, Statement
@@ -111,7 +112,13 @@ def _analyze(sql: str, dialect: Dialect, trees_out: list[exp.Expression]) -> Ana
         unsupported.update(reasons)
         # These are syntactic references, not resolved catalog identities. CTE aliases
         # are excluded from objects, but columns deliberately retain their SQL qualifiers.
-        ctes = {n.alias_or_name for n in tree.find_all(exp.CTE)}
+        scopes = list(traverse_scope(tree))
+        physical_tables = {
+            id(source)
+            for scope in scopes
+            for source in scope.sources.values()
+            if isinstance(source, exp.Table)
+        }
 
         def render(n):
             return n.sql(dialect=parser)
@@ -124,7 +131,7 @@ def _analyze(sql: str, dialect: Dialect, trees_out: list[exp.Expression]) -> Ana
                     {
                         render(n)
                         for n in tree.find_all(exp.Table)
-                        if n.db or n.catalog or n.name not in ctes
+                        if not scopes or id(n) in physical_tables
                     }
                 ),
                 columns=sorted({render(n) for n in tree.find_all(exp.Column)}),

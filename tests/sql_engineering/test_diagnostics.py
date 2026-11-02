@@ -272,3 +272,58 @@ def test_unqualified_nested_correlation_is_not_a_missing_column():
     assert any(
         e.rule_id == "SQL102" and e.status == "NOT_EVALUATED" for e in result.rule_evaluations
     )
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "SELECT missing AS missing FROM accounts",
+        "SELECT id AS missing FROM accounts WHERE missing = 1",
+    ],
+)
+def test_projection_alias_does_not_hide_invalid_source(sql):
+    assert "SQL102" in ids(ENGINE.analyze(sql, "postgresql", snapshot()))
+
+
+def test_order_by_projection_alias_is_visible():
+    assert "SQL102" not in ids(
+        ENGINE.analyze(
+            "SELECT id AS result FROM accounts ORDER BY result", "postgresql", snapshot()
+        )
+    )
+
+
+def test_cte_shadowing_preserves_physical_dependency():
+    result = analyze(
+        "WITH accounts AS (SELECT id FROM accounts) SELECT * FROM accounts", "postgresql"
+    )
+    assert result.statements[0].objects == ["accounts"]
+
+
+def test_duplicate_unaliased_table_names_fail_conservatively():
+    result = ENGINE.analyze(
+        "SELECT public.accounts.id FROM public.accounts JOIN public.accounts ON public.accounts.id=public.accounts.id",
+        "postgresql",
+        snapshot(),
+    )
+    assert any(
+        e.rule_id == "SQL102" and e.status == "NOT_EVALUATED" for e in result.rule_evaluations
+    )
+    assert not ({"SQL016", "SQL103", "SQL105"} & ids(result))
+
+
+def test_schema_qualified_collision_does_not_fabricate_evidence():
+    from dera.sql_engineering.diagnostics.rules.schema import evaluate
+
+    original = snapshot()
+    accounts = original.payload.tables[0]
+    archived = accounts.model_copy(update={"namespace": "archive", "columns": ()})
+    payload = original.payload.model_copy(update={"tables": (accounts, archived)})
+    context = original.model_copy(update={"payload": payload})
+    tree = sqlglot.parse_one(
+        "SELECT public.accounts.id FROM public.accounts JOIN archive.accounts "
+        "ON public.accounts.id=archive.accounts.id"
+    )
+    facts, skipped = evaluate(tree, context, "postgresql")
+    assert "SQL102" in skipped
+    assert not ({"SQL102", "SQL016", "SQL103", "SQL105"} & facts.keys())
