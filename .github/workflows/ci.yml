@@ -152,9 +152,26 @@ jobs:
         run: |
           npm run typecheck
 
+      - name: "Frontend Regression Tests and Lint"
+        run: |
+          npm run test --workspace=apps/web
+          npm run lint
+
       - name: "Validate Workspace Package Builds"
         run: |
           npm run build
+
+      - name: "Install Execution Plan Browser Test Runtime"
+        run: npx playwright install --with-deps chromium
+
+      - name: "Execution Plan Browser Qualification"
+        run: |
+          npm run start --workspace=apps/web > /tmp/dera-plan-web.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://localhost:3000/app/execution-plans > /dev/null; then break; fi
+            sleep 1
+          done
+          npx playwright test tests/e2e/execution-plans.spec.ts --config=apps/web/playwright.config.ts
 
       - name: "Upload Frontend Failure Diagnostics"
         if: failure()
@@ -163,6 +180,7 @@ jobs:
           name: dera-diagnostics-frontend-linux-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             npm-debug.log*
+            apps/web/test-results/
           retention-days: 5
           if-no-files-found: ignore
 

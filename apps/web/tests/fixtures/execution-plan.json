@@ -1,0 +1,191 @@
+{
+  "status": "COMPLETE",
+  "dialect": "postgresql",
+  "root_ids": [
+    "n0000"
+  ],
+  "nodes": [
+    {
+      "node_id": "n0000",
+      "parent_id": null,
+      "depth": 1,
+      "operation": "HASH_JOIN",
+      "native_operation": "Hash Join",
+      "relation": {
+        "name": null,
+        "namespace": null,
+        "alias": null,
+        "index_name": null,
+        "covering_index": false
+      },
+      "estimate": {
+        "startup": null,
+        "total": 250.0,
+        "rows": 100.0,
+        "row_width": null,
+        "filtered_percent": null,
+        "unit": "postgresql_planner_units",
+        "semantics": "inclusive planner estimate; rows per invocation"
+      },
+      "actual": {
+        "rows": null,
+        "loops": null,
+        "total_time_ms": null,
+        "row_semantics": "reported average rows per invocation; not multiplied by loops or workers",
+        "time_semantics": "reported inclusive average milliseconds per invocation; not wall time",
+        "row_estimation_ratio": null,
+        "row_estimation_error": null,
+        "estimation_case": "NOT_EVALUATED"
+      },
+      "child_ids": [
+        "n0001",
+        "n0002"
+      ],
+      "metadata_json": "{\"Node Type\":\"Hash Join\",\"Plan Rows\":100,\"Total Cost\":250}"
+    },
+    {
+      "node_id": "n0001",
+      "parent_id": "n0000",
+      "depth": 2,
+      "operation": "SCAN",
+      "native_operation": "Seq Scan",
+      "relation": {
+        "name": "orders",
+        "namespace": null,
+        "alias": null,
+        "index_name": null,
+        "covering_index": false
+      },
+      "estimate": {
+        "startup": null,
+        "total": 150.0,
+        "rows": 10000.0,
+        "row_width": null,
+        "filtered_percent": null,
+        "unit": "postgresql_planner_units",
+        "semantics": "inclusive planner estimate; rows per invocation"
+      },
+      "actual": {
+        "rows": null,
+        "loops": null,
+        "total_time_ms": null,
+        "row_semantics": "reported average rows per invocation; not multiplied by loops or workers",
+        "time_semantics": "reported inclusive average milliseconds per invocation; not wall time",
+        "row_estimation_ratio": null,
+        "row_estimation_error": null,
+        "estimation_case": "NOT_EVALUATED"
+      },
+      "child_ids": [],
+      "metadata_json": "{\"Node Type\":\"Seq Scan\",\"Plan Rows\":10000,\"Relation Name\":\"orders\",\"Total Cost\":150}"
+    },
+    {
+      "node_id": "n0002",
+      "parent_id": "n0000",
+      "depth": 2,
+      "operation": "INDEX_SCAN",
+      "native_operation": "Index Scan",
+      "relation": {
+        "name": "customers",
+        "namespace": null,
+        "alias": null,
+        "index_name": "customers_pkey",
+        "covering_index": false
+      },
+      "estimate": {
+        "startup": null,
+        "total": 50.0,
+        "rows": 100.0,
+        "row_width": null,
+        "filtered_percent": null,
+        "unit": "postgresql_planner_units",
+        "semantics": "inclusive planner estimate; rows per invocation"
+      },
+      "actual": {
+        "rows": null,
+        "loops": null,
+        "total_time_ms": null,
+        "row_semantics": "reported average rows per invocation; not multiplied by loops or workers",
+        "time_semantics": "reported inclusive average milliseconds per invocation; not wall time",
+        "row_estimation_ratio": null,
+        "row_estimation_error": null,
+        "estimation_case": "NOT_EVALUATED"
+      },
+      "child_ids": [],
+      "metadata_json": "{\"Index Name\":\"customers_pkey\",\"Node Type\":\"Index Scan\",\"Plan Rows\":100,\"Relation Name\":\"customers\",\"Total Cost\":50}"
+    }
+  ],
+  "summary": {
+    "node_count": 3,
+    "max_depth": 2,
+    "has_actual_metrics": false,
+    "estimated_total_cost": 250.0,
+    "estimated_startup_cost": null,
+    "execution_time_ms": null,
+    "highest_inclusive_cost_node_ids": [
+      "n0000",
+      "n0001",
+      "n0002"
+    ],
+    "operation_counts": {
+      "HASH_JOIN": 1,
+      "INDEX_SCAN": 1,
+      "SCAN": 1
+    },
+    "cost_limitation": "Costs are engine-specific inclusive estimates; never sum nodes or compare across engines. Exclusive cost and runtime bottlenecks are not inferred."
+  },
+  "diagnostics": [
+    {
+      "finding_id": "PLAN001:n0001",
+      "rule_id": "PLAN001",
+      "severity": "INFORMATIONAL",
+      "node_id": "n0001",
+      "evidence": [
+        "Estimated rows per scan: 10000.0."
+      ],
+      "explanation": "Large sequential scan",
+      "suggested_investigation": "Review filter selectivity and existing indexes; small scans can be optimal.",
+      "limitations": [
+        "Imported evidence is unverified and may be incomplete.",
+        "This is an investigation prompt, not proof of a performance defect or an index prescription."
+      ],
+      "observation_kind": "REVIEW_HEURISTIC",
+      "runtime_verification_needed": true
+    }
+  ],
+  "recommendations": [
+    {
+      "recommendation_id": "REC:PLAN001:n0001",
+      "finding_id": "PLAN001:n0001",
+      "rule_id": "PLAN001",
+      "node_id": "n0001",
+      "title": "Large sequential scan",
+      "evidence": [
+        "Estimated rows per scan: 10000.0."
+      ],
+      "suggested_action": "Review filter selectivity and existing indexes; small scans can be optimal.",
+      "expected_benefit": "May clarify the observed plan behavior; no speed improvement is promised.",
+      "limitations": [
+        "Imported evidence is unverified and may be incomplete.",
+        "This is an investigation prompt, not proof of a performance defect or an index prescription."
+      ],
+      "manual_review_required": true
+    }
+  ],
+  "provenance": {
+    "acquisition": "IMPORTED_UNVERIFIED",
+    "input_sha256": "307a3dc2443b6f6d918120a7c9826945ba248df46fcdb7c41d737c6c616e4690",
+    "parser_version": "1.0.0",
+    "rules_version": "1.0.0",
+    "model_version": "1.0.0",
+    "source_format": "postgresql-json",
+    "association": "Optional SQL is caller-associated; correspondence with the imported plan is not verified."
+  },
+  "source_metadata_json": "{}",
+  "limitations": [
+    "Imported plans only; no live acquisition or EXPLAIN execution.",
+    "Unknown properties are preserved. Plan-to-SQL association is not verified.",
+    "Workers and repeated loops are not summed. Exclusive costs are not inferred."
+  ],
+  "sql_diagnostics": null,
+  "plan_fingerprint": "abd77a045f900b4f8170a3e0d2748fc739fedf9873ab849c849cee726f3b0539"
+}

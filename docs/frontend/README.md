@@ -30,3 +30,7 @@
 - [System Architecture Overview](../architecture/SYSTEM_OVERVIEW.md)
 - [Backend Documentation](../backend/README.md)
 - [Shared Contracts](../contracts/README.md)
+
+## Imported Plan Explorer
+
+The [execution-plan explorer](../phase-10/PHASE_10_3_VISUALIZATION.md) adds a bounded import workflow, interactive graph and structured table. See its explicit browser qualification limitations.

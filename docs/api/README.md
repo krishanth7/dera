@@ -57,3 +57,7 @@ analysis endpoint. See the [API contract](../phase-10/PHASE_10_2_API_CONTRACT.md
 [rule catalog](../phase-10/PHASE_10_2_RULE_CATALOG.md) and
 [structural scoring formula](../phase-10/PHASE_10_2_COMPLEXITY_SCORING.md).
 No SQL execution or automated rewrite is provided.
+
+## Imported Execution Plans (Phase 10.3)
+
+Authenticated offline `POST /api/v1/sql-engineering/execution-plans/analyze` uses the [plan API contract](../phase-10/PHASE_10_3_API_CONTRACT.md). No live EXPLAIN or SQL execution.
