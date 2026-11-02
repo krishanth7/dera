@@ -81,6 +81,7 @@ const navItems: NavItem[] = [
     icon: <GitFork className="w-4 h-4" />,
     badge: "Phase 9",
   },
+  { title: "Execution Plans", href: "/app/execution-plans", icon: <GitFork className="w-4 h-4" />, badge: "Phase 10" },
   {
     title: "Snapshots",
     href: "/app/snapshots",

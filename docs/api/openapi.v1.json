@@ -1783,6 +1783,185 @@
         "title": "ErrorCode",
         "type": "string"
       },
+      "ExecutionPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/PlanDiagnostic"
+            },
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "dialect": {
+            "enum": [
+              "postgresql",
+              "sqlite",
+              "mysql",
+              "mariadb"
+            ],
+            "title": "Dialect",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/ExecutionPlanNode"
+            },
+            "title": "Nodes",
+            "type": "array"
+          },
+          "plan_fingerprint": {
+            "title": "Plan Fingerprint",
+            "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/PlanProvenance"
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/PlanRecommendation"
+            },
+            "title": "Recommendations",
+            "type": "array"
+          },
+          "root_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Root Ids",
+            "type": "array"
+          },
+          "source_metadata_json": {
+            "title": "Source Metadata Json",
+            "type": "string"
+          },
+          "sql_diagnostics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SqlDiagnosticsReport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "COMPLETE",
+              "PARTIAL"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/PlanSummary"
+          }
+        },
+        "required": [
+          "status",
+          "dialect",
+          "root_ids",
+          "nodes",
+          "summary",
+          "diagnostics",
+          "recommendations",
+          "provenance",
+          "source_metadata_json",
+          "limitations",
+          "plan_fingerprint"
+        ],
+        "title": "ExecutionPlan",
+        "type": "object"
+      },
+      "ExecutionPlanNode": {
+        "additionalProperties": false,
+        "properties": {
+          "actual": {
+            "$ref": "#/components/schemas/PlanActualMetrics"
+          },
+          "child_ids": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Child Ids",
+            "type": "array"
+          },
+          "depth": {
+            "title": "Depth",
+            "type": "integer"
+          },
+          "estimate": {
+            "$ref": "#/components/schemas/PlanCostEstimate"
+          },
+          "metadata_json": {
+            "title": "Metadata Json",
+            "type": "string"
+          },
+          "native_operation": {
+            "title": "Native Operation",
+            "type": "string"
+          },
+          "node_id": {
+            "title": "Node Id",
+            "type": "string"
+          },
+          "operation": {
+            "enum": [
+              "SCAN",
+              "INDEX_SCAN",
+              "BITMAP_SCAN",
+              "NESTED_LOOP",
+              "HASH_JOIN",
+              "MERGE_JOIN",
+              "SORT",
+              "AGGREGATE",
+              "MATERIALIZE",
+              "PARALLEL",
+              "CTE",
+              "QUERY",
+              "SET",
+              "UNKNOWN"
+            ],
+            "title": "Operation",
+            "type": "string"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "relation": {
+            "$ref": "#/components/schemas/PlanRelation"
+          }
+        },
+        "required": [
+          "node_id",
+          "parent_id",
+          "depth",
+          "operation",
+          "native_operation",
+          "relation",
+          "estimate",
+          "actual",
+          "metadata_json"
+        ],
+        "title": "ExecutionPlanNode",
+        "type": "object"
+      },
       "ExportCreateRequest": {
         "additionalProperties": false,
         "description": "Request payload to initiate a deterministic export.",
@@ -3445,6 +3624,535 @@
           "table_count"
         ],
         "title": "NamespaceSummary",
+        "type": "object"
+      },
+      "PlanActualMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "estimation_case": {
+            "enum": [
+              "COMPARABLE",
+              "BOTH_ZERO",
+              "ZERO_ESTIMATE",
+              "NOT_EVALUATED"
+            ],
+            "title": "Estimation Case",
+            "type": "string"
+          },
+          "loops": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Loops"
+          },
+          "row_estimation_error": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Estimation Error"
+          },
+          "row_estimation_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Estimation Ratio"
+          },
+          "row_semantics": {
+            "title": "Row Semantics",
+            "type": "string"
+          },
+          "rows": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rows"
+          },
+          "time_semantics": {
+            "title": "Time Semantics",
+            "type": "string"
+          },
+          "total_time_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Time Ms"
+          }
+        },
+        "required": [
+          "row_semantics",
+          "time_semantics",
+          "estimation_case"
+        ],
+        "title": "PlanActualMetrics",
+        "type": "object"
+      },
+      "PlanAnalyzeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "dialect": {
+            "enum": [
+              "postgresql",
+              "sqlite",
+              "mysql",
+              "mariadb"
+            ],
+            "title": "Dialect",
+            "type": "string"
+          },
+          "format": {
+            "enum": [
+              "postgresql-json",
+              "mysql-json-v1",
+              "mariadb-json",
+              "sqlite-eqp"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "plan_json": {
+            "maxLength": 1048576,
+            "minLength": 1,
+            "title": "Plan Json",
+            "type": "string"
+          },
+          "sql": {
+            "anyOf": [
+              {
+                "maxLength": 16384,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sql"
+          }
+        },
+        "required": [
+          "dialect",
+          "format",
+          "plan_json"
+        ],
+        "title": "PlanAnalyzeRequest",
+        "type": "object"
+      },
+      "PlanCostEstimate": {
+        "additionalProperties": false,
+        "properties": {
+          "filtered_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filtered Percent"
+          },
+          "row_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Width"
+          },
+          "rows": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rows"
+          },
+          "semantics": {
+            "title": "Semantics",
+            "type": "string"
+          },
+          "startup": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Startup"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          },
+          "unit": {
+            "enum": [
+              "postgresql_planner_units",
+              "mysql_planner_units",
+              "unavailable"
+            ],
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "unit",
+          "semantics"
+        ],
+        "title": "PlanCostEstimate",
+        "type": "object"
+      },
+      "PlanDiagnostic": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "finding_id": {
+            "title": "Finding Id",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "node_id": {
+            "title": "Node Id",
+            "type": "string"
+          },
+          "observation_kind": {
+            "default": "REVIEW_HEURISTIC",
+            "enum": [
+              "STRUCTURAL_FACT",
+              "REVIEW_HEURISTIC"
+            ],
+            "title": "Observation Kind",
+            "type": "string"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "runtime_verification_needed": {
+            "default": true,
+            "title": "Runtime Verification Needed",
+            "type": "boolean"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/DiagnosticSeverity"
+          },
+          "suggested_investigation": {
+            "title": "Suggested Investigation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "finding_id",
+          "rule_id",
+          "severity",
+          "node_id",
+          "evidence",
+          "explanation",
+          "suggested_investigation",
+          "limitations"
+        ],
+        "title": "PlanDiagnostic",
+        "type": "object"
+      },
+      "PlanProvenance": {
+        "additionalProperties": false,
+        "properties": {
+          "acquisition": {
+            "const": "IMPORTED_UNVERIFIED",
+            "default": "IMPORTED_UNVERIFIED",
+            "title": "Acquisition",
+            "type": "string"
+          },
+          "association": {
+            "default": "Optional SQL is caller-associated; correspondence with the imported plan is not verified.",
+            "title": "Association",
+            "type": "string"
+          },
+          "input_sha256": {
+            "title": "Input Sha256",
+            "type": "string"
+          },
+          "model_version": {
+            "default": "1.0.0",
+            "title": "Model Version",
+            "type": "string"
+          },
+          "parser_version": {
+            "default": "1.0.0",
+            "title": "Parser Version",
+            "type": "string"
+          },
+          "rules_version": {
+            "default": "1.0.0",
+            "title": "Rules Version",
+            "type": "string"
+          },
+          "source_format": {
+            "title": "Source Format",
+            "type": "string"
+          }
+        },
+        "required": [
+          "input_sha256",
+          "source_format"
+        ],
+        "title": "PlanProvenance",
+        "type": "object"
+      },
+      "PlanRecommendation": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "expected_benefit": {
+            "default": "May clarify the observed plan behavior; no speed improvement is promised.",
+            "title": "Expected Benefit",
+            "type": "string"
+          },
+          "finding_id": {
+            "title": "Finding Id",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "manual_review_required": {
+            "default": true,
+            "title": "Manual Review Required",
+            "type": "boolean"
+          },
+          "node_id": {
+            "title": "Node Id",
+            "type": "string"
+          },
+          "recommendation_id": {
+            "title": "Recommendation Id",
+            "type": "string"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "suggested_action": {
+            "title": "Suggested Action",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recommendation_id",
+          "finding_id",
+          "rule_id",
+          "node_id",
+          "title",
+          "evidence",
+          "suggested_action",
+          "limitations"
+        ],
+        "title": "PlanRecommendation",
+        "type": "object"
+      },
+      "PlanRelation": {
+        "additionalProperties": false,
+        "properties": {
+          "alias": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alias"
+          },
+          "covering_index": {
+            "default": false,
+            "title": "Covering Index",
+            "type": "boolean"
+          },
+          "index_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Index Name"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "namespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Namespace"
+          }
+        },
+        "title": "PlanRelation",
+        "type": "object"
+      },
+      "PlanSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "cost_limitation": {
+            "default": "Costs are engine-specific inclusive estimates; never sum nodes or compare across engines. Exclusive cost and runtime bottlenecks are not inferred.",
+            "title": "Cost Limitation",
+            "type": "string"
+          },
+          "estimated_startup_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Startup Cost"
+          },
+          "estimated_total_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Total Cost"
+          },
+          "execution_time_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Time Ms"
+          },
+          "has_actual_metrics": {
+            "title": "Has Actual Metrics",
+            "type": "boolean"
+          },
+          "highest_inclusive_cost_node_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Highest Inclusive Cost Node Ids",
+            "type": "array"
+          },
+          "max_depth": {
+            "title": "Max Depth",
+            "type": "integer"
+          },
+          "node_count": {
+            "title": "Node Count",
+            "type": "integer"
+          },
+          "operation_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Operation Counts",
+            "type": "object"
+          }
+        },
+        "required": [
+          "node_count",
+          "max_depth",
+          "has_actual_metrics",
+          "estimated_total_cost",
+          "estimated_startup_cost",
+          "execution_time_ms",
+          "highest_inclusive_cost_node_ids",
+          "operation_counts"
+        ],
+        "title": "PlanSummary",
         "type": "object"
       },
       "PlanSummarySchema": {
@@ -11379,6 +12087,140 @@
           }
         },
         "summary": "Diagnose Sql",
+        "tags": [
+          "SQL Engineering"
+        ]
+      }
+    },
+    "/api/v1/sql-engineering/execution-plans/analyze": {
+      "post": {
+        "description": "Offline import only. No database identity, connection or live acquisition is accepted.",
+        "operationId": "analyze_execution_plan_api_v1_sql_engineering_execution_plans_analyze_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanAnalyzeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionPlan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Imported plan request exceeds byte limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Analyze Execution Plan",
         "tags": [
           "SQL Engineering"
         ]

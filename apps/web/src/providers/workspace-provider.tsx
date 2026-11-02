@@ -53,13 +53,11 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     } catch (err: unknown) {
       // In offline/dev environment, fallback smoothly to local context
       setWorkspaces([defaultLocalWorkspace]);
-      if (!currentWorkspace) {
-        setCurrentWorkspace(defaultLocalWorkspace);
-      }
+      setCurrentWorkspace(prev => prev || defaultLocalWorkspace);
     } finally {
       setIsLoading(false);
     }
-  }, [currentWorkspace]);
+  }, []);
 
   useEffect(() => {
     refreshWorkspaces();

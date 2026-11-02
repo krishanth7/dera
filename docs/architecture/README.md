@@ -44,3 +44,7 @@
 - [Shared Contracts](../contracts/README.md)
 - [Security Architecture](../security/README.md)
 - [Repository Audit Log](../audit/README.md)
+
+## Offline Execution Plan Intelligence
+
+See [Phase 10.3 architecture](../phase-10/PHASE_10_3_ARCHITECTURE.md) for imported plans, bounded parsing, workspace authorization and deterministic analysis.

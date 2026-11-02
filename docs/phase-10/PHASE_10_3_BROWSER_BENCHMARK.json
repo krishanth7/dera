@@ -1,0 +1,29 @@
+{
+  "iterations": 5,
+  "method": "Synthetic API fixture, click-to-report plus two animation frames; includes test driver and mocked transport overhead, not isolated React CPU time or FPS",
+  "results": [
+    {
+      "fixture": "10_nodes",
+      "nodes": 10,
+      "median_ms": 96.6
+    },
+    {
+      "fixture": "100_nodes",
+      "nodes": 100,
+      "median_ms": 128.8
+    },
+    {
+      "fixture": "1000_nodes",
+      "nodes": 1000,
+      "median_ms": 585.4
+    },
+    {
+      "fixture": "deep_25",
+      "nodes": 25,
+      "median_ms": 96.9
+    }
+  ],
+  "run_id": 41432016461,
+  "job_id": 125232634881,
+  "head": "b0ad97b45efdb203b1a596451543ddc64b17b211"
+}

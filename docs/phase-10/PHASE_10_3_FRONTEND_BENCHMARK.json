@@ -1,0 +1,1 @@
+{"environment":"Vitest jsdom; not browser paint, FPS or production latency","iterations":5,"results":[{"nodes":10,"median_ms":12.38},{"nodes":100,"median_ms":58.281},{"nodes":1000,"median_ms":245.503}]}

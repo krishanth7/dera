@@ -1,0 +1,73 @@
+{
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "iterations": 20,
+  "notes": "Synthetic offline imports; stage serialization excludes final report hashing, total_ms measures full analyze_plan separately. Traced Python allocations are not process RSS.",
+  "results": [
+    {
+      "fixture": "10_nodes",
+      "input_bytes": 1026,
+      "nodes": 10,
+      "median_ms": {
+        "decode_ms": 0.072,
+        "normalize_ms": 0.153,
+        "diagnostics_ms": 0.074,
+        "serialize_ms": 0.137,
+        "total_ms": 0.664
+      },
+      "peak_traced_bytes": 124743
+    },
+    {
+      "fixture": "100_nodes",
+      "input_bytes": 10745,
+      "nodes": 100,
+      "median_ms": {
+        "decode_ms": 0.631,
+        "normalize_ms": 1.753,
+        "diagnostics_ms": 0.719,
+        "serialize_ms": 1.446,
+        "total_ms": 5.358
+      },
+      "peak_traced_bytes": 1227537
+    },
+    {
+      "fixture": "1000_nodes",
+      "input_bytes": 108844,
+      "nodes": 1000,
+      "median_ms": {
+        "decode_ms": 6.653,
+        "normalize_ms": 20.083,
+        "diagnostics_ms": 10.071,
+        "serialize_ms": 15.472,
+        "total_ms": 59.44
+      },
+      "peak_traced_bytes": 12259385
+    },
+    {
+      "fixture": "deep_25",
+      "input_bytes": 897,
+      "nodes": 25,
+      "median_ms": {
+        "decode_ms": 0.067,
+        "normalize_ms": 0.341,
+        "diagnostics_ms": 0.153,
+        "serialize_ms": 0.321,
+        "total_ms": 1.235
+      },
+      "peak_traced_bytes": 276960
+    },
+    {
+      "fixture": "large_import",
+      "input_bytes": 708244,
+      "nodes": 1000,
+      "median_ms": {
+        "decode_ms": 22.96,
+        "normalize_ms": 22.19,
+        "diagnostics_ms": 10.731,
+        "serialize_ms": 16.223,
+        "total_ms": 81.343
+      },
+      "peak_traced_bytes": 14697757
+    }
+  ]
+}

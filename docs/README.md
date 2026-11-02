@@ -71,3 +71,7 @@ DERA maintains synchronized documentation in 10 international languages:
 ---
 
 For contribution guidelines, refer to [CONTRIBUTING.md](../CONTRIBUTING.md). For security reports, consult [SECURITY.md](../SECURITY.md).
+
+## Phase 10.3 Execution Plan Intelligence
+
+Start with [architecture](phase-10/PHASE_10_3_ARCHITECTURE.md), [dialect capabilities](phase-10/PHASE_10_3_DIALECT_SUPPORT.md), [visualization](phase-10/PHASE_10_3_VISUALIZATION.md), and [acceptance](phase-10/PHASE_10_3_ACCEPTANCE.md).

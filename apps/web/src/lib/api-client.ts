@@ -4,6 +4,7 @@
  */
 
 import { env } from "@/lib/env";
+import type { PlanReport, PlanRequest } from "@/components/execution-plans/types";
 
 export interface ApiProblemDetail {
   type: string;
@@ -399,6 +400,12 @@ export class DeraApiClient {
     }
 
     return (await res.json()) as T;
+  }
+
+  async analyzeExecutionPlan(workspaceId: string, body: PlanRequest, signal?: AbortSignal): Promise<PlanReport> {
+    return this.request<PlanReport>(`/api/v1/sql-engineering/execution-plans/analyze?workspace_id=${encodeURIComponent(workspaceId)}`, {
+      method: "POST", body: JSON.stringify(body), signal,
+    });
   }
 
   // System & Health
