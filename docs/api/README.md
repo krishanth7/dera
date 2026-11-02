@@ -48,3 +48,12 @@ python scripts/ci/validate_openapi.py --check
 # Regenerate snapshot after intentional additive modifications
 python scripts/ci/validate_openapi.py --update
 ```
+
+## SQL Engineering Diagnostics (Phase 10.2)
+
+The dependent Phase 10.2 branch adds authenticated static SQL diagnostics at
+`POST /api/v1/sql-engineering/diagnostics?workspace_id=<UUID>`, preserving the Phase 10.1
+analysis endpoint. See the [API contract](../phase-10/PHASE_10_2_API_CONTRACT.md),
+[rule catalog](../phase-10/PHASE_10_2_RULE_CATALOG.md) and
+[structural scoring formula](../phase-10/PHASE_10_2_COMPLEXITY_SCORING.md).
+No SQL execution or automated rewrite is provided.
