@@ -123,13 +123,13 @@ gantt
 ### Phase 10 — SQL Analysis & Engineering Tools
 
 Phase 10.1 (#76) and Phase 10.2 (#77) are merged on main as of baseline `5409284`.
-Phase 10.3 implements imported execution-plan intelligence on a separate review branch.
+Phase 10.3 implements imported execution-plan intelligence on a qualified review branch (PR #78, unmerged).
 See [Phase 10.3 acceptance](../phase-10/PHASE_10_3_ACCEPTANCE.md) for qualification limits.
 
 - [x] SQL parsing and AST inspection via SQLGlot (10.1).
 - [x] Deterministic SQL diagnostics and structural complexity (10.2).
 - [ ] Transpilation between SQL dialects (future milestone).
-- [ ] Execution plan visualization and cost analysis (10.3 implemented; browser qualification pending).
+- [ ] Execution plan visualization and cost analysis (10.3 implemented and qualified in PR #78; pending merge).
 
 ### Phase 11 — Enterprise Security, Reliability & QA
 - [ ] Least-privilege database account provisioning guides.

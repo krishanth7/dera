@@ -5,25 +5,25 @@
     {
       "fixture": "10_nodes",
       "nodes": 10,
-      "median_ms": 97.4
+      "median_ms": 96.6
     },
     {
       "fixture": "100_nodes",
       "nodes": 100,
-      "median_ms": 97.3
+      "median_ms": 128.8
     },
     {
       "fixture": "1000_nodes",
       "nodes": 1000,
-      "median_ms": 364.2
+      "median_ms": 585.4
     },
     {
       "fixture": "deep_25",
       "nodes": 25,
-      "median_ms": 81.1
+      "median_ms": 96.9
     }
   ],
-  "run_id": 41431277576,
-  "job_id": 125230186837,
-  "head": "ae64ba4bd015ed03af85a6d8df2d6afa56df9a55"
+  "run_id": 41432016461,
+  "job_id": 125232634881,
+  "head": "b0ad97b45efdb203b1a596451543ddc64b17b211"
 }

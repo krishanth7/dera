@@ -1,6 +1,6 @@
 # Phase 10.3 Acceptance
 
-## Verdict: PARTIAL pending final hosted checks
+## Verdict: PASS for the qualified offline milestone
 
 Implemented imported-plan models, four explicit format contracts, bounded parsers, deterministic
 cost/cardinality analysis, evidence findings/recommendations, workspace-authorized offline API,
@@ -19,13 +19,20 @@ a separate reviewable branch and PR; it is not merged or released.
 | Authorization/security | Existing sessions/workspaces/CSRF, bounded input, no-store, no connector execution |
 | Documentation/contracts | Ten milestone documents, raw benchmarks, OpenAPI and indexes |
 | Browser/accessibility | Hosted Chromium passed desktop/mobile tests and bounded-graph benchmark; local browser runtime remains blocked |
-| Hosted CI | Must be reviewed on the delivered PR head; local evidence is not substituted for hosted results |
+| Hosted CI | Run 41432016461 on executable head b0ad97b passed all seven qualification jobs |
 
 Known limitations: no live plans, MySQL JSON v2/TREE, SQLite VM bytecode, generalized exclusive
 cost decomposition, cross-engine cost comparison, trusted imported provenance, guaranteed
 plan/SQL correspondence, index prescriptions, join-order optimality or parallel overhead inference.
 SQLite description formats and vendor extensions can remain UNKNOWN/PARTIAL. Hard runtime and
-memory isolation require deployment controls. Final-head browser checks and manual assistive-technology qualification remain separate from
-component tests. The first hosted desktop/mobile browser run passed.
+memory isolation require deployment controls. Hosted desktop/mobile checks passed. Manual
+assistive-technology qualification remains separate and is not claimed.
 
 See [test report](PHASE_10_3_TEST_REPORT.md) for exact results and skips.
+
+Qualification: 1,353 backend tests and 411 subtests passed (2 existing local skips), 250 SQL tests,
+116 frontend tests, 3 hosted Chromium cases, live integration, contracts, builds, docs and security
+checks. All four substantive inline review findings were addressed and regression-tested.
+Evidence-only documentation updates after b0ad97b do not change executable code. This PASS is
+for documented formats and offline capabilities; it is not deployment or security certification,
+manual assistive-technology certification, or permission to merge.

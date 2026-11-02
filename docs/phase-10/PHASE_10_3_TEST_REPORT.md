@@ -1,101 +1,100 @@
 # Phase 10.3 Verification Report
 
-Baseline main: `5409284f38a388c0ae46bf2326b096200560935d`. Python 3.12.14, Node 24.22.1,
-SQLGlot 30.27.0. Database format references are linked in the dialect capability document.
-Controlled fixtures are synthetic; no live customer plans or query execution were used.
+## Baseline and delivered implementation
 
-## Local evidence
+Main baseline: `5409284f38a388c0ae46bf2326b096200560935d` containing merged PRs #75, #76 and #77.
+Branch: `feat/phase-10-3-execution-plan-intelligence`. Reviewable [PR #78](https://github.com/krishanth7/dera/pull/78)
+is open and unmerged. Verified executable head: `b0ad97b45efdb203b1a596451543ddc64b17b211`.
+Subsequent evidence-only documentation commits do not change executable code.
 
-| Check | Observed result |
+Local Python 3.12.14 and Node 24.22.1; hosted Python 3.12/3.13 and Node 22. SQLGlot 30.27.0
+is unchanged. Fixtures are controlled synthetic plans and documented vendor shapes, not live
+customer captures or certification across every database/server version.
+
+## Exact local results
+
+| Check | Result |
 |---|---|
-| Full backend pytest run | 1,342 passed, 2 skipped, 407 subtests; 86.34 seconds |
-| Focused imported-plan tests after numeric/logging additions | 68 passed; 9.98 seconds |
-| SQL engineering corpus before final numeric/logging additions | 237 passed; 39.95 seconds |
-| Frontend component/unit suites before benchmark addition | 114 passed, 14 files |
-| New explorer component tests | 8 passed |
-| New synthetic DOM benchmark | 1 passed, five iterations per size |
-| TypeScript | Root and workspace typecheck passed |
-| Production build | Contracts and Next.js build passed; execution-plans route generated |
-| Ruff | Repository check and formatting passed, 760 Python files |
-| Bandit | Exit 0, no medium/high findings; existing migration nosec warnings |
-| OpenAPI | Generated snapshot updated; zero-drift validation performed |
+| Full backend `python -m pytest -q` | 1,353 passed, 2 skipped, 411 subtests, 25 warnings; 91.34 seconds |
+| SQL engineering corpus included in that run | 250 tests; collection independently verified |
+| Focused parser tests | 55 passed, 0.61 seconds |
+| Focused real-session plan API tests | 24 passed, 3 warnings, 12.80 seconds |
+| Escaped near-limit import after formatting refinement | 1 passed, 23 deselected, 2.20 seconds |
+| Frontend unit/component suites | 116 passed across 16 files; 11.43 seconds |
+| TypeScript and production build | Root/workspace checks and contracts/Next.js build passed |
+| Repository lint/format | Ruff and configured ESLint passed; 760 Python files formatted |
+| Bandit medium/high gate | Passed; existing migration nosec warnings only |
+| OpenAPI | Zero drift |
+| Documentation | Markdown lint, links, anchors and fences passed across 619 files |
+| Mermaid/i18n/navigation | 85 diagrams, 10 languages and 12 navigation documents passed |
 
-The full backend run preceded a subsequent actual-metric summary correction and conservative
-native-structure ordering refinement. Focused tests and CI on the delivered head are the final
-qualification authority; final follow-up results are recorded below. The two existing local
-PostgreSQL tests require a live server; hosted CI supplies its PostgreSQL service. No frontend
-browser result is inferred from jsdom success.
+The two existing PostgreSQL tests skip locally without a live service. Hosted CI's PostgreSQL
+job passed both live tests. Existing deprecation warnings were retained, not suppressed. Existing
+ESLint configuration excludes TS/TSX; strict TypeScript and behavioral suites qualify the added
+TypeScript. No new type-lint coverage is claimed.
 
-Tests cover four dialects, operation mapping, cost units and inclusive ranking, average actual
-rows/loops, zero/missing/parallel metrics, unknown operations, Unicode, malformed JSON, duplicate
-keys, invalid/non-finite/overflow metrics, 1,000-node acceptance and node/depth rejection, SQLite
-cycle/orphan/bytecode rejection, deterministic reports, recommendation evidence, optional shared
-SQL diagnostics, real sessions/workspace/CSRF enforcement and connector-spy regression.
+Tests cover four dialects, estimates/imported actuals, decimal-string MySQL filtering, distinct
+MariaDB counters, SQLite EQP, Unicode, zero/missing/parallel/overflow metrics, inclusive costs,
+stable fingerprints/recommendations, unknown operations, malformed JSON, duplicate keys,
+non-finite numbers, 1,000-node acceptance, size/depth rejection, cycles/orphans, VM rejection and
+shared SQL diagnostics. Tests preserve wrapper flags and distinguish Inner from auxiliary plans.
+
+Security tests use real sessions/workspaces: anonymous/forged/revoked/expired sessions, foreign/
+suspended workspaces, foreign members, CSRF, forbidden identity/connection fields, safe errors,
+no-store, sensitive-plan logs, connector and low-level SQLite connection spies. A 2,000-container
+outer envelope is rejected before framework decoding. A near-1-MiB plan with over 6 MB of outer
+Unicode escapes succeeds while decoded plan limits remain unchanged.
+
+## Hosted qualification
+
+[DERA CI run 41432016461](https://github.com/krishanth7/dera/actions/runs/41432016461), executable
+head `b0ad97b`, completed successfully. All seven jobs passed:
+
+- Python 3.12, job 125232634852: repository regression/build checks and 250 SQL tests (37.20 seconds).
+- Python 3.13, job 125232634974: same mandatory SQL corpus and repository regression/build checks.
+- Frontend, job 125232634881: 116 tests, typecheck, lint, build and 3 Chromium cases.
+- PostgreSQL/SQLite, job 125232634998: all integration suites, including 2 live PostgreSQL tests.
+- Contracts/architecture, job 125232634515.
+- Documentation, job 125232635129.
+- Qualification Gate, job 125233769162.
+
+Separate security, CodeQL, schema, multilingual, title and readiness checks were inspected.
+Review findings for discarded wrapper metadata, Inner versus auxiliary children, MySQL filtered
+strings and encoded-body overhead were fixed, regression-tested and resolved. Human approval
+and merging remain separate.
 
 ## Performance evidence
 
-Run `python scripts/development/benchmark_execution_plans.py` for 20 iterations per fixture.
-Raw evidence: [backend benchmark](PHASE_10_3_BENCHMARK.json). Decode, normalization,
-diagnostics and serialization are measured separately; total measures complete analysis including
-fingerprint construction. tracemalloc peak means traced Python allocations, not process RSS.
+`python scripts/development/benchmark_execution_plans.py`: 20 iterations per backend fixture.
+[Raw backend measurements](PHASE_10_3_BENCHMARK.json) include independent decode, normalization,
+diagnostics and serialization timings plus full-engine timing and peak traced allocations.
 
-Run `DERA_PLAN_BENCHMARK_OUTPUT=/tmp/dera-dom-benchmark.json npm run test --workspace=apps/web -- tests/component/execution-plans-performance.test.tsx`
-for the optional DOM evidence file. [Frontend benchmark](PHASE_10_3_FRONTEND_BENCHMARK.json)
-records five iterations each: 10 nodes 12.380 ms, 100 nodes 58.281 ms, 1,000 nodes 245.503 ms
-median React/jsdom rendering in the initial run. No timing threshold is asserted.
+| Fixture | Nodes | Input bytes | Full-analysis median ms | Peak traced bytes |
+|---|---:|---:|---:|---:|
+| Small | 10 | 1,026 | 0.664 | 124,743 |
+| Medium | 100 | 10,745 | 5.358 | 1,227,537 |
+| Large | 1,000 | 108,844 | 59.440 | 12,259,385 |
+| Deep | 25 | 897 | 1.235 | 276,960 |
+| Large imported metadata | 1,000 | 708,244 | 81.343 | 14,697,757 |
 
-## Browser qualification limitations
+Tracemalloc is not process RSS or an enforced memory quota. These are offline synthetic imports,
+not query execution benchmarks or latency SLAs.
 
-Playwright Chromium installation was attempted; downloaded archives were invalid/truncated and
-installation failed. Cloud Browser inspected the live repository and dependency PRs, but its
-container could not reach the local production server (`ERR_CONNECTION_REFUSED`). Consequently
-no real-browser E2E, paint/FPS, mobile viewport or automated accessibility scan is claimed.
-This limitation keeps overall acceptance PARTIAL pending browser qualification.
+[Hosted Chromium measurements](PHASE_10_3_BROWSER_BENCHMARK.json), five observations per fixture:
+10 nodes 96.6 ms, 100 nodes 128.8 ms, 1,000 nodes 585.4 ms, deep-25 96.9 ms medians.
+Timing spans click-to-report plus two animation frames, including mocked transport/test-driver
+overhead; it is not isolated React CPU time or FPS. All 3 browser cases passed in 7.2 seconds,
+covering keyboard selection, collapse, zoom, table access, mobile overflow and bounded rendering.
+The component benchmark also verifies fit-to-screen for 1,000 nodes. Initial
+[jsdom measurements](PHASE_10_3_FRONTEND_BENCHMARK.json) remain separate.
 
-## Final local follow-up
+## Environment limits and follow-up
 
-- Final SQL engineering corpus: 245 passed, 9 deprecation warnings, 39.47 seconds.
-- Final frontend suites: 116 passed across 16 files, including workspace fetch-loop regression.
-- Updated production build and TypeScript passed after workspace-provider integration correction.
-- Two new Playwright tests were attempted: both failed at browser launch (missing Chromium
-  executable), so neither test body executed. They are wired into hosted frontend CI, which installs
-  its own browser runtime; hosted results will be recorded separately.
-- Markdown lint, internal links/anchors, all 85 Mermaid diagrams, generated navigation and ten-language
-  parity passed across 619 Markdown files. No medium/high Bandit findings; Ruff covered 762 files.
+Local Playwright archives were invalid/truncated; 2 initial E2E cases failed at launch without
+executing assertions. Cloud Browser verified repository/PR state but could not reach localhost.
+Hosted Chromium supplied successful browser qualification; these local failures are not hidden
+or counted as passing local tests.
 
-The workspace provider callback previously depended on the workspace value it updated, causing
-repeated fetches when a real authorized workspace loaded. A stable callback and functional fallback
-remove that loop; a dedicated test verifies a single request. Authentication behavior is unchanged.
-
-## First hosted browser qualification
-
-DERA CI run [41430491819](https://github.com/krishanth7/dera/actions/runs/41430491819),
-frontend job 125227541059, head `9fef125`, successfully installed Chromium and passed both
-browser tests (2 passed, 2.2 seconds), including desktop keyboard interactions and mobile overflow.
-All 116 frontend unit/component tests, lint, typecheck and production build also passed in that job.
-The local runtime limitation is therefore environment-specific and has a verified hosted fallback.
-
-Final refinements preserve MySQL array-entry dependent/cacheable metadata and distinguish
-PostgreSQL InitPlan children from Inner join inputs. Dedicated parser regressions: 54 passed.
-A third hosted browser test measures five response-to-painted-plan observations each for
-10/100/1,000-node and deep-25 synthetic imports, without treating them as execution cost.
-
-Final pre-delivery follow-up: 247 SQL tests passed before the outer-envelope security addition;
-77 focused plan/parser/API tests passed after that addition (13.29 seconds). The new request
-pre-decoder test submits 2,000 nested containers and verifies a safe 422 instead of recursion failure.
-
-## Hosted bounded-graph benchmark and review closure
-
-Run [41431277576](https://github.com/krishanth7/dera/actions/runs/41431277576), frontend job
-125230186837, head `ae64ba4`, passed all three Chromium cases (5.1 seconds) and 116
-unit/component tests. Five observations per fixture yielded click-to-report-plus-two-frames
-medians: 10 nodes 97.4 ms, 100 nodes 97.3 ms, 1,000 nodes 364.2 ms, deep-25 81.1 ms.
-These include mocked transport and test-driver overhead; they are not isolated React CPU or FPS.
-Raw [browser benchmark evidence](PHASE_10_3_BROWSER_BENCHMARK.json) includes the run/head IDs.
-
-Review follow-up accepts MySQL's documented decimal-string filtered value while keeping the
-MariaDB numeric contract distinct. The outer request allowance is 6,500,000 bytes to accommodate
-JSON Unicode escaping of a full-size import; decoded plan limits are unchanged. The successful
-near-limit escape-overhead test and oversize rejection passed in the 24-test API suite.
-The final parser corpus passes 55 tests. Fit-to-screen now scales a 1,000-node graph below the
-previous 10% minimum; the benchmark test checks content fits both viewport dimensions.
+No manual screen-reader certification, automated axe scan, cross-browser matrix, production load/
+concurrency qualification or exhaustive server-version compatibility is claimed. Deployment-level
+resource controls remain necessary. These limits do not authorize live query execution.
