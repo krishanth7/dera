@@ -1,0 +1,53 @@
+{
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "engine_version": "dera-sql/1.0.0+sqlglot/30.27.0",
+  "memory_scope": "Separate single-run Python allocation peak; excludes process RSS and native allocations.",
+  "results": [
+    {
+      "fixture": "small",
+      "utf8_bytes": 36,
+      "iterations": 20,
+      "median_ms": 0.658,
+      "max_ms": 1.857,
+      "tracemalloc_peak_bytes": 31610,
+      "status": "PARTIAL"
+    },
+    {
+      "fixture": "medium",
+      "utf8_bytes": 105,
+      "iterations": 20,
+      "median_ms": 1.865,
+      "max_ms": 19.021,
+      "tracemalloc_peak_bytes": 50549,
+      "status": "PARTIAL"
+    },
+    {
+      "fixture": "large_multi_cte",
+      "utf8_bytes": 921,
+      "iterations": 20,
+      "median_ms": 8.329,
+      "max_ms": 11.402,
+      "tracemalloc_peak_bytes": 315356,
+      "status": "PARTIAL"
+    },
+    {
+      "fixture": "deeply_nested",
+      "utf8_bytes": 224,
+      "iterations": 20,
+      "median_ms": 2.691,
+      "max_ms": 3.545,
+      "tracemalloc_peak_bytes": 109807,
+      "status": "PARTIAL"
+    },
+    {
+      "fixture": "multiple_statements",
+      "utf8_bytes": 758,
+      "iterations": 20,
+      "median_ms": 7.352,
+      "max_ms": 9.266,
+      "tracemalloc_peak_bytes": 222855,
+      "status": "PARTIAL"
+    }
+  ]
+}

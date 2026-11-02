@@ -29,6 +29,7 @@ Welcome to the official technical documentation for **DERA — Database Engineer
 | **Deterministic Core** | Pure Python canonical domain models, Kahn DAG algorithms, and rule diagnostics | [docs/core/README.md](core/README.md) |
 | **Database Connectors** | Read-only connection lifecycle, query mutation safety, and capability matrix | [docs/connectors/CONNECTOR_ARCHITECTURE.md](connectors/CONNECTOR_ARCHITECTURE.md) |
 | **SQL Engineering** | Offline query analysis, dialect capabilities and security policy | [Phase 10.1 Architecture](phase-10/PHASE_10_1_ARCHITECTURE.md) |
+| **SQL Diagnostics (dependent branch)** | Deterministic rules, structural score and evidence-bound recommendations | [Phase 10.2 Architecture](phase-10/PHASE_10_2_ARCHITECTURE.md) |
 | **Shared Contracts** | JSON Schema exchange specifications and TypeScript protocol definitions | [docs/contracts/SCHEMA_CONTRACTS.md](contracts/SCHEMA_CONTRACTS.md) |
 | **Getting Started & Setup** | Quickstart onboarding, prerequisites, and developer environment setup | [docs/development/GETTING_STARTED.md](development/GETTING_STARTED.md) |
 | **Developer Workflow** | CLI commands reference, branching strategy, Conventional Commits, and PR lifecycle | [docs/development/CONTRIBUTION_WORKFLOW.md](development/CONTRIBUTION_WORKFLOW.md) |

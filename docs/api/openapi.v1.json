@@ -311,6 +311,77 @@
         "title": "ComparisonSummarySchema",
         "type": "object"
       },
+      "Complexity": {
+        "additionalProperties": false,
+        "properties": {
+          "band": {
+            "enum": [
+              "LOW",
+              "MODERATE",
+              "HIGH"
+            ],
+            "title": "Band",
+            "type": "string"
+          },
+          "evidence": {
+            "default": "Structural AST score; not measured execution cost.",
+            "title": "Evidence",
+            "type": "string"
+          },
+          "factor_breakdown": {
+            "items": {
+              "$ref": "#/components/schemas/ComplexityFactor"
+            },
+            "title": "Factor Breakdown",
+            "type": "array"
+          },
+          "score": {
+            "title": "Score",
+            "type": "integer"
+          },
+          "scoring_version": {
+            "default": "1.0.0",
+            "title": "Scoring Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "score",
+          "band",
+          "factor_breakdown"
+        ],
+        "title": "Complexity",
+        "type": "object"
+      },
+      "ComplexityFactor": {
+        "additionalProperties": false,
+        "properties": {
+          "contribution": {
+            "title": "Contribution",
+            "type": "integer"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "weight": {
+            "title": "Weight",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "count",
+          "weight",
+          "contribution"
+        ],
+        "title": "ComplexityFactor",
+        "type": "object"
+      },
       "ConnectionListResponse": {
         "description": "List of connections authorized in a workspace.",
         "properties": {
@@ -1603,6 +1674,78 @@
         "title": "DiagnosticRuleMetadataResponse",
         "type": "object"
       },
+      "DiagnosticSeverity": {
+        "description": "Deterministic severity classification for diagnostic findings.",
+        "enum": [
+          "INFORMATIONAL",
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL"
+        ],
+        "title": "DiagnosticSeverity",
+        "type": "string"
+      },
+      "DiagnosticsOptions": {
+        "additionalProperties": false,
+        "properties": {
+          "include_complexity": {
+            "default": true,
+            "title": "Include Complexity",
+            "type": "boolean"
+          },
+          "include_recommendations": {
+            "default": true,
+            "title": "Include Recommendations",
+            "type": "boolean"
+          }
+        },
+        "title": "DiagnosticsOptions",
+        "type": "object"
+      },
+      "DiagnosticsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "dialect": {
+            "enum": [
+              "postgresql",
+              "sqlite",
+              "mysql",
+              "mariadb"
+            ],
+            "title": "Dialect",
+            "type": "string"
+          },
+          "options": {
+            "$ref": "#/components/schemas/DiagnosticsOptions"
+          },
+          "schema_snapshot_id": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Snapshot Id"
+          },
+          "sql": {
+            "maxLength": 16384,
+            "minLength": 1,
+            "title": "Sql",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sql",
+          "dialect"
+        ],
+        "title": "DiagnosticsRequest",
+        "type": "object"
+      },
       "ErrorCode": {
         "description": "Authoritative machine-readable error classification codes.",
         "enum": [
@@ -1844,6 +1987,99 @@
           "message"
         ],
         "title": "FieldErrorDetail",
+        "type": "object"
+      },
+      "Finding": {
+        "additionalProperties": false,
+        "properties": {
+          "applicable_dialects": {
+            "items": {
+              "enum": [
+                "postgresql",
+                "sqlite",
+                "mysql",
+                "mariadb"
+              ],
+              "type": "string"
+            },
+            "title": "Applicable Dialects",
+            "type": "array"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "confidence": {
+            "enum": [
+              "STRUCTURAL_FACT",
+              "SCHEMA_FACT",
+              "REVIEW_HEURISTIC"
+            ],
+            "title": "Confidence",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "finding_id": {
+            "title": "Finding Id",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Span"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/DiagnosticSeverity"
+          },
+          "statement_index": {
+            "title": "Statement Index",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "finding_id",
+          "rule_id",
+          "name",
+          "category",
+          "severity",
+          "description",
+          "statement_index",
+          "evidence",
+          "confidence",
+          "limitations",
+          "applicable_dialects"
+        ],
+        "title": "Finding",
         "type": "object"
       },
       "ForeignKeySummaryResponse": {
@@ -3473,6 +3709,71 @@
         "title": "ReadinessSubsystems",
         "type": "object"
       },
+      "Recommendation": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "expected_benefit": {
+            "title": "Expected Benefit",
+            "type": "string"
+          },
+          "finding_id": {
+            "title": "Finding Id",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "manual_review_required": {
+            "default": true,
+            "title": "Manual Review Required",
+            "type": "boolean"
+          },
+          "recommendation_id": {
+            "title": "Recommendation Id",
+            "type": "string"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "suggested_action": {
+            "title": "Suggested Action",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recommendation_id",
+          "finding_id",
+          "rule_id",
+          "title",
+          "description",
+          "evidence",
+          "suggested_action",
+          "expected_benefit",
+          "limitations"
+        ],
+        "title": "Recommendation",
+        "type": "object"
+      },
       "RegisterRequest": {
         "additionalProperties": false,
         "description": "Payload for self-service user registration.",
@@ -3683,6 +3984,40 @@
           }
         },
         "title": "RiskSummarySchema",
+        "type": "object"
+      },
+      "RuleEvaluation": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "EVALUATED",
+              "NOT_EVALUATED"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_id",
+          "status"
+        ],
+        "title": "RuleEvaluation",
         "type": "object"
       },
       "SCCResponse": {
@@ -4048,6 +4383,107 @@
           "end"
         ],
         "title": "Span",
+        "type": "object"
+      },
+      "SqlDiagnosticsReport": {
+        "additionalProperties": false,
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/Analysis"
+          },
+          "analysis_status": {
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "INDETERMINATE"
+            ],
+            "title": "Analysis Status",
+            "type": "string"
+          },
+          "complexity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Complexity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dialect": {
+            "enum": [
+              "postgresql",
+              "sqlite",
+              "mysql",
+              "mariadb"
+            ],
+            "title": "Dialect",
+            "type": "string"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "fingerprint": {
+            "title": "Fingerprint",
+            "type": "string"
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Recommendations",
+            "type": "array"
+          },
+          "report_version": {
+            "default": "1.0.0",
+            "title": "Report Version",
+            "type": "string"
+          },
+          "rule_evaluations": {
+            "items": {
+              "$ref": "#/components/schemas/RuleEvaluation"
+            },
+            "title": "Rule Evaluations",
+            "type": "array"
+          },
+          "rules_version": {
+            "default": "1.0.0",
+            "title": "Rules Version",
+            "type": "string"
+          },
+          "snapshot_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Fingerprint"
+          },
+          "total_findings": {
+            "title": "Total Findings",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "analysis_status",
+          "dialect",
+          "analysis",
+          "complexity",
+          "findings",
+          "recommendations",
+          "rule_evaluations",
+          "total_findings",
+          "snapshot_fingerprint",
+          "fingerprint"
+        ],
+        "title": "SqlDiagnosticsReport",
         "type": "object"
       },
       "Statement": {
@@ -10809,6 +11245,140 @@
           }
         },
         "summary": "Analyze Sql",
+        "tags": [
+          "SQL Engineering"
+        ]
+      }
+    },
+    "/api/v1/sql-engineering/diagnostics": {
+      "post": {
+        "description": "Static SQL diagnostics, using only an authorized immutable stored snapshot.",
+        "operationId": "diagnose_sql_api_v1_sql_engineering_diagnostics_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiagnosticsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SqlDiagnosticsReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "SQL diagnostics request exceeds byte limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Diagnose Sql",
         "tags": [
           "SQL Engineering"
         ]

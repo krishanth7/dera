@@ -3,6 +3,7 @@
 import sqlglot
 from sqlglot import exp
 from sqlglot.errors import ErrorLevel, SqlglotError
+from sqlglot.optimizer.scope import traverse_scope
 
 from .dialects import resolve
 from .models import Analysis, Diagnostic, Dialect, Span, Statement
@@ -16,6 +17,21 @@ ENGINE_VERSION = f"dera-sql/1.0.0+sqlglot/{sqlglot.__version__}"
 
 
 def analyze(sql: str, dialect: Dialect) -> Analysis:
+    """Analyze without retaining an AST in the public response."""
+    return analyze_with_ast(sql, dialect)[0]
+
+
+def analyze_with_ast(sql: str, dialect: Dialect) -> tuple[Analysis, tuple[exp.Expression, ...]]:
+    """Share the validated, resource-bounded AST with offline engineering services.
+
+    Parses once. Rejected inputs expose no partial AST. Callers must not mutate trees.
+    """
+    trees: list[exp.Expression] = []
+    result = _analyze(sql, dialect, trees)
+    return result, tuple(trees)
+
+
+def _analyze(sql: str, dialect: Dialect, trees_out: list[exp.Expression]) -> Analysis:
     parser = resolve(dialect)
     span = Span(start=0, end=len(sql))
 
@@ -96,7 +112,13 @@ def analyze(sql: str, dialect: Dialect) -> Analysis:
         unsupported.update(reasons)
         # These are syntactic references, not resolved catalog identities. CTE aliases
         # are excluded from objects, but columns deliberately retain their SQL qualifiers.
-        ctes = {n.alias_or_name for n in tree.find_all(exp.CTE)}
+        scopes = list(traverse_scope(tree))
+        physical_tables = {
+            id(source)
+            for scope in scopes
+            for source in scope.sources.values()
+            if isinstance(source, exp.Table)
+        }
 
         def render(n):
             return n.sql(dialect=parser)
@@ -109,7 +131,7 @@ def analyze(sql: str, dialect: Dialect) -> Analysis:
                     {
                         render(n)
                         for n in tree.find_all(exp.Table)
-                        if n.db or n.catalog or n.name not in ctes
+                        if not scopes or id(n) in physical_tables
                     }
                 ),
                 columns=sorted({render(n) for n in tree.find_all(exp.Column)}),
@@ -137,6 +159,7 @@ def analyze(sql: str, dialect: Dialect) -> Analysis:
                 span=span,
             )
         )
+    trees_out.extend(trees)
     return Analysis(
         dialect=dialect,
         engine_version=ENGINE_VERSION,
