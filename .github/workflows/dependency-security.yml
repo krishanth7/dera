@@ -86,10 +86,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: "Set up Node.js 20"
+      - name: "Set up Node.js 22"
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
 
       - name: "Verify Lockfile Integrity (npm ci --ignore-scripts)"

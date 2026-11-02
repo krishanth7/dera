@@ -33,6 +33,7 @@
   "overrides": {
     "katex": "^0.18.2",
     "markdown-it": "^14.1.0",
-    "smol-toml": "^1.9.1"
+    "smol-toml": "^1.9.1",
+    "re2js": "^2.9.1"
   }
 }
