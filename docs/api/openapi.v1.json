@@ -33,6 +33,94 @@
         "title": "AddMemberRequest",
         "type": "object"
       },
+      "Analysis": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/Diagnostic"
+            },
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "dialect": {
+            "enum": [
+              "postgresql",
+              "sqlite",
+              "mysql",
+              "mariadb"
+            ],
+            "title": "Dialect",
+            "type": "string"
+          },
+          "engine_version": {
+            "title": "Engine Version",
+            "type": "string"
+          },
+          "safety": {
+            "enum": [
+              "read_only_candidate",
+              "unsafe",
+              "unknown"
+            ],
+            "title": "Safety",
+            "type": "string"
+          },
+          "statement_count": {
+            "title": "Statement Count",
+            "type": "integer"
+          },
+          "statements": {
+            "items": {
+              "$ref": "#/components/schemas/Statement"
+            },
+            "title": "Statements",
+            "type": "array"
+          },
+          "unsupported_constructs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unsupported Constructs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "dialect",
+          "engine_version",
+          "statement_count",
+          "safety"
+        ],
+        "title": "Analysis",
+        "type": "object"
+      },
+      "AnalyzeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "dialect": {
+            "enum": [
+              "postgresql",
+              "sqlite",
+              "mysql",
+              "mariadb"
+            ],
+            "title": "Dialect",
+            "type": "string"
+          },
+          "sql": {
+            "maxLength": 16384,
+            "minLength": 1,
+            "title": "Sql",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sql",
+          "dialect"
+        ],
+        "title": "AnalyzeRequest",
+        "type": "object"
+      },
       "AuditEventResponse": {
         "description": "Cryptographic audit event log entry.",
         "properties": {
@@ -906,6 +994,29 @@
           "levels"
         ],
         "title": "DependencyAnalysisResponse",
+        "type": "object"
+      },
+      "Diagnostic": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "span": {
+            "$ref": "#/components/schemas/Span"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "span"
+        ],
+        "title": "Diagnostic",
         "type": "object"
       },
       "DiagnosticEvaluateRequest": {
@@ -3918,6 +4029,84 @@
           "fingerprint"
         ],
         "title": "SnapshotVerifyResponse",
+        "type": "object"
+      },
+      "Span": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "title": "End",
+            "type": "integer"
+          },
+          "start": {
+            "title": "Start",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "Span",
+        "type": "object"
+      },
+      "Statement": {
+        "additionalProperties": false,
+        "properties": {
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "joins": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Joins",
+            "type": "array"
+          },
+          "objects": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Objects",
+            "type": "array"
+          },
+          "parameters": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Parameters",
+            "type": "array"
+          },
+          "predicates": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Predicates",
+            "type": "array"
+          },
+          "safety": {
+            "enum": [
+              "read_only_candidate",
+              "unsafe",
+              "unknown"
+            ],
+            "title": "Safety",
+            "type": "string"
+          },
+          "statement_type": {
+            "title": "Statement Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "statement_type",
+          "safety"
+        ],
+        "title": "Statement",
         "type": "object"
       },
       "SystemPingResponse": {
@@ -10488,6 +10677,140 @@
         "summary": "Cryptographically verify snapshot integrity",
         "tags": [
           "Reverse Engineering"
+        ]
+      }
+    },
+    "/api/v1/sql-engineering/analyze": {
+      "post": {
+        "description": "Analyze SQL without execution; workspace_id query parameter is server-authorized.",
+        "operationId": "analyze_sql_api_v1_sql_engineering_analyze_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Analysis"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Client Error / Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Authentication Required or Invalid"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Forbidden / Access Denied"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Resource Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "SQL analysis body exceeds byte limit"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation Failure (RFC 9457)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Rate Limited"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Analyze Sql",
+        "tags": [
+          "SQL Engineering"
         ]
       }
     },
