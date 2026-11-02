@@ -37,7 +37,7 @@ class BoundedRoute(APIRoute):
                 if len(body) + len(chunk) > self.max_body_bytes:
                     raise HTTPException(413, "Analysis request exceeds byte limit.")
                 body.extend(chunk)
-            self.validate_body(bytes(body))
+            await run_in_threadpool(self.validate_body, bytes(body))
             request._body = bytes(body)
             return await original(request)
 

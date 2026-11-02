@@ -116,3 +116,22 @@ class TestExecutionPlansAPI(auth_fixture.TestWorkspaceAuthorizationRegression):
         )
         self.assertEqual(response.status_code, 200, response.text[:300])
         self.assertEqual(response.json()["summary"]["node_count"], 1)
+
+    async def test_envelope_validation_runs_off_event_loop(self):
+        from threading import get_ident
+
+        from dera_api.api.v1.endpoints.sql_engineering import PlanBoundedRoute
+
+        loop_thread = get_ident()
+        threads = []
+        original = PlanBoundedRoute.validate_body
+
+        def validate(route, body):
+            threads.append(get_ident())
+            return original(route, body)
+
+        with patch.object(PlanBoundedRoute, "validate_body", new=validate):
+            self.assertEqual((await self.submit()).status_code, 200)
+            self.assertEqual((await self.submit(token="forged")).status_code, 401)
+        self.assertEqual(len(threads), 2)
+        self.assertTrue(all(thread != loop_thread for thread in threads))

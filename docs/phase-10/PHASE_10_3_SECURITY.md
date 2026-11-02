@@ -43,3 +43,6 @@ malicious nested value cannot bypass the imported-string guard by using an inval
 
 The raw envelope limit is 6,500,000 bytes for JSON escape overhead; the independently decoded
 plan remains limited to 1,048,576 bytes. This does not relax node, value or plan-depth bounds.
+
+The bounded outer-envelope depth scan runs in the thread pool before framework decoding. Its
+thread-identity regression covers both valid and forged sessions; authorization remains fail-closed.

@@ -4,8 +4,9 @@
 
 Main baseline: `5409284f38a388c0ae46bf2326b096200560935d` containing merged PRs #75, #76 and #77.
 Branch: `feat/phase-10-3-execution-plan-intelligence`. Reviewable [PR #78](https://github.com/krishanth7/dera/pull/78)
-is open and unmerged. Verified executable head: `b0ad97b45efdb203b1a596451543ddc64b17b211`.
-Subsequent evidence-only documentation commits do not change executable code.
+is open and unmerged. First fully hosted-qualified executable head: `b0ad97b45efdb203b1a596451543ddc64b17b211`.
+A final security refinement moves pre-decoder envelope scanning into the thread pool; its
+251-test SQL regression passed. Current PR checks identify the delivery head.
 
 Local Python 3.12.14 and Node 24.22.1; hosted Python 3.12/3.13 and Node 22. SQLGlot 30.27.0
 is unchanged. Fixtures are controlled synthetic plans and documented vendor shapes, not live
@@ -16,9 +17,9 @@ customer captures or certification across every database/server version.
 | Check | Result |
 |---|---|
 | Full backend `python -m pytest -q` | 1,353 passed, 2 skipped, 411 subtests, 25 warnings; 91.34 seconds |
-| SQL engineering corpus included in that run | 250 tests; collection independently verified |
+| SQL engineering corpus | 250 included in full run; final off-loop refinement: 251 passed, 40.11 seconds |
 | Focused parser tests | 55 passed, 0.61 seconds |
-| Focused real-session plan API tests | 24 passed, 3 warnings, 12.80 seconds |
+| Plan API tests | 24 passed in focused run; final 25 included in the 251-test SQL regression |
 | Escaped near-limit import after formatting refinement | 1 passed, 23 deselected, 2.20 seconds |
 | Frontend unit/component suites | 116 passed across 16 files; 11.43 seconds |
 | TypeScript and production build | Root/workspace checks and contracts/Next.js build passed |
@@ -60,7 +61,7 @@ head `b0ad97b`, completed successfully. All seven jobs passed:
 
 Separate security, CodeQL, schema, multilingual, title and readiness checks were inspected.
 Review findings for discarded wrapper metadata, Inner versus auxiliary children, MySQL filtered
-strings and encoded-body overhead were fixed, regression-tested and resolved. Human approval
+strings, encoded-body overhead and event-loop blocking were fixed and regression-tested. Human approval
 and merging remain separate.
 
 ## Performance evidence
@@ -98,3 +99,9 @@ or counted as passing local tests.
 No manual screen-reader certification, automated axe scan, cross-browser matrix, production load/
 concurrency qualification or exhaustive server-version compatibility is claimed. Deployment-level
 resource controls remain necessary. These limits do not authorize live query execution.
+
+Final security review: bounded outer-envelope scanning now uses the thread pool before framework
+JSON decoding. A dedicated test records a different thread identity for both valid and forged-session
+requests, preserving 200/401 behavior. The full 251-test SQL corpus passed after this change.
+This moves CPU work off the event loop; it does not claim process isolation or deployment-level
+rate limiting. The 1,353-test full-suite result predates this scheduling-only refinement.

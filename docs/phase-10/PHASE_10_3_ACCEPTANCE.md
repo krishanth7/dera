@@ -30,9 +30,10 @@ assistive-technology qualification remains separate and is not claimed.
 
 See [test report](PHASE_10_3_TEST_REPORT.md) for exact results and skips.
 
-Qualification: 1,353 backend tests and 411 subtests passed (2 existing local skips), 250 SQL tests,
+Qualification: 1,353 backend tests and 411 subtests passed (2 existing local skips), 251 final SQL tests,
 116 frontend tests, 3 hosted Chromium cases, live integration, contracts, builds, docs and security
-checks. All four substantive inline review findings were addressed and regression-tested.
-Evidence-only documentation updates after b0ad97b do not change executable code. This PASS is
+checks. All five substantive inline review findings were addressed and regression-tested.
+A final envelope-scan scheduling refinement passed the 251-test SQL regression; current PR checks
+record its hosted status. This PASS is
 for documented formats and offline capabilities; it is not deployment or security certification,
 manual assistive-technology certification, or permission to merge.
