@@ -11,6 +11,7 @@ from dera_api.api.v1.endpoints.connections import router as connections_router
 from dera_api.api.v1.endpoints.jobs import router as jobs_router
 from dera_api.api.v1.endpoints.migrations import router as migrations_router
 from dera_api.api.v1.endpoints.reverse_engineering import router as reverse_engineering_router
+from dera_api.api.v1.endpoints.sql_engineering import router as sql_engineering_router
 from dera_api.api.v1.endpoints.system import router as system_router
 from dera_api.api.v1.endpoints.workspaces import router as workspaces_router
 from dera_api.contracts.errors import ProblemDetail
@@ -34,3 +35,5 @@ api_v1_router.include_router(jobs_router)
 api_v1_router.include_router(reverse_engineering_router)
 api_v1_router.include_router(connections_router)
 api_v1_router.include_router(migrations_router)
+
+api_v1_router.include_router(sql_engineering_router)

@@ -82,6 +82,9 @@ jobs:
         run: |
           python scripts/ci/test_reporter.py --test-dir tests/
 
+      - name: "Phase 10.1 SQL Analysis Regression Corpus"
+        run: python -m pytest tests/sql_engineering -q
+
       - name: "Generate Test Artifact Integrity Manifest"
         if: always()
         run: |
