@@ -83,3 +83,19 @@ A third hosted browser test measures five response-to-painted-plan observations 
 Final pre-delivery follow-up: 247 SQL tests passed before the outer-envelope security addition;
 77 focused plan/parser/API tests passed after that addition (13.29 seconds). The new request
 pre-decoder test submits 2,000 nested containers and verifies a safe 422 instead of recursion failure.
+
+## Hosted bounded-graph benchmark and review closure
+
+Run [41431277576](https://github.com/krishanth7/dera/actions/runs/41431277576), frontend job
+125230186837, head `ae64ba4`, passed all three Chromium cases (5.1 seconds) and 116
+unit/component tests. Five observations per fixture yielded click-to-report-plus-two-frames
+medians: 10 nodes 97.4 ms, 100 nodes 97.3 ms, 1,000 nodes 364.2 ms, deep-25 81.1 ms.
+These include mocked transport and test-driver overhead; they are not isolated React CPU or FPS.
+Raw [browser benchmark evidence](PHASE_10_3_BROWSER_BENCHMARK.json) includes the run/head IDs.
+
+Review follow-up accepts MySQL's documented decimal-string filtered value while keeping the
+MariaDB numeric contract distinct. The outer request allowance is 6,500,000 bytes to accommodate
+JSON Unicode escaping of a full-size import; decoded plan limits are unchanged. The successful
+near-limit escape-overhead test and oversize rejection passed in the 24-test API suite.
+The final parser corpus passes 55 tests. Fit-to-screen now scales a 1,000-node graph below the
+previous 10% minimum; the benchmark test checks content fits both viewport dimensions.

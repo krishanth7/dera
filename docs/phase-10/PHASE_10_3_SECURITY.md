@@ -40,3 +40,6 @@ IDs, size/depth errors, connector-spy regressions and sensitive-plan logging. Se
 
 The outer request envelope also receives a raw depth-64 scan before FastAPI decoding, so a
 malicious nested value cannot bypass the imported-string guard by using an invalid field type.
+
+The raw envelope limit is 6,500,000 bytes for JSON escape overhead; the independently decoded
+plan remains limited to 1,048,576 bytes. This does not relax node, value or plan-depth bounds.

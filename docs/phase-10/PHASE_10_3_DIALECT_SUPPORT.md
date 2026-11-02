@@ -3,7 +3,7 @@
 | Dialect | Format token | Normalized estimates | Imported actuals | Limits |
 |---|---|---|---|---|
 | PostgreSQL | postgresql-json | Startup/total cost, rows, width | Average rows/time per invocation, loops; top-level execution time | One EXPLAIN object or one-element array; Plans child arrays |
-| MySQL | mysql-json-v1 | Query-block query_cost, examined rows/scan, filtered percent | Unavailable | Traditional query_block JSON; JSON v2 and TREE unsupported |
+| MySQL | mysql-json-v1 | Query-block query_cost, examined rows/scan, numeric/decimal-string filtered percent | Unavailable | Traditional query_block JSON; JSON v2 and TREE unsupported |
 | MariaDB | mariadb-json | rows and filtered percent | r_rows average, r_loops, cumulative r_total_time_ms | Separate MariaDB wrapper and metric contracts; costs unavailable |
 | SQLite | sqlite-eqp | Unavailable | Unavailable | JSON array of exact id/parent/notused/detail objects; VM bytecode rejected |
 

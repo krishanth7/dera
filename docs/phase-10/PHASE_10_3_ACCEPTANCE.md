@@ -18,7 +18,7 @@ a separate reviewable branch and PR; it is not merged or released.
 | Explorer | Graph, native keyboard controls, structured table, selection, metrics and evidence; component tests pass |
 | Authorization/security | Existing sessions/workspaces/CSRF, bounded input, no-store, no connector execution |
 | Documentation/contracts | Ten milestone documents, raw benchmarks, OpenAPI and indexes |
-| Browser/accessibility | First hosted Chromium run passed both desktop/mobile tests; local browser runtime remains blocked |
+| Browser/accessibility | Hosted Chromium passed desktop/mobile tests and bounded-graph benchmark; local browser runtime remains blocked |
 | Hosted CI | Must be reviewed on the delivered PR head; local evidence is not substituted for hosted results |
 
 Known limitations: no live plans, MySQL JSON v2/TREE, SQLite VM bytecode, generalized exclusive

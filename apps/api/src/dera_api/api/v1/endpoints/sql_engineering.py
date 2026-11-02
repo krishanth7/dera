@@ -126,7 +126,7 @@ async def diagnose_sql(
 
 # Plans are submitted as a JSON string so nesting can be checked before decoding.
 class PlanBoundedRoute(BoundedRoute):
-    max_body_bytes = 1_200_000
+    max_body_bytes = 6_500_000
 
     def validate_body(self, body: bytes) -> None:
         try:

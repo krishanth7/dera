@@ -174,7 +174,7 @@ def test_mysql_json_v1_join_filesort_and_cost():
                                 "table_name": "a",
                                 "access_type": "ALL",
                                 "rows_examined_per_scan": 10000,
-                                "filtered": 10,
+                                "filtered": "10.00",
                             }
                         },
                         {
@@ -405,3 +405,34 @@ def test_initplan_is_not_inferred_as_nested_loop_inner():
         )
     )
     assert "PLAN007" not in rules(result)
+
+
+def test_mysql_filtered_decimal_string_and_mariadb_numeric_contracts():
+    result = run(
+        {
+            "query_block": {
+                "table": {
+                    "table_name": "a",
+                    "access_type": "ALL",
+                    "rows_examined_per_scan": 10,
+                    "filtered": "100.00",
+                }
+            }
+        },
+        "mysql",
+    )
+    assert result.nodes[-1].estimate.filtered_percent == 100
+    with pytest.raises(PlanInputError):
+        run(
+            {
+                "query_block": {
+                    "table": {
+                        "table_name": "a",
+                        "access_type": "ALL",
+                        "rows": 10,
+                        "filtered": "100.00",
+                    }
+                }
+            },
+            "mariadb",
+        )

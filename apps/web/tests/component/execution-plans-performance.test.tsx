@@ -1,12 +1,13 @@
 import React from "react";
 import { writeFileSync } from "node:fs";
-import { render, cleanup } from "@testing-library/react";
-import { expect, it } from "vitest";
+import { render, cleanup, fireEvent, screen } from "@testing-library/react";
+import { expect, it, vi } from "vitest";
 import { ExecutionPlanTree } from "@/components/execution-plans/ExecutionPlanTree";
 import type { PlanReport } from "@/components/execution-plans/types";
 import fixture from "../fixtures/execution-plan.json";
 
 it("qualifies synthetic 10/100/1000-node DOM rendering without timing assertions", () => {
+  Element.prototype.scrollTo = vi.fn();
   const base=fixture as PlanReport;
   const results=[];
   for (const count of [10,100,1000]) {
@@ -17,6 +18,10 @@ it("qualifies synthetic 10/100/1000-node DOM rendering without timing assertions
       const {container}=render(<ExecutionPlanTree report={report} selected={null} onSelect={()=>{}} />);
       samples.push(performance.now()-start);
       expect(container.querySelectorAll('button[aria-pressed]').length).toBe(count);
+      fireEvent.click(screen.getByRole("button", { name: "Fit to screen" }));
+      const canvas = screen.getByRole("region", { name: "Scrollable plan canvas" }).firstElementChild as HTMLElement;
+      expect(parseFloat(canvas.style.height)).toBeLessThanOrEqual(450);
+      expect(parseFloat(canvas.style.width)).toBeLessThanOrEqual(800);
       cleanup();
     }
     results.push({nodes:count,median_ms:Number(samples.sort((a,b)=>a-b)[2].toFixed(3))});

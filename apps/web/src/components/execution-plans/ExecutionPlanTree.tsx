@@ -37,15 +37,15 @@ export function ExecutionPlanTree({ report, selected, onSelect }: {
   return <section aria-label="Execution plan tree" className="space-y-3">
     <div className="flex flex-wrap gap-2" aria-label="Plan view controls">
       <button type="button" onClick={() => setZoom(z => Math.min(2, z + .2))}>Zoom in</button>
-      <button type="button" onClick={() => setZoom(z => Math.max(.1, z - .2))}>Zoom out</button>
-      <button type="button" onClick={() => { setZoom(Math.max(.1, Math.min(1, (viewport.current?.clientWidth || 800) / width, 450 / height))); viewport.current?.scrollTo({ left: 0, top: 0 }); }}>Fit to screen</button>
+      <button type="button" onClick={() => setZoom(z => Math.max(.001, z - .2))}>Zoom out</button>
+      <button type="button" onClick={() => { setZoom(Math.max(.001, Math.min(1, (viewport.current?.clientWidth || 800) / width, 450 / height))); viewport.current?.scrollTo({ left: 0, top: 0 }); }}>Fit to screen</button>
       <button type="button" onClick={() => pan(-200, 0)}>Pan left</button>
       <button type="button" onClick={() => pan(200, 0)}>Pan right</button>
       <button type="button" onClick={() => pan(0, -200)}>Pan up</button>
       <button type="button" onClick={() => pan(0, 200)}>Pan down</button>
       <button type="button" onClick={() => { setCollapsed(new Set()); setZoom(1); }}>Expand all</button>
       {selected && <button type="button" aria-expanded={!collapsed.has(selected)} onClick={() => toggle(selected)}>Toggle selected subtree</button>}
-      <output aria-label="Zoom level">{Math.round(zoom * 100)}%</output>
+      <output aria-label="Zoom level">{Number((zoom * 100).toFixed(1))}%</output>
     </div>
     <p className="text-sm text-slate-500">Scroll to pan. Use Tab to select nodes, or use the structured table below. Costs are inclusive estimates, not milliseconds.</p>
     <div ref={viewport} tabIndex={0} role="region" aria-label="Scrollable plan canvas" className="h-[450px] overflow-auto rounded-xl border bg-slate-50 dark:bg-slate-950">

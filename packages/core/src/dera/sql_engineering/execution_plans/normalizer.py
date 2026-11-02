@@ -244,7 +244,7 @@ def mysql_family(data, dialect):
         # prefix_cost is cumulative for a join prefix, never a table's exclusive cost.
         total = number(costs, "query_cost", strings=True) if not is_maria else None
         rows = number(raw, "rows" if is_maria else "rows_examined_per_scan")
-        filtered = number(raw, "filtered")
+        filtered = number(raw, "filtered", strings=not is_maria)
         if filtered is not None and filtered > 100:
             fail()
         estimate = PlanCostEstimate(

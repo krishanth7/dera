@@ -51,7 +51,7 @@ class TestExecutionPlansAPI(auth_fixture.TestWorkspaceAuthorizationRegression):
         self.assertEqual((await self.submit(role="owner")).status_code, 422)
         self.assertEqual((await self.submit(connection_id="customer")).status_code, 422)
         self.assertEqual((await self.submit(format="analyze")).status_code, 422)
-        self.assertEqual((await self.submit(plan_json="x" * 1_200_001)).status_code, 413)
+        self.assertEqual((await self.submit(plan_json="x" * 6_500_001)).status_code, 413)
         self.assertEqual((await self.submit(plan_json="[" * 65 + "]" * 65)).status_code, 422)
 
     async def test_cookie_csrf(self):
@@ -98,3 +98,21 @@ class TestExecutionPlansAPI(auth_fixture.TestWorkspaceAuthorizationRegression):
         )
         self.assertEqual(response.status_code, 422)
         self.assertNotIn("RecursionError", response.text)
+
+    async def test_full_size_import_with_outer_unicode_escape_overhead(self):
+        plan = json.dumps({"Plan": {"Node Type": "Result", "Padding": ["a" * 10000] * 100}})
+        self.assertLess(len(plan.encode()), 1_048_576)
+        escaped = "".join(f"\\u{ord(char):04x}" for char in plan)
+        body = '{"dialect":"postgresql","format":"postgresql-json","plan_json":"' + escaped + '"}'
+        self.assertGreater(len(body), 6_000_000)
+        response = await self.client.post(
+            "/api/v1/sql-engineering/execution-plans/analyze",
+            params={"workspace_id": str(self.ws_active.id)},
+            headers={
+                "Authorization": f"Bearer {self.valid_raw_token}",
+                "Content-Type": "application/json",
+            },
+            content=body,
+        )
+        self.assertEqual(response.status_code, 200, response.text[:300])
+        self.assertEqual(response.json()["summary"]["node_count"], 1)

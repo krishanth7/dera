@@ -29,7 +29,7 @@ PARTIAL identifies unsupported operations. Success carries `Cache-Control: no-st
 |---|---|
 | 401 | Anonymous, invalid, expired or revoked session |
 | 403 | CSRF, inactive/foreign workspace, membership or permission denial |
-| 413 | Raw streamed body exceeds 1,200,000 bytes |
+| 413 | Raw streamed body exceeds 6,500,000 bytes |
 | 422 | Invalid request, format mismatch, malformed, invalid numeric, reference or over-limit import |
 
 Imported plan text: 1,048,576 UTF-8 bytes and characters; individual decoded strings 16,384 bytes;
@@ -44,3 +44,8 @@ by the caller and its correspondence with the plan is explicitly unverified.
 
 The outer request envelope also receives a raw depth-64 scan before FastAPI decoding, so a
 malicious nested value cannot bypass the imported-string guard by using an invalid field type.
+
+The envelope allowance covers up to six JSON-escape bytes per accepted imported character,
+plus optional SQL and envelope fields. Independent decoded import limits remain 1 MiB; the
+larger raw allowance does not expand parser node/value limits. A near-1-MiB plan encoded as
+outer Unicode escapes has a dedicated successful API regression.
