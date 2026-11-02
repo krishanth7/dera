@@ -11,7 +11,7 @@
 # ============================================================
 
 # Stage 1: Builder
-FROM python:3.13-slim AS builder
+FROM python:3.15-slim AS builder
 
 WORKDIR /build
 
@@ -27,7 +27,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir --prefix=/install .
 
 # Stage 2: Production Runtime
-FROM python:3.13-slim AS runner
+FROM python:3.15-slim AS runner
 
 WORKDIR /app
 
