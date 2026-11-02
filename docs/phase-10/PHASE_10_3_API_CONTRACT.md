@@ -41,3 +41,6 @@ nonnegative and at most 10^15. Optional SQL retains Phase 10.1's independent par
 Errors follow existing Problem Details conventions and exclude plan/SQL values. No import is
 persisted, fetched from a URL or acquired from a customer database. Associated SQL is supplied
 by the caller and its correspondence with the plan is explicitly unverified.
+
+The outer request envelope also receives a raw depth-64 scan before FastAPI decoding, so a
+malicious nested value cannot bypass the imported-string guard by using an invalid field type.

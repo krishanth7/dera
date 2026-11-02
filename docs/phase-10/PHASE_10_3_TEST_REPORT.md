@@ -66,3 +66,20 @@ This limitation keeps overall acceptance PARTIAL pending browser qualification.
 The workspace provider callback previously depended on the workspace value it updated, causing
 repeated fetches when a real authorized workspace loaded. A stable callback and functional fallback
 remove that loop; a dedicated test verifies a single request. Authentication behavior is unchanged.
+
+## First hosted browser qualification
+
+DERA CI run [41430491819](https://github.com/krishanth7/dera/actions/runs/41430491819),
+frontend job 125227541059, head `9fef125`, successfully installed Chromium and passed both
+browser tests (2 passed, 2.2 seconds), including desktop keyboard interactions and mobile overflow.
+All 116 frontend unit/component tests, lint, typecheck and production build also passed in that job.
+The local runtime limitation is therefore environment-specific and has a verified hosted fallback.
+
+Final refinements preserve MySQL array-entry dependent/cacheable metadata and distinguish
+PostgreSQL InitPlan children from Inner join inputs. Dedicated parser regressions: 54 passed.
+A third hosted browser test measures five response-to-painted-plan observations each for
+10/100/1,000-node and deep-25 synthetic imports, without treating them as execution cost.
+
+Final pre-delivery follow-up: 247 SQL tests passed before the outer-envelope security addition;
+77 focused plan/parser/API tests passed after that addition (13.29 seconds). The new request
+pre-decoder test submits 2,000 nested containers and verifies a safe 422 instead of recursion failure.

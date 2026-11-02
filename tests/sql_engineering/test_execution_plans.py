@@ -352,3 +352,56 @@ def test_malformed_dialect_shapes(data, dialect):
 def test_no_low_level_database_access():
     with patch("sqlite3.connect", side_effect=AssertionError("customer SQL execution")):
         run(pg())
+
+
+def test_mysql_subquery_flags_and_unknown_entry_metadata_preserved():
+    result = run(
+        {
+            "query_block": {
+                "attached_subqueries": [
+                    {
+                        "dependent": True,
+                        "cacheable": False,
+                        "query_block": {"table": {"table_name": "a", "access_type": "ALL"}},
+                    }
+                ]
+            }
+        },
+        "mysql",
+    )
+    assert any(json.loads(n.metadata_json).get("dependent") is True for n in result.nodes)
+    result = run(
+        {
+            "query_block": {
+                "nested_loop": [
+                    {
+                        "table": {"table_name": "a", "access_type": "ALL"},
+                        "future_operator": {"data": "preserved"},
+                    }
+                ]
+            }
+        },
+        "mysql",
+    )
+    assert result.status == "PARTIAL"
+    assert any("future_operator" in json.loads(n.metadata_json) for n in result.nodes)
+
+
+def test_initplan_is_not_inferred_as_nested_loop_inner():
+    result = run(
+        pg(
+            {
+                "Node Type": "Nested Loop",
+                "Plans": [
+                    {"Node Type": "Result", "Parent Relationship": "Outer"},
+                    {
+                        "Node Type": "Result",
+                        "Parent Relationship": "InitPlan",
+                        "Actual Loops": 1000,
+                    },
+                    {"Node Type": "Result", "Parent Relationship": "Inner", "Actual Loops": 1},
+                ],
+            }
+        )
+    )
+    assert "PLAN007" not in rules(result)

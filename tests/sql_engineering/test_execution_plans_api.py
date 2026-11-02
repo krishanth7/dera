@@ -85,3 +85,16 @@ class TestExecutionPlansAPI(auth_fixture.TestWorkspaceAuthorizationRegression):
             self.assertNotIn(marker, "\n".join(records))
         finally:
             logger.removeHandler(handler)
+
+    async def test_outer_envelope_depth_before_framework_decoder(self):
+        response = await self.client.post(
+            "/api/v1/sql-engineering/execution-plans/analyze",
+            params={"workspace_id": str(self.ws_active.id)},
+            headers={
+                "Authorization": f"Bearer {self.valid_raw_token}",
+                "Content-Type": "application/json",
+            },
+            content='{"plan_json":' + "[" * 2000 + "0" + "]" * 2000 + "}",
+        )
+        self.assertEqual(response.status_code, 422)
+        self.assertNotIn("RecursionError", response.text)

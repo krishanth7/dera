@@ -185,21 +185,25 @@ def mysql_family(data, dialect):
             "optimized_away_subqueries",
         }:
             children = [(k, v) for k, v in sorted(raw.items()) if k in structural]
-            if not children:
-                # Keep unrecognized wrappers explicit, not silently interpreted.
-                builder.add(
+            metadata = {k: v for k, v in raw.items() if k not in structural}
+            if metadata or not children:
+                # Preserve array-entry flags (dependent/cacheable) and unknown wrappers.
+                unknown = not children or any(
+                    isinstance(v, (dict, list)) for v in metadata.values()
+                )
+                parent = builder.add(
                     parent,
                     depth,
-                    "UNKNOWN",
+                    "UNKNOWN" if unknown else "QUERY",
                     kind,
                     PlanRelation(),
-                    PlanCostEstimate(unit="unavailable", semantics="unavailable"),
+                    PlanCostEstimate(unit="unavailable", semantics="native structural container"),
                     actual_metrics(),
-                    raw,
+                    metadata,
                 )
-            else:
-                for k, v in children:
-                    visit(k, v, parent, depth)
+                depth += 1
+            for k, v in children:
+                visit(k, v, parent, depth)
             return
         operation = {
             "query_block": "QUERY",

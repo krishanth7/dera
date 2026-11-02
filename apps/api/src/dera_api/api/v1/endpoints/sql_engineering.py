@@ -5,6 +5,7 @@ from typing import Annotated, Literal
 from dera.sql_engineering import Analysis, analyze
 from dera.sql_engineering.diagnostics import SqlDiagnosticsEngine, SqlDiagnosticsReport
 from dera.sql_engineering.execution_plans import ExecutionPlan, PlanInputError, analyze_plan
+from dera.sql_engineering.execution_plans.parser import check_depth
 from dera.sql_engineering.models import Dialect
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.routing import APIRoute
@@ -24,6 +25,9 @@ class BoundedRoute(APIRoute):
 
     max_body_bytes = 65_536
 
+    def validate_body(self, body: bytes) -> None:
+        """Optional pre-decoder validation hook for bounded analysis routes."""
+
     def get_route_handler(self):
         original = super().get_route_handler()
 
@@ -33,6 +37,7 @@ class BoundedRoute(APIRoute):
                 if len(body) + len(chunk) > self.max_body_bytes:
                     raise HTTPException(413, "Analysis request exceeds byte limit.")
                 body.extend(chunk)
+            self.validate_body(bytes(body))
             request._body = bytes(body)
             return await original(request)
 
@@ -122,6 +127,12 @@ async def diagnose_sql(
 # Plans are submitted as a JSON string so nesting can be checked before decoding.
 class PlanBoundedRoute(BoundedRoute):
     max_body_bytes = 1_200_000
+
+    def validate_body(self, body: bytes) -> None:
+        try:
+            check_depth(body.decode("utf-8"))
+        except (PlanInputError, UnicodeError):
+            raise HTTPException(422, "Invalid or over-limit analysis request envelope.") from None
 
 
 class PlanAnalyzeRequest(BaseModel):

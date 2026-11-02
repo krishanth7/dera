@@ -24,6 +24,28 @@ def canonical(value):
     )
 
 
+def check_depth(text: str):
+    # Bound raw container depth before invoking the JSON decoder. Braces in strings are data.
+    depth = 0
+    quoted = escaped = False
+    for char in text:
+        if quoted:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                quoted = False
+        elif char == '"':
+            quoted = True
+        elif char in "[{":
+            depth += 1
+            if depth > MAX_DEPTH:
+                fail()
+        elif char in "]}":
+            depth -= 1
+
+
 def decode(text: str):
     try:
         if (
@@ -32,25 +54,7 @@ def decode(text: str):
             or len(text.encode("utf-8")) > MAX_BYTES
         ):
             fail()
-        # Bound raw container depth before invoking the JSON decoder. Braces in strings are data.
-        depth = 0
-        quoted = escaped = False
-        for char in text:
-            if quoted:
-                if escaped:
-                    escaped = False
-                elif char == "\\":
-                    escaped = True
-                elif char == '"':
-                    quoted = False
-            elif char == '"':
-                quoted = True
-            elif char in "[{":
-                depth += 1
-                if depth > MAX_DEPTH:
-                    fail()
-            elif char in "]}":
-                depth -= 1
+        check_depth(text)
 
         def pairs(items):
             result = {}

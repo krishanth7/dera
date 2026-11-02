@@ -37,3 +37,6 @@ claims from the caller, not trusted database provenance or proof of plan-to-SQL 
 Tests cover real sessions, CSRF, foreign workspace access, identity spoofing, rejected connection
 IDs, size/depth errors, connector-spy regressions and sensitive-plan logging. See
 [test evidence](PHASE_10_3_TEST_REPORT.md).
+
+The outer request envelope also receives a raw depth-64 scan before FastAPI decoding, so a
+malicious nested value cannot bypass the imported-string guard by using an invalid field type.

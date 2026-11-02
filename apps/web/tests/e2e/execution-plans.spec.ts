@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
-import report from "../fixtures/execution-plan.json";
+import fixture from "../fixtures/execution-plan.json";
+import type { PlanReport } from "../../src/components/execution-plans/types";
+const report = fixture as PlanReport;
 
 // UI contract fixtures only. Backend auth is verified separately with real sessions.
 test.beforeEach(async ({ page }) => {
@@ -33,4 +35,30 @@ test("contains graph/table overflow at a mobile viewport", async ({ page }) => {
   await page.getByRole("button",{name:"Analyze imported plan"}).click();
   await expect(page.getByRole("table")).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+});
+
+test("records synthetic response-to-painted-plan latency for bounded graph sizes", async ({ page }) => {
+  let current: PlanReport = report;
+  await page.route("**/sql-engineering/execution-plans/analyze**", async route=>{
+    await route.fulfill({json:current,headers:{"Access-Control-Allow-Origin":"http://localhost:3000","Access-Control-Allow-Credentials":"true","Access-Control-Allow-Methods":"GET, POST, OPTIONS","Access-Control-Allow-Headers":"content-type, x-csrf-token"}});
+  });
+  await page.goto("/app/execution-plans");
+  await page.getByLabel("Execution plan JSON",{exact:true}).fill("{}");
+  const results=[];
+  for(const [label,count,deep] of [["10_nodes",10,false],["100_nodes",100,false],["1000_nodes",1000,false],["deep_25",25,true]] as const) {
+    const samples=[];
+    for(let sample=0;sample<5;sample++) {
+      const nodes=Array.from({length:count},(_,i)=>({...report.nodes[i?1:0],node_id:`n${i}`,parent_id:i?(deep?`n${i-1}`:"n0"):null,depth:deep?i+1:i?2:1,child_ids:deep?(i<count-1?[`n${i+1}`]:[]):i?[]:Array.from({length:count-1},(_,j)=>`n${j+1}`)}));
+      current={...report,nodes,root_ids:["n0"],diagnostics:[],recommendations:[],summary:{...report.summary,node_count:count,max_depth:deep?count:2},plan_fingerprint:`perf-${label}-${sample}`};
+      const start=await page.evaluate(()=>performance.now());
+      await page.getByRole("button",{name:"Analyze imported plan"}).click();
+      await expect(page.getByLabel("Plan summary",{exact:true})).toContainText(current.plan_fingerprint);
+      await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
+      const end=await page.evaluate(()=>performance.now());
+      samples.push(end-start);
+      await expect(page.locator('button[aria-pressed]')).toHaveCount(count);
+    }
+    results.push({fixture:label,nodes:count,median_ms:Number(samples.sort((a,b)=>a-b)[2].toFixed(3))});
+  }
+  console.log("DERA_PLAN_BROWSER_BENCHMARK",JSON.stringify({iterations:5,method:"Synthetic API fixture, click-to-report plus two animation frames; includes test driver and mocked transport overhead, not isolated React CPU time or FPS",results}));
 });

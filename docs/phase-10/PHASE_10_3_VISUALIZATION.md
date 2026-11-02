@@ -25,5 +25,7 @@ responsive layout stacks details and findings on narrow screens and contains hor
 Vitest component tests exercise selection, relationships, missing metrics, collapse, zoom/pan,
 loading, errors, unsupported states and evidence. A reproducible synthetic DOM benchmark renders
 10/100/1,000 nodes. These are jsdom measurements, not browser paint/FPS or accessibility
-certification. Browser screenshots, automated accessibility scanning and real mobile-browser
-qualification remain explicitly unverified in this environment; see the test report.
+certification. Hosted Chromium desktop keyboard and mobile viewport tests passed after the local browser runtime
+failed to install. A separate browser benchmark records click-to-painted-plan latency for bounded
+synthetic imports. Automated accessibility scanning and manual assistive-technology qualification
+remain unclaimed; see the test report.

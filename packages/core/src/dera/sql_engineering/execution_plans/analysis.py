@@ -101,7 +101,24 @@ def analyze_nodes(nodes):
         ):
             emit("PLAN006", node, ["Native plan explicitly reports temporary storage."])
         if node.operation == "NESTED_LOOP":
-            inner = [by_id[k] for k in node.child_ids[1:]]
+            children = [by_id[k] for k in node.child_ids]
+            if node.native_operation == "Nested Loop":
+                inner = [
+                    child
+                    for child in children
+                    if json.loads(child.metadata_json).get("Parent Relationship") == "Inner"
+                ]
+                if (
+                    not inner
+                    and len(children) == 2
+                    and all(
+                        "Parent Relationship" not in json.loads(child.metadata_json)
+                        for child in children
+                    )
+                ):
+                    inner = children[1:]
+            else:
+                inner = children[1:]
             for child in inner:
                 if child.actual.loops is not None and child.actual.loops >= 1_000:
                     emit(
